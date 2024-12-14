@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Sat Dec 14 17:13:51 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Sat Dec 14 18:57:44 2024
 <BR><P>
 <H3>Maximum Stack Usage =       2364 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -3073,7 +3073,6 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_isOffTimeEnabled
 <LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_hasOffTimeTimerExpired
 <LI><a href="#[20a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
-<LI><a href="#[22d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet6Scrn
 </UL>
 
 <P><STRONG><a name="[33d]"></a>Light_Modbus_GetOffTimeTimer</STRONG> (Thumb, 12 bytes, Stack size 4 bytes, display.o(.text.Light_Modbus_GetOffTimeTimer))
@@ -11803,15 +11802,14 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[20a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[22d]"></a>DSP_InitSet6Scrn</STRONG> (Thumb, 894 bytes, Stack size 168 bytes, display.o(.text.DSP_InitSet6Scrn))
-<BR><BR>[Stack]<UL><LI>Max Depth = 680<LI>Call Chain = DSP_InitSet6Scrn &rArr; SPINBOX_SetEdge &rArr; _AdjustEdit &rArr; WM_SetWindowPos &rArr; WM_SetSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<P><STRONG><a name="[22d]"></a>DSP_InitSet6Scrn</STRONG> (Thumb, 2670 bytes, Stack size 248 bytes, display.o(.text.DSP_InitSet6Scrn))
+<BR><BR>[Stack]<UL><LI>Max Depth = 760<LI>Call Chain = DSP_InitSet6Scrn &rArr; SPINBOX_SetEdge &rArr; _AdjustEdit &rArr; WM_SetWindowPos &rArr; WM_SetSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_SetValue
 <LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_SetEdge
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_CreateEx
 <LI><a href="#[20d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_isTiedToMainLight
 <LI><a href="#[22e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_GetRelay
-<LI><a href="#[230]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_GetOffTime
 <LI><a href="#[1f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetTextAlign
 <LI><a href="#[1f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetFont
 <LI><a href="#[1f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetColor
@@ -11900,7 +11898,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[20a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[235]"></a>DSP_KillSet6Scrn</STRONG> (Thumb, 186 bytes, Stack size 32 bytes, display.o(.text.DSP_KillSet6Scrn))
+<P><STRONG><a name="[235]"></a>DSP_KillSet6Scrn</STRONG> (Thumb, 348 bytes, Stack size 32 bytes, display.o(.text.DSP_KillSet6Scrn))
 <BR><BR>[Stack]<UL><LI>Max Depth = 264<LI>Call Chain = DSP_KillSet6Scrn &rArr; WM_DeleteWindow &rArr; WM__SendMsgNoData &rArr; WM__SendMessage &rArr; WM_DefaultProc &rArr; WM_InvalidateWindow &rArr; WM_InvalidateRect &rArr; WM__InvalidateRectEx &rArr; WM__InvalidateRect &rArr;  WM__InvalidateRect (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[259]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DeleteWindow
