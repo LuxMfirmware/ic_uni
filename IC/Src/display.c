@@ -290,7 +290,7 @@ uint8_t settingsChanged = 0;
 uint8_t curtainSettingMenu = 0, curtainMenu = 0, curtainMenuCurtainCount = 1, curtainMenuStartIndex = 0, curtainMenuCurtainLength = 120, curtainMenuSpaceBetween = 0, curtain_selected = 0;
 LIGHT_Modbus_CmdTypeDef lights_modbus[LIGHTS_MODBUS_SIZE];
 uint32_t light_settingsTimerStart = 0;
-uint8_t lights_count = 0, lightsModbusSettingsMenu = 0, lights_modbus_rows = 0, light_selectedIndex = 0, lightsMenuSpaceBetween = (400 - (80 * LIGHTS_MODBUS_PER_ROW)) / (LIGHTS_MODBUS_PER_ROW - 1 + 2);
+uint8_t lights_count = 0, lightsModbusSettingsMenu = 0, lights_modbus_rows = 0, light_selectedIndex = LIGHTS_MODBUS_SIZE, lightsMenuSpaceBetween = (400 - (80 * LIGHTS_MODBUS_PER_ROW)) / (LIGHTS_MODBUS_PER_ROW - 1 + 2);
 uint8_t shouldDrawScreen = 1;
 uint8_t bOnlyLeaveScreenSaverAfterTouch = 0;
 uint8_t LightNightTimer_isEnabled = 0;
@@ -1867,16 +1867,8 @@ void DISP_Service(void){
                     {
                         int x = (lightsMenuSpaceBetween * ((i % lightsInRow) + 1)) + (80 * (i % lightsInRow));
                         
-                        if(Light_Modbus_isOffTimeEnabled(lights_modbus + lightsInRowSum + i))
-                        {
-                            if(Light_Modbus_isActive(lights_modbus + lightsInRowSum + i)) GUI_DrawBitmap(&bmVENTILATOR_ON, x, y);
-                            else GUI_DrawBitmap(&bmVENTILATOR_OFF, x, y);
-                        }
-                        else
-                        {
-                            if(Light_Modbus_isActive(lights_modbus + lightsInRowSum + i)) GUI_DrawBitmap(&bmSijalicaOn, x, y);
-                            else GUI_DrawBitmap(&bmSijalicaOff, x, y);
-                        }
+                        if(Light_Modbus_isActive(lights_modbus + lightsInRowSum + i)) GUI_DrawBitmap(&bmSijalicaOn, x, y);
+                        else GUI_DrawBitmap(&bmSijalicaOff, x, y);
                         
                         /*GUI_SetFont(GUI_FONT_24B_1);
                         GUI_SetColor(GUI_ORANGE);
@@ -3788,10 +3780,12 @@ void PID_Hook(GUI_PID_STATE * pTS){
     else
     {
         if(screen == 1) screen = 0;
-        else if(screen == 15)
+        else if((screen == 15) && (light_selectedIndex < LIGHTS_MODBUS_SIZE))
         {
+            
             light_settingsTimerStart = 0;
             Light_Modbus_Flip(lights_modbus + light_selectedIndex);
+            light_selectedIndex = LIGHTS_MODBUS_SIZE;
         }
         btnset = 0;
         btndec = 0U;   

@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Mon Dec 16 13:36:15 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Mon Dec 16 14:18:24 2024
 <BR><P>
 <H3>Maximum Stack Usage =       2404 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1505,7 +1505,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[20a]"></a>DISP_Service</STRONG> (Thumb, 17946 bytes, Stack size 1416 bytes, display.o(.text.DISP_Service))
+<P><STRONG><a name="[20a]"></a>DISP_Service</STRONG> (Thumb, 17818 bytes, Stack size 1416 bytes, display.o(.text.DISP_Service))
 <BR><BR>[Stack]<UL><LI>Max Depth = 2372<LI>Call Chain = DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 </UL>
 <BR>[Calls]<UL><LI><a href="#[226]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
@@ -3348,8 +3348,8 @@ Global Symbols
 <P><STRONG><a name="[39]"></a>NMI_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f7xx_it.o(.text.NMI_Handler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f746xx.o(RESET)
 </UL>
-<P><STRONG><a name="[a6]"></a>PID_Hook</STRONG> (Thumb, 3092 bytes, Stack size 56 bytes, display.o(.text.PID_Hook))
-<BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = PID_Hook &rArr; Curtains_MoveSignal &rArr; Curtains_Move &rArr; Curtains_isAnyCurtainMoving &rArr; Curtain_isMoving &rArr; Curtain_hasRelays
+<P><STRONG><a name="[a6]"></a>PID_Hook</STRONG> (Thumb, 3118 bytes, Stack size 64 bytes, display.o(.text.PID_Hook))
+<BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = PID_Hook &rArr; Curtains_MoveSignal &rArr; Curtains_Move &rArr; Curtains_isAnyCurtainMoving &rArr; Curtain_isMoving &rArr; Curtain_hasRelays
 </UL>
 <BR>[Calls]<UL><LI><a href="#[226]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 <LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
@@ -4976,15 +4976,15 @@ Global Symbols
 <LI><a href="#[446]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetBkColor
 <LI><a href="#[444]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP__FindChar
 </UL>
-<BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
-<LI> f13_1.o(.constdata)
+<BR>[Address Reference Count : 11]<UL><LI> f13_1.o(.constdata)
+<LI> fd32.o(.constdata)
 <LI> fd48.o(.constdata)
-<LI> fd64.o(.constdata)
 <LI> f16b_1.o(.constdata)
-<LI> f20_1.o(.constdata)
 <LI> f24_1.o(.constdata)
-<LI> f24b_1.o(.constdata)
+<LI> f20_1.o(.constdata)
+<LI> fd64.o(.constdata)
 <LI> fd80.o(.constdata)
+<LI> f24b_1.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
 </UL>
@@ -4993,28 +4993,28 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[444]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP__FindChar
 </UL>
-<BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
-<LI> f13_1.o(.constdata)
+<BR>[Address Reference Count : 11]<UL><LI> f13_1.o(.constdata)
+<LI> fd32.o(.constdata)
 <LI> fd48.o(.constdata)
-<LI> fd64.o(.constdata)
 <LI> f16b_1.o(.constdata)
-<LI> f20_1.o(.constdata)
 <LI> f24_1.o(.constdata)
-<LI> f24b_1.o(.constdata)
+<LI> f20_1.o(.constdata)
+<LI> fd64.o(.constdata)
 <LI> fd80.o(.constdata)
+<LI> f24b_1.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
 </UL>
 <P><STRONG><a name="[158]"></a>GUIPROP_GetFontInfo</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, gui_charp.o(i.GUIPROP_GetFontInfo))
-<BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
-<LI> f13_1.o(.constdata)
+<BR>[Address Reference Count : 11]<UL><LI> f13_1.o(.constdata)
+<LI> fd32.o(.constdata)
 <LI> fd48.o(.constdata)
-<LI> fd64.o(.constdata)
 <LI> f16b_1.o(.constdata)
-<LI> f20_1.o(.constdata)
 <LI> f24_1.o(.constdata)
-<LI> f24b_1.o(.constdata)
+<LI> f20_1.o(.constdata)
+<LI> fd64.o(.constdata)
 <LI> fd80.o(.constdata)
+<LI> f24b_1.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
 </UL>
@@ -5023,15 +5023,15 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[444]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP__FindChar
 </UL>
-<BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
-<LI> f13_1.o(.constdata)
+<BR>[Address Reference Count : 11]<UL><LI> f13_1.o(.constdata)
+<LI> fd32.o(.constdata)
 <LI> fd48.o(.constdata)
-<LI> fd64.o(.constdata)
 <LI> f16b_1.o(.constdata)
-<LI> f20_1.o(.constdata)
 <LI> f24_1.o(.constdata)
-<LI> f24b_1.o(.constdata)
+<LI> f20_1.o(.constdata)
+<LI> fd64.o(.constdata)
 <LI> fd80.o(.constdata)
+<LI> f24b_1.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
 </UL>
