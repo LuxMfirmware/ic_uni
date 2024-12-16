@@ -30,7 +30,7 @@ typedef enum{
 typedef struct
 {
     uint32_t off_timer_start;
-    uint16_t index, old_index, iconID, controllerID_on, off_delay;
+    uint16_t index, old_index, iconID, controllerID_on;
     uint8_t value, old_value, tiedToMainLight, off_time, controllerID_on_delay, on_hour, on_minute, communication_type, local_pin, sleep_time, button_external;
 } LIGHT_Modbus_CmdTypeDef;
 

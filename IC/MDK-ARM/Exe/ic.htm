@@ -3,9 +3,9 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Sat Dec 14 18:57:44 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Mon Dec 16 13:36:15 2024
 <BR><P>
-<H3>Maximum Stack Usage =       2364 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =       2404 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 main &rArr; DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 <P>
@@ -1505,8 +1505,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[20a]"></a>DISP_Service</STRONG> (Thumb, 16906 bytes, Stack size 1376 bytes, display.o(.text.DISP_Service))
-<BR><BR>[Stack]<UL><LI>Max Depth = 2332<LI>Call Chain = DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
+<P><STRONG><a name="[20a]"></a>DISP_Service</STRONG> (Thumb, 17946 bytes, Stack size 1416 bytes, display.o(.text.DISP_Service))
+<BR><BR>[Stack]<UL><LI>Max Depth = 2372<LI>Call Chain = DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 </UL>
 <BR>[Calls]<UL><LI><a href="#[226]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 <LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
@@ -3073,6 +3073,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_isOffTimeEnabled
 <LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_hasOffTimeTimerExpired
 <LI><a href="#[20a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
+<LI><a href="#[22d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet6Scrn
 </UL>
 
 <P><STRONG><a name="[33d]"></a>Light_Modbus_GetOffTimeTimer</STRONG> (Thumb, 12 bytes, Stack size 4 bytes, display.o(.text.Light_Modbus_GetOffTimeTimer))
@@ -3100,7 +3101,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[279]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_Light_Modbus
 </UL>
 
-<P><STRONG><a name="[339]"></a>Light_Modbus_Init</STRONG> (Thumb, 314 bytes, Stack size 72 bytes, display.o(.text.Light_Modbus_Init))
+<P><STRONG><a name="[339]"></a>Light_Modbus_Init</STRONG> (Thumb, 290 bytes, Stack size 72 bytes, display.o(.text.Light_Modbus_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 404<LI>Call Chain = Light_Modbus_Init &rArr; EE_ReadBuffer &rArr; EE_ReadData &rArr; I2Cx_ReadMultiple &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_ReadBuffer
@@ -3145,7 +3146,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[36f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RS485_Service
 </UL>
 
-<P><STRONG><a name="[33b]"></a>Light_Modbus_Save</STRONG> (Thumb, 304 bytes, Stack size 72 bytes, display.o(.text.Light_Modbus_Save))
+<P><STRONG><a name="[33b]"></a>Light_Modbus_Save</STRONG> (Thumb, 280 bytes, Stack size 72 bytes, display.o(.text.Light_Modbus_Save))
 <BR><BR>[Stack]<UL><LI>Max Depth = 444<LI>Call Chain = Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_WriteBuffer
@@ -3285,7 +3286,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[33e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_Calculate
 </UL>
 
-<P><STRONG><a name="[208]"></a>Lights_Modbus_Init</STRONG> (Thumb, 80 bytes, Stack size 16 bytes, display.o(.text.Lights_Modbus_Init))
+<P><STRONG><a name="[208]"></a>Lights_Modbus_Init</STRONG> (Thumb, 76 bytes, Stack size 16 bytes, display.o(.text.Lights_Modbus_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 420<LI>Call Chain = Lights_Modbus_Init &rArr; Light_Modbus_Init &rArr; EE_ReadBuffer &rArr; EE_ReadData &rArr; I2Cx_ReadMultiple &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[33e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_Calculate
@@ -3307,7 +3308,7 @@ Global Symbols
 <LI><a href="#[20a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[234]"></a>Lights_Modbus_Save</STRONG> (Thumb, 80 bytes, Stack size 16 bytes, display.o(.text.Lights_Modbus_Save))
+<P><STRONG><a name="[234]"></a>Lights_Modbus_Save</STRONG> (Thumb, 76 bytes, Stack size 16 bytes, display.o(.text.Lights_Modbus_Save))
 <BR><BR>[Stack]<UL><LI>Max Depth = 460<LI>Call Chain = Lights_Modbus_Save &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[33e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_Calculate
@@ -4153,7 +4154,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[a3]"></a>main</STRONG> (Thumb, 124 bytes, Stack size 32 bytes, main.o(.text.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 2364<LI>Call Chain = main &rArr; DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
+<BR><BR>[Stack]<UL><LI>Max Depth = 2404<LI>Call Chain = main &rArr; DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TS_Init
 <LI><a href="#[2a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
@@ -4975,15 +4976,15 @@ Global Symbols
 <LI><a href="#[446]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetBkColor
 <LI><a href="#[444]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP__FindChar
 </UL>
-<BR>[Address Reference Count : 11]<UL><LI> f13_1.o(.constdata)
-<LI> fd32.o(.constdata)
+<BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
+<LI> f13_1.o(.constdata)
 <LI> fd48.o(.constdata)
-<LI> f16b_1.o(.constdata)
-<LI> f24_1.o(.constdata)
-<LI> f20_1.o(.constdata)
 <LI> fd64.o(.constdata)
-<LI> fd80.o(.constdata)
+<LI> f16b_1.o(.constdata)
+<LI> f20_1.o(.constdata)
+<LI> f24_1.o(.constdata)
 <LI> f24b_1.o(.constdata)
+<LI> fd80.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
 </UL>
@@ -4992,28 +4993,28 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[444]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP__FindChar
 </UL>
-<BR>[Address Reference Count : 11]<UL><LI> f13_1.o(.constdata)
-<LI> fd32.o(.constdata)
+<BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
+<LI> f13_1.o(.constdata)
 <LI> fd48.o(.constdata)
-<LI> f16b_1.o(.constdata)
-<LI> f24_1.o(.constdata)
-<LI> f20_1.o(.constdata)
 <LI> fd64.o(.constdata)
-<LI> fd80.o(.constdata)
+<LI> f16b_1.o(.constdata)
+<LI> f20_1.o(.constdata)
+<LI> f24_1.o(.constdata)
 <LI> f24b_1.o(.constdata)
+<LI> fd80.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
 </UL>
 <P><STRONG><a name="[158]"></a>GUIPROP_GetFontInfo</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, gui_charp.o(i.GUIPROP_GetFontInfo))
-<BR>[Address Reference Count : 11]<UL><LI> f13_1.o(.constdata)
-<LI> fd32.o(.constdata)
+<BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
+<LI> f13_1.o(.constdata)
 <LI> fd48.o(.constdata)
-<LI> f16b_1.o(.constdata)
-<LI> f24_1.o(.constdata)
-<LI> f20_1.o(.constdata)
 <LI> fd64.o(.constdata)
-<LI> fd80.o(.constdata)
+<LI> f16b_1.o(.constdata)
+<LI> f20_1.o(.constdata)
+<LI> f24_1.o(.constdata)
 <LI> f24b_1.o(.constdata)
+<LI> fd80.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
 </UL>
@@ -5022,15 +5023,15 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[444]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP__FindChar
 </UL>
-<BR>[Address Reference Count : 11]<UL><LI> f13_1.o(.constdata)
-<LI> fd32.o(.constdata)
+<BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
+<LI> f13_1.o(.constdata)
 <LI> fd48.o(.constdata)
-<LI> f16b_1.o(.constdata)
-<LI> f24_1.o(.constdata)
-<LI> f20_1.o(.constdata)
 <LI> fd64.o(.constdata)
-<LI> fd80.o(.constdata)
+<LI> f16b_1.o(.constdata)
+<LI> f20_1.o(.constdata)
+<LI> f24_1.o(.constdata)
 <LI> f24b_1.o(.constdata)
+<LI> fd80.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
 </UL>
@@ -11802,14 +11803,15 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[20a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[22d]"></a>DSP_InitSet6Scrn</STRONG> (Thumb, 2670 bytes, Stack size 248 bytes, display.o(.text.DSP_InitSet6Scrn))
-<BR><BR>[Stack]<UL><LI>Max Depth = 760<LI>Call Chain = DSP_InitSet6Scrn &rArr; SPINBOX_SetEdge &rArr; _AdjustEdit &rArr; WM_SetWindowPos &rArr; WM_SetSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<P><STRONG><a name="[22d]"></a>DSP_InitSet6Scrn</STRONG> (Thumb, 2702 bytes, Stack size 256 bytes, display.o(.text.DSP_InitSet6Scrn))
+<BR><BR>[Stack]<UL><LI>Max Depth = 768<LI>Call Chain = DSP_InitSet6Scrn &rArr; SPINBOX_SetEdge &rArr; _AdjustEdit &rArr; WM_SetWindowPos &rArr; WM_SetSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_SetValue
 <LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_SetEdge
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_CreateEx
 <LI><a href="#[20d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_isTiedToMainLight
 <LI><a href="#[22e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_GetRelay
+<LI><a href="#[230]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_GetOffTime
 <LI><a href="#[1f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetTextAlign
 <LI><a href="#[1f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetFont
 <LI><a href="#[1f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetColor
@@ -11898,8 +11900,8 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[20a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[235]"></a>DSP_KillSet6Scrn</STRONG> (Thumb, 348 bytes, Stack size 32 bytes, display.o(.text.DSP_KillSet6Scrn))
-<BR><BR>[Stack]<UL><LI>Max Depth = 264<LI>Call Chain = DSP_KillSet6Scrn &rArr; WM_DeleteWindow &rArr; WM__SendMsgNoData &rArr; WM__SendMessage &rArr; WM_DefaultProc &rArr; WM_InvalidateWindow &rArr; WM_InvalidateRect &rArr; WM__InvalidateRectEx &rArr; WM__InvalidateRect &rArr;  WM__InvalidateRect (Cycle)
+<P><STRONG><a name="[235]"></a>DSP_KillSet6Scrn</STRONG> (Thumb, 372 bytes, Stack size 24 bytes, display.o(.text.DSP_KillSet6Scrn))
+<BR><BR>[Stack]<UL><LI>Max Depth = 256<LI>Call Chain = DSP_KillSet6Scrn &rArr; WM_DeleteWindow &rArr; WM__SendMsgNoData &rArr; WM__SendMessage &rArr; WM_DefaultProc &rArr; WM_InvalidateWindow &rArr; WM_InvalidateRect &rArr; WM__InvalidateRectEx &rArr; WM__InvalidateRect &rArr;  WM__InvalidateRect (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[259]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DeleteWindow
 </UL>

@@ -28,7 +28,7 @@
 
 typedef struct
 {
-    SPINBOX_Handle  relay, offTime, iconID, controllerID_on, off_delay, controllerID_on_delay, on_hour, on_minute, communication_type, local_pin, sleep_time, button_external;
+    SPINBOX_Handle  relay, offTime, iconID, controllerID_on, controllerID_on_delay, on_hour, on_minute, communication_type, local_pin, sleep_time, button_external;
     CHECKBOX_Handle  tiedToMainLight;
 }
 Light_Modbus_settingsWidgets;
@@ -1721,11 +1721,74 @@ void DISP_Service(void){
                         Light_Modbus_SetRelay(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].relay));
                     }
                     
+                    if(lights_modbus[i].iconID != SPINBOX_GetValue(lightsWidgets[i].iconID))
+                    {
+                        settingsChanged = 1;
+                        
+                        lights_modbus[i].iconID = SPINBOX_GetValue(lightsWidgets[i].iconID);
+                    }
+                    
+                    if(lights_modbus[i].controllerID_on != SPINBOX_GetValue(lightsWidgets[i].controllerID_on))
+                    {
+                        settingsChanged = 1;
+                        
+                        lights_modbus[i].controllerID_on = SPINBOX_GetValue(lightsWidgets[i].controllerID_on);
+                    }
+                    
+                    if(lights_modbus[i].controllerID_on_delay != SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay))
+                    {
+                        settingsChanged = 1;
+                        
+                        lights_modbus[i].controllerID_on_delay = SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay);
+                    }
+                    
                     if(Light_Modbus_GetOffTime(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].offTime))
                     {
                         settingsChanged = 1;
                         
                         Light_Modbus_SetOffTime(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].offTime));
+                    }
+                    
+                    if(lights_modbus[i].on_hour != SPINBOX_GetValue(lightsWidgets[i].on_hour))
+                    {
+                        settingsChanged = 1;
+                        
+                        lights_modbus[i].on_hour = SPINBOX_GetValue(lightsWidgets[i].on_hour);
+                    }
+                    
+                    if(lights_modbus[i].on_minute != SPINBOX_GetValue(lightsWidgets[i].on_minute))
+                    {
+                        settingsChanged = 1;
+                        
+                        lights_modbus[i].on_minute = SPINBOX_GetValue(lightsWidgets[i].on_minute);
+                    }
+                    
+                    if(lights_modbus[i].communication_type != SPINBOX_GetValue(lightsWidgets[i].communication_type))
+                    {
+                        settingsChanged = 1;
+                        
+                        lights_modbus[i].communication_type = SPINBOX_GetValue(lightsWidgets[i].communication_type);
+                    }
+                    
+                    if(lights_modbus[i].local_pin != SPINBOX_GetValue(lightsWidgets[i].local_pin))
+                    {
+                        settingsChanged = 1;
+                        
+                        lights_modbus[i].local_pin = SPINBOX_GetValue(lightsWidgets[i].local_pin);
+                    }
+                    
+                    if(lights_modbus[i].sleep_time != SPINBOX_GetValue(lightsWidgets[i].sleep_time))
+                    {
+                        settingsChanged = 1;
+                        
+                        lights_modbus[i].sleep_time = SPINBOX_GetValue(lightsWidgets[i].sleep_time);
+                    }
+                    
+                    if(lights_modbus[i].button_external != SPINBOX_GetValue(lightsWidgets[i].button_external))
+                    {
+                        settingsChanged = 1;
+                        
+                        lights_modbus[i].button_external = SPINBOX_GetValue(lightsWidgets[i].button_external);
                     }
                     
                     if(Light_Modbus_isTiedToMainLight(lights_modbus + i) != CHECKBOX_GetState(lightsWidgets[i].tiedToMainLight))
@@ -2919,9 +2982,9 @@ static void DSP_InitSet6Scrn(void)
         SPINBOX_SetEdge(lightsWidgets[i].controllerID_on_delay, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].controllerID_on_delay, lights_modbus[i].controllerID_on_delay);
         
-        lightsWidgets[i].off_delay = SPINBOX_CreateEx(x, y + 132, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 4, 0, 512);
-        SPINBOX_SetEdge(lightsWidgets[i].off_delay, SPINBOX_EDGE_CENTER);
-        SPINBOX_SetValue(lightsWidgets[i].off_delay, lights_modbus[i].off_delay);
+        lightsWidgets[i].offTime = SPINBOX_CreateEx(x, y + 132, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 4, 0, 512);
+        SPINBOX_SetEdge(lightsWidgets[i].offTime, SPINBOX_EDGE_CENTER);
+        SPINBOX_SetValue(lightsWidgets[i].offTime, Light_Modbus_GetOffTime(lights_modbus + i));
         
         lightsWidgets[i].on_hour = SPINBOX_CreateEx(x, y + 165, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 5, 0, 512);
         SPINBOX_SetEdge(lightsWidgets[i].on_hour, SPINBOX_EDGE_CENTER);
@@ -3096,7 +3159,7 @@ static void DSP_KillSet6Scrn(void)
         WM_DeleteWindow(lightsWidgets[i].iconID);
         WM_DeleteWindow(lightsWidgets[i].controllerID_on);
         WM_DeleteWindow(lightsWidgets[i].controllerID_on_delay);
-        WM_DeleteWindow(lightsWidgets[i].off_delay);
+        WM_DeleteWindow(lightsWidgets[i].offTime);
         WM_DeleteWindow(lightsWidgets[i].on_hour);
         WM_DeleteWindow(lightsWidgets[i].on_minute);
         WM_DeleteWindow(lightsWidgets[i].communication_type);
@@ -3946,12 +4009,11 @@ void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* li, const uint16_t addr)
     EE_ReadBuffer((uint8_t*)(&li->iconID),             addr + 4,       1);
     EE_ReadBuffer((uint8_t*)(&li->controllerID_on),    addr + 5,       2);
     EE_ReadBuffer(&li->controllerID_on_delay,          addr + 7,       1);
-    EE_ReadBuffer((uint8_t*)(&li->off_delay),          addr + 8,       2);
-    EE_ReadBuffer(&li->on_minute,                      addr + 10,       1);
-    EE_ReadBuffer(&li->communication_type,             addr + 11,       1);
-    EE_ReadBuffer(&li->local_pin,                      addr + 12,       1);
-    EE_ReadBuffer(&li->sleep_time,                     addr + 13,       1);
-    EE_ReadBuffer(&li->button_external,                addr + 14,       1);
+    EE_ReadBuffer(&li->on_minute,                      addr + 8,       1);
+    EE_ReadBuffer(&li->communication_type,             addr + 9,       1);
+    EE_ReadBuffer(&li->local_pin,                      addr + 10,       1);
+    EE_ReadBuffer(&li->sleep_time,                     addr + 11,       1);
+    EE_ReadBuffer(&li->button_external,                addr + 12,       1);
 }
 
 
@@ -3963,12 +4025,11 @@ void Light_Modbus_Save(LIGHT_Modbus_CmdTypeDef* li, const uint16_t addr)
     EE_WriteBuffer((uint8_t*)(&li->iconID),             addr + 4,       1);
     EE_WriteBuffer((uint8_t*)(&li->controllerID_on),    addr + 5,       2);
     EE_WriteBuffer(&li->controllerID_on_delay,          addr + 7,       1);
-    EE_WriteBuffer((uint8_t*)(&li->off_delay),          addr + 8,       2);
-    EE_WriteBuffer(&li->on_minute,                      addr + 10,       1);
-    EE_WriteBuffer(&li->communication_type,             addr + 11,       1);
-    EE_WriteBuffer(&li->local_pin,                      addr + 12,       1);
-    EE_WriteBuffer(&li->sleep_time,                     addr + 13,       1);
-    EE_WriteBuffer(&li->button_external,                addr + 14,       1);
+    EE_WriteBuffer(&li->on_minute,                      addr + 8,       1);
+    EE_WriteBuffer(&li->communication_type,             addr + 9,       1);
+    EE_WriteBuffer(&li->local_pin,                      addr + 10,       1);
+    EE_WriteBuffer(&li->sleep_time,                     addr + 11,       1);
+    EE_WriteBuffer(&li->button_external,                addr + 12,       1);
 }
 
 void Lights_Modbus_Init()
