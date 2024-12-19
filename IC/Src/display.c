@@ -2101,6 +2101,12 @@ void DISP_Service(void){
                 GUI_DrawLine(400,40,450,40);
                 GUI_DrawLine(400,60,450,60);
                 
+                //GUI_DrawRect(20, 20, 100, 100);
+                GUI_SetColor(lights_modbus[light_selectedIndex].color);
+                GUI_FillRect(20, 20, 100, 100);
+                
+                GUI_DrawBitmap(&bmcolorSpectrum, 20, 136);
+                
                 GUI_MULTIBUF_EndEx(1);
             }
             
@@ -3158,7 +3164,6 @@ static void DSP_KillSet6Scrn(void)
         WM_DeleteWindow(lightsWidgets[i].local_pin);
         WM_DeleteWindow(lightsWidgets[i].sleep_time);
         WM_DeleteWindow(lightsWidgets[i].button_external);
-        //WM_DeleteWindow(lightsWidgets[i].offTime);
         WM_DeleteWindow(lightsWidgets[i].tiedToMainLight);
     }
     WM_DeleteWindow(hBUTTON_Next);
@@ -3498,6 +3503,8 @@ void PID_Hook(GUI_PID_STATE * pTS){
         }
         else if(screen == 15) //lights
         {
+            light_selectedIndex = LIGHTS_MODBUS_SIZE; // clear selected light
+            
             int y = (Lights_Modbus_Rows_getCount() > 1) ? 10 : 86;
             uint8_t lightsInRowSum = 0;
             
@@ -3623,6 +3630,11 @@ void PID_Hook(GUI_PID_STATE * pTS){
                 menu_lc = 0;
                 shouldDrawScreen = 1;
             }
+        }
+        else if(screen == 20)  // light settings
+        {
+            lights_modbus[light_selectedIndex].color = LCD_GetPixelColor(pTS->x, pTS->y);
+            shouldDrawScreen = 1;
         }
         else if((pTS->x > 100)&&(pTS->y > 100)&&(pTS->x < 400)&&(pTS->y < 272)&&(screen == 0))
         {
@@ -3780,12 +3792,10 @@ void PID_Hook(GUI_PID_STATE * pTS){
     else
     {
         if(screen == 1) screen = 0;
-        else if((screen == 15) && (light_selectedIndex < LIGHTS_MODBUS_SIZE))
+        else if((screen == 15))
         {
-            
             light_settingsTimerStart = 0;
             Light_Modbus_Flip(lights_modbus + light_selectedIndex);
-            light_selectedIndex = LIGHTS_MODBUS_SIZE;
         }
         btnset = 0;
         btndec = 0U;   

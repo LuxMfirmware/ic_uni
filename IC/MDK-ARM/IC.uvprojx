@@ -518,6 +518,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Display\mobilePhone.c</FilePath>
             </File>
+            <File>
+              <FileName>colorSpectrum.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\colorSpectrum.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

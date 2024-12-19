@@ -26,6 +26,7 @@
 ".\exe\ventilator_on.o"
 ".\exe\wifi.o"
 ".\exe\mobilephone.o"
+".\exe\colorspectrum.o"
 ".\exe\system_stm32f7xx.o"
 ".\exe\ft5336.o"
 ".\exe\stm32746g.o"
