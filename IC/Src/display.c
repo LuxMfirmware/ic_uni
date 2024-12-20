@@ -487,6 +487,158 @@ void lng(uint8_t t)
     
 }
 
+
+
+uint8_t readPins()
+{
+    uint8_t pin = 0, retPins = 0;
+    
+    for(unsigned short int i = 1U; i < 8; i++)
+    {
+        switch(i)
+        {
+            /*case 1:
+                pin = Pin3IsSet();
+                break;
+                                        
+            case 2:
+                pin = Pin4IsSet();
+                break;
+            
+            case 3:
+                pin = Pin5IsSet();
+                break;
+                                    
+            case 4:
+                pin = Pin6IsSet();
+                break;
+            
+            case 5:
+                pin = Pin7IsSet();
+                break;
+            
+            case 6:
+                pin = Pin8IsSet();
+                break;
+            
+            default:
+                pin = 0;
+                break;*/
+                
+                case 1:
+                pin = IsLight1Active();
+                break;
+                                        
+            case 2:
+                pin = IsLight2Active();
+                break;
+            
+            case 3:
+                pin = IsLight3Active();
+                break;
+                                    
+            case 4:
+                pin = IsBuzzerActiv();
+                break;
+            
+            case 5:
+                pin = IsLight5Active();
+                break;
+            
+            case 6:
+                pin = IsLight6Active();
+                break;
+            
+            default:
+                pin = 0;
+                break; 
+        }
+        
+        retPins = ((retPins | pin) << 1U);
+    }
+    
+    pin = 0;  //Pin8IsSet();
+    
+    retPins = (retPins | pin);
+    
+    return retPins;
+}
+
+bool ReadPin(const uint8_t pin)
+{
+    switch(pin)
+    {
+        case 1:
+            return IsLight1Active();
+            break;
+
+        case 2:
+        {
+            return IsLight2Active();
+            break;
+        }
+
+        case 3:
+            return IsLight3Active();
+            break;
+                        
+        case 4:
+            return IsLight4Active();
+            break;
+
+        case 5:
+            return IsLight5Active();
+            break;
+
+        case 6:
+            return IsLight6Active();
+            break;
+        
+        default:
+            break;                                        
+    }
+    
+    return false;
+}
+
+void SetPin(uint8_t pin, uint8_t pinVal)
+{
+    switch(pin)
+    {
+        case 1:
+            if(pinVal) Light1On(); else Light1Off();
+            break;
+
+        case 2:
+        {
+            if(pinVal) Light2On(); else Light2Off();
+            /*if(pinVal) t = 1; else t = 0;
+            screen = 7;*/
+            
+            break;
+        }
+
+        case 3:
+            if(pinVal) Light3On(); else Light3Off();
+            break;
+                        
+        case 4:
+            if(pinVal) Light4On(); else Light4Off();
+            break;
+
+        case 5:
+            if(pinVal) Light5On(); else Light5Off();
+            break;
+
+        case 6:
+            if(pinVal) Light6On(); else Light6Off();
+            break;
+        
+        default:
+            break;                                        
+    }
+}
+
 /* Private Macro -------------------------------------------------------------*/
 /* Private Function Prototype ------------------------------------------------*/
 static void DISPDateTime(void);
@@ -4045,7 +4197,7 @@ void Lights_Modbus_Init()
 {
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
-        Light_Modbus_Init(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 3));
+        Light_Modbus_Init(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 13));
     }
     
     Lights_Modbus_Calculate();
@@ -4055,7 +4207,7 @@ void Lights_Modbus_Save()
 {
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
-        Light_Modbus_Save(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 3));
+        Light_Modbus_Save(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 13));
     }
     
     Lights_Modbus_Calculate();
