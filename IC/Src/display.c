@@ -299,6 +299,8 @@ uint32_t ventilatorOnDelayTimer_Start = 0;
 
 uint8_t qr_codes[QR_CODE_COUNT][QR_CODE_LENGTH] = {0}, qr_code_draw_id = 0;
 
+GUI_CONST_STORAGE GUI_BITMAP* light_modbus_images[] = {&bmSijalicaOff, &bmSijalicaOn, &bmVENTILATOR_OFF, &bmVENTILATOR_ON};
+
 enum Languages{BOS = 0, ENG} language = ENG;
 #define LANGUAGES_NUM 2
 char langText[40];
@@ -526,6 +528,7 @@ void Light_Modbus_SetOffTimeTimer(LIGHT_Modbus_CmdTypeDef* const li, const uint3
 bool Light_Modbus_isOffTimeTimerActive(const LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_hasOffTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li);
+GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li);
 uint32_t Ventilator_GetOnDelayTimer();
 void Ventilator_SetOnDelayTimer(const uint32_t val);
 bool Ventilator_isOnDelayTimerActive();
@@ -1709,7 +1712,6 @@ void DISP_Service(void){
         //
         case 14:
         {
-            
             if (BUTTON_IsPressed(hBUTTON_Ok))
             {
                 for(uint8_t i = lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS; i < (((LIGHTS_MODBUS_SIZE - (lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS)) >= LIGHTS_MODBUS_PER_SETTINGS) ? ((lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS) + LIGHTS_MODBUS_PER_SETTINGS) : LIGHTS_MODBUS_SIZE); i++)
@@ -1865,10 +1867,12 @@ void DISP_Service(void){
                     
                     for(uint8_t i = 0; i < lightsInRow; ++i)
                     {
+                        const LIGHT_Modbus_CmdTypeDef* light = lights_modbus + lightsInRowSum + i;
+                        
                         int x = (lightsMenuSpaceBetween * ((i % lightsInRow) + 1)) + (80 * (i % lightsInRow));
                         
-                        if(Light_Modbus_isActive(lights_modbus + lightsInRowSum + i)) GUI_DrawBitmap(&bmSijalicaOn, x, y);
-                        else GUI_DrawBitmap(&bmSijalicaOff, x, y);
+                        if(Light_Modbus_isActive(light)) GUI_DrawBitmap(Light_Modbus_GetIcon(light), x, y);
+                        else GUI_DrawBitmap(Light_Modbus_GetIcon(light), x, y);
                         
                         /*GUI_SetFont(GUI_FONT_24B_1);
                         GUI_SetColor(GUI_ORANGE);
@@ -3657,7 +3661,10 @@ void PID_Hook(GUI_PID_STATE * pTS){
                 }
                 
                 
-                if((isAnyLightActive) && LightNightTimer_isEnabled && (!LightNightTimer_StartTime) && (!((Bcd2Dec(rtctm.Hours) > 6) && (Bcd2Dec(rtctm.Hours) < 20))))
+                if((isAnyLightActive)
+                    && LightNightTimer_isEnabled
+                && (!LightNightTimer_StartTime)
+                && (!((Bcd2Dec(rtctm.Hours) > 6) && (Bcd2Dec(rtctm.Hours) < 20))))
                 {
                     LightNightTimer_StartTime = HAL_GetTick();
                     if(!LightNightTimer_StartTime) LightNightTimer_StartTime = 1;
@@ -4008,7 +4015,7 @@ void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* li, const uint16_t addr)
     EE_ReadBuffer((uint8_t*)&li->index,                addr,           2);
     EE_ReadBuffer(&li->tiedToMainLight,                addr + 2,       1);
     EE_ReadBuffer(&li->off_time,                       addr + 3,       1);
-    EE_ReadBuffer((uint8_t*)(&li->iconID),             addr + 4,       1);
+    EE_ReadBuffer(&li->iconID,                         addr + 4,       1);
     EE_ReadBuffer((uint8_t*)(&li->controllerID_on),    addr + 5,       2);
     EE_ReadBuffer(&li->controllerID_on_delay,          addr + 7,       1);
     EE_ReadBuffer(&li->on_minute,                      addr + 8,       1);
@@ -4024,7 +4031,7 @@ void Light_Modbus_Save(LIGHT_Modbus_CmdTypeDef* li, const uint16_t addr)
     EE_WriteBuffer((uint8_t*)&li->index,                addr,           2);
     EE_WriteBuffer(&li->tiedToMainLight,                addr + 2,       1);
     EE_WriteBuffer(&li->off_time,                       addr + 3,       1);
-    EE_WriteBuffer((uint8_t*)(&li->iconID),             addr + 4,       1);
+    EE_WriteBuffer(&li->iconID,                         addr + 4,       1);
     EE_WriteBuffer((uint8_t*)(&li->controllerID_on),    addr + 5,       2);
     EE_WriteBuffer(&li->controllerID_on_delay,          addr + 7,       1);
     EE_WriteBuffer(&li->on_minute,                      addr + 8,       1);
@@ -4208,6 +4215,13 @@ bool Light_Modbus_hasOffTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li
 void Light_Modbus_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->off_timer_start = 0;
+}
+
+
+
+GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return light_modbus_images[(li->iconID * 2) + Light_Modbus_isNewValueOn(li)];
 }
 
 
