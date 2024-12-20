@@ -633,7 +633,7 @@ void DISP_Service(void){
                     
                     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
                     {
-                        if(Light_Modbus_isTiedToMainLight(lights_modbus + i)  &&  (!Light_Modbus_isOffTimeEnabled(lights_modbus + i))  &&  Light_Modbus_isNewValueOn(lights_modbus + i))
+                        if(Light_Modbus_isTiedToMainLight(lights_modbus + i)  &&  Light_Modbus_isNewValueOn(lights_modbus + i))
                         {
                             t = 0;
                             break;
@@ -3649,7 +3649,7 @@ void PID_Hook(GUI_PID_STATE * pTS){
                 
                 for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
                 {
-                    if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && (!Light_Modbus_isOffTimeEnabled(lights_modbus + i)) && Light_Modbus_isActive(lights_modbus + i))
+                    if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && Light_Modbus_isActive(lights_modbus + i))
                     {
                         isAnyLightActive = 1;
                         break;
@@ -3677,16 +3677,14 @@ void PID_Hook(GUI_PID_STATE * pTS){
                             }
                             else
                             {
-                                if(Light_Modbus_isOffTimeEnabled(lights_modbus + i))
+                                /*if(Light_Modbus_isOffTimeEnabled(lights_modbus + i))
                                 {
-                                    uint32_t venttime = HAL_GetTick();
-                                    if(!venttime) venttime = 1;
-                                    Ventilator_SetOnDelayTimer(venttime);
-                                }
-                                else
-                                {
-                                    Light_Modbus_On(lights_modbus + i);
-                                }
+                                    uint32_t currentTickTime = HAL_GetTick();
+                                    if(!currentTickTime) currentTickTime = 1;
+                                    Ventilator_SetOnDelayTimer(currentTickTime);
+                                }*/
+                                
+                                Light_Modbus_On(lights_modbus + i);
                             }
                         }
                         
