@@ -296,6 +296,7 @@ uint8_t bOnlyLeaveScreenSaverAfterTouch = 0;
 uint8_t LightNightTimer_isEnabled = 0;
 uint32_t LightNightTimer_StartTime = 0;
 uint32_t ventilatorOnDelayTimer_Start = 0;
+uint32_t everyMinuteTimerStart = 0;
 
 uint8_t qr_codes[QR_CODE_COUNT][QR_CODE_LENGTH] = {0}, qr_code_draw_id = 0;
 
@@ -680,6 +681,8 @@ void Light_Modbus_SetOffTimeTimer(LIGHT_Modbus_CmdTypeDef* const li, const uint3
 bool Light_Modbus_isOffTimeTimerActive(const LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_hasOffTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li);
+bool Light_Modbus_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li);
+bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li);
 GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li);
 uint32_t Ventilator_GetOnDelayTimer();
 void Ventilator_SetOnDelayTimer(const uint32_t val);
@@ -713,6 +716,7 @@ void DISP_Init(void){
     Lights_Modbus_Init();
     EE_ReadBuffer(&bOnlyLeaveScreenSaverAfterTouch, EE_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, 1);
     EE_ReadBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
+    everyMinuteTimerStart = HAL_GetTick();
     GUI_Exec();
 }
 /**
@@ -2299,6 +2303,26 @@ void DISP_Service(void){
             menu_rel123 = 0;
             menu_out1 = 0;
             break;
+        }
+    }
+    
+    
+    
+    
+    
+    if((HAL_GetTick() - everyMinuteTimerStart) >= (50 * 1000))
+    {
+        everyMinuteTimerStart = HAL_GetTick();
+        
+        for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
+        {
+            if(Light_Modbus_isTimeOnEnabled(lights_modbus + i) && Light_Modbus_isTimeToTurnOn(lights_modbus + i))
+            {
+                Light_Modbus_On(lights_modbus + i);
+                
+                if(screen == 15) shouldDrawScreen = 1;
+                else if((screen == 0) || (screen == 1)) screen = 7;
+            }
         }
     }
     
@@ -4367,6 +4391,19 @@ bool Light_Modbus_hasOffTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li
 void Light_Modbus_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->off_timer_start = 0;
+}
+
+
+
+
+bool Light_Modbus_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return (li->on_hour < 24) && (li->on_minute < 60);
+}
+
+bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return (li->on_hour == Bcd2Dec(rtctm.Hours)) && (li->on_minute == Bcd2Dec(rtctm.Minutes));
 }
 
 
