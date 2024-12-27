@@ -4194,11 +4194,12 @@ void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* li, const uint16_t addr)
     EE_ReadBuffer(&li->iconID,                         addr + 4,       1);
     EE_ReadBuffer((uint8_t*)(&li->controllerID_on),    addr + 5,       2);
     EE_ReadBuffer(&li->controllerID_on_delay,          addr + 7,       1);
-    EE_ReadBuffer(&li->on_minute,                      addr + 8,       1);
-    EE_ReadBuffer(&li->communication_type,             addr + 9,       1);
-    EE_ReadBuffer(&li->local_pin,                      addr + 10,       1);
-    EE_ReadBuffer(&li->sleep_time,                     addr + 11,       1);
-    EE_ReadBuffer(&li->button_external,                addr + 12,       1);
+    EE_ReadBuffer(&li->on_hour,                        addr + 8,       1);
+    EE_ReadBuffer(&li->on_minute,                      addr + 9,       1);
+    EE_ReadBuffer(&li->communication_type,             addr + 10,       1);
+    EE_ReadBuffer(&li->local_pin,                      addr + 11,       1);
+    EE_ReadBuffer(&li->sleep_time,                     addr + 12,       1);
+    EE_ReadBuffer(&li->button_external,                addr + 13,       1);
 }
 
 
@@ -4210,11 +4211,12 @@ void Light_Modbus_Save(LIGHT_Modbus_CmdTypeDef* li, const uint16_t addr)
     EE_WriteBuffer(&li->iconID,                         addr + 4,       1);
     EE_WriteBuffer((uint8_t*)(&li->controllerID_on),    addr + 5,       2);
     EE_WriteBuffer(&li->controllerID_on_delay,          addr + 7,       1);
-    EE_WriteBuffer(&li->on_minute,                      addr + 8,       1);
-    EE_WriteBuffer(&li->communication_type,             addr + 9,       1);
-    EE_WriteBuffer(&li->local_pin,                      addr + 10,       1);
-    EE_WriteBuffer(&li->sleep_time,                     addr + 11,       1);
-    EE_WriteBuffer(&li->button_external,                addr + 12,       1);
+    EE_WriteBuffer(&li->on_hour,                        addr + 8,       1);
+    EE_WriteBuffer(&li->on_minute,                      addr + 9,       1);
+    EE_WriteBuffer(&li->communication_type,             addr + 10,       1);
+    EE_WriteBuffer(&li->local_pin,                      addr + 11,       1);
+    EE_WriteBuffer(&li->sleep_time,                     addr + 12,       1);
+    EE_WriteBuffer(&li->button_external,                addr + 13,       1);
 }
 
 void Lights_Modbus_Init()
@@ -4270,6 +4272,10 @@ uint8_t Light_Modbus_Get_byIndex(const uint8_t light_index)
 void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->value = 1;
+    
+    if(li->local_pin < 5) SetPin(li->local_pin, 1);
+    else PCA9685_SetOutput(li->local_pin, 255);
+    
     if(Light_Modbus_isOffTimeEnabled(li))
     {
         uint32_t time = HAL_GetTick();
@@ -4281,6 +4287,10 @@ void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li)
 void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->value = 0;
+    
+    if(li->local_pin < 5) SetPin(li->local_pin, 0);
+    else PCA9685_SetOutput(li->local_pin, 0);
+    
     Light_Modbus_OffTimeTimerDeactivate(li);
 }
 
