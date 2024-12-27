@@ -67,10 +67,15 @@ DMA2D_HandleTypeDef hdma2d;
 uint8_t sysfl   = 0, initfl = 0;
 uint32_t rstsrc = 0;
 static volatile float adc_refcor = 1.0f;
+
+bool pwminit = true;
+uint8_t pwm[32];
+uint8_t pca9685_register[PCA9685_REGISTER_SIZE];
 /* Private Macro -------------------------------------------------------------*/
 #define VREFIN_CAL_ADDRESS          ((uint16_t*) (0x1FF0F44A))
 #define TEMPSENSOR_CAL1_ADDR        ((uint16_t*) (0x1FF0F44C))
 #define TEMPSENSOR_CAL2_ADDR        ((uint16_t*) (0x1FF0F44E))
+#define PWM_CalculatePrescale(FREQUNCY)	(PCA9685_PRE_SCALE_REGISTER = ((25000000U / (4096U * FREQUNCY)) - 1U))
 /* Private Function Prototype ------------------------------------------------*/
 static void RAM_Init(void);
 static void ADC3_Read(void);
@@ -134,6 +139,11 @@ int main(void){
     DISP_Init();
 //    PresentSystem();
     THSTAT_Init();
+    ZEROFILL(pwm, 32);
+    ZEROFILL(pca9685_register, PCA9685_REGISTER_SIZE);
+    PCA9685_Reset();
+    PCA9685_Init();
+    if(pwminit) PCA9685_SetOutputFrequency(PWM_0_15_FREQUENCY_DEFAULT);
 //    Ventilator_Init(&ventilator, EE_VENTILATOR);
     Curtains_Init();
 #ifdef	USE_WATCHDOG
@@ -1271,5 +1281,144 @@ static uint32_t RTC_GetUnixTimeStamp(RTC_t* data){
 	seconds += data->minutes * SECONDS_PER_MINUTE;
 	seconds += data->seconds;	
 	return seconds;
+}
+
+void PCA9685_Init(void){//registrovana 2 PCA965 0x90 I2CPWM0_WRADD  i 0x92  I2CPWM1_WRADD 
+	uint8_t buf[2];
+	buf[0] = 0x00U;
+	buf[1]= 0x00U;	
+	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM0_WRADD, buf, 2, I2CPWM_TOUT) != HAL_OK){
+		pwminit = false;
+	}
+	
+	HAL_Delay(5);
+	buf[0] = 0x01U;
+//	buf[1]= 0x04U;	
+//    buf[1]= 0x00U;	
+	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM0_WRADD, buf, 2, I2CPWM_TOUT) != HAL_OK){
+        pwminit = false;
+	}	
+    
+//	HAL_Delay(2);
+//    buf[0] = 0x00U;
+//	buf[1]= 0x00U;	
+//	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM1_WRADD, buf, 2, I2CPWM_TOUT) != HAL_OK){
+//		pwminit = false;
+//	}
+//	
+//	HAL_Delay(5);
+//	buf[0] = 0x01U;
+//	buf[1]= 0x04U;	
+//	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM1_WRADD, buf, 2, I2CPWM_TOUT) != HAL_OK){
+//        pwminit = false;
+//	}	
+	HAL_Delay(2);
+}
+
+
+void PCA9685_Reset(void){	
+	uint8_t cmd = PCA9685_SW_RESET_COMMAND;	
+	if(HAL_I2C_Master_Transmit(&hi2c4, PCA9685_GENERAL_CALL_ACK, &cmd, 1, I2CPWM_TOUT) != HAL_OK){
+		pwminit = false;
+	}
+}
+
+
+void PCA9685_SetOutputFrequency(uint16_t frequency){
+	uint8_t buf[2];	
+	buf[0] = 0x00U;
+	buf[1]= 0x10U;	
+	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM0_WRADD, buf, 2, I2CPWM_TOUT) != HAL_OK){
+		SYSRestart();
+	}	
+	PWM_CalculatePrescale(frequency);	
+	buf[0] = PCA9685_PRE_SCALE_REG_ADDRESS;
+	buf[1]= PCA9685_PRE_SCALE_REGISTER;	
+	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM0_WRADD, buf, 2, I2CPWM_TOUT) != HAL_OK){
+		SYSRestart();	
+	}
+	buf[0] = 0x00U;
+	buf[1]= 0xa0U;	
+	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM0_WRADD, buf, 2, I2CPWM_TOUT) != HAL_OK){
+		SYSRestart();
+	}
+	HAL_Delay(5);
+	buf[0] = 0x01U;
+	buf[1]= 0x04U;	
+	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM0_WRADD, buf, 2, I2CPWM_TOUT) != HAL_OK){
+		SYSRestart();
+	}
+//    buf[0] = 0x00U;
+//	buf[1]= 0x10U;	
+//	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM1_WRADD, buf, 2, I2CPWM_TOUT) != HAL_OK){
+//		SYSRestart();	
+//	}
+//    HAL_Delay(5);
+//	PWM_CalculatePrescale(frequency);	
+//	buf[0] = PCA9685_PRE_SCALE_REG_ADDRESS;
+//	buf[1]= PCA9685_PRE_SCALE_REGISTER;	
+//	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM1_WRADD, buf, 2, I2CPWM_TOUT) != HAL_OK){
+//		SYSRestart();	
+//	}
+//	buf[0] = 0x00U;
+//	buf[1]= 0xa0U;	
+//	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM1_WRADD, buf, 2, I2CPWM_TOUT) != HAL_OK){
+//		SYSRestart();
+//	}
+//	HAL_Delay(5);
+//	buf[0] = 0x01U;
+//	buf[1]= 0x04U;	
+//	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM1_WRADD, buf, 2, I2CPWM_TOUT) != HAL_OK){
+//		SYSRestart();
+//	}
+}
+
+void PCA9685_OutputUpdate(void)
+{
+	uint16_t pwm_out;
+    uint8_t i,j,buf[70];	
+    j = 6;
+    for(i = 0; i < 16; i++){
+        pca9685_register[j]= 0;
+        j += 1;
+        pca9685_register[j] = 0;
+        j += 3;
+	}
+	j = 8;
+    for(i = 0; i < 16; i++){
+		pwm_out = pwm[i] * 16U;
+        if (pwm_out > 4000) pwm_out = 0x0FFFU; // zaokzuzi izlaz na maksimalno 4096 0xfff 
+        pca9685_register[j]= (pwm_out & 0xffU);
+        j += 1;
+        pca9685_register[j] = (pwm_out >> 8U);
+        j += 3;
+	}
+    buf[0] = PCA9685_LED_0_ON_L_REG_ADDRESS;
+    memcpy(&buf[1],&pca9685_register[6], 64);
+    
+    HAL_Delay(300);
+
+	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM0_WRADD, buf, 65, PWM_UPDATE_TIMEOUT) != HAL_OK){
+		SYSRestart();
+	}    
+//	j = 8;
+//    for(i = 16; i < 32; i++){
+//		pwm_out= pwm[i] * 16U;
+//        pca9685_register[j]= (pwm_out & 0xffU);
+//        j += 1;
+//        pca9685_register[j] = (pwm_out >> 8U);
+//        j += 3;
+//	}	    
+//    buf[0] = PCA9685_LED_0_ON_L_REG_ADDRESS;
+//    memcpy(&buf[1],&pca9685_register[6], 64);
+//	if(HAL_I2C_Master_Transmit(&hi2c4, I2CPWM1_WRADD, buf, 65, PWM_UPDATE_TIMEOUT) != HAL_OK){
+//		SYSRestart();
+//	}
+}
+
+void PCA9685_SetOutput(const uint8_t pin, const uint8_t value)
+{
+    pwm[pin - 1] = value;
+    PCA9685_OutputUpdate();
 }
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/
