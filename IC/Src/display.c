@@ -2310,7 +2310,7 @@ void DISP_Service(void){
     
     
     
-    if((HAL_GetTick() - everyMinuteTimerStart) >= (50 * 1000))
+    if((HAL_GetTick() - everyMinuteTimerStart) >= (60 * 1000))
     {
         everyMinuteTimerStart = HAL_GetTick();
         
