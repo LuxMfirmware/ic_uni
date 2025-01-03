@@ -296,7 +296,7 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
             ||  (msg->data[0] == GET_ROOM_TEMP)
             ||  (msg->data[0] == SET_ROOM_TEMP)
             ||  (msg->data[0] == SET_THST_HEATING)
-//            ||  (msg->data[0] == SET_THST_COOLING)
+            ||  (msg->data[0] == SET_THST_COOLING)
             ||  (msg->data[0] == SET_THST_ON)
             ||  (msg->data[0] == SET_THST_OFF)
             ||  (msg->data[0] == GET_APPL_STAT)
@@ -333,10 +333,10 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
                 else if (cmd == SET_THST_HEATING){
                     SetThstHeating();
                 }
-                /*else if (cmd == SET_THST_COOLING)
+                else if (cmd == SET_THST_COOLING)
                 {
                     SetThstCooling();
-                }*/
+                }
                 else if (cmd == SET_THST_ON){
                     SetThstOn();
                 }
