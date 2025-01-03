@@ -297,6 +297,7 @@ uint8_t LightNightTimer_isEnabled = 0;
 uint32_t LightNightTimer_StartTime = 0;
 uint32_t ventilatorOnDelayTimer_Start = 0;
 uint32_t everyMinuteTimerStart = 0;
+uint8_t isButtonActive_old = 0;
 
 uint8_t qr_codes[QR_CODE_COUNT][QR_CODE_LENGTH] = {0}, qr_code_draw_id = 0;
 
@@ -683,6 +684,7 @@ bool Light_Modbus_hasOffTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li
 void Light_Modbus_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li);
+void Lights_Modbus_Button_External_Press(LIGHT_Modbus_CmdTypeDef* const li);
 GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li);
 uint32_t Ventilator_GetOnDelayTimer();
 void Ventilator_SetOnDelayTimer(const uint32_t val);
@@ -2304,6 +2306,19 @@ void DISP_Service(void){
             menu_out1 = 0;
             break;
         }
+    }
+    
+    
+    
+    
+    if((isButtonActive_old != IsButtonActive()) && (!isButtonActive_old))
+    {
+        for(uint8_t i = 0; i < Curtains_getCount(); i++)
+        {
+            Lights_Modbus_Button_External_Press(lights_modbus + i);
+        }
+        
+        isButtonActive_old = IsButtonActive();
     }
     
     
@@ -4414,6 +4429,27 @@ bool Light_Modbus_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li)
 bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return (li->on_hour == Bcd2Dec(rtctm.Hours)) && (li->on_minute == Bcd2Dec(rtctm.Minutes));
+}
+
+
+
+void Lights_Modbus_Button_External_Press(LIGHT_Modbus_CmdTypeDef* const li)
+{
+    if(!li->button_external)
+    {
+        if(li->button_external == 1)
+        {
+            Light_Modbus_On(li);
+        }
+        else if(li->button_external == 2)
+        {
+            Light_Modbus_Off(li);
+        }
+        else if(li->button_external == 3)
+        {
+            Light_Modbus_Flip(li);
+        }
+    }
 }
 
 

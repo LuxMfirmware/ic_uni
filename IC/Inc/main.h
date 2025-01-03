@@ -305,6 +305,7 @@ extern uint8_t pwm[32];
 #define Light6On()                  (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_SET))
 #define Light6Off()                 (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_RESET))
 #define IsLight6Active()            (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_10) == GPIO_PIN_SET)
+#define IsButtonActive()             (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_3) == GPIO_PIN_RESET)
 /* Exported hal handler --------------------------------------------------------*/
 extern RTC_t date_time; 
 extern RTC_TimeTypeDef rtctm;
