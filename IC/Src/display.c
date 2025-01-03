@@ -674,6 +674,14 @@ void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isActive(const LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_Flip(LIGHT_Modbus_CmdTypeDef* const li);
+uint8_t Light_Modbus_GetOnDelayTime(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_SetOnDelayTime(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val);
+bool Light_Modbus_isOnDelayTimeEnabled(const LIGHT_Modbus_CmdTypeDef* const li);
+uint32_t Light_Modbus_GetOnDelayTimeTimer(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_SetOnDelayTimeTimer(LIGHT_Modbus_CmdTypeDef* const li, const uint32_t val);
+bool Light_Modbus_isOnDelayTimeTimerActive(const LIGHT_Modbus_CmdTypeDef* const li);
+bool Light_Modbus_hasOnDelayTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_OnDelayTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li);
 uint8_t Light_Modbus_GetOffTime(const LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_SetOffTime(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val);
 bool Light_Modbus_isOffTimeEnabled(const LIGHT_Modbus_CmdTypeDef* const li);
@@ -1895,11 +1903,11 @@ void DISP_Service(void){
                         lights_modbus[i].controllerID_on = SPINBOX_GetValue(lightsWidgets[i].controllerID_on);
                     }
                     
-                    if(lights_modbus[i].controllerID_on_delay != SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay))
+                    if(Light_Modbus_GetOnDelayTime(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay))
                     {
                         settingsChanged = 1;
                         
-                        lights_modbus[i].controllerID_on_delay = SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay);
+                        Light_Modbus_SetOnDelayTime(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay));
                     }
                     
                     if(Light_Modbus_GetOffTime(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].offTime))
@@ -2365,6 +2373,21 @@ void DISP_Service(void){
             if(Light_Modbus_isOffTimeEnabled(lights_modbus + i)) Light_Modbus_On(lights_modbus + i);
             if(screen == 15) shouldDrawScreen = 1;
         }
+    }
+    
+    
+    
+    
+    
+    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
+    {
+        if(Light_Modbus_isOnDelayTimeTimerActive(lights_modbus + i) && Light_Modbus_hasOnDelayTimeTimerExpired(lights_modbus + i))
+        {
+            Light_Modbus_OnDelayTimeTimerDeactivate(lights_modbus + i);
+            Light_Modbus_On(lights_modbus + i);
+        }
+        
+        if(screen == 15) shouldDrawScreen = 1;
     }
     
     
@@ -4299,6 +4322,19 @@ void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li)
     }
 }
 
+void Light_Modbus_On_External(LIGHT_Modbus_CmdTypeDef* const li)
+{
+    if(li->controllerID_on_delay)
+    {
+        li->on_delay_timer_start = HAL_GetTick();
+        if(!li->on_delay_timer_start) --li->on_delay_timer_start;
+    }
+    else
+    {
+        Light_Modbus_On(li);
+    }
+}
+
 void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->value = 0;
@@ -4370,6 +4406,52 @@ void Light_Modbus_UntieFromMainLight(LIGHT_Modbus_CmdTypeDef* const li)
 bool Light_Modbus_isTiedToMainLight(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return li->tiedToMainLight;
+}
+
+
+
+
+
+uint8_t Light_Modbus_GetOnDelayTime(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return li->controllerID_on_delay;
+}
+
+void Light_Modbus_SetOnDelayTime(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val)
+{
+    li->controllerID_on_delay = val;
+}
+
+bool Light_Modbus_isOnDelayTimeEnabled(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return Light_Modbus_GetOnDelayTime(li);
+}
+
+
+
+uint32_t Light_Modbus_GetOnDelayTimeTimer(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return li->on_delay_timer_start;
+}
+
+void Light_Modbus_SetOnDelayTimeTimer(LIGHT_Modbus_CmdTypeDef* const li, const uint32_t val)
+{
+    li->on_delay_timer_start = val;
+}
+
+bool Light_Modbus_isOnDelayTimeTimerActive(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return Light_Modbus_GetOnDelayTimeTimer(li);
+}
+
+bool Light_Modbus_hasOnDelayTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return (HAL_GetTick() - li->on_delay_timer_start) >= (Light_Modbus_GetOnDelayTime(li) * 60 * 1000);
+}
+
+void Light_Modbus_OnDelayTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li)
+{
+    li->on_delay_timer_start = 0;
 }
 
 

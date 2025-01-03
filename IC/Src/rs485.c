@@ -394,6 +394,29 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
                 ZEROFILL(responseData, sizeof(responseData));
                 responseDataLength = 0;
         }
+        else if(msg->data[0] == MODBUS_SEND_WRITE_SINGLE_REGISTER)
+        {
+            /*if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
+            *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+            sendDataCount += 2;
+            sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;*/
+            
+            
+            
+            for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
+            {
+                if(Light_Modbus_GetRelay(lights_modbus + i) == (((((uint16_t)msg->data[1]) << 8) & 0xFF) & msg->data[2]))
+                {
+                    if(msg->data[3] && (!Light_Modbus_isNewValueOn(lights_modbus + i)))
+                    {
+                        Light_Modbus_On_External(lights_modbus + i);
+                    }
+                }
+            }
+            
+            if(screen == 15) shouldDrawScreen = 1;
+        }
         else if(msg->data[1] == tfbra)
         {
             if  (msg->data[0] == SET_RTC_DATE_TIME)

@@ -30,7 +30,7 @@ typedef enum{
 typedef struct
 {
     GUI_COLOR color;
-    uint32_t off_timer_start;
+    uint32_t off_timer_start, on_delay_timer_start;
     uint16_t index, old_index, controllerID_on;
     uint8_t value, old_value, iconID, tiedToMainLight, off_time, controllerID_on_delay, on_hour, on_minute, communication_type, local_pin, sleep_time, button_external;
 } LIGHT_Modbus_CmdTypeDef;
@@ -153,6 +153,7 @@ void DISPSetBrightnes(uint8_t val);
 void PID_Hook(GUI_PID_STATE* pState);
 void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr);
 void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr);
+uint8_t Lights_Modbus_getCount();
 void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li);
 uint8_t Light_Modbus_Set_byIndex(const uint8_t light_index, const uint8_t val);
@@ -163,6 +164,7 @@ void Light_Modbus_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8
 bool Light_Modbus_isNewValueOn(const LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_hasChanged(const LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_On_External(LIGHT_Modbus_CmdTypeDef* const li);
 bool QR_Code_isDataLengthShortEnough(uint8_t dataLength);
 bool QR_Code_willDataFit(const uint8_t *data);
 uint8_t* QR_Code_Get(const uint8_t qrCodeID);
