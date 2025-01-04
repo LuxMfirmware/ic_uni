@@ -406,7 +406,7 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
             
             for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
             {
-                if(Light_Modbus_GetRelay(lights_modbus + i) == (((((uint16_t)msg->data[1]) << 8) & 0xFF) & msg->data[2]))
+                if(Light_Modbus_GetRelay(lights_modbus + i) == (((((uint16_t)msg->data[1]) << 8) & 0xFF00) | msg->data[2]))
                 {
                     if(msg->data[3] && (!Light_Modbus_isNewValueOn(lights_modbus + i)))
                     {
