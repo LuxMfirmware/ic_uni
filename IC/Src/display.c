@@ -4345,6 +4345,18 @@ void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li)
     Light_Modbus_OffTimeTimerDeactivate(li);
 }
 
+void Light_Modbus_Off_External(LIGHT_Modbus_CmdTypeDef* const li)
+{
+    if(li->controllerID_on_delay)
+    {
+        li->on_delay_timer_start = 0;
+    }
+    else
+    {
+        Light_Modbus_Off(li);
+    }
+}
+
 void Light_Modbus_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val)
 {
     li->old_value = val;

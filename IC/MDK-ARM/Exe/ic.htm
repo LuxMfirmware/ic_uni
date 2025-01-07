@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Sat Jan  4 19:05:55 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Tue Jan  7 18:18:12 2025
 <BR><P>
 <H3>Maximum Stack Usage =       2420 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -5933,7 +5933,6 @@ Global Symbols
 <LI><a href="#[59f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetWindowOrgX
 <LI><a href="#[4c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_CreateStaticDevice
 <LI><a href="#[4bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__SendMessageNoPara
-<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_cbTimer
 <LI><a href="#[5af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_InvalidateWindowAndDescs
 <LI><a href="#[59d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetFlags
 <LI><a href="#[59b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetDialogItem
@@ -5944,6 +5943,7 @@ Global Symbols
 <LI><a href="#[59e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetHasTrans
 <LI><a href="#[54a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetDialogItem
 <LI><a href="#[66d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Screen2hWin
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_cbTimer
 </UL>
 
 <P><STRONG><a name="[635]"></a>GUI_ALLOC_p2h</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, gui_alloc.o(i.GUI_ALLOC_p2h))
@@ -10092,11 +10092,11 @@ Global Symbols
 <LI><a href="#[56d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WIDGET_SetEffect
 <LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_Callback
 <LI><a href="#[568]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_OnAction
-<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_cbTimer
 <LI><a href="#[558]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetInsideRectEx
 <LI><a href="#[59a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetId
 <LI><a href="#[586]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetScrollState
 <LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetScrollState
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_cbTimer
 </UL>
 
 <P><STRONG><a name="[55e]"></a>WM_SendMessageNoPara</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, wm_lib.o(i.WM_SendMessageNoPara))
@@ -12995,11 +12995,11 @@ Local Symbols
 <P><STRONG><a name="[61e]"></a>_Eat8</STRONG> (Thumb, 172 bytes, Stack size 40 bytes, gui_qr.o(i._Eat8))
 <BR><BR>[Stack]<UL><LI>Max Depth = 208<LI>Call Chain = _Eat8 &rArr; _QR_INPUT_Append &rArr; _QR_INPUT_LIST_CreateEntry &rArr; _Malloc &rArr; GUI_ALLOC_AllocNoInit &rArr; _Alloc &rArr; _InitOnce &rArr; _EnlargeBlocks &rArr;  _Alloc (Cycle)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[622]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeNum
-<LI><a href="#[623]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeAn
-<LI><a href="#[621]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_Append
+<BR>[Calls]<UL><LI><a href="#[621]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_Append
 <LI><a href="#[61f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_GetLengthIndicator
 <LI><a href="#[620]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_IdentifyMode
+<LI><a href="#[622]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeNum
+<LI><a href="#[623]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeAn
 </UL>
 <BR>[Called By]<UL><LI><a href="#[625]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_EatNum
 <LI><a href="#[624]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_EatAn
@@ -13009,11 +13009,11 @@ Local Symbols
 <P><STRONG><a name="[624]"></a>_EatAn</STRONG> (Thumb, 202 bytes, Stack size 48 bytes, gui_qr.o(i._EatAn))
 <BR><BR>[Stack]<UL><LI>Max Depth = 256<LI>Call Chain = _EatAn &rArr; _Eat8 &rArr; _QR_INPUT_Append &rArr; _QR_INPUT_LIST_CreateEntry &rArr; _Malloc &rArr; GUI_ALLOC_AllocNoInit &rArr; _Alloc &rArr; _InitOnce &rArr; _EnlargeBlocks &rArr;  _Alloc (Cycle)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[622]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeNum
-<LI><a href="#[623]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeAn
-<LI><a href="#[621]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_Append
+<BR>[Calls]<UL><LI><a href="#[621]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_Append
 <LI><a href="#[61f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_GetLengthIndicator
 <LI><a href="#[61e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Eat8
+<LI><a href="#[622]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeNum
+<LI><a href="#[623]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeAn
 </UL>
 <BR>[Called By]<UL><LI><a href="#[625]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_EatNum
 <LI><a href="#[671]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SplitString
@@ -13022,13 +13022,13 @@ Local Symbols
 <P><STRONG><a name="[625]"></a>_EatNum</STRONG> (Thumb, 162 bytes, Stack size 24 bytes, gui_qr.o(i._EatNum))
 <BR><BR>[Stack]<UL><LI>Max Depth = 280<LI>Call Chain = _EatNum &rArr; _EatAn &rArr; _Eat8 &rArr; _QR_INPUT_Append &rArr; _QR_INPUT_LIST_CreateEntry &rArr; _Malloc &rArr; GUI_ALLOC_AllocNoInit &rArr; _Alloc &rArr; _InitOnce &rArr; _EnlargeBlocks &rArr;  _Alloc (Cycle)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[622]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeNum
-<LI><a href="#[623]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeAn
-<LI><a href="#[621]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_Append
+<BR>[Calls]<UL><LI><a href="#[621]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_Append
 <LI><a href="#[61f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_GetLengthIndicator
 <LI><a href="#[620]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_IdentifyMode
 <LI><a href="#[624]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_EatAn
 <LI><a href="#[61e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Eat8
+<LI><a href="#[622]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeNum
+<LI><a href="#[623]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeAn
 </UL>
 <BR>[Called By]<UL><LI><a href="#[671]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SplitString
 </UL>
@@ -13071,7 +13071,6 @@ Local Symbols
 <LI><a href="#[405]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Free
 </UL>
 <BR>[Called By]<UL><LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
-<LI><a href="#[655]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_LIST_CreateEntry
 <LI><a href="#[62a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_Delete
 <LI><a href="#[656]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_AppendPaddingBit
 <LI><a href="#[62b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_CODE_EncodeMask
@@ -13084,6 +13083,7 @@ Local Symbols
 <LI><a href="#[64c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_RAW_Create
 <LI><a href="#[650]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_Mask
 <LI><a href="#[65c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_LIST_DeleteEntry
+<LI><a href="#[655]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_LIST_CreateEntry
 </UL>
 
 <P><STRONG><a name="[620]"></a>_IdentifyMode</STRONG> (Thumb, 88 bytes, Stack size 0 bytes, gui_qr.o(i._IdentifyMode))
@@ -13118,8 +13118,7 @@ Local Symbols
 <BR>[Calls]<UL><LI><a href="#[3db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
 <LI><a href="#[45d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_AllocNoInit
 </UL>
-<BR>[Called By]<UL><LI><a href="#[655]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_LIST_CreateEntry
-<LI><a href="#[656]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_AppendPaddingBit
+<BR>[Called By]<UL><LI><a href="#[656]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_AppendPaddingBit
 <LI><a href="#[652]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_CreateFrameSub
 <LI><a href="#[64d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_CreateFrame
 <LI><a href="#[62b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_CODE_EncodeMask
@@ -13132,6 +13131,7 @@ Local Symbols
 <LI><a href="#[629]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SplitStringToQRinput
 <LI><a href="#[64c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_RAW_Create
 <LI><a href="#[650]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_Mask
+<LI><a href="#[655]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_LIST_CreateEntry
 </UL>
 
 <P><STRONG><a name="[627]"></a>_ModNN</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, gui_qr.o(i._ModNN))
@@ -13270,8 +13270,7 @@ Local Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 264 + In Cycle
 <LI>Call Chain = _QR_INPUT_EncodeBitStream &rArr;  _QR_INPUT_EncodeBitStream (Cycle)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[655]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_LIST_CreateEntry
-<LI><a href="#[661]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EncodeModeStructure
+<BR>[Calls]<UL><LI><a href="#[661]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EncodeModeStructure
 <LI><a href="#[65d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EncodeModeNum
 <LI><a href="#[660]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EncodeModeKanji
 <LI><a href="#[662]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EncodeModeECI
@@ -13284,6 +13283,7 @@ Local Symbols
 <LI><a href="#[5e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_BS_AppendBytes
 <LI><a href="#[5e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_BS_Append
 <LI><a href="#[65c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_LIST_DeleteEntry
+<LI><a href="#[655]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_LIST_CreateEntry
 </UL>
 <BR>[Called By]<UL><LI><a href="#[65b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EncodeBitStream
 <LI><a href="#[658]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_ConvertData
@@ -13358,10 +13358,10 @@ Local Symbols
 <P><STRONG><a name="[659]"></a>_QR_INPUT_EstimateBitStreamSizeOfEntry</STRONG> (Thumb, 144 bytes, Stack size 16 bytes, gui_qr.o(i._QR_INPUT_EstimateBitStreamSizeOfEntry))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = _QR_INPUT_EstimateBitStreamSizeOfEntry &rArr; _QR_INPUT_DecodeECIFromByteArray
 </UL>
-<BR>[Calls]<UL><LI><a href="#[622]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeNum
-<LI><a href="#[623]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeAn
-<LI><a href="#[663]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_DecodeECIFromByteArray
+<BR>[Calls]<UL><LI><a href="#[663]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_DecodeECIFromByteArray
 <LI><a href="#[61f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_GetLengthIndicator
+<LI><a href="#[622]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeNum
+<LI><a href="#[623]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_EstimateBitsModeAn
 </UL>
 <BR>[Called By]<UL><LI><a href="#[658]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_ConvertData
 </UL>
@@ -13405,11 +13405,11 @@ Local Symbols
 <P><STRONG><a name="[665]"></a>_QR_INPUT_MergeBitStream</STRONG> (Thumb, 102 bytes, Stack size 16 bytes, gui_qr.o(i._QR_INPUT_MergeBitStream))
 <BR><BR>[Stack]<UL><LI>Max Depth = 304<LI>Call Chain = _QR_INPUT_MergeBitStream &rArr; _QR_INPUT_ConvertData &rArr; _QR_INPUT_EncodeBitStream &rArr;  _QR_INPUT_EncodeBitStream (Cycle)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[655]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_LIST_CreateEntry
-<LI><a href="#[658]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_ConvertData
+<BR>[Calls]<UL><LI><a href="#[658]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_ConvertData
 <LI><a href="#[5e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_BS_Delete
 <LI><a href="#[5e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_BS_Create
 <LI><a href="#[5e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_BS_Append
+<LI><a href="#[655]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_INPUT_LIST_CreateEntry
 </UL>
 <BR>[Called By]<UL><LI><a href="#[64c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_RAW_Create
 </UL>

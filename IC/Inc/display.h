@@ -165,6 +165,7 @@ bool Light_Modbus_isNewValueOn(const LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_hasChanged(const LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_On_External(LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_Off_External(LIGHT_Modbus_CmdTypeDef* const li);
 bool QR_Code_isDataLengthShortEnough(uint8_t dataLength);
 bool QR_Code_willDataFit(const uint8_t *data);
 uint8_t* QR_Code_Get(const uint8_t qrCodeID);
