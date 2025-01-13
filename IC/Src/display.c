@@ -4011,7 +4011,7 @@ void PID_Hook(GUI_PID_STATE * pTS){
     else
     {
         if(screen == 1) screen = 0;
-        else if((screen == 15))
+        else if(screen == 15)
         {
             light_settingsTimerStart = 0;
             Light_Modbus_Flip(lights_modbus + light_selectedIndex);
