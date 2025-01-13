@@ -408,11 +408,11 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
             {
                 if(Light_Modbus_GetRelay(lights_modbus + i) == (((((uint16_t)msg->data[1]) << 8) & 0xFF00) | msg->data[2]))
                 {
-                    /*if((!msg->data[3]) && Light_Modbus_isNewValueOn(lights_modbus + i))
+                    if((!msg->data[3]) && Light_Modbus_isNewValueOn(lights_modbus + i))
                     {
                         Light_Modbus_Off_External(lights_modbus + i);
                     }
-                    else*/ if(msg->data[3] && (!Light_Modbus_isNewValueOn(lights_modbus + i)))
+                    else if(msg->data[3] && (!Light_Modbus_isNewValueOn(lights_modbus + i)))
                     {
                         Light_Modbus_On_External(lights_modbus + i);
                     }
