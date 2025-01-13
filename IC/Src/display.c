@@ -4013,8 +4013,12 @@ void PID_Hook(GUI_PID_STATE * pTS){
         if(screen == 1) screen = 0;
         else if(screen == 15)
         {
-            light_settingsTimerStart = 0;
-            Light_Modbus_Flip(lights_modbus + light_selectedIndex);
+            if(light_settingsTimerStart)
+            {
+                light_settingsTimerStart = 0;
+                Light_Modbus_Flip(lights_modbus + light_selectedIndex);
+            }
+            
         }
         btnset = 0;
         btndec = 0U;   

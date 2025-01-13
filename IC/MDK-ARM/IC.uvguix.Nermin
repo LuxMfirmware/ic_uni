@@ -3606,9 +3606,9 @@
       <ActiveTab>0</ActiveTab>
       <Doc>
         <Name>..\Src\display.c</Name>
-        <ColumnNumber>16</ColumnNumber>
+        <ColumnNumber>13</ColumnNumber>
         <TopLine>1666</TopLine>
-        <CurrentLine>4014</CurrentLine>
+        <CurrentLine>4017</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders>431,457,569,606,959,1031,1222,1274,1328,1469,1499,1566,1662,1739,1780,1831,1879,2001,2066,2118,2164,2219,2253,2288,2473,2657,2681,2833,2856,2983,3008,3058,3077,3138,3157,3370,3452,3468,3479</ContractedFolders>
         <PaneID>0</PaneID>
