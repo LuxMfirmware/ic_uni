@@ -289,7 +289,8 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
             }
             MX_QSPI_Init();
             QSPI_MemMapMode();
-        }else if((msg->data[1] == tfifa)
+        }
+        else if((msg->data[1] == tfifa)
             &&  ((msg->data[0] == RESTART_CTRL)
             ||  (msg->data[0] == LOAD_DEFAULT)
             ||  (msg->data[0] == FORMAT_EXTFLASH)
@@ -721,6 +722,10 @@ void RS485_Service(void){
                         *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
                         sendDataCount += 2;
                         sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
+                        sendDataBuff[sendDataCount++] = lights_modbus[i].color & 0xFF;             // blue
+                        sendDataBuff[sendDataCount++] = (lights_modbus[i].color >> 8) & 0xFF;      // green
+                        sendDataBuff[sendDataCount++] = (lights_modbus[i].color >> 16) & 0xFF;     // red
+                        sendDataBuff[sendDataCount++] = lights_modbus[i].brightness;
                         
                         Light_Modbus_ResetChange(lights_modbus + i);
                         

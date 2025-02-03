@@ -52,6 +52,7 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmVENTILATOR_ON;
 extern GUI_CONST_STORAGE GUI_BITMAP bmwifi;
 extern GUI_CONST_STORAGE GUI_BITMAP bmmobilePhone;
 extern GUI_CONST_STORAGE GUI_BITMAP bmcolorSpectrum;
+extern GUI_CONST_STORAGE GUI_BITMAP bmblackWhiteGradient;
 
 extern const unsigned long thstat_size;
 extern const unsigned char thstat[];

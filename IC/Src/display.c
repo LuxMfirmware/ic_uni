@@ -2275,7 +2275,8 @@ void DISP_Service(void){
                 GUI_SetColor(lights_modbus[light_selectedIndex].color);
                 GUI_FillRect(20, 20, 100, 100);
                 
-                GUI_DrawBitmap(&bmcolorSpectrum, 20, 136);
+                GUI_DrawBitmap(&bmcolorSpectrum, 20, 110);
+                GUI_DrawBitmap(&bmblackWhiteGradient, 20, 180);
                 
                 GUI_MULTIBUF_EndEx(1);
             }
@@ -3851,7 +3852,8 @@ void PID_Hook(GUI_PID_STATE * pTS){
         }
         else if(screen == 20)  // light settings
         {
-            lights_modbus[light_selectedIndex].color = LCD_GetPixelColor(pTS->x, pTS->y);
+            if(pTS->y < 180) lights_modbus[light_selectedIndex].color = LCD_GetPixelColor(pTS->x, pTS->y);
+            else lights_modbus[light_selectedIndex].brightness = ((pTS->x - 20) / 440.0) * 100;
             shouldDrawScreen = 1;
         }
         else if((pTS->x > 100)&&(pTS->y > 100)&&(pTS->x < 400)&&(pTS->y < 272)&&(screen == 0))

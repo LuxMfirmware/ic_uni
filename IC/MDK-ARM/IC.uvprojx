@@ -523,6 +523,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Display\colorSpectrum.c</FilePath>
             </File>
+            <File>
+              <FileName>blackWhiteGradient.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\blackWhiteGradient.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
