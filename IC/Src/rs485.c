@@ -565,6 +565,20 @@ void RS485_Service(void){
             sendDataCount = 0;
             ZEROFILL(sendDataBuff, COUNTOF(sendDataBuff));
         }
+        else if (tcnt) {
+            TF_QuerySimple(&tfapp, S_TEMP, tbuf, tcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
+            etmr = HAL_GetTick();
+            tcnt = 0;
+        }
+        else if (lcnt) {
+            TF_QuerySimple(&tfapp, S_BINARY, lbuf, lcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
+            etmr = HAL_GetTick();
+            lcnt = 0;
+        } else if (dcnt){
+            TF_QuerySimple(&tfapp, S_DIMMER, dbuf, dcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
+            etmr = HAL_GetTick();
+            dcnt = 0;
+        }
         /*else if(LightInitRequestShouldSend())
         {
             LightInitDisable();
@@ -630,20 +644,6 @@ void RS485_Service(void){
             modbusSendData[modbusSendDataCount++] = ventilator.relay & 0xFF;
             modbusSendData[modbusSendDataCount++] = VENTILATOR_IS_ACTIVE();
         }*/
-        else if (tcnt) {
-            TF_QuerySimple(&tfapp, S_TEMP, tbuf, tcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
-            etmr = HAL_GetTick();
-            tcnt = 0;
-        }
-        else if (lcnt) {
-            TF_QuerySimple(&tfapp, S_BINARY, lbuf, lcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
-            etmr = HAL_GetTick();
-            lcnt = 0;
-        } else if (dcnt){
-            TF_QuerySimple(&tfapp, S_DIMMER, dbuf, dcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
-            etmr = HAL_GetTick();
-            dcnt = 0;
-        }
         else
         {
             for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
@@ -722,10 +722,10 @@ void RS485_Service(void){
                         *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
                         sendDataCount += 2;
                         sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
-                        sendDataBuff[sendDataCount++] = lights_modbus[i].color & 0xFF;             // blue
-                        sendDataBuff[sendDataCount++] = (lights_modbus[i].color >> 8) & 0xFF;      // green
-                        sendDataBuff[sendDataCount++] = (lights_modbus[i].color >> 16) & 0xFF;     // red
-                        sendDataBuff[sendDataCount++] = lights_modbus[i].brightness;
+                        sendDataBuff[sendDataCount++] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
+                        sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
+                        sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
+                        sendDataBuff[sendDataCount++] = Light_Modbus_GetBrightness(lights_modbus + i);
                         
                         Light_Modbus_ResetChange(lights_modbus + i);
                         

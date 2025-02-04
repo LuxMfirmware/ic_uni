@@ -694,6 +694,10 @@ bool Light_Modbus_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li);
 void Lights_Modbus_Button_External_Press(LIGHT_Modbus_CmdTypeDef* const li);
 GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_SetColor(LIGHT_Modbus_CmdTypeDef* const li, GUI_COLOR color);
+void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brightness);
+void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li);
 uint32_t Ventilator_GetOnDelayTimer();
 void Ventilator_SetOnDelayTimer(const uint32_t val);
 bool Ventilator_isOnDelayTimerActive();
@@ -3852,8 +3856,8 @@ void PID_Hook(GUI_PID_STATE * pTS){
         }
         else if(screen == 20)  // light settings
         {
-            if(pTS->y < 180) lights_modbus[light_selectedIndex].color = LCD_GetPixelColor(pTS->x, pTS->y);
-            else lights_modbus[light_selectedIndex].brightness = ((pTS->x - 20) / 440.0) * 100;
+            if(pTS->y < 180) Light_Modbus_SetColor(lights_modbus + light_selectedIndex, LCD_GetPixelColor(pTS->x, pTS->y));
+            else Light_Modbus_SetBrightness(lights_modbus + light_selectedIndex, ((pTS->x - 20) / (float)bmblackWhiteGradient.XSize) * 100);
             shouldDrawScreen = 1;
         }
         else if((pTS->x > 100)&&(pTS->y > 100)&&(pTS->x < 400)&&(pTS->y < 272)&&(screen == 0))
@@ -4379,20 +4383,15 @@ bool Light_Modbus_isNewValueOn(const LIGHT_Modbus_CmdTypeDef* const li)
     return li->value;
 }
 
+bool Light_Modbus_isOldValueOn(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return li->old_value;
+}
+
 void Light_Modbus_Flip(LIGHT_Modbus_CmdTypeDef* const li)
 {
     if(Light_Modbus_isActive(li)) Light_Modbus_Off(li);
     else Light_Modbus_On(li);
-}
-
-bool Light_Modbus_hasChanged(const LIGHT_Modbus_CmdTypeDef* const li)
-{
-    return li->old_value != li->value;
-}
-
-void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li)
-{
-    li->old_value = li->value;
 }
 
 
@@ -4533,6 +4532,48 @@ bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li)
 
 
 
+
+
+void Light_Modbus_SetColor(LIGHT_Modbus_CmdTypeDef* const li, GUI_COLOR color)
+{
+    li->color = color;
+}
+
+GUI_COLOR Light_Modbus_GetColor(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return li->color;
+}
+
+void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li)
+{
+    li->color = 0;
+}
+
+
+
+
+
+void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brightness)
+{
+    if(brightness > 100) li->brightness = 100;
+    else if(brightness < 0) li->brightness = 0;
+    else li->brightness = brightness;
+}
+
+uint8_t Light_Modbus_GetBrightness(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return li->brightness;
+}
+
+void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li)
+{
+    li->brightness = 0;
+}
+
+
+
+
+
 void Lights_Modbus_Button_External_Press(LIGHT_Modbus_CmdTypeDef* const li)
 {
     if(!li->button_external)
@@ -4550,6 +4591,22 @@ void Lights_Modbus_Button_External_Press(LIGHT_Modbus_CmdTypeDef* const li)
             Light_Modbus_Flip(li);
         }
     }
+}
+
+
+
+
+
+bool Light_Modbus_hasChanged(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return (Light_Modbus_isOldValueOn(li) != Light_Modbus_isNewValueOn(li)) || Light_Modbus_GetBrightness(li) || Light_Modbus_GetColor(li);
+}
+
+void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li)
+{
+    li->old_value = li->value;
+    Light_Modbus_ResetBrightness(li);
+    Light_Modbus_ResetColor(li);
 }
 
 
