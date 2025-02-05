@@ -675,7 +675,7 @@ void RS485_Service(void){
                 {
                     uint16_t relay = 0;
                     
-                    if(Curtain_isMoving(cur) && (!Curtain_isNewDirectionStop(cur)) && (!Curtain_shouldResend(cur)))
+                    /*if(Curtain_isMoving(cur) && (!Curtain_isNewDirectionStop(cur)) && (!Curtain_shouldResend(cur)))
                     {
                         Curtain_Resend(cur);
                         
@@ -691,37 +691,43 @@ void RS485_Service(void){
                         Curtain_RestartTimer(cur);
                     }
                     else if((!Curtain_shouldResend(cur)) || (Curtain_shouldResend(cur) && Curtain_HasSwitchDirectionTimeExpired(cur)))
-                    {
-                        if(Curtain_shouldResend(cur))
+                    {*/
+                        /*if(Curtain_shouldResend(cur))
                         {
                             Curtain_ResendReset(cur);
                             Curtain_RestartTimer(cur);
-                        }
+                        }*/
                         
-                        if(sendDataBuff[0] != MODBUS_SEND_WRITE_SINGLE_REGISTER) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
+//                        if(sendDataBuff[0] != MODBUS_SEND_WRITE_SINGLE_REGISTER) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
                         relay = (Curtain_isNewDirectionUp(cur) || (Curtain_isNewDirectionStop(cur) && Curtain_isMovingUp(cur))) ? Curtain_GetRelayUp(cur) : Curtain_GetRelayDown(cur);
                         *(sendDataBuff + sendDataCount) = (relay >> 8) & 0xFF;
                         *(sendDataBuff + sendDataCount + 1) = relay & 0xFF;
                         sendDataCount += 2;
-                        sendDataBuff[sendDataCount++] = Curtain_isNewDirectionStop(cur) ? 0x02 : 0x01;
+                        sendDataBuff[sendDataCount++] = Curtain_isNewDirectionStop(cur) ? 0 : (Curtain_isNewDirectionUp(cur) ? 1 : 2);
                         
                         if(screen == 16) shouldDrawScreen = 1;
                         
                         if(Curtain_isNewDirectionStop(cur)) Curtain_Reset(cur);
                         else Curtain_DirectionEqualize(cur);
-                    }
+//                    }
                 }
             }
             
             
-            if(!isSendDataBufferEmpty()) goto check_changes_loops_end;   // IMPORTANT!
+            if(!isSendDataBufferEmpty())
+            {
+                sendData.data = sendDataBuff;
+                sendData.len = sendDataCount;
+                sendData.type = S_JALOUSIE;
+                goto check_changes_loops_end;   // IMPORTANT!
+            }
             
             
             for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
             {
                 if(Light_Modbus_hasStatusChanged(lights_modbus + i))
                 {
-                    //if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
+//                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
                     *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
                     *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
                     sendDataCount += 2;
@@ -748,7 +754,7 @@ void RS485_Service(void){
             {
                 if(Light_Modbus_hasBrightnessChanged(lights_modbus + i))
                 {
-                    //if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_BRIGHTNESS_SET;
+//                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_BRIGHTNESS_SET;
                     *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
                     *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
                     sendDataCount += 2;
