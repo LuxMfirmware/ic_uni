@@ -699,41 +699,72 @@ void RS485_Service(void){
                 }
             }
             
-            if(isSendDataBufferEmpty())
+            
+            if(!isSendDataBufferEmpty()) goto check_changes_loops_end;   // IMPORTANT!
+            
+            
+            for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
             {
-                /*if(LIGHT_Ctrl1.Main1.old_value != LIGHT_Ctrl1.Main1.value)
+                if(Light_Modbus_hasStatusChanged(lights_modbus + i))
                 {
-                    sendDataBuff[0] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
-                    *(uint16_t*)(sendDataBuff + 1) = LIGHT_Ctrl1.modbusLight.index;
-//                    modbusSendData[1] = (LIGHT_Ctrl1.modbusLight.index >> 8) & 0xFF;
-//                    modbusSendData[2] = LIGHT_Ctrl1.modbusLight.index & 0xFF;
-                    sendDataBuff[3] = LIGHT_Ctrl1.Main1.value ? 0x01 : 0x02;
-                    sendDataCount = 4;
+                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
+                    *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+                    *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+                    sendDataCount += 2;
+                    sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
+                    /*sendDataBuff[sendDataCount++] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
+                    sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
+                    sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
+                    sendDataBuff[sendDataCount++] = Light_Modbus_GetBrightness(lights_modbus + i);*/
                     
-                    LIGHT_Ctrl1.Main1.old_value = LIGHT_Ctrl1.Main1.value;
-                }*/
-                
-                for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
-                {
-                    if(Light_Modbus_hasChanged(lights_modbus + i))
-                    {
-                        if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
-                        *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-                        *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-                        sendDataCount += 2;
-                        sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
-                        sendDataBuff[sendDataCount++] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
-                        sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
-                        sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
-                        sendDataBuff[sendDataCount++] = Light_Modbus_GetBrightness(lights_modbus + i);
-                        
-                        Light_Modbus_ResetChange(lights_modbus + i);
-                        
-                        if(screen == 15) shouldDrawScreen = 1;
-                        else if(!screen) screen = 1;
-                    }
+                    Light_Modbus_ResetChange(lights_modbus + i);
+                    
+                    if(screen == 15) shouldDrawScreen = 1;
+                    else if(!screen) screen = 1;
                 }
             }
+            
+            
+            if(!isSendDataBufferEmpty()) goto check_changes_loops_end;   // IMPORTANT!
+            
+            
+            for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
+            {
+                if(Light_Modbus_hasBrightnessChanged(lights_modbus + i))
+                {
+                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_BRIGHTNESS_SET;
+                    *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+                    *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+                    sendDataCount += 2;
+                    sendDataBuff[sendDataCount++] = Light_Modbus_GetBrightness(lights_modbus + i);
+                    
+                    Light_Modbus_ResetBrightness(lights_modbus + i);
+                }
+            }
+            
+            
+            if(!isSendDataBufferEmpty()) goto check_changes_loops_end;   // IMPORTANT!
+            
+            
+            for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
+            {
+                if(Light_Modbus_hasColorChanged(lights_modbus + i))
+                {
+                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_COLOR_SET;
+                    *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+                    *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+                    sendDataCount += 2;
+                    sendDataBuff[sendDataCount++] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
+                    sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
+                    sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
+                    
+                    Light_Modbus_ResetColor(lights_modbus + i);
+                }
+            }
+            
+            
+            if(!isSendDataBufferEmpty()) goto check_changes_loops_end;   // IMPORTANT!
+            
             
             /*lcnt = 0;
             dcnt = 0;
@@ -763,6 +794,8 @@ void RS485_Service(void){
                 lctrl1 += 4;
                 lctrl2 += 4;
             }*/
+            
+            check_changes_loops_end:;
         }
     }
 }

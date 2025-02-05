@@ -16,9 +16,9 @@
 /*  time and buld number are result of executing batch files and vb script	is compiled	    */
 /* 	                                                                                        */
 /**/
-#define FW_DATE                                	0x00250302
-#define FW_TIME                        			0x00170738 
-#define FW_BUILD_NUMBER                          11906
+#define FW_DATE                                	0x00250402
+#define FW_TIME                        			0x00193646 
+#define FW_BUILD_NUMBER                          11913
 
 /* select application if preprocessor symbol no defined -----------------*/
 //#define HOTEL_CONTROLLER
@@ -1115,6 +1115,9 @@ typedef enum
 
 #define QR_CODE_GET                         0xE5
 #define QR_CODE_SET                         0xE6
+
+#define LIGHT_SEND_BRIGHTNESS_SET                0xE7
+#define LIGHT_SEND_COLOR_SET                     0xE8
 
 /* Exported type  ----------------------------------------------------- */
 /* flash operation error code */

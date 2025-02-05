@@ -19,7 +19,12 @@
 #define SCRNSVR_TOUT    30  // 10 sec timeout increment to set display in low brigntnes after last touch event
 #define TS_LAYER        1   // touch screen layer event
 
-#define LIGHTS_MODBUS_SIZE              6
+#define LIGHT_COM_BIN                        1
+#define LIGHT_COM_DIM                        2
+#define LIGHT_COM_COLOR                      3
+
+#define LIGHTS_MODBUS_SIZE                   6
+
 /* Exported types ------------------------------------------------------------*/
 typedef enum{
 	RELEASED    = 0,
@@ -163,12 +168,18 @@ bool Light_Modbus_isIndexInRange(const uint8_t light_index);
 void Light_Modbus_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val);
 bool Light_Modbus_isNewValueOn(const LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isOldValueOn(const LIGHT_Modbus_CmdTypeDef* const li);
+bool Light_Modbus_hasStatusChanged(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_ResetStatus(LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_hasChanged(const LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_On_External(LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_Off_External(LIGHT_Modbus_CmdTypeDef* const li);
 uint8_t Light_Modbus_GetBrightness(const LIGHT_Modbus_CmdTypeDef* const li);
+bool Light_Modbus_hasBrightnessChanged(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li);
 GUI_COLOR Light_Modbus_GetColor(const LIGHT_Modbus_CmdTypeDef* const li);
+bool Light_Modbus_hasColorChanged(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li);
 bool QR_Code_isDataLengthShortEnough(uint8_t dataLength);
 bool QR_Code_willDataFit(const uint8_t *data);
 uint8_t* QR_Code_Get(const uint8_t qrCodeID);

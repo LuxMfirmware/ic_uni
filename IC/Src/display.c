@@ -3264,7 +3264,7 @@ static void DSP_InitSet6Scrn(void)
         x = 200;
         y = 5;
         
-        lightsWidgets[i].communication_type = SPINBOX_CreateEx(x, y, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 7, 0, 512);
+        lightsWidgets[i].communication_type = SPINBOX_CreateEx(x, y, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 7, 0, 3);
         SPINBOX_SetEdge(lightsWidgets[i].communication_type, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].communication_type, lights_modbus[i].communication_type);
         
@@ -4544,6 +4544,11 @@ GUI_COLOR Light_Modbus_GetColor(const LIGHT_Modbus_CmdTypeDef* const li)
     return li->color;
 }
 
+bool Light_Modbus_hasColorChanged(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return Light_Modbus_GetColor(li);
+}
+
 void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->color = 0;
@@ -4563,6 +4568,11 @@ void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brigh
 uint8_t Light_Modbus_GetBrightness(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return li->brightness;
+}
+
+bool Light_Modbus_hasBrightnessChanged(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return Light_Modbus_GetBrightness(li);
 }
 
 void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li)
@@ -4596,10 +4606,23 @@ void Lights_Modbus_Button_External_Press(LIGHT_Modbus_CmdTypeDef* const li)
 
 
 
+bool Light_Modbus_hasStatusChanged(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return Light_Modbus_isOldValueOn(li) != Light_Modbus_isNewValueOn(li);
+}
+
+void Light_Modbus_ResetStatus(LIGHT_Modbus_CmdTypeDef* const li)
+{
+    li->old_value = li->value;
+}
+
+
+
+
 
 bool Light_Modbus_hasChanged(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return (Light_Modbus_isOldValueOn(li) != Light_Modbus_isNewValueOn(li)) || Light_Modbus_GetBrightness(li) || Light_Modbus_GetColor(li);
+    return Light_Modbus_hasStatusChanged(li) || Light_Modbus_hasBrightnessChanged(li) || Light_Modbus_hasColorChanged(li);
 }
 
 void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li)
