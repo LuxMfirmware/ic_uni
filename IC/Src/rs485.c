@@ -32,6 +32,7 @@
 static TinyFrame tfapp;
 /* Private Define  -----------------------------------------------------------*/
 /* Private Variables  --------------------------------------------------------*/
+TF_Msg sendData;
 bool init_tf = false;
 static uint8_t ud1, ud2;
 static uint32_t rstmr = 0;
@@ -509,7 +510,11 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
 *           packet sender address msb + lsb 4 bytes         (2 x 9 bit)
 *           packet lenght msb + lsb 4 bytes                 (2 x 9 bit)
 */
-void RS485_Init(void){
+void RS485_Init(void)
+{
+    sendData.data = NULL;
+    sendData.len = 0;
+    
     if(!init_tf){
         init_tf = TF_InitStatic(&tfapp, TF_SLAVE); // 1 = master, 0 = slave
         TF_AddGenericListener(&tfapp, GEN_Listener);
@@ -559,9 +564,18 @@ void RS485_Service(void){
             }
             cmd = 0;
         }
-        else if(!isSendDataBufferEmpty())
+        else if((!isSendDataBufferEmpty()) || sendData.data)
         {
-            TF_QuerySimple(&tfapp, S_CUSTOM, sendDataBuff, sendDataCount, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
+            if(sendData.data)
+            {
+                TF_Query(&tfapp, &sendData, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
+            }
+            else
+            {
+                TF_QuerySimple(&tfapp, S_CUSTOM, sendDataBuff, sendDataCount, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
+            }
+            sendData.data = NULL;
+            sendData.len = 0;
             sendDataCount = 0;
             ZEROFILL(sendDataBuff, COUNTOF(sendDataBuff));
         }
@@ -707,15 +721,11 @@ void RS485_Service(void){
             {
                 if(Light_Modbus_hasStatusChanged(lights_modbus + i))
                 {
-                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
+                    //if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
                     *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
                     *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
                     sendDataCount += 2;
                     sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
-                    /*sendDataBuff[sendDataCount++] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
-                    sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
-                    sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
-                    sendDataBuff[sendDataCount++] = Light_Modbus_GetBrightness(lights_modbus + i);*/
                     
                     Light_Modbus_ResetChange(lights_modbus + i);
                     
@@ -725,14 +735,20 @@ void RS485_Service(void){
             }
             
             
-            if(!isSendDataBufferEmpty()) goto check_changes_loops_end;   // IMPORTANT!
+            if(!isSendDataBufferEmpty())
+            {
+                sendData.data = sendDataBuff;
+                sendData.len = sendDataCount;
+                sendData.type = S_BINARY;
+                goto check_changes_loops_end;   // IMPORTANT!
+            }
             
             
             for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
             {
                 if(Light_Modbus_hasBrightnessChanged(lights_modbus + i))
                 {
-                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_BRIGHTNESS_SET;
+                    //if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_BRIGHTNESS_SET;
                     *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
                     *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
                     sendDataCount += 2;
@@ -743,7 +759,13 @@ void RS485_Service(void){
             }
             
             
-            if(!isSendDataBufferEmpty()) goto check_changes_loops_end;   // IMPORTANT!
+            if(!isSendDataBufferEmpty())
+            {
+                sendData.data = sendDataBuff;
+                sendData.len = sendDataCount;
+                sendData.type = S_DIMMER;
+                goto check_changes_loops_end;   // IMPORTANT!
+            }
             
             
             for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
@@ -854,6 +876,6 @@ void RS485_ErrorCallback(void){
 
 bool isSendDataBufferEmpty()
 {
-    return !sendDataBuff[0];
+    return !sendDataCount;
 }
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/
