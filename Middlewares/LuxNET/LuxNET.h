@@ -92,7 +92,9 @@ typedef enum {
 	S_GPS					= 38,	//!< GPS Sensor, V_POSITION
 	S_WATER_QUALITY			= 39,	//!< V_TEMP, V_PH, V_ORP, V_EC, V_STATUS
     S_JALOUSIE              = 40,
-    S_JALOUSIE_SETUP        = 41
+    S_JALOUSIE_SETUP        = 41,
+    S_DIMMER_SETUP  	    = 42,
+    S_DIMMER_RESTART        = 43
 } mysensors_sensor_t;
 
 /// @brief Type of sensor data (for set/req/echo messages)
@@ -157,7 +159,7 @@ typedef enum {
 	V_VAR					= 54,	//!< S_POWER, Reactive power: volt-ampere reactive (var)
 	V_VA					= 55,	//!< S_POWER, Apparent power: volt-ampere (VA)
 	V_POWER_FACTOR			= 56,	//!< S_POWER, Ratio of real power to apparent power: floating point value in the range [-1,..,1]
-    V_JALOUSIE              = 58
+    V_JALOUSIE              = 57
 } luxnet_data_t;
 
 

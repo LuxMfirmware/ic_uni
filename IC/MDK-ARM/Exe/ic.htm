@@ -3,9 +3,9 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Wed Feb  5 19:56:23 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Thu Feb  6 15:49:00 2025
 <BR><P>
-<H3>Maximum Stack Usage =       2420 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =       2428 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 main &rArr; DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 <P>
@@ -1467,8 +1467,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[206]"></a>DISP_Service</STRONG> (Thumb, 18282 bytes, Stack size 1432 bytes, display.o(.text.DISP_Service))
-<BR><BR>[Stack]<UL><LI>Max Depth = 2388<LI>Call Chain = DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
+<P><STRONG><a name="[206]"></a>DISP_Service</STRONG> (Thumb, 18370 bytes, Stack size 1440 bytes, display.o(.text.DISP_Service))
+<BR><BR>[Stack]<UL><LI>Max Depth = 2396<LI>Call Chain = DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
@@ -3824,7 +3824,7 @@ Global Symbols
 <LI><a href="#[2f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_DeInit
 </UL>
 
-<P><STRONG><a name="[398]"></a>ReadThermostatController</STRONG> (Thumb, 278 bytes, Stack size 56 bytes, display.o(.text.ReadThermostatController))
+<P><STRONG><a name="[398]"></a>ReadThermostatController</STRONG> (Thumb, 288 bytes, Stack size 56 bytes, display.o(.text.ReadThermostatController))
 <BR><BR>[Stack]<UL><LI>Max Depth = 388<LI>Call Chain = ReadThermostatController &rArr; EE_ReadBuffer &rArr; EE_ReadData &rArr; I2Cx_ReadMultiple &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_ReadBuffer
@@ -3869,7 +3869,7 @@ Global Symbols
 <LI><a href="#[370]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PCA9685_OutputUpdate
 </UL>
 
-<P><STRONG><a name="[20f]"></a>SaveThermostatController</STRONG> (Thumb, 282 bytes, Stack size 56 bytes, display.o(.text.SaveThermostatController))
+<P><STRONG><a name="[20f]"></a>SaveThermostatController</STRONG> (Thumb, 292 bytes, Stack size 56 bytes, display.o(.text.SaveThermostatController))
 <BR><BR>[Stack]<UL><LI>Max Depth = 428<LI>Call Chain = SaveThermostatController &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_WriteBuffer
@@ -4411,7 +4411,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[a3]"></a>main</STRONG> (Thumb, 196 bytes, Stack size 32 bytes, main.o(.text.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 2420<LI>Call Chain = main &rArr; DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
+<BR><BR>[Stack]<UL><LI>Max Depth = 2428<LI>Call Chain = main &rArr; DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TS_Init
 <LI><a href="#[2ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
@@ -11971,8 +11971,8 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[23c]"></a>DSP_InitSet1Scrn</STRONG> (Thumb, 1230 bytes, Stack size 264 bytes, display.o(.text.DSP_InitSet1Scrn))
-<BR><BR>[Stack]<UL><LI>Max Depth = 776<LI>Call Chain = DSP_InitSet1Scrn &rArr; SPINBOX_SetEdge &rArr; _AdjustEdit &rArr; WM_SetWindowPos &rArr; WM_SetSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<P><STRONG><a name="[23c]"></a>DSP_InitSet1Scrn</STRONG> (Thumb, 1300 bytes, Stack size 272 bytes, display.o(.text.DSP_InitSet1Scrn))
+<BR><BR>[Stack]<UL><LI>Max Depth = 784<LI>Call Chain = DSP_InitSet1Scrn &rArr; SPINBOX_SetEdge &rArr; _AdjustEdit &rArr; WM_SetWindowPos &rArr; WM_SetSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[215]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_SetValue
 <LI><a href="#[253]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_SetEdge
@@ -12131,7 +12131,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[213]"></a>DSP_KillSet1Scrn</STRONG> (Thumb, 144 bytes, Stack size 8 bytes, display.o(.text.DSP_KillSet1Scrn))
+<P><STRONG><a name="[213]"></a>DSP_KillSet1Scrn</STRONG> (Thumb, 158 bytes, Stack size 8 bytes, display.o(.text.DSP_KillSet1Scrn))
 <BR><BR>[Stack]<UL><LI>Max Depth = 256<LI>Call Chain = DSP_KillSet1Scrn &rArr; WM_DeleteWindow &rArr; WM_NotifyParent &rArr; WM_SendToParent &rArr; WM__SendMessage &rArr; WM_DefaultProc &rArr;  WM_SendToParent (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[25e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DeleteWindow

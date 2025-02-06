@@ -104,18 +104,6 @@ void Curtain_SetRelayUp(Curtain* const cur, const uint16_t val)
 
 
 
-uint8_t Curtain_getDirection(const Curtain* const cur)
-{
-    return cur->upDown_old;
-}
-
-uint8_t Curtain_getNewDirection(const Curtain* const cur)
-{
-    return cur->upDown;
-}
-
-
-
 
 uint16_t Curtain_GetRelayDown(const Curtain* const cur)
 {
@@ -125,6 +113,18 @@ uint16_t Curtain_GetRelayDown(const Curtain* const cur)
 void Curtain_SetRelayDown(Curtain* const cur, const uint16_t val)
 {
     cur->relayDown = val;
+}
+
+
+
+uint8_t Curtain_getDirection(const Curtain* const cur)
+{
+    return cur->upDown_old;
+}
+
+uint8_t Curtain_getNewDirection(const Curtain* const cur)
+{
+    return cur->upDown;
 }
 
 

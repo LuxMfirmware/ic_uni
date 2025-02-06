@@ -43,6 +43,7 @@ typedef struct{
     uint32_t relay3DelayTimerStart;
     uint32_t relay4DelayTimerStart;
     uint8_t sendChangeSignalFlags;
+    uint8_t group;
 }THERMOSTAT_TypeDef;
 
 extern THERMOSTAT_TypeDef thst;

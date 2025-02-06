@@ -165,6 +165,7 @@ Light_Modbus_settingsWidgets;
 
 #define ID_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH       0x977
 #define ID_LIGHT_NIGHT_TIMER            0x978
+#define ID_THST_GROUP                   0x979
 
 
 /* Private Type --------------------------------------------------------------*/
@@ -191,6 +192,7 @@ SPINBOX_Handle hThstRelay3Delay;
 SPINBOX_Handle hThstRelay4Delay;
 SPINBOX_Handle hNTC_Offset;
 SPINBOX_Handle hFanDiff;
+SPINBOX_Handle hThstGroup;
 
 
 SPINBOX_Handle  hDEV_ID;
@@ -1547,6 +1549,11 @@ void DISP_Service(void){
                 thst.relay4Delay = SPINBOX_GetValue(hThstRelay4Delay);
                 thsta = 1;
             }
+            else if(thst.group != SPINBOX_GetValue(hThstGroup))
+            {
+                thst.group = SPINBOX_GetValue(hThstGroup);
+                thsta = 1;
+            }
             
             
             if (BUTTON_IsPressed(hBUTTON_Ok))
@@ -2594,6 +2601,10 @@ static void DSP_InitSet1Scrn(void){
     SPINBOX_SetEdge(hThstRelay4Delay, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hThstRelay4Delay, thst.relay4Delay);
     
+    hThstGroup = SPINBOX_CreateEx(200, 220, 110, 40, 0, WM_CF_SHOW, ID_THST_GROUP, 0, 0xFF);
+    SPINBOX_SetEdge(hThstGroup, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(hThstGroup, thst.group);
+    
     
     
     
@@ -2676,6 +2687,7 @@ static void DSP_KillSet1Scrn(void){
     WM_DeleteWindow(hThstRelay3Delay);
     WM_DeleteWindow(hThstRelay4Delay);
     WM_DeleteWindow(hFanDiff);
+    WM_DeleteWindow(hThstGroup);
     WM_DeleteWindow(hBUTTON_Ok);
     WM_DeleteWindow(hBUTTON_Next);
 }
@@ -4121,7 +4133,7 @@ static void ReadLightController(LIGHT_CtrlTypeDef* lc, uint16_t addr){
   * @retval
   */
 void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
-    uint8_t buf[31];
+    uint8_t buf[32];
     buf[0] = tc->th_ctrl;
     buf[1] = tc->th_state;
     buf[2] = tc->mv_temp>>8;
@@ -4153,7 +4165,8 @@ void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
     buf[28] = tc->relay4 & 0xFF;
     buf[29] = tc->relay3Delay;
     buf[30] = tc->relay4Delay;
-    EE_WriteBuffer(buf, addr, 31);
+    buf[31] = tc->group;
+    EE_WriteBuffer(buf, addr, 32);
 }
 /**
   * @brief
@@ -4161,8 +4174,8 @@ void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
   * @retval
   */
 void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
-    uint8_t buf[31];
-    EE_ReadBuffer(buf, addr, 31);
+    uint8_t buf[32];
+    EE_ReadBuffer(buf, addr, 32);
     tc->th_ctrl         = buf[0];
     tc->th_state        = buf[1];
     tc->mv_temp         =(buf[2]<<8)|buf[3];
@@ -4187,6 +4200,7 @@ void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
     tc->relay4          = (buf[27] << 8) | buf[28];
     tc->relay3Delay     = buf[29];
     tc->relay4Delay     = buf[30];
+    tc->group           = buf[31];
 }
 
 
