@@ -709,6 +709,8 @@ void RS485_Service(void){
                         
                         if(Curtain_isNewDirectionStop(cur)) Curtain_Reset(cur);
                         else Curtain_DirectionEqualize(cur);
+                        
+                        break; // blinds have to be sent one by one
 //                    }
                 }
             }
