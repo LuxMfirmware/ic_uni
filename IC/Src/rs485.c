@@ -660,6 +660,13 @@ void RS485_Service(void){
         }*/
         else
         {
+            if(!isSendDataBufferEmpty())
+            {
+                goto check_changes_loops_end;   // IMPORTANT!
+            }
+            
+            
+            
             for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
             {
                 Curtain* const cur = curtains + i;

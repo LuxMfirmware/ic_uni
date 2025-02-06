@@ -4285,7 +4285,7 @@ void Lights_Modbus_Init()
 {
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
-        Light_Modbus_Init(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 13));
+        Light_Modbus_Init(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 14));
     }
     
     Lights_Modbus_Calculate();
@@ -4295,7 +4295,7 @@ void Lights_Modbus_Save()
 {
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
-        Light_Modbus_Save(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 13));
+        Light_Modbus_Save(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 14));
     }
     
     Lights_Modbus_Calculate();

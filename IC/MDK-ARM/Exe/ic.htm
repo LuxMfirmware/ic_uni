@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Thu Feb  6 17:38:28 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Thu Feb  6 19:51:40 2025
 <BR><P>
 <H3>Maximum Stack Usage =       2428 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -3472,7 +3472,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[356]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_Calculate
 </UL>
 
-<P><STRONG><a name="[204]"></a>Lights_Modbus_Init</STRONG> (Thumb, 78 bytes, Stack size 16 bytes, display.o(.text.Lights_Modbus_Init))
+<P><STRONG><a name="[204]"></a>Lights_Modbus_Init</STRONG> (Thumb, 80 bytes, Stack size 16 bytes, display.o(.text.Lights_Modbus_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 420<LI>Call Chain = Lights_Modbus_Init &rArr; Light_Modbus_Init &rArr; EE_ReadBuffer &rArr; EE_ReadData &rArr; I2Cx_ReadMultiple &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[356]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_Calculate
@@ -3494,7 +3494,7 @@ Global Symbols
 <LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[230]"></a>Lights_Modbus_Save</STRONG> (Thumb, 78 bytes, Stack size 16 bytes, display.o(.text.Lights_Modbus_Save))
+<P><STRONG><a name="[230]"></a>Lights_Modbus_Save</STRONG> (Thumb, 80 bytes, Stack size 16 bytes, display.o(.text.Lights_Modbus_Save))
 <BR><BR>[Stack]<UL><LI>Max Depth = 460<LI>Call Chain = Lights_Modbus_Save &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[356]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_Calculate
@@ -3744,7 +3744,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[315]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_RxCpltCallback
 </UL>
 
-<P><STRONG><a name="[38e]"></a>RS485_Service</STRONG> (Thumb, 2488 bytes, Stack size 112 bytes, rs485.o(.text.RS485_Service))
+<P><STRONG><a name="[38e]"></a>RS485_Service</STRONG> (Thumb, 2500 bytes, Stack size 112 bytes, rs485.o(.text.RS485_Service))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1296<LI>Call Chain = RS485_Service &rArr; PresentSystem &rArr; GUI_Exec &rArr; GUI_Exec1 &rArr; WM_Exec &rArr; _Exec1Draw &rArr; _DrawNext &rArr; WM__Paint &rArr; GUI_MEMDEV_Draw &rArr; GUI_MEMDEV_CopyToLCD &rArr; GUI_MEMDEV_CopyToLCDAt &rArr; GUI_MEMDEV__WriteToActiveOpaque &rArr; _WriteToActiveOpaque_8 &rArr; GUI_ALLOC_AllocNoInit &rArr; _Alloc &rArr; _InitOnce &rArr; _EnlargeBlocks &rArr;  _Alloc (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
