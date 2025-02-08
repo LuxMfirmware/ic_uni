@@ -52,7 +52,6 @@ bool isSendDataBufferEmpty();
 
 
 
-
 void AttachData(TF_Msg* mess)
 {
     mess->data = responseData;
@@ -255,8 +254,10 @@ void Set_QR_Code_RS485(TF_Msg* message)
   * @retval
   */
 TF_Result ID_Listener(TinyFrame *tf, TF_Msg *msg){
+    
     return TF_CLOSE;
 }
+
 TF_Result FWREQ_Listener(TinyFrame *tf, TF_Msg *msg){          
     if (IsFwUpdateActiv()){
         MX_QSPI_Init();
@@ -516,7 +517,7 @@ void RS485_Init(void)
     sendData.len = 0;
     
     if(!init_tf){
-        init_tf = TF_InitStatic(&tfapp, TF_SLAVE); // 1 = master, 0 = slave
+        init_tf = TF_InitStatic(&tfapp, TF_MASTER); // 1 = master, 0 = slave
         TF_AddGenericListener(&tfapp, GEN_Listener);
     }
 	HAL_UART_Receive_IT(&huart1, &rec, 1);
@@ -572,7 +573,7 @@ void RS485_Service(void){
             }
             else
             {
-                TF_QuerySimple(&tfapp, S_CUSTOM, sendDataBuff, sendDataCount, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
+                TF_QuerySimple(&tfapp, CUSTOM_SET, sendDataBuff, sendDataCount, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
             }
             sendData.data = NULL;
             sendData.len = 0;
@@ -580,16 +581,16 @@ void RS485_Service(void){
             ZEROFILL(sendDataBuff, COUNTOF(sendDataBuff));
         }
         else if (tcnt) {
-            TF_QuerySimple(&tfapp, S_TEMP, tbuf, tcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
+            TF_QuerySimple(&tfapp, THERMOSTAT_TEMP_SET, tbuf, tcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
             etmr = HAL_GetTick();
             tcnt = 0;
         }
         else if (lcnt) {
-            TF_QuerySimple(&tfapp, S_BINARY, lbuf, lcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
+            TF_QuerySimple(&tfapp, BINARY_SET, lbuf, lcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
             etmr = HAL_GetTick();
             lcnt = 0;
         } else if (dcnt){
-            TF_QuerySimple(&tfapp, S_DIMMER, dbuf, dcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
+            TF_QuerySimple(&tfapp, DIMMER_SET, dbuf, dcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
             etmr = HAL_GetTick();
             dcnt = 0;
         }
@@ -727,7 +728,7 @@ void RS485_Service(void){
             {
                 sendData.data = sendDataBuff;
                 sendData.len = sendDataCount;
-                sendData.type = S_JALOUSIE;
+                sendData.type = JALOUSIE_SET;
                 goto check_changes_loops_end;   // IMPORTANT!
             }
             
@@ -754,7 +755,7 @@ void RS485_Service(void){
             {
                 sendData.data = sendDataBuff;
                 sendData.len = sendDataCount;
-                sendData.type = S_BINARY;
+                sendData.type = BINARY_SET;
                 goto check_changes_loops_end;   // IMPORTANT!
             }
             
@@ -778,7 +779,7 @@ void RS485_Service(void){
             {
                 sendData.data = sendDataBuff;
                 sendData.len = sendDataCount;
-                sendData.type = S_DIMMER;
+                sendData.type = DIMMER_SET;
                 goto check_changes_loops_end;   // IMPORTANT!
             }
             

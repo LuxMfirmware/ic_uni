@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Thu Feb  6 19:51:40 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Sat Feb  8 19:04:29 2025
 <BR><P>
 <H3>Maximum Stack Usage =       2428 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -5365,15 +5365,15 @@ Global Symbols
 <P><STRONG><a name="[40e]"></a>GUI_ALLOC_Free</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, gui_alloc.o(i.GUI_ALLOC_Free))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = GUI_ALLOC_Free &rArr; _AddFreeMemory &rArr; _WriteTagData
 </UL>
-<BR>[Calls]<UL><LI><a href="#[46b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_PushFreeBlock
-<LI><a href="#[46a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_AddFreeMemory
+<BR>[Calls]<UL><LI><a href="#[46a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_AddFreeMemory
+<LI><a href="#[46b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_PushFreeBlock
 </UL>
 <BR>[Called By]<UL><LI><a href="#[25e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DeleteWindow
 <LI><a href="#[241]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Delete
+<LI><a href="#[634]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_EnlargeBlocks
 <LI><a href="#[3e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_FreePtr
 <LI><a href="#[8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_NextPixel_End
 <LI><a href="#[472]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Realloc
-<LI><a href="#[634]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_EnlargeBlocks
 <LI><a href="#[4e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Free
 <LI><a href="#[569]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DeleteTimer
 <LI><a href="#[593]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_CreateTimer
@@ -5421,10 +5421,10 @@ Global Symbols
 <P><STRONG><a name="[46c]"></a>GUI_ALLOC_GetFixedBlock</STRONG> (Thumb, 172 bytes, Stack size 24 bytes, gui_alloc.o(i.GUI_ALLOC_GetFixedBlock))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = GUI_ALLOC_GetFixedBlock &rArr; _InitOnce &rArr; _EnlargeBlocks &rArr;  _Alloc (Cycle)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[46e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveHoles
-<LI><a href="#[46f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveFreeBlock
-<LI><a href="#[46d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_InitOnce
+<BR>[Calls]<UL><LI><a href="#[46d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_InitOnce
 <LI><a href="#[46a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_AddFreeMemory
+<LI><a href="#[46e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveHoles
+<LI><a href="#[46f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveFreeBlock
 </UL>
 <BR>[Called By]<UL><LI><a href="#[4fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetAlphaBuffer
 <LI><a href="#[48b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DEVICE_Create
@@ -12547,28 +12547,28 @@ Local Symbols
 <P><STRONG><a name="[46a]"></a>_AddFreeMemory</STRONG> (Thumb, 138 bytes, Stack size 24 bytes, gui_alloc.o(i._AddFreeMemory))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = _AddFreeMemory &rArr; _WriteTagData
 </UL>
-<BR>[Calls]<UL><LI><a href="#[5e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_WriteTagData
+<BR>[Calls]<UL><LI><a href="#[5df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetMinIndex
+<LI><a href="#[5e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_WriteTagData
 <LI><a href="#[46f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveFreeBlock
-<LI><a href="#[5df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetMinIndex
 </UL>
 <BR>[Called By]<UL><LI><a href="#[40e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Free
-<LI><a href="#[46c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
-<LI><a href="#[46e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveHoles
 <LI><a href="#[46d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_InitOnce
 <LI><a href="#[468]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Alloc
+<LI><a href="#[46c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
+<LI><a href="#[46e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveHoles
 </UL>
 
 <P><STRONG><a name="[468]"></a>_Alloc</STRONG> (Thumb, 174 bytes, Stack size 24 bytes, gui_alloc.o(i._Alloc))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = _Alloc &rArr; _InitOnce &rArr; _EnlargeBlocks &rArr;  _Alloc (Cycle)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[5e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_WriteTagData
+<BR>[Calls]<UL><LI><a href="#[46d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_InitOnce
+<LI><a href="#[5df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetMinIndex
+<LI><a href="#[46a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_AddFreeMemory
+<LI><a href="#[5e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_WriteTagData
 <LI><a href="#[46e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveHoles
 <LI><a href="#[46f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveFreeBlock
 <LI><a href="#[46b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_PushFreeBlock
 <LI><a href="#[5e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_PopFreeBlock
-<LI><a href="#[46d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_InitOnce
-<LI><a href="#[5df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetMinIndex
-<LI><a href="#[46a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_AddFreeMemory
 </UL>
 <BR>[Called By]<UL><LI><a href="#[467]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_AllocNoInit
 <LI><a href="#[634]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_EnlargeBlocks
@@ -12581,14 +12581,14 @@ Local Symbols
 <BR>[Calls]<UL><LI><a href="#[40e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Free
 <LI><a href="#[468]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Alloc
 </UL>
-<BR>[Called By]<UL><LI><a href="#[5e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_PopFreeBlock
-<LI><a href="#[46d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_InitOnce
+<BR>[Called By]<UL><LI><a href="#[46d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_InitOnce
+<LI><a href="#[5e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_PopFreeBlock
 </UL>
 
 <P><STRONG><a name="[5df]"></a>_GetMinIndex</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, gui_alloc.o(i._GetMinIndex))
-<BR><BR>[Called By]<UL><LI><a href="#[46f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveFreeBlock
-<LI><a href="#[468]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Alloc
+<BR><BR>[Called By]<UL><LI><a href="#[468]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Alloc
 <LI><a href="#[46a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_AddFreeMemory
+<LI><a href="#[46f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveFreeBlock
 </UL>
 
 <P><STRONG><a name="[46d]"></a>_InitOnce</STRONG> (Thumb, 128 bytes, Stack size 24 bytes, gui_alloc.o(i._InitOnce))
@@ -12597,9 +12597,9 @@ Local Symbols
 <BR>[Calls]<UL><LI><a href="#[634]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_EnlargeBlocks
 <LI><a href="#[46a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_AddFreeMemory
 </UL>
-<BR>[Called By]<UL><LI><a href="#[46c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
+<BR>[Called By]<UL><LI><a href="#[468]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Alloc
+<LI><a href="#[46c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
 <LI><a href="#[470]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetMaxSize
-<LI><a href="#[468]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Alloc
 </UL>
 
 <P><STRONG><a name="[5e9]"></a>_PopFreeBlock</STRONG> (Thumb, 62 bytes, Stack size 8 bytes, gui_alloc.o(i._PopFreeBlock))
@@ -12622,21 +12622,21 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[5df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetMinIndex
 </UL>
-<BR>[Called By]<UL><LI><a href="#[46c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
-<LI><a href="#[46e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveHoles
-<LI><a href="#[468]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Alloc
+<BR>[Called By]<UL><LI><a href="#[468]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Alloc
 <LI><a href="#[46a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_AddFreeMemory
+<LI><a href="#[46c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
+<LI><a href="#[46e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveHoles
 </UL>
 
 <P><STRONG><a name="[46e]"></a>_RemoveHoles</STRONG> (Thumb, 158 bytes, Stack size 40 bytes, gui_alloc.o(i._RemoveHoles))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = _RemoveHoles &rArr; _AddFreeMemory &rArr; _WriteTagData
 </UL>
-<BR>[Calls]<UL><LI><a href="#[46f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveFreeBlock
-<LI><a href="#[46a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_AddFreeMemory
+<BR>[Calls]<UL><LI><a href="#[46a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_AddFreeMemory
+<LI><a href="#[46f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_RemoveFreeBlock
 <LI><a href="#[630]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memmove
 </UL>
-<BR>[Called By]<UL><LI><a href="#[46c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
-<LI><a href="#[468]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Alloc
+<BR>[Called By]<UL><LI><a href="#[468]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Alloc
+<LI><a href="#[46c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
 </UL>
 
 <P><STRONG><a name="[5e0]"></a>_WriteTagData</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, gui_alloc.o(i._WriteTagData))
