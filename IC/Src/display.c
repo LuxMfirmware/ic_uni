@@ -4597,6 +4597,24 @@ void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li)
 
 
 
+bool Light_Modbus_isBinary(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return li->communication_type == 0;
+}
+
+bool Light_Modbus_isDimmer(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return li->communication_type == 1;
+}
+
+bool Light_Modbus_isRGB(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return li->communication_type == 2;
+}
+
+
+
+
 
 void Lights_Modbus_Button_External_Press(LIGHT_Modbus_CmdTypeDef* const li)
 {
@@ -4641,7 +4659,7 @@ bool Light_Modbus_hasChanged(const LIGHT_Modbus_CmdTypeDef* const li)
 
 void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    li->old_value = li->value;
+    Light_Modbus_ResetStatus(li);
     Light_Modbus_ResetBrightness(li);
     Light_Modbus_ResetColor(li);
 }
