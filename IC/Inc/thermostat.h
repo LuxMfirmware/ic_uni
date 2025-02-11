@@ -34,7 +34,7 @@ typedef struct{
     uint8_t  fan_quiet_start;   // fan quiet mode start hour
     uint8_t  fan_quiet_end;     // fan quiet mode end hour
     uint8_t  fan_quiet_speed;   // fan quiet mode speed limit
-    uint16_t relay1;
+    /*uint16_t relay1;
     uint16_t relay2;
     uint16_t relay3;
     uint16_t relay4;
@@ -42,7 +42,7 @@ typedef struct{
     uint8_t  relay4Delay;
     uint32_t relay3DelayTimerStart;
     uint32_t relay4DelayTimerStart;
-    uint8_t sendChangeSignalFlags;
+    uint8_t sendChangeSignalFlags;*/
     uint8_t group;
 }THERMOSTAT_TypeDef;
 

@@ -51,7 +51,6 @@ uint8_t termfl;
   */
 void THSTAT_Init(void){
 	ReadThermostatController(&thst,  EE_THST1);
-    thst.sendChangeSignalFlags = 0;
     TempRegHeating();
 }
 
@@ -78,83 +77,45 @@ void THSTAT_Service(void)
 	else if(IsTempRegActiv())
     {
         temp_sp =(int16_t) ((thst.sp_temp & 0x3FU) * 10);        
-        /*if(IsTempRegCooling()){
+        if(IsTempRegCooling()){
             if      ((thst.fan_speed == 0U) && (thst.mv_temp > (temp_sp + thst.fan_loband)))                                    thst.fan_speed = 1U;
             else if ((thst.fan_speed == 1U) && (thst.mv_temp > (temp_sp + thst.fan_hiband)))                                    thst.fan_speed = 2U;
             else if ((thst.fan_speed == 1U) && (thst.mv_temp <= temp_sp))                                                       thst.fan_speed = 0U;         
             else if ((thst.fan_speed == 2U) && (thst.mv_temp > (temp_sp + thst.fan_hiband + thst.fan_loband)))                  thst.fan_speed = 3U;
             else if ((thst.fan_speed == 2U) && (thst.mv_temp <=(temp_sp + thst.fan_hiband - thst.fan_diff)))                    thst.fan_speed = 1U; 
             else if ((thst.fan_speed == 3U) && (thst.mv_temp <=(temp_sp + thst.fan_hiband + thst.fan_loband - thst.fan_diff)))  thst.fan_speed = 2U;                 
-        }*/
-            if      ((thst.fan_speed == 0U) && (thst.mv_temp < (temp_sp - thst.fan_diff)))                                      thst.fan_speed = 1U;
+        }
+        else if(IsTempRegHeating())
+        {
+            if      ((thst.fan_speed == 0U) && (thst.mv_temp < (temp_sp - thst.fan_loband)))                                    thst.fan_speed = 1U;
+            else if ((thst.fan_speed == 1U) && (thst.mv_temp < (temp_sp - thst.fan_hiband)))                                    thst.fan_speed = 2U;
             else if ((thst.fan_speed == 1U) && (thst.mv_temp >= temp_sp))                                                       thst.fan_speed = 0U;
+            else if ((thst.fan_speed == 2U) && (thst.mv_temp < (temp_sp - thst.fan_hiband - thst.fan_loband)))                  thst.fan_speed = 3U;
+            else if ((thst.fan_speed == 2U) && (thst.mv_temp >=(temp_sp - thst.fan_hiband + thst.fan_diff)))                    thst.fan_speed = 1U; 
+            else if ((thst.fan_speed == 3U) && (thst.mv_temp >=(temp_sp - thst.fan_hiband - thst.fan_loband + thst.fan_diff)))  thst.fan_speed = 2U;         
+        }
     }
     /** ============================================================================*/
 	/**		S W I T C H		F A N		S P E E D		W I T H		D E L A Y		*/
 	/** ============================================================================*/
 	if (thst.fan_speed != old_fan_speed)
     {
-        if((HAL_GetTick() - fancoil_fan_timer) >= FANC_FAN_MIN_ON_TIME)
-        {
-//            if(fan_pcnt > 1U)  fan_pcnt = 0U;                
-//            if(fan_pcnt == 0U)
-//            {
-////                FanOff();
-//                if(thst.relay1) THST_SendRelay1();
-//                if(thst.relay2) THST_SendRelay2();
-//                if(thst.relay3)
-//                {
-//                    THST_SendRelay3();
-//                    thst.relay3DelayTimerStart = 0;
-//                }
-//                if(thst.relay4)
-//                {
-//                    THST_SendRelay4();
-//                    thst.relay4DelayTimerStart = 0;
-//                }
-//                if (old_fan_speed) fancoil_fan_timer = HAL_GetTick();
-//                ++fan_pcnt;
-//            }
-//            else if(fan_pcnt == 1U)
-//            {                
-                /*if      (thst.fan_speed == 1) FanLowSpeedOn();
+        if((HAL_GetTick() - fancoil_fan_timer) >= FANC_FAN_MIN_ON_TIME){
+            if(fan_pcnt > 1U)  fan_pcnt = 0U;                
+            if(fan_pcnt == 0U){
+                FanOff();
+                if (old_fan_speed) fancoil_fan_timer = HAL_GetTick();
+                ++fan_pcnt;
+            }
+            else if(fan_pcnt == 1U){                
+                if      (thst.fan_speed == 1) FanLowSpeedOn();
                 else if (thst.fan_speed == 2) FanMiddleSpeedOn();
-                else if (thst.fan_speed == 3) FanHighSpeedOn();*/
-//                if (thst.fan_speed)
-//                {
-                    if(thst.relay1) THST_SendRelay1();
-                    if(thst.relay2) THST_SendRelay2();
-                    if(thst.relay3)
-                    {
-//                        THST_SendRelay3();
-                        thst.relay3DelayTimerStart = HAL_GetTick();
-                        if(!(thst.relay3DelayTimerStart)) thst.relay3DelayTimerStart = 1;
-                    }
-                    if(thst.relay4)
-                    {
-//                        THST_SendRelay4();
-                        thst.relay4DelayTimerStart = HAL_GetTick();
-                        if(!(thst.relay4DelayTimerStart)) thst.relay4DelayTimerStart = 1;
-                    }
-                    
-                    fancoil_fan_timer = HAL_GetTick();
-//                }
+                else if (thst.fan_speed == 3) FanHighSpeedOn();
+                if (thst.fan_speed) fancoil_fan_timer = HAL_GetTick();
                 old_fan_speed = thst.fan_speed;
-//                ++fan_pcnt;
-//            }            
+                ++fan_pcnt;
+            }            
         }
 	}
-    
-    if((thst.relay3DelayTimerStart) && ((HAL_GetTick() - thst.relay3DelayTimerStart) >= (thst.relay3Delay * 10 * 1000 * (thst.fan_speed ? 1 : 0))))
-    {
-        thst.relay3DelayTimerStart = 0;
-        THST_SendRelay3();
-    }
-    
-    if((thst.relay4DelayTimerStart) && ((HAL_GetTick() - thst.relay4DelayTimerStart) >= (thst.relay4Delay * 10 * 1000 * (thst.fan_speed ? 1 : 0))))
-    {
-        thst.relay4DelayTimerStart = 0;
-        THST_SendRelay4();
-    }
 }
 /******************************   RAZLAZ SIJELA  ********************************/

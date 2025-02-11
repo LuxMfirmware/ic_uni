@@ -603,54 +603,6 @@ void RS485_Service(void){
             TF_QuerySimple(&tfapp, S_CUSTOM, sendDataBuff, 4, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
             ZEROFILL(sendDataBuff, COUNTOF(sendDataBuff));
         }*/
-        else if(thst.sendChangeSignalFlags)
-        {
-            sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
-            
-            if(THST_ShouldSendRelay1())
-            {
-                THST_ResetRelay1Flag();
-                *(sendDataBuff + sendDataCount) = (thst.relay1 >> 8) & 0xFF;
-                *(sendDataBuff + sendDataCount + 1) = thst.relay1 & 0xFF;
-                sendDataCount += 2;
-                /*modbusSendData[modbusSendDataCount++] = (thst.relay1 >> 8) & 0xFF;
-                modbusSendData[modbusSendDataCount++] = thst.relay1 & 0xFF;*/
-                sendDataBuff[sendDataCount++] = thst.fan_speed ? 0x01 : 0x02;
-            }
-            
-            if(THST_ShouldSendRelay2())
-            {
-                THST_ResetRelay2Flag();
-                *(sendDataBuff + sendDataCount) = (thst.relay2 >> 8) & 0xFF;
-                *(sendDataBuff + sendDataCount + 1) = thst.relay2 & 0xFF;
-                sendDataCount += 2;
-                /*modbusSendData[modbusSendDataCount++] = (thst.relay2 >> 8) & 0xFF;
-                modbusSendData[modbusSendDataCount++] = thst.relay2 & 0xFF;*/
-                sendDataBuff[sendDataCount++] = thst.fan_speed ? 0x01 : 0x02;
-            }
-            
-            if(THST_ShouldSendRelay3())
-            {
-                THST_ResetRelay3Flag();
-                *(sendDataBuff + sendDataCount) = (thst.relay3 >> 8) & 0xFF;
-                *(sendDataBuff + sendDataCount + 1) = thst.relay3 & 0xFF;
-                sendDataCount += 2;
-                /*modbusSendData[modbusSendDataCount++] = (thst.relay3 >> 8) & 0xFF;
-                modbusSendData[modbusSendDataCount++] = thst.relay3 & 0xFF;*/
-                sendDataBuff[sendDataCount++] = thst.fan_speed ? 0x01 : 0x02;
-            }
-            
-            if(THST_ShouldSendRelay4())
-            {
-                THST_ResetRelay4Flag();
-                *(sendDataBuff + sendDataCount) = (thst.relay4 >> 8) & 0xFF;
-                *(sendDataBuff + sendDataCount + 1) = thst.relay4 & 0xFF;
-                sendDataCount += 2;
-                /*modbusSendData[modbusSendDataCount++] = (thst.relay4 >> 8) & 0xFF;
-                modbusSendData[modbusSendDataCount++] = thst.relay4 & 0xFF;*/
-                sendDataBuff[sendDataCount++] = thst.fan_speed ? 0x01 : 0x02;
-            }
-        }
         /*else if(VENTILATOR_HAS_CHANGED())
         {
             VENTILATOR_CHANGE_RESET();

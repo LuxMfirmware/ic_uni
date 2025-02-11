@@ -177,22 +177,14 @@ BUTTON_Handle   hBUTTON_Next;
 SPINBOX_Handle  hSPNBX_MaxSetpoint;                         //  set thermostat user maximum setpoint value
 SPINBOX_Handle  hSPNBX_MinSetpoint;                         //  set thermostat user minimum setpoint value
 
-/*RADIO_Handle    hThstControl;
+RADIO_Handle    hThstControl;
 RADIO_Handle    hFanControl;
 SPINBOX_Handle  hThstMaxSetPoint;
 SPINBOX_Handle  hThstMinSetPoint;
 SPINBOX_Handle  hFanDiff;
 SPINBOX_Handle  hFanLowBand;
-SPINBOX_Handle  hFanHiBand;*/
-SPINBOX_Handle hThstRelay1;
-SPINBOX_Handle hThstRelay2;
-SPINBOX_Handle hThstRelay3;
-SPINBOX_Handle hThstRelay4;
-SPINBOX_Handle hThstRelay3Delay;
-SPINBOX_Handle hThstRelay4Delay;
-SPINBOX_Handle hNTC_Offset;
-SPINBOX_Handle hFanDiff;
-SPINBOX_Handle hThstGroup;
+SPINBOX_Handle  hFanHiBand;
+SPINBOX_Handle  hThstGroup;
 
 
 SPINBOX_Handle  hDEV_ID;
@@ -1509,45 +1501,33 @@ void DISP_Service(void){
             /** ==========================================================================*/
             
             
-            if(thst.relay1 != SPINBOX_GetValue(hThstRelay1))
-            {
-                thst.relay1 = SPINBOX_GetValue(hThstRelay1);
-                thsta = 1;
+            if (thst.th_ctrl != RADIO_GetValue(hThstControl)){
+                thst.th_ctrl  = RADIO_GetValue(hThstControl);
+                ++thsta;
             }
-            else if(thst.relay2 != SPINBOX_GetValue(hThstRelay2))
-            {
-                thst.relay2 = SPINBOX_GetValue(hThstRelay2);
-                thsta = 1;
+            else if (thst.fan_ctrl != RADIO_GetValue(hFanControl)){
+                thst.fan_ctrl  = RADIO_GetValue(hFanControl);
+                ++thsta;
             }
-            else if(thst.relay3 != SPINBOX_GetValue(hThstRelay3))
-            {
-                thst.relay3 = SPINBOX_GetValue(hThstRelay3);
-                thsta = 1;
+            else if (thst.sp_max != SPINBOX_GetValue(hThstMaxSetPoint)){
+                thst.sp_max  = SPINBOX_GetValue(hThstMaxSetPoint);
+                ++thsta;
+            }            
+            else if (thst.sp_min != SPINBOX_GetValue(hThstMinSetPoint)){
+                thst.sp_min  = SPINBOX_GetValue(hThstMinSetPoint);
+                ++thsta;
             }
-            else if(thst.relay4 != SPINBOX_GetValue(hThstRelay4))
-            {
-                thst.relay4 = SPINBOX_GetValue(hThstRelay4);
-                thsta = 1;
+            else if (thst.fan_diff != SPINBOX_GetValue(hFanDiff)){
+                thst.fan_diff  = SPINBOX_GetValue(hFanDiff);
+                ++thsta;
             }
-            else if(thst.mv_offset != SPINBOX_GetValue(hNTC_Offset))
-            {
-                thst.mv_offset = SPINBOX_GetValue(hNTC_Offset);
-                thsta = 1;
+            else if (thst.fan_loband != SPINBOX_GetValue(hFanLowBand)){
+                thst.fan_loband  = SPINBOX_GetValue(hFanLowBand);
+                ++thsta;
             }
-            else if(thst.fan_diff != SPINBOX_GetValue(hFanDiff))
-            {
-                thst.fan_diff = SPINBOX_GetValue(hFanDiff);
-                thsta = 1;
-            }
-            else if(thst.relay3Delay != SPINBOX_GetValue(hThstRelay3Delay))
-            {
-                thst.relay3Delay = SPINBOX_GetValue(hThstRelay3Delay);
-                thsta = 1;
-            }
-            else if(thst.relay4Delay != SPINBOX_GetValue(hThstRelay4Delay))
-            {
-                thst.relay4Delay = SPINBOX_GetValue(hThstRelay4Delay);
-                thsta = 1;
+            else if (thst.fan_hiband != SPINBOX_GetValue(hFanHiBand)){
+                thst.fan_hiband  = SPINBOX_GetValue(hFanHiBand);
+                ++thsta;
             }
             else if(thst.group != SPINBOX_GetValue(hThstGroup))
             {
@@ -2491,7 +2471,7 @@ static void DSP_InitSet1Scrn(void){
     GUI_Clear();
     GUI_MULTIBUF_BeginEx(1);
 
-    /*hThstControl = RADIO_CreateEx(10, 20, 150, 80, 0,WM_CF_SHOW, 0, ID_ThstControl, 3, 20);
+    hThstControl = RADIO_CreateEx(10, 20, 150, 80, 0,WM_CF_SHOW, 0, ID_ThstControl, 3, 20);
     RADIO_SetTextColor(hThstControl, GUI_GREEN);
     RADIO_SetText(hThstControl, "OFF",     0);
     RADIO_SetText(hThstControl, "COOLING", 1);
@@ -2523,6 +2503,10 @@ static void DSP_InitSet1Scrn(void){
     hFanHiBand = SPINBOX_CreateEx(110, 230, 90, 30, 0, WM_CF_SHOW, ID_FanHiBand, 0, 100);
     SPINBOX_SetEdge(hFanHiBand, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hFanHiBand, thst.fan_hiband);
+    
+    /*hThstGroup = SPINBOX_CreateEx(200, 220, 110, 40, 0, WM_CF_SHOW, ID_THST_GROUP, 0, 0xFF);
+    SPINBOX_SetEdge(hThstGroup, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(hThstGroup, thst.group);*/
 
     hBUTTON_Next = BUTTON_Create(340, 180, 130, 30, ID_Next, WM_CF_SHOW);
     BUTTON_SetText(hBUTTON_Next, "NEXT");
@@ -2559,109 +2543,7 @@ static void DSP_InitSet1Scrn(void){
     GUI_DispString("FAN SPEED CONTROL MODE");
     
     GUI_DrawHLine(12, 5, 320);
-    GUI_DrawHLine(130, 5, 320);*/
-    
-    
-    hThstRelay1 = SPINBOX_CreateEx(10, 20, 110, 40, 0, WM_CF_SHOW, ID_ThstRelay1, 0, 512);
-    SPINBOX_SetEdge(hThstRelay1, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hThstRelay1, thst.relay1);
-    
-    hThstRelay2 = SPINBOX_CreateEx(10, 70, 110, 40, 0, WM_CF_SHOW, ID_ThstRelay2, 0, 512);
-    SPINBOX_SetEdge(hThstRelay2, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hThstRelay2, thst.relay2);
-    
-    hThstRelay3 = SPINBOX_CreateEx(10, 120, 110, 40, 0, WM_CF_SHOW, ID_ThstRelay3, 0, 512);
-    SPINBOX_SetEdge(hThstRelay3, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hThstRelay3, thst.relay3);
-    
-    hThstRelay4 = SPINBOX_CreateEx(10, 170, 110, 40, 0, WM_CF_SHOW, ID_ThstRelay4, 0, 512);
-    SPINBOX_SetEdge(hThstRelay4, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hThstRelay4, thst.relay4);
-    
-    
-    
-    
-    hNTC_Offset = SPINBOX_CreateEx(200, 20, 110, 40, 0, WM_CF_SHOW, ID_NTC_Offset, -100, 100);
-    SPINBOX_SetEdge(hNTC_Offset, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hNTC_Offset, thst.mv_offset);
-    
-    /*hTempDiff = SPINBOX_CreateEx(10, 220, 90, 30, 0, WM_CF_SHOW, ID_TempDiff, 15, 40);
-    SPINBOX_SetEdge(hTempDiff, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hTempDiff, );*/
-    
-    hFanDiff = SPINBOX_CreateEx(200, 70, 110, 40, 0, WM_CF_SHOW, ID_FanDiff, 0, 50);
-    SPINBOX_SetEdge(hFanDiff, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hFanDiff, thst.fan_diff);
-    
-    hThstRelay3Delay = SPINBOX_CreateEx(200, 120, 110, 40, 0, WM_CF_SHOW, ID_ThstRelay3Delay, 0, 100);
-    SPINBOX_SetEdge(hThstRelay3Delay, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hThstRelay3Delay, thst.relay3Delay);
-    
-    hThstRelay4Delay = SPINBOX_CreateEx(200, 170, 110, 40, 0, WM_CF_SHOW, ID_ThstRelay4Delay, 0, 100);
-    SPINBOX_SetEdge(hThstRelay4Delay, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hThstRelay4Delay, thst.relay4Delay);
-    
-    hThstGroup = SPINBOX_CreateEx(200, 220, 110, 40, 0, WM_CF_SHOW, ID_THST_GROUP, 0, 0xFF);
-    SPINBOX_SetEdge(hThstGroup, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hThstGroup, thst.group);
-    
-    
-    
-    
-    hBUTTON_Next = BUTTON_Create(410, 180, 60, 30, ID_Next, WM_CF_SHOW);
-    BUTTON_SetText(hBUTTON_Next, "NEXT");
-
-    hBUTTON_Ok = BUTTON_Create(410, 230, 60, 30, ID_Ok, WM_CF_SHOW);
-    BUTTON_SetText(hBUTTON_Ok, "SAVE");
-    
-    
-    
-    
-    GUI_SetColor(GUI_WHITE);
-    GUI_SetFont(GUI_FONT_13_1);
-    GUI_SetTextAlign(GUI_TA_LEFT|GUI_TA_VCENTER);
-    
-    GUI_GotoXY(130, 28);
-    GUI_DispString("RELAY");
-    GUI_GotoXY(130, 40);
-    GUI_DispString("1 ADDR");
-    
-    GUI_GotoXY(130, 78);
-    GUI_DispString("RELAY");
-    GUI_GotoXY(130, 90);
-    GUI_DispString("2 ADDR");
-    
-    GUI_GotoXY(130, 128);
-    GUI_DispString("RELAY");
-    GUI_GotoXY(130, 140);
-    GUI_DispString("3 ADDR");
-    
-    GUI_GotoXY(130, 178);
-    GUI_DispString("RELAY");
-    GUI_GotoXY(130, 190);
-    GUI_DispString("4 ADDR");
-    
-    
-    
-    GUI_GotoXY(320, 28);
-    GUI_DispString("NTC x0.1*C");
-    GUI_GotoXY(320, 40);
-    GUI_DispString("OFFSET");
-    
-    GUI_GotoXY(320, 78);
-    GUI_DispString("TEMPERATURE");
-    GUI_GotoXY(320, 90);
-    GUI_DispString("DIFFERENCE x0.1*C");
-    
-    GUI_GotoXY(320, 128);
-    GUI_DispString("DELAY");
-    GUI_GotoXY(320, 140);
-    GUI_DispString("ON x10s");
-    
-    GUI_GotoXY(320, 178);
-    GUI_DispString("DELAY");
-    GUI_GotoXY(320, 190);
-    GUI_DispString("ON x10s");
+    GUI_DrawHLine(130, 5, 320);
     
     
     GUI_MULTIBUF_EndEx(1);
@@ -2672,21 +2554,13 @@ static void DSP_InitSet1Scrn(void){
   * @retval
   */
 static void DSP_KillSet1Scrn(void){
-    /*WM_DeleteWindow(hThstControl);
+    WM_DeleteWindow(hThstControl);
     WM_DeleteWindow(hFanControl);
     WM_DeleteWindow(hThstMaxSetPoint);
     WM_DeleteWindow(hThstMinSetPoint);
     WM_DeleteWindow(hFanDiff);
     WM_DeleteWindow(hFanLowBand);
-    WM_DeleteWindow(hFanHiBand);*/
-    WM_DeleteWindow(hThstRelay1);
-    WM_DeleteWindow(hThstRelay2);
-    WM_DeleteWindow(hThstRelay3);
-    WM_DeleteWindow(hThstRelay4);
-    WM_DeleteWindow(hNTC_Offset);
-    WM_DeleteWindow(hThstRelay3Delay);
-    WM_DeleteWindow(hThstRelay4Delay);
-    WM_DeleteWindow(hFanDiff);
+    WM_DeleteWindow(hFanHiBand);
     WM_DeleteWindow(hThstGroup);
     WM_DeleteWindow(hBUTTON_Ok);
     WM_DeleteWindow(hBUTTON_Next);
@@ -4133,7 +4007,7 @@ static void ReadLightController(LIGHT_CtrlTypeDef* lc, uint16_t addr){
   * @retval
   */
 void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
-    uint8_t buf[32];
+    uint8_t buf[22];
     buf[0] = tc->th_ctrl;
     buf[1] = tc->th_state;
     buf[2] = tc->mv_temp>>8;
@@ -4155,18 +4029,8 @@ void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
     buf[18] = tc->fan_quiet_start;
     buf[19] = tc->fan_quiet_end;
     buf[20] = tc->fan_quiet_speed;
-    buf[21] = (tc->relay1 >> 8) & 0xFF;
-    buf[22] = tc->relay1 & 0xFF;
-    buf[23] = (tc->relay2 >> 8) & 0xFF;
-    buf[24] = tc->relay2 & 0xFF;
-    buf[25] = (tc->relay3 >> 8) & 0xFF;
-    buf[26] = tc->relay3 & 0xFF;
-    buf[27] = (tc->relay4 >> 8) & 0xFF;
-    buf[28] = tc->relay4 & 0xFF;
-    buf[29] = tc->relay3Delay;
-    buf[30] = tc->relay4Delay;
-    buf[31] = tc->group;
-    EE_WriteBuffer(buf, addr, 32);
+    buf[21] = tc->group;
+    EE_WriteBuffer(buf, addr, 22);
 }
 /**
   * @brief
@@ -4174,8 +4038,8 @@ void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
   * @retval
   */
 void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
-    uint8_t buf[32];
-    EE_ReadBuffer(buf, addr, 32);
+    uint8_t buf[22];
+    EE_ReadBuffer(buf, addr, 22);
     tc->th_ctrl         = buf[0];
     tc->th_state        = buf[1];
     tc->mv_temp         =(buf[2]<<8)|buf[3];
@@ -4184,8 +4048,8 @@ void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
     tc->mv_nctbeta      =(buf[7]<<8)|buf[8];
     tc->sp_temp         = buf[9];
     tc->sp_diff         = buf[10];
-    tc->sp_max          = 35; //buf[11];
-    tc->sp_min          = 10; //buf[12];
+    tc->sp_max          = buf[11];
+    tc->sp_min          = buf[12];
     tc->fan_ctrl        = buf[13];
     tc->fan_speed       = buf[14];
     tc->fan_diff        = buf[15];
@@ -4194,13 +4058,7 @@ void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
     tc->fan_quiet_start = buf[18];
     tc->fan_quiet_end   = buf[19];
     tc->fan_quiet_speed = buf[20];
-    tc->relay1          = (buf[21] << 8) | buf[22];
-    tc->relay2          = (buf[23] << 8) | buf[24];
-    tc->relay3          = (buf[25] << 8) | buf[26];
-    tc->relay4          = (buf[27] << 8) | buf[28];
-    tc->relay3Delay     = buf[29];
-    tc->relay4Delay     = buf[30];
-    tc->group           = buf[31];
+    tc->group           = buf[21];
 }
 
 
