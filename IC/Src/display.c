@@ -2293,7 +2293,23 @@ void DISP_Service(void){
     {
         for(uint8_t i = 0; i < Curtains_getCount(); i++)
         {
-            Lights_Modbus_Button_External_Press(lights_modbus + i);
+            LIGHT_Modbus_CmdTypeDef* const light = lights_modbus + i;
+            
+            if(!light->button_external)
+            {
+                if(light->button_external == 1)
+                {
+                    Light_Modbus_On(light);
+                }
+                else if(light->button_external == 2)
+                {
+                    Light_Modbus_Off(light);
+                }
+                else if(light->button_external == 3)
+                {
+                    Light_Modbus_Flip(light);
+                }
+            }
         }
         
         isButtonActive_old = IsButtonActive();

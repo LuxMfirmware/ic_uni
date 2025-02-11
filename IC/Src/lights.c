@@ -428,26 +428,6 @@ bool Light_Modbus_isRGB(const LIGHT_Modbus_CmdTypeDef* const li)
 
 
 
-void Lights_Modbus_Button_External_Press(LIGHT_Modbus_CmdTypeDef* const li)
-{
-    if(!li->button_external)
-    {
-        if(li->button_external == 1)
-        {
-            Light_Modbus_On(li);
-        }
-        else if(li->button_external == 2)
-        {
-            Light_Modbus_Off(li);
-        }
-        else if(li->button_external == 3)
-        {
-            Light_Modbus_Flip(li);
-        }
-    }
-}
-
-
 
 
 bool Light_Modbus_hasStatusChanged(const LIGHT_Modbus_CmdTypeDef* const li)
