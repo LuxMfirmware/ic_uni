@@ -20,6 +20,7 @@
 #include "thermostat.h"
 #include "ventilator.h"
 #include "curtain.h"
+#include "lights.h"
 #include "stm32746g.h"
 #include "stm32746g_ts.h"
 #include "stm32746g_qspi.h"

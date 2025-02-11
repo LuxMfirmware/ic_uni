@@ -15,15 +15,10 @@
 #include "stm32f7xx.h"
 #include "main.h"
 #include "thermostat.h"
+#include "lights.h"
 /* Exported Define -----------------------------------------------------------*/
 #define SCRNSVR_TOUT    30  // 10 sec timeout increment to set display in low brigntnes after last touch event
 #define TS_LAYER        1   // touch screen layer event
-
-#define LIGHT_COM_BIN                        1
-#define LIGHT_COM_DIM                        2
-#define LIGHT_COM_COLOR                      3
-
-#define LIGHTS_MODBUS_SIZE                   6
 
 /* Exported types ------------------------------------------------------------*/
 typedef enum{
@@ -31,14 +26,6 @@ typedef enum{
 	PRESSED     = 1,
     BUTTON_SHIT = 2
 }BUTTON_StateTypeDef;
-
-typedef struct
-{
-    GUI_COLOR color;
-    uint32_t off_timer_start, on_delay_timer_start;
-    uint16_t index, old_index, controllerID_on;
-    uint8_t value, old_value, iconID, tiedToMainLight, off_time, controllerID_on_delay, on_hour, on_minute, communication_type, local_pin, sleep_time, button_external, brightness;
-} LIGHT_Modbus_CmdTypeDef;
 
 typedef struct{
     uint8_t index;
@@ -158,33 +145,9 @@ void DISPSetBrightnes(uint8_t val);
 void PID_Hook(GUI_PID_STATE* pState);
 void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr);
 void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr);
-uint8_t Lights_Modbus_getCount();
-void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li);
-uint8_t Light_Modbus_Set_byIndex(const uint8_t light_index, const uint8_t val);
-uint8_t Light_Modbus_Get_byIndex(const uint8_t light_index);
-uint16_t Light_Modbus_GetRelay(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isIndexInRange(const uint8_t light_index);
-void Light_Modbus_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val);
-bool Light_Modbus_isNewValueOn(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isOldValueOn(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_hasStatusChanged(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_ResetStatus(LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_hasChanged(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_On_External(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_Off_External(LIGHT_Modbus_CmdTypeDef* const li);
-uint8_t Light_Modbus_GetBrightness(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_hasBrightnessChanged(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li);
-GUI_COLOR Light_Modbus_GetColor(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_hasColorChanged(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isBinary(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isDimmer(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isRGB(const LIGHT_Modbus_CmdTypeDef* const li);
 bool QR_Code_isDataLengthShortEnough(uint8_t dataLength);
 bool QR_Code_willDataFit(const uint8_t *data);
+void SetPin(uint8_t pin, uint8_t pinVal);
 uint8_t* QR_Code_Get(const uint8_t qrCodeID);
 void QR_Code_Set(const uint8_t qrCodeID, const uint8_t *data);
 #endif

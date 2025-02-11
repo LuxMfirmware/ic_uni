@@ -983,6 +983,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\curtain.c</FilePath>
             </File>
+            <File>
+              <FileName>lights.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\lights.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
