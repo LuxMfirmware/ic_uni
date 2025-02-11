@@ -1524,8 +1524,8 @@ void DISP_Service(void){
             else if (BUTTON_IsPressed(hBUTTON_Next))
             {                
                 DSP_KillSet1Scrn();
-                DSP_InitSet2Scrn();
-                screen = 9;
+                DSP_InitSet3Scrn();
+                screen = 10;
             }
             break;
         }
@@ -1534,10 +1534,6 @@ void DISP_Service(void){
         //
         case 9:
         {
-            if (tfifa != SPINBOX_GetValue(hDEV_ID)){
-                tfifa = SPINBOX_GetValue(hDEV_ID);
-                EE_WriteBuffer(&tfifa, EE_TFIFA, 1);
-            }            
             if (LIGHT_Ctrl1.modbusLight.index != SPINBOX_GetValue(hBIN_MAIN1)){
                 LIGHT_Ctrl1.modbusLight.index  = SPINBOX_GetValue(hBIN_MAIN1);
                 if (LIGHT_Ctrl1.Main1.index == 0) SPINBOX_SetValue(hBIN2_MAIN1, 0);
@@ -1615,7 +1611,6 @@ void DISP_Service(void){
                 if(IsScrnsvrClkActiv()) ebuf[6] = 1;
                 else ebuf[6] = 0;
                 EE_WriteBuffer(ebuf, EE_DISP_LOW_BCKLGHT, 7);
-                EE_WriteBuffer(&tfifa, EE_TFIFA, 1);
                 DSP_KillSet2Scrn();
                 screen = 7;
             } else if (BUTTON_IsPressed(hBUTTON_Next)){                
@@ -2090,6 +2085,10 @@ void DISP_Service(void){
             {
                 SYSRestart();
             }
+            else if (tfifa != SPINBOX_GetValue(hDEV_ID))
+            {
+                tfifa = SPINBOX_GetValue(hDEV_ID);
+            }  
             else if(BUTTON_IsPressed(hBUTTON_Ok))
             {
                 if(Curtain_GetMoveTime() != SPINBOX_GetValue(hCurtainsMoveTime))
@@ -2111,6 +2110,7 @@ void DISP_Service(void){
                 if(settingsChanged)
                 {
                     Curtains_Save();
+                    EE_WriteBuffer(&tfifa, EE_TFIFA, 1);
                     EE_WriteBuffer(&bOnlyLeaveScreenSaverAfterTouch, EE_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, 1);
                     EE_WriteBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
                     settingsChanged = 0;
@@ -2571,10 +2571,6 @@ static void DSP_InitSet2Scrn(void){
     GUI_SetBkColor(GUI_TRANSPARENT); 
     GUI_Clear();
     GUI_MULTIBUF_BeginEx(1);
-
-    hDEV_ID = SPINBOX_CreateEx(10, 10, 90, 30, 0, WM_CF_SHOW, ID_DEV_ID, 1, 254);
-    SPINBOX_SetEdge(hDEV_ID, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hDEV_ID, tfifa);
     
     hBIN_MAIN1 = SPINBOX_CreateEx(10, 50, 90, 30, 0, WM_CF_SHOW, ID_BIN_MAIN1, 0, 512);
     SPINBOX_SetEdge(hBIN_MAIN1, SPINBOX_EDGE_CENTER);
@@ -2638,11 +2634,6 @@ static void DSP_InitSet2Scrn(void){
     GUI_SetColor(GUI_WHITE);
     GUI_SetFont(GUI_FONT_13_1);
     GUI_SetTextAlign(GUI_TA_LEFT|GUI_TA_VCENTER);
-    
-    GUI_GotoXY(110, 14);
-    GUI_DispString("DEVICE");
-    GUI_GotoXY(110, 26);
-    GUI_DispString("BUS ID");
     
     GUI_GotoXY(110, 54);
     GUI_DispString("MAIN SW.");
@@ -2717,7 +2708,6 @@ static void DSP_InitSet2Scrn(void){
   * @retval
   */
 static void DSP_KillSet2Scrn(void){
-    WM_DeleteWindow(hDEV_ID);
     WM_DeleteWindow(hBIN_MAIN1);
     WM_DeleteWindow(hBIN_LED1);
     WM_DeleteWindow(hBIN_LED2);
@@ -3290,19 +3280,27 @@ static void DSP_InitSet7Scrn(void)
     GUI_MULTIBUF_BeginEx(1);
     
     
-    hCurtainsMoveTime = SPINBOX_CreateEx(10, 20, 110, 40, 0, WM_CF_SHOW, ID_CurtainsMoveTime, 0, 60);
+    hDEV_ID = SPINBOX_CreateEx(10, 10, 90, 30, 0, WM_CF_SHOW, ID_DEV_ID, 1, 254);
+    SPINBOX_SetEdge(hDEV_ID, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(hDEV_ID, tfifa);
+    
+    hCurtainsMoveTime = SPINBOX_CreateEx(10, 50, 110, 40, 0, WM_CF_SHOW, ID_CurtainsMoveTime, 0, 60);
     SPINBOX_SetEdge(hCurtainsMoveTime, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hCurtainsMoveTime, Curtain_GetMoveTime());
     
-    hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH = CHECKBOX_Create(10, 70, 205, 20, 0, ID_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, WM_CF_SHOW);
+    hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH = CHECKBOX_Create(10, 100, 205, 20, 0, ID_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, WM_CF_SHOW);
     CHECKBOX_SetTextColor(hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, GUI_GREEN);
     CHECKBOX_SetText(hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, "ONLY LEAVE SCRNSVR AFTER TOUCH");
     CHECKBOX_SetState(hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, bOnlyLeaveScreenSaverAfterTouch);
     
-    hCHKBX_LIGHT_NIGHT_TIMER = CHECKBOX_Create(10, 100, 170, 20, 0, ID_LIGHT_NIGHT_TIMER, WM_CF_SHOW);
+    hCHKBX_LIGHT_NIGHT_TIMER = CHECKBOX_Create(10, 130, 170, 20, 0, ID_LIGHT_NIGHT_TIMER, WM_CF_SHOW);
     CHECKBOX_SetTextColor(hCHKBX_LIGHT_NIGHT_TIMER, GUI_GREEN);
     CHECKBOX_SetText(hCHKBX_LIGHT_NIGHT_TIMER, "LiGHT OFF TIMER AFTER 20h");
     CHECKBOX_SetState(hCHKBX_LIGHT_NIGHT_TIMER, LightNightTimer_isEnabled);
+    
+    
+    
+    
     
     hBUTTON_SYSRESTART = BUTTON_Create(10, 230, 60, 30, ID_SYSRESTART, WM_CF_SHOW);
     BUTTON_SetText(hBUTTON_SYSRESTART, "RESTART");
@@ -3313,9 +3311,14 @@ static void DSP_InitSet7Scrn(void)
     GUI_SetFont(GUI_FONT_13_1);
     GUI_SetTextAlign(GUI_TA_LEFT|GUI_TA_VCENTER);
     
-    GUI_GotoXY(130, 28);
+    GUI_GotoXY(110, 14);
+    GUI_DispString("DEVICE");
+    GUI_GotoXY(110, 26);
+    GUI_DispString("BUS ID");
+    
+    GUI_GotoXY(130, 58);
     GUI_DispString("CURTAINS");
-    GUI_GotoXY(130, 40);
+    GUI_GotoXY(130, 70);
     GUI_DispString("MOVE TIME");
     
     
@@ -3336,6 +3339,7 @@ static void DSP_InitSet7Scrn(void)
   */
 static void DSP_KillSet7Scrn(void)
 {
+    WM_DeleteWindow(hDEV_ID);
     WM_DeleteWindow(hCurtainsMoveTime);
     WM_DeleteWindow(hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH);
     WM_DeleteWindow(hCHKBX_LIGHT_NIGHT_TIMER);
