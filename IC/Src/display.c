@@ -166,6 +166,7 @@ Light_Modbus_settingsWidgets;
 #define ID_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH       0x977
 #define ID_LIGHT_NIGHT_TIMER            0x978
 #define ID_THST_GROUP                   0x979
+#define ID_THST_MASTER                  0x97A
 
 
 /* Private Type --------------------------------------------------------------*/
@@ -185,6 +186,7 @@ SPINBOX_Handle  hFanDiff;
 SPINBOX_Handle  hFanLowBand;
 SPINBOX_Handle  hFanHiBand;
 SPINBOX_Handle  hThstGroup;
+CHECKBOX_Handle hThstMaster;
 
 
 SPINBOX_Handle  hDEV_ID;
@@ -1333,7 +1335,7 @@ void DISP_Service(void){
                 /************************************/
                 if      ( btninc&& !_btninc){
                     _btninc = 1;
-                    if (thst.sp_temp < thst.sp_max) ++thst.sp_temp;
+                    Thermostat_SP_Temp_Increment();
                     SaveThermostatController(&thst, EE_THST1);
                     DISPSetPoint();
                 }
@@ -1343,7 +1345,7 @@ void DISP_Service(void){
                 /************************************/
                 if      (btndec && !_btndec){
                     _btndec = 1;
-                    if (thst.sp_temp > thst.sp_min)  --thst.sp_temp;
+                    Thermostat_SP_Temp_Decrement();
                     SaveThermostatController(&thst, EE_THST1);
                     DISPSetPoint();
                 }
@@ -1512,11 +1514,20 @@ void DISP_Service(void){
                 thst.group = SPINBOX_GetValue(hThstGroup);
                 thsta = 1;
             }
+            else if(thst.master != CHECKBOX_IsChecked(hThstMaster))
+            {
+                thst.master = CHECKBOX_IsChecked(hThstMaster);
+                thsta = 1;
+            }
             
             
             if (BUTTON_IsPressed(hBUTTON_Ok))
             {
-                if(thsta) SaveThermostatController(&thst, EE_THST1);
+                if(thsta)
+                {
+                    SaveThermostatController(&thst, EE_THST1);
+                    thst.hasSecondaryInfoChanged = true;
+                }
                 thsta = 0;
                 DSP_KillSet1Scrn();
                 screen = 7;
@@ -2498,9 +2509,20 @@ static void DSP_InitSet1Scrn(void){
     SPINBOX_SetEdge(hFanHiBand, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hFanHiBand, thst.fan_hiband);
     
-    /*hThstGroup = SPINBOX_CreateEx(200, 220, 110, 40, 0, WM_CF_SHOW, ID_THST_GROUP, 0, 0xFF);
+    hThstGroup = SPINBOX_CreateEx(320, 20, 110, 40, 0, WM_CF_SHOW, ID_THST_GROUP, 0, 254);
     SPINBOX_SetEdge(hThstGroup, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hThstGroup, thst.group);*/
+    SPINBOX_SetValue(hThstGroup, thst.group);
+    
+    hThstMaster = CHECKBOX_Create(320, 70, 170, 20, 0, ID_THST_MASTER, WM_CF_SHOW);
+    CHECKBOX_SetTextColor(hThstMaster, GUI_GREEN);
+    CHECKBOX_SetText(hThstMaster, "Master");
+    CHECKBOX_SetState(hThstMaster, thst.master);
+    
+    
+    
+    
+    
+    
 
     hBUTTON_Next = BUTTON_Create(340, 180, 130, 30, ID_Next, WM_CF_SHOW);
     BUTTON_SetText(hBUTTON_Next, "NEXT");
@@ -2556,6 +2578,7 @@ static void DSP_KillSet1Scrn(void){
     WM_DeleteWindow(hFanLowBand);
     WM_DeleteWindow(hFanHiBand);
     WM_DeleteWindow(hThstGroup);
+    WM_DeleteWindow(hThstMaster);
     WM_DeleteWindow(hBUTTON_Ok);
     WM_DeleteWindow(hBUTTON_Next);
 }
@@ -4005,7 +4028,7 @@ static void ReadLightController(LIGHT_CtrlTypeDef* lc, uint16_t addr){
   * @retval
   */
 void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
-    uint8_t buf[22];
+    uint8_t buf[23];
     buf[0] = tc->th_ctrl;
     buf[1] = tc->th_state;
     buf[2] = tc->mv_temp>>8;
@@ -4028,7 +4051,8 @@ void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
     buf[19] = tc->fan_quiet_end;
     buf[20] = tc->fan_quiet_speed;
     buf[21] = tc->group;
-    EE_WriteBuffer(buf, addr, 22);
+    buf[22] = tc->master;
+    EE_WriteBuffer(buf, addr, 23);
 }
 /**
   * @brief
@@ -4036,8 +4060,8 @@ void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
   * @retval
   */
 void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
-    uint8_t buf[22];
-    EE_ReadBuffer(buf, addr, 22);
+    uint8_t buf[23];
+    EE_ReadBuffer(buf, addr, 23);
     tc->th_ctrl         = buf[0];
     tc->th_state        = buf[1];
     tc->mv_temp         =(buf[2]<<8)|buf[3];
@@ -4057,6 +4081,7 @@ void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
     tc->fan_quiet_end   = buf[19];
     tc->fan_quiet_speed = buf[20];
     tc->group           = buf[21];
+    tc->master          = buf[22];
 }
 
 

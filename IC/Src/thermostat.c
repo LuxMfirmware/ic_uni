@@ -50,6 +50,8 @@ uint8_t termfl;
   * @retval
   */
 void THSTAT_Init(void){
+    thst.hasPrimaryInfoChanged = false;
+    thst.hasSecondaryInfoChanged = false;
 	ReadThermostatController(&thst,  EE_THST1);
     TempRegHeating();
 }
@@ -118,4 +120,39 @@ void THSTAT_Service(void)
         }
 	}
 }
+
+
+void Thermostat_SP_Temp_Set(const uint8_t setpoint)
+{
+    if(thst.sp_temp != setpoint)
+    {
+        if(setpoint < thst.sp_min)
+        {
+            thst.sp_temp = thst.sp_min;
+            thst.hasPrimaryInfoChanged = true;
+        }
+        else if(setpoint > thst.sp_max)
+        {
+            thst.sp_temp = thst.sp_max;
+            thst.hasPrimaryInfoChanged = true;
+        }
+        else
+        {
+            thst.sp_temp = setpoint;
+            thst.hasPrimaryInfoChanged = true;
+        }
+    }
+}
+
+void Thermostat_SP_Temp_Increment()
+{
+    Thermostat_SP_Temp_Set(thst.sp_temp + 1);
+}
+
+void Thermostat_SP_Temp_Decrement()
+{
+    Thermostat_SP_Temp_Set(thst.sp_temp - 1);
+}
+
+
 /******************************   RAZLAZ SIJELA  ********************************/

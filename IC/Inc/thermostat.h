@@ -10,6 +10,7 @@
 #ifndef __TEMP_CTRL_H__
 #define __TEMP_CTRL_H__                             FW_BUILD // version
 /* Includes ------------------------------------------------------------------*/
+#include "main.h"
 #include "stm32f7xx.h"
 /* Exported Type  ------------------------------------------------------------*/
 
@@ -44,6 +45,9 @@ typedef struct{
     uint32_t relay4DelayTimerStart;
     uint8_t sendChangeSignalFlags;*/
     uint8_t group;
+    bool master;
+    bool hasPrimaryInfoChanged;
+    bool hasSecondaryInfoChanged;
 }THERMOSTAT_TypeDef;
 
 extern THERMOSTAT_TypeDef thst;
@@ -100,7 +104,9 @@ extern uint8_t termfl;
 /* Exported Function  ------------------------------------------------------- */
 void THSTAT_Init(void);
 void THSTAT_Service(void);
-void THSTAT_SaveSettings(void);
+void THSTAT_SaveSettings(void);void Thermostat_SP_Temp_Set(const uint8_t setpoint);
+void Thermostat_SP_Temp_Increment();
+void Thermostat_SP_Temp_Decrement();
 
 #endif
 /******************************   END OF FILE  ********************************/

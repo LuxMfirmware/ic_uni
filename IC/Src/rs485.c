@@ -503,6 +503,53 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
     }
     return TF_STAY;
 }
+
+
+
+
+
+TF_Result Thermostat_Setup_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+    if((!thst.master) && sendDataBuff[1] && thst.group == sendDataBuff[0])
+    {
+        thst.group = sendDataBuff[0];
+        thst.master = sendDataBuff[1];
+        thst.th_ctrl = sendDataBuff[2];
+        thst.th_state = sendDataBuff[3];
+        thst.mv_temp = sendDataBuff[4];
+        thst.sp_temp = sendDataBuff[5];
+        thst.sp_min = sendDataBuff[6];
+        thst.sp_max = sendDataBuff[7];
+        thst.sp_diff = sendDataBuff[8];
+        thst.fan_speed = sendDataBuff[9];
+        thst.fan_loband = sendDataBuff[10];
+        thst.fan_hiband = sendDataBuff[11];
+        thst.fan_diff = sendDataBuff[12];
+        thst.fan_ctrl = sendDataBuff[13];
+        thst.fan_quiet_start = sendDataBuff[14];
+        thst.fan_quiet_end = sendDataBuff[15];
+        thst.fan_quiet_speed = sendDataBuff[16];
+    }
+    
+    return TF_STAY;
+}
+
+
+TF_Result Thermostat_Info_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+    if((!thst.master) && sendDataBuff[1] && thst.group == sendDataBuff[0])
+    {
+        thst.th_ctrl = sendDataBuff[2];
+        thst.th_state = sendDataBuff[3];
+        thst.mv_temp = ((sendDataBuff[4] << 8) & 0xFF00) | sendDataBuff[5];
+        thst.sp_temp = sendDataBuff[6];
+    }
+    
+    return TF_STAY;
+}
+
+
+
 /**
 * @brief :  init usart interface to rs485 9 bit receiving 
 * @param :  and init state to receive packet control block 
@@ -520,6 +567,8 @@ void RS485_Init(void)
     if(!init_tf){
         init_tf = TF_InitStatic(&tfapp, TF_MASTER); // 1 = master, 0 = slave
         TF_AddGenericListener(&tfapp, GEN_Listener);
+        TF_AddTypeListener(&tfapp, THERMOSTAT_INFO, Thermostat_Info_Listener);
+        TF_AddTypeListener(&tfapp, THERMOSTAT_SETUP, Thermostat_Setup_Listener);
     }
 	HAL_UART_Receive_IT(&huart1, &rec, 1);
 }
@@ -580,6 +629,49 @@ void RS485_Service(void){
             sendData.len = 0;
             sendDataCount = 0;
             ZEROFILL(sendDataBuff, COUNTOF(sendDataBuff));
+        }
+        else if(thst.master && thst.hasSecondaryInfoChanged)
+        {
+            sendDataBuff[sendDataCount++] = thst.group;
+            sendDataBuff[sendDataCount++] = thst.master;
+            sendDataBuff[sendDataCount++] = thst.th_ctrl;
+            sendDataBuff[sendDataCount++] = thst.th_state;
+            sendDataBuff[sendDataCount++] = (thst.mv_temp >> 8) & 0xFF;
+            sendDataBuff[sendDataCount++] = thst.mv_temp & 0xFF;
+            sendDataBuff[sendDataCount++] = thst.sp_temp;
+            sendDataBuff[sendDataCount++] = thst.sp_min;
+            sendDataBuff[sendDataCount++] = thst.sp_max;
+            sendDataBuff[sendDataCount++] = thst.sp_diff;
+            sendDataBuff[sendDataCount++] = thst.fan_speed;
+            sendDataBuff[sendDataCount++] = thst.fan_loband;
+            sendDataBuff[sendDataCount++] = thst.fan_hiband;
+            sendDataBuff[sendDataCount++] = thst.fan_diff;
+            sendDataBuff[sendDataCount++] = thst.fan_ctrl;
+            sendDataBuff[sendDataCount++] = thst.fan_quiet_start;
+            sendDataBuff[sendDataCount++] = thst.fan_quiet_end;
+            sendDataBuff[sendDataCount++] = thst.fan_quiet_speed;
+            
+            sendData.data = sendDataBuff;
+            sendData.len = sendDataCount;
+            sendData.type = THERMOSTAT_SETUP;
+            
+            thst.hasSecondaryInfoChanged = false;
+        }
+        else if(thst.master && thst.hasPrimaryInfoChanged)
+        {
+            sendDataBuff[sendDataCount++] = thst.group;
+            sendDataBuff[sendDataCount++] = thst.master;
+            sendDataBuff[sendDataCount++] = thst.th_ctrl;
+            sendDataBuff[sendDataCount++] = thst.th_state;
+            sendDataBuff[sendDataCount++] = (thst.mv_temp >> 8) & 0xFF;
+            sendDataBuff[sendDataCount++] = thst.mv_temp & 0xFF;
+            sendDataBuff[sendDataCount++] = thst.sp_temp;
+            
+            sendData.data = sendDataBuff;
+            sendData.len = sendDataCount;
+            sendData.type = THERMOSTAT_INFO;
+            
+            thst.hasPrimaryInfoChanged = false;
         }
         else if (tcnt) {
             TF_QuerySimple(&tfapp, THERMOSTAT_TEMP_SET, tbuf, tcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
