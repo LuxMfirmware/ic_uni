@@ -235,7 +235,7 @@ void Set_QR_Code_RS485(TF_Msg* message)
     if(QR_Code_isDataLengthShortEnough(message->len - 3))
     {
         QR_Code_Set(message->data[2], message->data + 3);
-        if(screen == 19) shouldDrawScreen = true;
+        if(screen == SCREEN_QR_CODE) shouldDrawScreen = true;
     }
     else
     {
@@ -423,7 +423,7 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
                 }
             }
             
-            if(screen == 15) shouldDrawScreen = 1;
+            if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
         }
         else if(msg->data[1] == tfbra)
         {
@@ -453,8 +453,8 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
                         {
                             Light_Modbus_Update_External(lights_modbus + i, val);
                             
-                            if(screen == 15) shouldDrawScreen = 1;
-                            else if(!screen) screen = 1;
+                            if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
+                            else if(!screen) screen = SCREEN_MAIN;
                             
                             continue;
                         }
@@ -476,7 +476,7 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
                                 Curtain_Move(curtains + i, CURTAIN_UP);
                                 Curtain_DirectionEqualize(curtains + i);
                                 
-                                if(screen == 16) shouldDrawScreen = 1;
+                                if(screen == SCREEN_CURTAINS) shouldDrawScreen = 1;
                             }
                             
                             continue;
@@ -488,7 +488,7 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
                                 Curtain_Move(curtains + i, CURTAIN_DOWN);
                                 Curtain_DirectionEqualize(curtains + i);
                                 
-                                if(screen == 16) shouldDrawScreen = 1;
+                                if(screen == SCREEN_CURTAINS) shouldDrawScreen = 1;
                             }
                             
                             continue;
@@ -739,7 +739,7 @@ void RS485_Service(void){
                         sendDataCount += 2;
                         sendDataBuff[sendDataCount++] = 0x2;
                         
-                        if(screen == 16) shouldDrawScreen = 1;
+                        if(screen == SCREEN_CURTAINS) shouldDrawScreen = 1;
                         
                         Curtain_RestartTimer(cur);
                     }
@@ -758,7 +758,7 @@ void RS485_Service(void){
                         sendDataCount += 2;
                         sendDataBuff[sendDataCount++] = Curtain_isNewDirectionStop(cur) ? 0 : (Curtain_isNewDirectionUp(cur) ? 1 : 2);
                         
-                        if(screen == 16) shouldDrawScreen = 1;
+                        if(screen == SCREEN_CURTAINS) shouldDrawScreen = 1;
                         
                         if(Curtain_isNewDirectionStop(cur)) Curtain_Reset(cur);
                         else Curtain_DirectionEqualize(cur);
@@ -801,8 +801,8 @@ void RS485_Service(void){
                     
                     Light_Modbus_ResetStatus(lights_modbus + i);
                     
-                    if(screen == 15) shouldDrawScreen = 1;
-                    else if(!screen) screen = 1;
+                    if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
+                    else if(!screen) screen = SCREEN_MAIN;
                 }
                 else if(Light_Modbus_hasBrightnessChanged(lights_modbus + i))
                 {

@@ -298,13 +298,7 @@ uint8_t qr_codes[QR_CODE_COUNT][QR_CODE_LENGTH] = {0}, qr_code_draw_id = 0;
 
 enum Languages{BOS = 0, ENG} language = ENG;
 
-//
-//  NAPRAVI NEŠTO OVAKO
-//
-enum{MAIN = 100, CONTROL_SELECT, LIGHT_DIMMER, LED_1_3_RELAY, LED_4_RELAY, THERMOSTAT, RETURN_TO_FIRST, LIGHTS, CURTAINS,
-    SETTINGS_1, SETTINGS_2, SETTINGS_3, SETTINGS_4, SETTINGS_5, SETTINGS_6, SETTINGS_7, RESET_MENU_SWITCHES
-}eScreen;
-//eScreen screen;
+
 
 #define LANGUAGES_NUM 2
 char langText[40];
@@ -774,7 +768,7 @@ void DISP_Service(void){
         //
         //  MAIN LIGHT CONTROL ON/OFF/DIMM
         //
-        case 1:
+        case SCREEN_MAIN:
         {
             //
             //  TOUCH EVENT TIME SHORT(ON/OFF)/LONG(DIMM)
@@ -847,11 +841,11 @@ void DISP_Service(void){
                     }
                     
                     i = 0;
-                    screen = 0;
+                    screen = SCREEN_RESET_MENU_SWITCHES;
                     break;
 
                     if (r){
-                        screen = 0;
+                        screen = SCREEN_RESET_MENU_SWITCHES;
                         r = 0; // SKEEP FOR MENU TIMEOUT CALL
                     } else {
                         if      (t == 0){
@@ -943,7 +937,7 @@ void DISP_Service(void){
         //
         //  CONTROL SELECT
         //
-        case 2:
+        case SCREEN_CONTROL_SELECT:
         {
             if (menu_lc == 0){
                 ++menu_lc;
@@ -1015,7 +1009,7 @@ void DISP_Service(void){
         //
         //  LIGHT DIMMER 0-100% CONTROL
         //
-        case 3:
+        case SCREEN_LIGHT_DIMMER:
         {
             switch (menu_dim){
                 case 0:
@@ -1206,7 +1200,7 @@ void DISP_Service(void){
         //
         //  LED 1-3 RELAY ON/OFF CONTROL
         //
-        case 4:
+        case SCREEN_LED_1_3_RELAY:
         {
             if      (menu_rel123 == 0){
                 ++menu_rel123;
@@ -1258,7 +1252,7 @@ void DISP_Service(void){
         //
         //  LED 4 RELAY ON/OFF CONTROL
         //
-        case 5:
+        case SCREEN_LED_4_RELAY:
         {
             if      (menu_out1 == 0){
                 ++menu_out1;
@@ -1312,7 +1306,7 @@ void DISP_Service(void){
         //
         //  THERMOSTAT
         //
-        case 6:
+        case SCREEN_THERMOSTAT:
         {
             GUI_MULTIBUF_BeginEx(1);
             
@@ -1453,7 +1447,7 @@ void DISP_Service(void){
         //
         //  RETURN TO FIRST MENU
         //
-        case 7:
+        case SCREEN_RETURN_TO_FIRST:
         {
             GUI_SelectLayer(0);
             GUI_Clear();
@@ -1461,7 +1455,7 @@ void DISP_Service(void){
             GUI_SetBkColor(GUI_TRANSPARENT); 
             GUI_Clear();
             DISPSetBrightnes(DISP_BRGHT_MIN);
-            screen = 1;
+            screen = SCREEN_MAIN;
             i = 0;  // SET SWITCH TO ENTER ON/OFF TOUCH EVENT
             r = 1;  // SKEEP BACKLIGHT LED MAX BRIGHTNESS
 //            if (t == 0) t = 1; // TOGGLE NEXT TOUCH EVENT
@@ -1483,7 +1477,7 @@ void DISP_Service(void){
         //
         //  SETTINGS MENU 1
         //
-        case 8:
+        case SCREEN_SETTINGS_1:
         {            
             /** ==========================================================================*/
             /**    S E T T I N G S     M E N U     U S E R     I N P U T   U P D A T E    */
@@ -1539,26 +1533,26 @@ void DISP_Service(void){
                 }
                 thsta = 0;
                 DSP_KillSet1Scrn();
-                screen = 7;
+                screen = SCREEN_RETURN_TO_FIRST;
             }
             else if (BUTTON_IsPressed(hBUTTON_Next))
             {                
                 DSP_KillSet1Scrn();
                 DSP_InitSet3Scrn();
-                screen = 10;
+                screen = SCREEN_SETTINGS_3;
             }
             break;
         }
         //
         //  SETTINGS MENU 2
         //
-        case 9:
+        case SCREEN_SETTINGS_2:
         {
-            if (LIGHT_Ctrl1.modbusLight.index != SPINBOX_GetValue(hBIN_MAIN1)){
+            /*if (LIGHT_Ctrl1.modbusLight.index != SPINBOX_GetValue(hBIN_MAIN1)){
                 LIGHT_Ctrl1.modbusLight.index  = SPINBOX_GetValue(hBIN_MAIN1);
                 if (LIGHT_Ctrl1.Main1.index == 0) SPINBOX_SetValue(hBIN2_MAIN1, 0);
                 ++lcsta;
-            }
+            }*/
             if (LIGHT_Ctrl1.Led1.index != SPINBOX_GetValue(hBIN_LED1)){
                 LIGHT_Ctrl1.Led1.index  = SPINBOX_GetValue(hBIN_LED1);
                 if (LIGHT_Ctrl1.Led1.index == 0) SPINBOX_SetValue(hBIN2_LED1, 0);
@@ -1632,18 +1626,18 @@ void DISP_Service(void){
                 else ebuf[6] = 0;
                 EE_WriteBuffer(ebuf, EE_DISP_LOW_BCKLGHT, 7);
                 DSP_KillSet2Scrn();
-                screen = 7;
+                screen = SCREEN_RETURN_TO_FIRST;
             } else if (BUTTON_IsPressed(hBUTTON_Next)){                
                 DSP_KillSet2Scrn();
                 DSP_InitSet3Scrn();
-                screen = 10;
+                screen = SCREEN_SETTINGS_3;
             }
             break;
         }        
         //
         //  SETTINGS MENU 3
         //
-        case 10:
+        case SCREEN_SETTINGS_3:
         {
             if (rtctm.Hours != Dec2Bcd(SPINBOX_GetValue(hSPNBX_Hour))){
                 rtctm.Hours = Dec2Bcd(SPINBOX_GetValue(hSPNBX_Hour));
@@ -1709,18 +1703,18 @@ void DISP_Service(void){
                 EE_WriteBuffer(ebuf, EE_DISP_LOW_BCKLGHT, 7);
                 EE_WriteBuffer(&tfifa, EE_TFIFA, 1);
                 DSP_KillSet3Scrn();
-                screen = 7;
+                screen = SCREEN_RETURN_TO_FIRST;
             } else if (BUTTON_IsPressed(hBUTTON_Next)){                
                 DSP_KillSet3Scrn();
                 DSP_InitSet5Scrn();
-                screen = 13;
+                screen = SCREEN_SETTINGS_5;
             }
             break;
         }
         //
         //  CLEAN
         //
-        case 11:
+        case SCREEN_CLEAN:
         {
             if (menu_clean == 0){
                 ++menu_clean;
@@ -1752,7 +1746,7 @@ void DISP_Service(void){
                     GUI_MULTIBUF_EndEx(1);
                     
                     if (clrtmr) --clrtmr;
-                    else screen = 7;
+                    else screen = SCREEN_RETURN_TO_FIRST;
                 }
             }
             
@@ -1761,7 +1755,7 @@ void DISP_Service(void){
         //
         //  SETTINGS MENU 4
         //
-        case 12:
+        case SCREEN_SETTINGS_4:
         {
             /*if(Ventilator_getRelay(&ventilator) != SPINBOX_GetValue(hVentilatorRelay))
             {
@@ -1799,20 +1793,20 @@ void DISP_Service(void){
                     settingsChanged = 0;
                 }
                 DSP_KillSet4Scrn();
-                screen = 7;
+                screen = SCREEN_RETURN_TO_FIRST;
             }
             else if (BUTTON_IsPressed(hBUTTON_Next))
             {                
                 DSP_KillSet4Scrn();
                 DSP_InitSet5Scrn();
-                screen = 13;
+                screen = SCREEN_SETTINGS_5;
             }
             break;
         }
         //
         //  SETTINGS MENU 5
         //
-        case 13:
+        case SCREEN_SETTINGS_5:
         {
             
             if (BUTTON_IsPressed(hBUTTON_Ok))
@@ -1836,7 +1830,7 @@ void DISP_Service(void){
                     settingsChanged = 0;
                 }
                 DSP_KillSet5Scrn();
-                screen = 7;
+                screen = SCREEN_RETURN_TO_FIRST;
             }
             else if (BUTTON_IsPressed(hBUTTON_Next))
             {
@@ -1852,7 +1846,7 @@ void DISP_Service(void){
                     curtainSettingMenu = 0;
                     
                     DSP_InitSet6Scrn();
-                    screen = 14;
+                    screen = SCREEN_SETTINGS_6;
                 }
             }
             break;
@@ -1860,7 +1854,7 @@ void DISP_Service(void){
         //
         //  SETTINGS MENU 6
         //
-        case 14:
+        case SCREEN_SETTINGS_6:
         {
             if (BUTTON_IsPressed(hBUTTON_Ok))
             {
@@ -1958,7 +1952,7 @@ void DISP_Service(void){
                     settingsChanged = 0;
                 }
                 DSP_KillSet6Scrn();
-                screen = 7;
+                screen = SCREEN_RETURN_TO_FIRST;
             }
             else if (BUTTON_IsPressed(hBUTTON_Next))
             {
@@ -1974,7 +1968,7 @@ void DISP_Service(void){
                     lightsModbusSettingsMenu = 0;
                     
                     DSP_InitSet7Scrn();
-                    screen = 17;
+                    screen = SCREEN_SETTINGS_7;
                 }
             }
             break;
@@ -1982,7 +1976,7 @@ void DISP_Service(void){
         //
         //  LIGHTS
         //     
-        case 15:
+        case SCREEN_LIGHTS:
         {
             if(shouldDrawScreen)
             {
@@ -2047,7 +2041,7 @@ void DISP_Service(void){
         //
         //  CURTAINS
         //     
-        case 16:
+        case SCREEN_CURTAINS:
         {
             if(shouldDrawScreen)
             {
@@ -2099,7 +2093,7 @@ void DISP_Service(void){
         //
         //  SETTINGS MENU 7
         //     
-        case 17:
+        case SCREEN_SETTINGS_7:
         {
             if(BUTTON_IsPressed(hBUTTON_SYSRESTART))
             {
@@ -2136,13 +2130,13 @@ void DISP_Service(void){
                     settingsChanged = 0;
                 }
                 DSP_KillSet7Scrn();
-                screen = 7;
+                screen = SCREEN_RETURN_TO_FIRST;
             }
             else if (BUTTON_IsPressed(hBUTTON_Next))
             {
                 DSP_KillSet7Scrn();
                 DSP_InitSet1Scrn();
-                screen = 8;
+                screen = SCREEN_SETTINGS_1;
             }
             
             break;
@@ -2150,7 +2144,7 @@ void DISP_Service(void){
         //
         //  SELECT SCREEN 2
         //     
-        case 18:
+        case SCREEN_SELECT_SCREEN_2:
         {
             if(shouldDrawScreen)
             {
@@ -2205,7 +2199,7 @@ void DISP_Service(void){
         //
         //  QR CODE
         //     
-        case 19:
+        case SCREEN_QR_CODE:
         {
             if(shouldDrawScreen)
             {
@@ -2239,7 +2233,7 @@ void DISP_Service(void){
         //
         //  LIGHT SETTINGS
         //     
-        case 20:
+        case SCREEN_LIGHT_SETTINGS:
         {
             if(shouldDrawScreen)
             {
@@ -2275,7 +2269,7 @@ void DISP_Service(void){
         //
         //  RESET MENU SWITCHES
         //        
-        case 0:
+        case SCREEN_RESET_MENU_SWITCHES:
         {
             if(LightNightTimer_StartTime)
             {
@@ -2349,8 +2343,8 @@ void DISP_Service(void){
             {
                 Light_Modbus_On(lights_modbus + i);
                 
-                if(screen == 15) shouldDrawScreen = 1;
-                else if((screen == 0) || (screen == 1)) screen = 7;
+                if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
+                else if((screen == SCREEN_RESET_MENU_SWITCHES) || (screen == SCREEN_MAIN)) screen = SCREEN_RETURN_TO_FIRST;
             }
         }
     }
@@ -2362,7 +2356,7 @@ void DISP_Service(void){
     if(light_settingsTimerStart && ((HAL_GetTick() - light_settingsTimerStart) >= (2 * 1000)))
     {
         light_settingsTimerStart = 0;
-        screen = 20;
+        screen = SCREEN_LIGHT_SETTINGS;
         shouldDrawScreen = 1;
     }
     
@@ -2377,7 +2371,7 @@ void DISP_Service(void){
         for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
         {
             if(Light_Modbus_isOffTimeEnabled(lights_modbus + i)) Light_Modbus_On(lights_modbus + i);
-            if(screen == 15) shouldDrawScreen = 1;
+            if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
         }
     }
     
@@ -2393,7 +2387,7 @@ void DISP_Service(void){
             Light_Modbus_On(lights_modbus + i);
         }
         
-        if(screen == 15) shouldDrawScreen = 1;
+        if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
     }
     
     
@@ -2408,7 +2402,7 @@ void DISP_Service(void){
             Light_Modbus_Off(lights_modbus + i);
         }
         
-        if(screen == 15) shouldDrawScreen = 1;
+        if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
     }
     
     
@@ -2426,7 +2420,7 @@ void DISP_Service(void){
             }
         }
         
-        if(screen == 0) screen = 1;
+        if(screen == SCREEN_RESET_MENU_SWITCHES) screen = 1;
         shouldDrawScreen = 1;
     }
     
@@ -2436,17 +2430,17 @@ void DISP_Service(void){
     
     if (!IsScrnsvrActiv()){
         if ((HAL_GetTick() - scrnsvr_tmr) >= (uint32_t)(scrnsvr_tout*1000)){
-            if      (screen == 8) DSP_KillSet1Scrn();
-            else if (screen == 9) DSP_KillSet2Scrn();
-            else if (screen == 10)DSP_KillSet3Scrn();
-            else if (screen == 12)DSP_KillSet4Scrn();
-            else if (screen == 13)DSP_KillSet5Scrn();
-            else if (screen == 14)DSP_KillSet6Scrn();
-            else if (screen == 17)DSP_KillSet7Scrn();
+            if      (screen == SCREEN_SETTINGS_1) DSP_KillSet1Scrn();
+            else if (screen == SCREEN_SETTINGS_2) DSP_KillSet2Scrn();
+            else if (screen == SCREEN_SETTINGS_3)DSP_KillSet3Scrn();
+            else if (screen == SCREEN_SETTINGS_4)DSP_KillSet4Scrn();
+            else if (screen == SCREEN_SETTINGS_5)DSP_KillSet5Scrn();
+            else if (screen == SCREEN_SETTINGS_6)DSP_KillSet6Scrn();
+            else if (screen == SCREEN_SETTINGS_7)DSP_KillSet7Scrn();
             DISPSetBrightnes(low_bcklght);
             ScrnsvrInitReset();
             ScrnsvrSet();            
-            screen = 7;
+            screen = SCREEN_RETURN_TO_FIRST;
         }
     }
     //
@@ -2461,14 +2455,14 @@ void DISP_Service(void){
     //
     //  DISPLAY SETTINGS MENU
     //
-    if (DISPMenuSettings(btnset)&&(screen < 8)){
+    if (DISPMenuSettings(btnset)&&(screen < SCREEN_SETTINGS_1)){
         DSP_InitSet1Scrn();
-        screen = 8;
+        screen = SCREEN_SETTINGS_1;
     }
     
     if (HAL_GetTick() - rtctmr >= 1000){
         rtctmr = HAL_GetTick();
-        if (screen < 2) DISPDateTime();
+        if (screen < SCREEN_CONTROL_SELECT) DISPDateTime();
         if (!IsScrnsvrActiv()) MVUpdateSet(); 
     }
 }
@@ -3410,10 +3404,10 @@ static void DISPDateTime(void){
     if(scrnsvr_ena_hour>=scrnsvr_dis_hour){
         if      (Bcd2Dec(rtctm.Hours)>=scrnsvr_ena_hour) ScrnsvrEnable();
         else if (Bcd2Dec(rtctm.Hours)<scrnsvr_dis_hour) ScrnsvrEnable();
-        else if (IsScrnsvrEnabled())ScrnsvrDisable(), screen = 7;
+        else if (IsScrnsvrEnabled())ScrnsvrDisable(), screen = SCREEN_RETURN_TO_FIRST;
     }else if(scrnsvr_ena_hour<scrnsvr_dis_hour){
         if((Bcd2Dec(rtctm.Hours<scrnsvr_dis_hour))&&(Bcd2Dec(rtctm.Hours)>=scrnsvr_ena_hour)) ScrnsvrEnable();
-        else if(IsScrnsvrEnabled()) ScrnsvrDisable(), screen = 7;
+        else if(IsScrnsvrEnabled()) ScrnsvrDisable(), screen = SCREEN_RETURN_TO_FIRST;
     }
     /************************************/
     /*      DISPLAY  DATE  &  TIME      */
@@ -3510,7 +3504,7 @@ static void DISPDateTime(void){
   * @retval DISP sreensvr_tmr loaded with system_tmr value
   */
 void DISPResetScrnsvr(void){
-    if(IsScrnsvrActiv() && IsScrnsvrEnabled()) screen = 7;
+    if(IsScrnsvrActiv() && IsScrnsvrEnabled()) screen = SCREEN_RETURN_TO_FIRST;
     ScrnsvrReset();
     ScrnsvrInitReset();
     scrnsvr_tmr = HAL_GetTick();
@@ -3542,7 +3536,7 @@ void PID_Hook(GUI_PID_STATE * pTS){
     uint8_t click = 0;
     if (pTS->Pressed  == 1U){
         pTS->Layer = 1U;
-        if ((pTS->y > 60) && (pTS->y < 200) && ((screen == 3) || (screen == 4) || (screen == 5))){
+        if ((pTS->y > 60) && (pTS->y < 200) && ((screen == SCREEN_LIGHT_DIMMER) || (screen == SCREEN_LED_1_3_RELAY) || (screen == SCREEN_LED_4_RELAY))){
             click = 1;
             ctrl1 = 0;
             ctrl2 = 0;
@@ -3552,12 +3546,12 @@ void PID_Hook(GUI_PID_STATE * pTS){
             else if ((pTS->x > 320) && (pTS->x < 480)) ctrl3 = 1;
         }
 
-        if ((pTS->x > 400) && (pTS->y < 60) && ((screen <= 2) || (screen == 6) || ((screen > 14) && (screen != 17)))){
+        if ((pTS->x > 400) && (pTS->y < 60) && ((screen <= SCREEN_CONTROL_SELECT) || (screen == SCREEN_THERMOSTAT) || ((screen > SCREEN_SETTINGS_6) && (screen != SCREEN_SETTINGS_7)))){
             click = 1;
-            if      (screen  < 2) screen = 2;
-            else if ((screen == 2) || (screen == 6) || ((screen > 14) && (screen != 17))) screen = 7;
+            if      (screen  < SCREEN_CONTROL_SELECT) screen = SCREEN_CONTROL_SELECT;
+            else if ((screen == SCREEN_CONTROL_SELECT) || (screen == SCREEN_THERMOSTAT) || ((screen > SCREEN_SETTINGS_6) && (screen != SCREEN_SETTINGS_7))) screen = SCREEN_RETURN_TO_FIRST;
         }
-        else if(screen == 2)
+        else if(screen == SCREEN_CONTROL_SELECT)
         {
             if(pTS->x < 400)
             {
@@ -3565,19 +3559,19 @@ void PID_Hook(GUI_PID_STATE * pTS){
                 {
                     if(pTS->x < 190)
                     {
-                        screen = 15;
+                        screen = SCREEN_LIGHTS;
                         shouldDrawScreen = 1;
                     }
                     else
                     {
-                        screen = 6;
+                        screen = SCREEN_THERMOSTAT;
                     }
                 }
                 else
                 {
                     if(pTS->x < 190)
                     {
-                        screen = 16;
+                        screen = SCREEN_CURTAINS;
                         Curtain_ResetSelection();
                         shouldDrawScreen = 1;
                     }
@@ -3594,7 +3588,7 @@ void PID_Hook(GUI_PID_STATE * pTS){
                         
                         menu_lc = 0;*/
                         
-                        screen = 19;
+                        screen = SCREEN_QR_CODE;
                         qr_code_draw_id = QR_CODE_WIFI_ID;
                         shouldDrawScreen = 1;
                     }
@@ -3604,25 +3598,25 @@ void PID_Hook(GUI_PID_STATE * pTS){
             {
                 shouldDrawScreen = 1;
                 menu_lc = 0;
-                screen = 18;
+                screen = SCREEN_SELECT_SCREEN_2;
             }
             
-            if(screen != 2) click = 1;
+            if(screen != SCREEN_CONTROL_SELECT) click = 1;
         }
-        else if((pTS->x > 0)&&(pTS->x < 120)&&(pTS->y > 200)&&(pTS->y < 272)&&((screen == 4)||(screen == 5))){
+        else if((pTS->x > 0)&&(pTS->x < 120)&&(pTS->y > 200)&&(pTS->y < 272)&&((screen == SCREEN_LED_1_3_RELAY)||(screen == SCREEN_LED_4_RELAY))){
             click = 1;
-            screen = 3;
-        }else if((pTS->x > 120)&&(pTS->x < 240)&&(pTS->y > 200)&&(pTS->y < 272)&&((screen == 3)||(screen == 5))){
+            screen = SCREEN_LIGHT_DIMMER;
+        }else if((pTS->x > 120)&&(pTS->x < 240)&&(pTS->y > 200)&&(pTS->y < 272)&&((screen == SCREEN_LIGHT_DIMMER)||(screen == SCREEN_LED_4_RELAY))){
             click = 1;
-            screen = 4;
-        }else if((pTS->x > 240)&&(pTS->y > 200)&&(pTS->x < 360)&&(pTS->y < 272)&&((screen == 3)||(screen == 4))){
+            screen = SCREEN_LED_1_3_RELAY;
+        }else if((pTS->x > 240)&&(pTS->y > 200)&&(pTS->x < 360)&&(pTS->y < 272)&&((screen == SCREEN_LIGHT_DIMMER)||(screen == SCREEN_LED_1_3_RELAY))){
             click = 1;
-            screen = 5;
-        }else if((pTS->x > 360)&&(pTS->y > 200)&&(pTS->x < 480)&&(pTS->y < 272)&&((screen == 3)||(screen == 4)||(screen == 5))){
+            screen = SCREEN_LED_4_RELAY;
+        }else if((pTS->x > 360)&&(pTS->y > 200)&&(pTS->x < 480)&&(pTS->y < 272)&&((screen == SCREEN_LIGHT_DIMMER)||(screen == SCREEN_LED_1_3_RELAY)||(screen == SCREEN_LED_4_RELAY))){
             click = 1;
-            screen = 7;
+            screen = SCREEN_RETURN_TO_FIRST;
         }
-        else if(screen == 6)
+        else if(screen == SCREEN_THERMOSTAT)
         {
             if((pTS->x > BTN_INC_X0)&&(pTS->y > BTN_INC_Y0)&&(pTS->x < BTN_INC_X1)&&(pTS->y < BTN_INC_Y1))
             {
@@ -3640,7 +3634,7 @@ void PID_Hook(GUI_PID_STATE * pTS){
                 if(!thermostatOnOffTouch_timer) thermostatOnOffTouch_timer = 1;
             }
         }
-        else if(screen == 15) //lights
+        else if(screen == SCREEN_LIGHTS) //lights
         {
             light_selectedIndex = LIGHTS_MODBUS_SIZE; // clear selected light
             
@@ -3695,7 +3689,7 @@ void PID_Hook(GUI_PID_STATE * pTS){
                 }
             }*/
         }
-        else if(screen == 16) //curtains
+        else if(screen == SCREEN_CURTAINS) //curtains
         {
             if(pTS->x < 400)
             {
@@ -3745,7 +3739,7 @@ void PID_Hook(GUI_PID_STATE * pTS){
                 }
             }
         }
-        else if(screen == 18)   // select screen 2
+        else if(screen == SCREEN_SELECT_SCREEN_2)   // select screen 2
         {
             if(pTS->x < 400)
             {
@@ -3753,37 +3747,37 @@ void PID_Hook(GUI_PID_STATE * pTS){
                 {
                     if(pTS->x < 190)
                     {
-                        screen = 19;
+                        screen = SCREEN_QR_CODE;
                         qr_code_draw_id = QR_CODE_APP_ID;
                         shouldDrawScreen = 1;
                     }
                     else
                     {
-                        screen = 11;
+                        screen = SCREEN_CLEAN;
                     }
                 }
             }
             else if(pTS->y > 159)
             {
-                screen = 2;
+                screen = SCREEN_CONTROL_SELECT;
                 menu_lc = 0;
                 shouldDrawScreen = 1;
             }
         }
-        else if(screen == 20)  // light settings
+        else if(screen == SCREEN_LIGHT_SETTINGS)  // light settings
         {
             if(pTS->y < 180) Light_Modbus_SetColor(lights_modbus + light_selectedIndex, LCD_GetPixelColor(pTS->x, pTS->y));
             else Light_Modbus_SetBrightness(lights_modbus + light_selectedIndex, ((pTS->x - 20) / (float)bmblackWhiteGradient.XSize) * 100);
             shouldDrawScreen = 1;
         }
-        else if((pTS->x > 100)&&(pTS->y > 100)&&(pTS->x < 400)&&(pTS->y < 272)&&(screen == 0))
+        else if((pTS->x > 100)&&(pTS->y > 100)&&(pTS->x < 400)&&(pTS->y < 272)&&(screen == SCREEN_RESET_MENU_SWITCHES))
         {
             if((!bOnlyLeaveScreenSaverAfterTouch) || (bOnlyLeaveScreenSaverAfterTouch && (!IsScrnsvrActiv())))
             {
                 uint8_t isAnyLightActive = 0;
                 
                 click = 1;
-                screen = 1;
+                screen = SCREEN_MAIN;
                 
                 
                 
@@ -3932,8 +3926,8 @@ void PID_Hook(GUI_PID_STATE * pTS){
     }
     else
     {
-        if(screen == 1) screen = 0;
-        else if(screen == 15)
+        if(screen == SCREEN_MAIN) screen = SCREEN_RESET_MENU_SWITCHES;
+        else if(screen == SCREEN_LIGHTS)
         {
             if(light_settingsTimerStart)
             {

@@ -21,6 +21,31 @@
 #define TS_LAYER        1   // touch screen layer event
 
 /* Exported types ------------------------------------------------------------*/
+
+typedef enum{
+    SCREEN_MAIN = 1,
+    SCREEN_CONTROL_SELECT,
+    SCREEN_LIGHT_DIMMER,
+    SCREEN_LED_1_3_RELAY,
+    SCREEN_LED_4_RELAY,
+    SCREEN_THERMOSTAT,
+    SCREEN_RETURN_TO_FIRST,
+    SCREEN_SETTINGS_1,
+    SCREEN_SETTINGS_2,
+    SCREEN_SETTINGS_3,
+    SCREEN_CLEAN,
+    SCREEN_SETTINGS_4,
+    SCREEN_SETTINGS_5,
+    SCREEN_SETTINGS_6,
+    SCREEN_LIGHTS,
+    SCREEN_CURTAINS,
+    SCREEN_SETTINGS_7,
+    SCREEN_SELECT_SCREEN_2,
+    SCREEN_QR_CODE,
+    SCREEN_LIGHT_SETTINGS,
+    SCREEN_RESET_MENU_SWITCHES = 0 // ALWAYS AT THE BOTTOM OF ENUM
+}eScreen;
+
 typedef enum{
 	RELEASED    = 0,
 	PRESSED     = 1,

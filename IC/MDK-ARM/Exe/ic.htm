@@ -3,9 +3,9 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Thu Feb 13 18:19:07 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Thu Feb 13 19:19:12 2025
 <BR><P>
-<H3>Maximum Stack Usage =       2436 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =       2428 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 main &rArr; DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 <P>
@@ -1473,8 +1473,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[20d]"></a>DISP_Service</STRONG> (Thumb, 18406 bytes, Stack size 1448 bytes, display.o(.text.DISP_Service))
-<BR><BR>[Stack]<UL><LI>Max Depth = 2404<LI>Call Chain = DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
+<P><STRONG><a name="[20d]"></a>DISP_Service</STRONG> (Thumb, 18294 bytes, Stack size 1440 bytes, display.o(.text.DISP_Service))
+<BR><BR>[Stack]<UL><LI>Max Depth = 2396<LI>Call Chain = DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[1ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
@@ -4173,7 +4173,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[3c9]"></a>THSTAT_Service</STRONG> (Thumb, 1360 bytes, Stack size 16 bytes, thermostat.o(.text.THSTAT_Service))
+<P><STRONG><a name="[3c9]"></a>THSTAT_Service</STRONG> (Thumb, 1362 bytes, Stack size 16 bytes, thermostat.o(.text.THSTAT_Service))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = THSTAT_Service &rArr; HAL_GPIO_WritePin
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
@@ -4461,7 +4461,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[a7]"></a>main</STRONG> (Thumb, 196 bytes, Stack size 32 bytes, main.o(.text.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 2436<LI>Call Chain = main &rArr; DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
+<BR><BR>[Stack]<UL><LI>Max Depth = 2428<LI>Call Chain = main &rArr; DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TS_Init
 <LI><a href="#[2b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
@@ -4509,8 +4509,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
-<LI><a href="#[3f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_FreePtr
 <LI><a href="#[3f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_FreePtrArray
+<LI><a href="#[3f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_FreePtr
 <LI><a href="#[3fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DefaultProc
 <LI><a href="#[3f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WIDGET_HandleActive
 <LI><a href="#[3fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_SetPressed
@@ -4763,7 +4763,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[c8]"></a>DROPDOWN_Callback</STRONG> (Thumb, 380 bytes, Stack size 40 bytes, dropdown.o(i.DROPDOWN_Callback))
-<BR><BR>[Stack]<UL><LI>Max Depth = 896<LI>Call Chain = DROPDOWN_Callback &rArr; DROPDOWN_Expand &rArr; LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 896<LI>Call Chain = DROPDOWN_Callback &rArr; DROPDOWN_Expand &rArr; LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -4840,7 +4840,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> dropdown.o(.data)
 </UL>
 <P><STRONG><a name="[420]"></a>DROPDOWN_Expand</STRONG> (Thumb, 510 bytes, Stack size 160 bytes, dropdown.o(i.DROPDOWN_Expand))
-<BR><BR>[Stack]<UL><LI>Max Depth = 856<LI>Call Chain = DROPDOWN_Expand &rArr; LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 856<LI>Call Chain = DROPDOWN_Expand &rArr; LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -5042,8 +5042,8 @@ Global Symbols
 <LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
 <LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetFont
-<LI><a href="#[44e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetStringDistX
 <LI><a href="#[44f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetNumChars
+<LI><a href="#[44e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetStringDistX
 <LI><a href="#[428]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetWindowSizeX
 <LI><a href="#[450]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetCursorPosChar
 <LI><a href="#[442]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EDIT__SetCursorPos
@@ -5144,8 +5144,8 @@ Global Symbols
 <P><STRONG><a name="[45b]"></a>GL_DrawEllipse</STRONG> (Thumb, 212 bytes, Stack size 88 bytes, gui_circ.o(i.GL_DrawEllipse))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = GL_DrawEllipse &rArr; LCD_DrawHLine
 </UL>
-<BR>[Calls]<UL><LI><a href="#[45c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__sqrt32
-<LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DrawHLine
+<BR>[Calls]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DrawHLine
+<LI><a href="#[45c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__sqrt32
 </UL>
 <BR>[Called By]<UL><LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DrawEllipse
 </UL>
@@ -5226,8 +5226,8 @@ Global Symbols
 <P><STRONG><a name="[46d]"></a>GL_FillEllipse</STRONG> (Thumb, 132 bytes, Stack size 72 bytes, gui_circ.o(i.GL_FillEllipse))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = GL_FillEllipse &rArr; LCD_DrawHLine
 </UL>
-<BR>[Calls]<UL><LI><a href="#[45c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__sqrt32
-<LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DrawHLine
+<BR>[Calls]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DrawHLine
+<LI><a href="#[45c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__sqrt32
 </UL>
 <BR>[Called By]<UL><LI><a href="#[20e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DrawEllipse
 </UL>
@@ -5318,8 +5318,8 @@ Global Symbols
 <LI> f24_1.o(.constdata)
 <LI> f24b_1.o(.constdata)
 <LI> f32_1.o(.constdata)
-<LI> f32b_1.o(.constdata)
 <LI> fd80.o(.constdata)
+<LI> f32b_1.o(.constdata)
 </UL>
 <P><STRONG><a name="[15e]"></a>GUIPROP_GetCharDistX</STRONG> (Thumb, 64 bytes, Stack size 12 bytes, gui_charp.o(i.GUIPROP_GetCharDistX))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = GUIPROP_GetCharDistX
@@ -5335,8 +5335,8 @@ Global Symbols
 <LI> f24_1.o(.constdata)
 <LI> f24b_1.o(.constdata)
 <LI> f32_1.o(.constdata)
-<LI> f32b_1.o(.constdata)
 <LI> fd80.o(.constdata)
+<LI> f32b_1.o(.constdata)
 </UL>
 <P><STRONG><a name="[15f]"></a>GUIPROP_GetFontInfo</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, gui_charp.o(i.GUIPROP_GetFontInfo))
 <BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
@@ -5348,8 +5348,8 @@ Global Symbols
 <LI> f24_1.o(.constdata)
 <LI> f24b_1.o(.constdata)
 <LI> f32_1.o(.constdata)
-<LI> f32b_1.o(.constdata)
 <LI> fd80.o(.constdata)
+<LI> f32b_1.o(.constdata)
 </UL>
 <P><STRONG><a name="[160]"></a>GUIPROP_IsInFont</STRONG> (Thumb, 16 bytes, Stack size 4 bytes, gui_charp.o(i.GUIPROP_IsInFont))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = GUIPROP_IsInFont
@@ -5365,8 +5365,8 @@ Global Symbols
 <LI> f24_1.o(.constdata)
 <LI> f24b_1.o(.constdata)
 <LI> f32_1.o(.constdata)
-<LI> f32b_1.o(.constdata)
 <LI> fd80.o(.constdata)
+<LI> f32b_1.o(.constdata)
 </UL>
 <P><STRONG><a name="[474]"></a>GUIPROP__FindChar</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, gui_charp.o(i.GUIPROP__FindChar))
 <BR><BR>[Called By]<UL><LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP_IsInFont
@@ -5390,10 +5390,10 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[479]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Alloc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[47a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_AllocZero
-<LI><a href="#[40b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__SetText
 <LI><a href="#[5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_NextPixel_Start
 <LI><a href="#[483]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Realloc
 <LI><a href="#[477]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_AllocInit
+<LI><a href="#[40b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__SetText
 <LI><a href="#[606]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Malloc
 <LI><a href="#[4d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_MEMDEV__CreateFixed
 <LI><a href="#[4e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_WriteToActiveOpaque_HT
@@ -5432,10 +5432,10 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[26c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DeleteWindow
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Delete
-<LI><a href="#[3f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_FreePtr
 <LI><a href="#[8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_NextPixel_End
 <LI><a href="#[483]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Realloc
 <LI><a href="#[64f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_EnlargeBlocks
+<LI><a href="#[3f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_FreePtr
 <LI><a href="#[4f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Free
 <LI><a href="#[584]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DeleteTimer
 <LI><a href="#[5ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_CreateTimer
@@ -5464,8 +5464,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[41f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Free
 </UL>
-<BR>[Called By]<UL><LI><a href="#[40b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__SetText
-<LI><a href="#[3f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_FreePtrArray
+<BR>[Called By]<UL><LI><a href="#[3f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_FreePtrArray
+<LI><a href="#[40b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__SetText
 <LI><a href="#[489]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ARRAY_SetItem
 <LI><a href="#[41e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ARRAY_Delete
 <LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_Callback
@@ -5510,8 +5510,8 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[484]"></a>GUI_ALLOC_GetSize</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, gui_alloc.o(i.GUI_ALLOC_GetSize))
-<BR><BR>[Called By]<UL><LI><a href="#[40b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__SetText
-<LI><a href="#[483]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Realloc
+<BR><BR>[Called By]<UL><LI><a href="#[483]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Realloc
+<LI><a href="#[40b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__SetText
 <LI><a href="#[489]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ARRAY_SetItem
 </UL>
 
@@ -5543,12 +5543,12 @@ Global Symbols
 <LI><a href="#[228]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
 <LI><a href="#[267]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_SetText
 <LI><a href="#[21d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
-<LI><a href="#[52a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__strcmp_hp
-<LI><a href="#[40b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__SetText
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_HandlePID
 <LI><a href="#[5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_NextPixel_Start
 <LI><a href="#[483]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Realloc
 <LI><a href="#[477]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_AllocInit
+<LI><a href="#[52a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__strcmp_hp
+<LI><a href="#[40b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__SetText
 <LI><a href="#[606]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Malloc
 <LI><a href="#[613]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Calloc
 <LI><a href="#[588]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_ShowWindow
@@ -5663,8 +5663,6 @@ Global Symbols
 <LI><a href="#[5ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_FindNext_IVR
 <LI><a href="#[5b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Exec1Input
 <LI><a href="#[5f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__PaintWinAndOverlays
-<LI><a href="#[59c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__UpdateChildPositions
-<LI><a href="#[5a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetYSize
 <LI><a href="#[5a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetXSize
 <LI><a href="#[57f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WIDGET_SetWidth
 <LI><a href="#[595]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawButton
@@ -5772,6 +5770,8 @@ Global Symbols
 <LI><a href="#[5d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__MoveWindow
 <LI><a href="#[5e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_ValidateWindow
 <LI><a href="#[5da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_ResizeWindow
+<LI><a href="#[59c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__UpdateChildPositions
+<LI><a href="#[5a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetYSize
 <LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Paint
 <LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Create
 <LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_CalcPositions
@@ -5826,12 +5826,12 @@ Global Symbols
 <LI><a href="#[228]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
 <LI><a href="#[267]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_SetText
 <LI><a href="#[21d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
-<LI><a href="#[52a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__strcmp_hp
-<LI><a href="#[40b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__SetText
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_HandlePID
 <LI><a href="#[8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_NextPixel_End
 <LI><a href="#[483]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Realloc
 <LI><a href="#[477]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_AllocInit
+<LI><a href="#[52a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__strcmp_hp
+<LI><a href="#[40b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__SetText
 <LI><a href="#[4f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Free
 <LI><a href="#[588]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_ShowWindow
 <LI><a href="#[586]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetEnableState
@@ -5945,8 +5945,6 @@ Global Symbols
 <LI><a href="#[5ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_FindNext_IVR
 <LI><a href="#[5b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Exec1Input
 <LI><a href="#[5f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__PaintWinAndOverlays
-<LI><a href="#[59c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__UpdateChildPositions
-<LI><a href="#[5a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetYSize
 <LI><a href="#[5a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetXSize
 <LI><a href="#[57f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WIDGET_SetWidth
 <LI><a href="#[595]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawButton
@@ -6055,6 +6053,8 @@ Global Symbols
 <LI><a href="#[5d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__MoveWindow
 <LI><a href="#[5e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_ValidateWindow
 <LI><a href="#[5da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_ResizeWindow
+<LI><a href="#[59c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__UpdateChildPositions
+<LI><a href="#[5a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetYSize
 <LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Paint
 <LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Create
 <LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_CalcPositions
@@ -6277,10 +6277,10 @@ Global Symbols
 <P><STRONG><a name="[48f]"></a>GUI_BMP__Init</STRONG> (Thumb, 240 bytes, Stack size 40 bytes, gui_bmp.o(i.GUI_BMP__Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = GUI_BMP__Init &rArr; _ManageBitfields &rArr; GUI_BMP__ReadData
 </UL>
-<BR>[Calls]<UL><LI><a href="#[492]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__Read32
-<LI><a href="#[491]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__Read16
-<LI><a href="#[490]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_BMP__ReadData
+<BR>[Calls]<UL><LI><a href="#[490]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_BMP__ReadData
 <LI><a href="#[493]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ManageBitfields
+<LI><a href="#[492]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__Read32
+<LI><a href="#[491]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__Read16
 </UL>
 <BR>[Called By]<UL><LI><a href="#[48e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Draw
 </UL>
@@ -6300,8 +6300,8 @@ Global Symbols
 <P><STRONG><a name="[494]"></a>GUI_BMP__ReadPalette</STRONG> (Thumb, 66 bytes, Stack size 24 bytes, gui_bmp.o(i.GUI_BMP__ReadPalette))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = GUI_BMP__ReadPalette &rArr; GUI_BMP__ReadData
 </UL>
-<BR>[Calls]<UL><LI><a href="#[495]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Color2Index
-<LI><a href="#[490]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_BMP__ReadData
+<BR>[Calls]<UL><LI><a href="#[490]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_BMP__ReadData
+<LI><a href="#[495]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Color2Index
 </UL>
 <BR>[Called By]<UL><LI><a href="#[622]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap_RLE
 <LI><a href="#[620]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap_Pal
@@ -6486,12 +6486,12 @@ Global Symbols
 <P><STRONG><a name="[1ff]"></a>GUI_DispString</STRONG> (Thumb, 258 bytes, Stack size 40 bytes, gui_dispstring.o(i.GUI_DispString))
 <BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = GUI_DispString &rArr; GUI__DispLine &rArr; WM__InitIVRSearch &rArr; WM__GetNextIVR &rArr; WM__ActivateClipRect &rArr; _SetClipRectUserIntersect &rArr; LCD_SetClipRectEx &rArr; GUI__IntersectRects
 </UL>
-<BR>[Calls]<UL><LI><a href="#[4a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
-<LI><a href="#[4a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DispLine
+<BR>[Calls]<UL><LI><a href="#[4a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DispLine
 <LI><a href="#[4a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetLineNumChars
 <LI><a href="#[4a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetLineDistX
 <LI><a href="#[43f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_UC__NumChars2NumBytes
 <LI><a href="#[4a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetYAdjust
+<LI><a href="#[4a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 </UL>
 <BR>[Called By]<UL><LI><a href="#[4a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispStringAt
 <LI><a href="#[214]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispDecMin
@@ -6560,8 +6560,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[49a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__InitIVRSearch
 <LI><a href="#[49b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__GetNextIVR
-<LI><a href="#[4ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__ReduceRect
 <LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DrawPixel
+<LI><a href="#[4ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__ReduceRect
 </UL>
 <BR>[Called By]<UL><LI><a href="#[19]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_DrawSkinFlex
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LISTBOX_OwnerDraw
@@ -7204,11 +7204,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[420]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_Expand
 <LI><a href="#[14]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_DrawSkinFlex
 <LI><a href="#[5ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__Client2Screen
-<LI><a href="#[5f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__Screen2Client
 <LI><a href="#[55c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetInsideRectExScrollbar
 <LI><a href="#[54c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_OnPaint
 <LI><a href="#[5f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_MoveDescendents
 <LI><a href="#[5d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__MoveWindow
+<LI><a href="#[5f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__Screen2Client
 <LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_CalcPositions
 </UL>
 
@@ -7774,13 +7774,13 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[4ab]"></a>GUI__DispStringInRect</STRONG> (Thumb, 320 bytes, Stack size 72 bytes, gui_dispstring.o(i.GUI__DispStringInRect), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[4a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
-<LI><a href="#[515]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__HandleEOLine
+<BR><BR>[Calls]<UL><LI><a href="#[515]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__HandleEOLine
 <LI><a href="#[4a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DispLine
 <LI><a href="#[4a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetLineNumChars
 <LI><a href="#[4a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetLineDistX
 <LI><a href="#[43f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_UC__NumChars2NumBytes
 <LI><a href="#[405]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetClientRect
+<LI><a href="#[4a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 </UL>
 <BR>[Called By]<UL><LI><a href="#[4a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispStringInRectMax
 </UL>
@@ -7880,8 +7880,8 @@ Global Symbols
 <LI><a href="#[522]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetCharDistX
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispString
-<LI><a href="#[44e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetStringDistX
 <LI><a href="#[4ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DispStringInRect
+<LI><a href="#[44e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetStringDistX
 </UL>
 
 <P><STRONG><a name="[4a5]"></a>GUI__GetLineNumChars</STRONG> (Thumb, 52 bytes, Stack size 24 bytes, gui_charline.o(i.GUI__GetLineNumChars))
@@ -7951,10 +7951,10 @@ Global Symbols
 <P><STRONG><a name="[525]"></a>GUI__InvertRectColors</STRONG> (Thumb, 78 bytes, Stack size 32 bytes, gui_common.o(i.GUI__InvertRectColors))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = GUI__InvertRectColors &rArr; LCD_GetPixelIndex
 </UL>
-<BR>[Calls]<UL><LI><a href="#[495]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Color2Index
-<LI><a href="#[527]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPixelIndex
+<BR>[Calls]<UL><LI><a href="#[527]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetPixelIndex
 <LI><a href="#[4b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Index2Color
 <LI><a href="#[526]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_GetPixelIndex
+<LI><a href="#[495]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Color2Index
 </UL>
 <BR>[Called By]<UL><LI><a href="#[444]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Paint
 </UL>
@@ -8633,9 +8633,9 @@ Global Symbols
 <P><STRONG><a name="[4e2]"></a>LCD_UpdateColorIndices</STRONG> (Thumb, 32 bytes, Stack size 8 bytes, lcd_updatecolorindices.o(i.LCD_UpdateColorIndices))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LCD_UpdateColorIndices
 </UL>
-<BR>[Calls]<UL><LI><a href="#[495]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Color2Index
-<LI><a href="#[4ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetColorIndex
+<BR>[Calls]<UL><LI><a href="#[4ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetColorIndex
 <LI><a href="#[53d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetBkColorIndex
+<LI><a href="#[495]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Color2Index
 </UL>
 <BR>[Called By]<UL><LI><a href="#[4d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SelectLCD
 <LI><a href="#[4cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_MEMDEV_Select
@@ -8663,7 +8663,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[540]"></a>LISTBOX_AddKey</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, listbox.o(i.LISTBOX_AddKey))
-<BR><BR>[Stack]<UL><LI>Max Depth = 632<LI>Call Chain = LISTBOX_AddKey &rArr; _AddKey &rArr; LISTBOX_IncSel &rArr; _MoveSel &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 632<LI>Call Chain = LISTBOX_AddKey &rArr; _AddKey &rArr; LISTBOX_IncSel &rArr; _MoveSel &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[541]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_AddKey
 </UL>
@@ -8671,7 +8671,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[542]"></a>LISTBOX_AddString</STRONG> (Thumb, 148 bytes, Stack size 40 bytes, listbox.o(i.LISTBOX_AddString))
-<BR><BR>[Stack]<UL><LI>Max Depth = 592<LI>Call Chain = LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 592<LI>Call Chain = LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -8689,7 +8689,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[42e]"></a>LISTBOX_AddStringH</STRONG> (Thumb, 178 bytes, Stack size 56 bytes, listbox.o(i.LISTBOX_AddStringH))
-<BR><BR>[Stack]<UL><LI>Max Depth = 608<LI>Call Chain = LISTBOX_AddStringH &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 608<LI>Call Chain = LISTBOX_AddStringH &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -8707,7 +8707,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[d9]"></a>LISTBOX_Callback</STRONG> (Thumb, 466 bytes, Stack size 72 bytes, listbox.o(i.LISTBOX_Callback))
-<BR><BR>[Stack]<UL><LI>Max Depth = 704<LI>Call Chain = LISTBOX_Callback &rArr; LISTBOX_AddKey &rArr; _AddKey &rArr; LISTBOX_IncSel &rArr; _MoveSel &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 704<LI>Call Chain = LISTBOX_Callback &rArr; LISTBOX_AddKey &rArr; _AddKey &rArr; LISTBOX_IncSel &rArr; _MoveSel &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[40c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_InvalidateWindow
 <LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
@@ -8734,7 +8734,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> listbox.o(i.LISTBOX_CreateUser)
 </UL>
 <P><STRONG><a name="[42a]"></a>LISTBOX_CreateAsChild</STRONG> (Thumb, 44 bytes, Stack size 48 bytes, listbox.o(i.LISTBOX_CreateAsChild))
-<BR><BR>[Stack]<UL><LI>Max Depth = 696<LI>Call Chain = LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 696<LI>Call Chain = LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[552]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LISTBOX_CreateUser
 </UL>
@@ -8742,7 +8742,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[552]"></a>LISTBOX_CreateUser</STRONG> (Thumb, 120 bytes, Stack size 40 bytes, listbox.o(i.LISTBOX_CreateUser))
-<BR><BR>[Stack]<UL><LI>Max Depth = 648<LI>Call Chain = LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 648<LI>Call Chain = LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -8758,7 +8758,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[554]"></a>LISTBOX_DecSel</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, listbox.o(i.LISTBOX_DecSel))
-<BR><BR>[Stack]<UL><LI>Max Depth = 592<LI>Call Chain = LISTBOX_DecSel &rArr; _MoveSel &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 592<LI>Call Chain = LISTBOX_DecSel &rArr; _MoveSel &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[555]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_MoveSel
 </UL>
@@ -8777,7 +8777,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[556]"></a>LISTBOX_IncSel</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, listbox.o(i.LISTBOX_IncSel))
-<BR><BR>[Stack]<UL><LI>Max Depth = 592<LI>Call Chain = LISTBOX_IncSel &rArr; _MoveSel &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 592<LI>Call Chain = LISTBOX_IncSel &rArr; _MoveSel &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[555]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_MoveSel
 </UL>
@@ -8785,7 +8785,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[557]"></a>LISTBOX_InvalidateItem</STRONG> (Thumb, 138 bytes, Stack size 32 bytes, listbox.o(i.LISTBOX_InvalidateItem))
-<BR><BR>[Stack]<UL><LI>Max Depth = 584<LI>Call Chain = LISTBOX_InvalidateItem &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 584<LI>Call Chain = LISTBOX_InvalidateItem &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -8809,13 +8809,13 @@ Global Symbols
 <LI><a href="#[200]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetTextMode
 <LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetFont
 <LI><a href="#[1f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Clear
-<LI><a href="#[44e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetStringDistX
-<LI><a href="#[4a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 <LI><a href="#[4ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DrawFocusRect
 <LI><a href="#[407]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispStringInRect
 <LI><a href="#[471]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetColor
 <LI><a href="#[470]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetBkColor
 <LI><a href="#[438]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetYDistOfFont
+<LI><a href="#[44e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetStringDistX
+<LI><a href="#[4a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 <LI><a href="#[42d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ARRAY_GethItem
 <LI><a href="#[55c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetInsideRectExScrollbar
 <LI><a href="#[55b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetInsideRect
@@ -8824,7 +8824,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> listbox.o(i.LISTBOX_CreateUser)
 </UL>
 <P><STRONG><a name="[42c]"></a>LISTBOX_SetAutoScrollV</STRONG> (Thumb, 76 bytes, Stack size 24 bytes, listbox.o(i.LISTBOX_SetAutoScrollV))
-<BR><BR>[Stack]<UL><LI>Max Depth = 576<LI>Call Chain = LISTBOX_SetAutoScrollV &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 576<LI>Call Chain = LISTBOX_SetAutoScrollV &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -8845,7 +8845,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[434]"></a>LISTBOX_SetFont</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, listbox.o(i.LISTBOX_SetFont))
-<BR><BR>[Stack]<UL><LI>Max Depth = 600<LI>Call Chain = LISTBOX_SetFont &rArr; LISTBOX_InvalidateItem &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 600<LI>Call Chain = LISTBOX_SetFont &rArr; LISTBOX_InvalidateItem &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -8867,7 +8867,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[433]"></a>LISTBOX_SetItemSpacing</STRONG> (Thumb, 36 bytes, Stack size 16 bytes, listbox.o(i.LISTBOX_SetItemSpacing))
-<BR><BR>[Stack]<UL><LI>Max Depth = 600<LI>Call Chain = LISTBOX_SetItemSpacing &rArr; LISTBOX_InvalidateItem &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 600<LI>Call Chain = LISTBOX_SetItemSpacing &rArr; LISTBOX_InvalidateItem &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -8898,7 +8898,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[42b]"></a>LISTBOX_SetScrollbarWidth</STRONG> (Thumb, 48 bytes, Stack size 16 bytes, listbox.o(i.LISTBOX_SetScrollbarWidth))
-<BR><BR>[Stack]<UL><LI>Max Depth = 520<LI>Call Chain = LISTBOX_SetScrollbarWidth &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 520<LI>Call Chain = LISTBOX_SetScrollbarWidth &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[40c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_InvalidateWindow
 <LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
@@ -8927,7 +8927,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[553]"></a>LISTBOX_SetText</STRONG> (Thumb, 42 bytes, Stack size 16 bytes, listbox.o(i.LISTBOX_SetText))
-<BR><BR>[Stack]<UL><LI>Max Depth = 608<LI>Call Chain = LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 608<LI>Call Chain = LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[542]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LISTBOX_AddString
 <LI><a href="#[557]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LISTBOX_InvalidateItem
@@ -8956,7 +8956,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[545]"></a>LISTBOX_UpdateScrollers</STRONG> (Thumb, 86 bytes, Stack size 24 bytes, listbox.o(i.LISTBOX_UpdateScrollers))
-<BR><BR>[Stack]<UL><LI>Max Depth = 552<LI>Call Chain = LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 552<LI>Call Chain = LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -9087,7 +9087,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[55f]"></a>LISTBOX__SetScrollbarWidth</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, listbox.o(i.LISTBOX__SetScrollbarWidth))
-<BR><BR>[Stack]<UL><LI>Max Depth = 504<LI>Call Chain = LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 504<LI>Call Chain = LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[566]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetDialogItem
 <LI><a href="#[569]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SCROLLBAR_SetWidth
@@ -9354,7 +9354,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[569]"></a>SCROLLBAR_SetWidth</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, scrollbar.o(i.SCROLLBAR_SetWidth))
-<BR><BR>[Stack]<UL><LI>Max Depth = 488<LI>Call Chain = SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 488<LI>Call Chain = SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[57f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WIDGET_SetWidth
 <LI><a href="#[573]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SCROLLBAR__InvalidatePartner
@@ -9579,9 +9579,9 @@ Global Symbols
 <LI><a href="#[422]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetFocus
 <LI><a href="#[414]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_NotifyParent
 <LI><a href="#[59e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WIDGET_SetState
-<LI><a href="#[59c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__UpdateChildPositions
 <LI><a href="#[59d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_BringToTop
 <LI><a href="#[59f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WIDGET__GetInsideRect
+<LI><a href="#[59c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__UpdateChildPositions
 </UL>
 <BR>[Called By]<UL><LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_Callback
 <LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_Callback
@@ -9636,12 +9636,12 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[57f]"></a>WIDGET_SetWidth</STRONG> (Thumb, 50 bytes, Stack size 24 bytes, widget.o(i.WIDGET_SetWidth))
-<BR><BR>[Stack]<UL><LI>Max Depth = 472<LI>Call Chain = WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 472<LI>Call Chain = WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
-<LI><a href="#[5a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetYSize
 <LI><a href="#[5a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetXSize
+<LI><a href="#[5a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetYSize
 </UL>
 <BR>[Called By]<UL><LI><a href="#[569]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SCROLLBAR_SetWidth
 </UL>
@@ -10388,9 +10388,9 @@ Global Symbols
 <LI><a href="#[59c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__UpdateChildPositions
 </UL>
 <BR>[Called By]<UL><LI><a href="#[43a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetSize
+<LI><a href="#[5a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetXSize
 <LI><a href="#[59c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__UpdateChildPositions
 <LI><a href="#[5a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetYSize
-<LI><a href="#[5a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetXSize
 </UL>
 
 <P><STRONG><a name="[445]"></a>WM_RestartTimer</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, wm_timer.o(i.WM_RestartTimer))
@@ -12938,11 +12938,11 @@ Local Symbols
 <P><STRONG><a name="[624]"></a>_DrawBitmap_16bpp</STRONG> (Thumb, 218 bytes, Stack size 104 bytes, gui_bmp.o(i._DrawBitmap_16bpp))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = _DrawBitmap_16bpp &rArr; _GetEarlyOut
 </UL>
-<BR>[Calls]<UL><LI><a href="#[491]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__Read16
-<LI><a href="#[537]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_GetpfColor2IndexEx
+<BR>[Calls]<UL><LI><a href="#[537]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_GetpfColor2IndexEx
 <LI><a href="#[490]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_BMP__ReadData
 <LI><a href="#[63d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetEarlyOut
 <LI><a href="#[63c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetClipParam
+<LI><a href="#[491]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__Read16
 <LI><a href="#[36f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[48e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Draw
@@ -13036,9 +13036,9 @@ Local Symbols
 <P><STRONG><a name="[493]"></a>_ManageBitfields</STRONG> (Thumb, 100 bytes, Stack size 16 bytes, gui_bmp.o(i._ManageBitfields))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = _ManageBitfields &rArr; GUI_BMP__ReadData
 </UL>
-<BR>[Calls]<UL><LI><a href="#[492]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__Read32
-<LI><a href="#[490]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_BMP__ReadData
+<BR>[Calls]<UL><LI><a href="#[490]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_BMP__ReadData
 <LI><a href="#[66a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetBitfieldsPara
+<LI><a href="#[492]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__Read32
 </UL>
 <BR>[Called By]<UL><LI><a href="#[48f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_BMP__Init
 <LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Index2ColorBitfields
@@ -13134,10 +13134,10 @@ Local Symbols
 <P><STRONG><a name="[63b]"></a>_DrawBitmapHW</STRONG> (Thumb, 142 bytes, Stack size 64 bytes, gui_drawbitmap_8888.o(i._DrawBitmapHW))
 <BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = _DrawBitmapHW &rArr; _DoClipping
 </UL>
-<BR>[Calls]<UL><LI><a href="#[495]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Color2Index
-<LI><a href="#[62a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DoClipping
+<BR>[Calls]<UL><LI><a href="#[62a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DoClipping
 <LI><a href="#[4b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_GetColorIndex
 <LI><a href="#[4fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetColorIndex
+<LI><a href="#[495]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Color2Index
 </UL>
 <BR>[Called By]<UL><LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmapHW_8888
 </UL>
@@ -13967,16 +13967,16 @@ Local Symbols
 <P><STRONG><a name="[143]"></a>_SetBkColor</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, lcd.o(i._SetBkColor))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = _SetBkColor
 </UL>
-<BR>[Calls]<UL><LI><a href="#[495]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Color2Index
-<LI><a href="#[53d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetBkColorIndex
+<BR>[Calls]<UL><LI><a href="#[53d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetBkColorIndex
+<LI><a href="#[495]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Color2Index
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> lcd.o(.constdata)
 </UL>
 <P><STRONG><a name="[142]"></a>_SetColor</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, lcd.o(i._SetColor))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = _SetColor
 </UL>
-<BR>[Calls]<UL><LI><a href="#[495]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Color2Index
-<LI><a href="#[4ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetColorIndex
+<BR>[Calls]<UL><LI><a href="#[4ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_SetColorIndex
+<LI><a href="#[495]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Color2Index
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> lcd.o(.constdata)
 </UL>
@@ -14142,8 +14142,8 @@ Local Symbols
 <P><STRONG><a name="[61a]"></a>_InitOnce</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, guidrv_lin_16.o(i._InitOnce))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = _InitOnce &rArr; GUI_ALLOC_GetFixedBlock &rArr; _InitOnce &rArr; _EnlargeBlocks &rArr;  _Alloc (Cycle)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[664]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__memset
-<LI><a href="#[47d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
+<BR>[Calls]<UL><LI><a href="#[47d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
+<LI><a href="#[664]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__memset
 </UL>
 <BR>[Called By]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ShowBuffer
 <LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVis
@@ -14407,8 +14407,8 @@ Local Symbols
 <P><STRONG><a name="[61b]"></a>_InitOnce</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, guidrv_lin_32.o(i._InitOnce))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = _InitOnce &rArr; GUI_ALLOC_GetFixedBlock &rArr; _InitOnce &rArr; _EnlargeBlocks &rArr;  _Alloc (Cycle)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[664]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__memset
-<LI><a href="#[47d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
+<BR>[Calls]<UL><LI><a href="#[47d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
+<LI><a href="#[664]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__memset
 </UL>
 <BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ShowBuffer
 <LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVis
@@ -14962,8 +14962,8 @@ Local Symbols
 <P><STRONG><a name="[514]"></a>_DispLine</STRONG> (Thumb, 128 bytes, Stack size 32 bytes, gui_charline.o(i._DispLine))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = _DispLine &rArr; GUI__ManageCache &rArr; GUI__ManageCacheEx
 </UL>
-<BR>[Calls]<UL><LI><a href="#[521]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_UC__GetCharCodeInc
-<LI><a href="#[5a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_RectsIntersect
+<BR>[Calls]<UL><LI><a href="#[5a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_RectsIntersect
+<LI><a href="#[521]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_UC__GetCharCodeInc
 <LI><a href="#[528]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__ManageCache
 </UL>
 <BR>[Called By]<UL><LI><a href="#[4a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DispLine
@@ -15418,10 +15418,10 @@ Local Symbols
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
 <LI><a href="#[1f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetColor
-<LI><a href="#[44e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetStringDistX
 <LI><a href="#[4ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DrawFocusRect
 <LI><a href="#[412]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetClientRect
 <LI><a href="#[63e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetYSizeOfFont
+<LI><a href="#[44e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetStringDistX
 <LI><a href="#[411]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetSkinFlexButtonSize
 </UL>
 <BR>[Called By]<UL><LI><a href="#[16]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_DrawSkinFlex
@@ -15699,7 +15699,7 @@ Local Symbols
 <BR>[Address Reference Count : 1]<UL><LI> editdec.o(i.EDIT_SetDecMode)
 </UL>
 <P><STRONG><a name="[541]"></a>_AddKey</STRONG> (Thumb, 234 bytes, Stack size 40 bytes, listbox.o(i._AddKey))
-<BR><BR>[Stack]<UL><LI>Max Depth = 632<LI>Call Chain = _AddKey &rArr; LISTBOX_IncSel &rArr; _MoveSel &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 632<LI>Call Chain = _AddKey &rArr; LISTBOX_IncSel &rArr; _MoveSel &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -15809,7 +15809,7 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[561]"></a>_ManageAutoScroll</STRONG> (Thumb, 166 bytes, Stack size 24 bytes, listbox.o(i._ManageAutoScroll))
-<BR><BR>[Stack]<UL><LI>Max Depth = 528<LI>Call Chain = _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 528<LI>Call Chain = _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -15826,7 +15826,7 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[555]"></a>_MoveSel</STRONG> (Thumb, 180 bytes, Stack size 40 bytes, listbox.o(i._MoveSel))
-<BR><BR>[Stack]<UL><LI>Max Depth = 592<LI>Call Chain = _MoveSel &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 592<LI>Call Chain = _MoveSel &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetXSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
@@ -15923,10 +15923,10 @@ Local Symbols
 <LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
 <LI><a href="#[200]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetTextMode
 <LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetFont
-<LI><a href="#[44e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetStringDistX
-<LI><a href="#[4a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 <LI><a href="#[412]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetClientRect
 <LI><a href="#[670]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontInfo
+<LI><a href="#[44e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetStringDistX
+<LI><a href="#[4a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 <LI><a href="#[487]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ARRAY_GetpItemLocked
 <LI><a href="#[18]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO__GetButtonSize
 </UL>
