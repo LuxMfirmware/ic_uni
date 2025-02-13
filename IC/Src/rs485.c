@@ -510,25 +510,25 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
 
 TF_Result Thermostat_Setup_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    if((!thst.master) && sendDataBuff[1] && thst.group == sendDataBuff[0])
+    if(thst.master && msg->data[1] && thst.group == msg->data[0])
     {
-        thst.group = sendDataBuff[0];
-        thst.master = sendDataBuff[1];
-        thst.th_ctrl = sendDataBuff[2];
-        thst.th_state = sendDataBuff[3];
-        thst.mv_temp = sendDataBuff[4];
-        thst.sp_temp = sendDataBuff[5];
-        thst.sp_min = sendDataBuff[6];
-        thst.sp_max = sendDataBuff[7];
-        thst.sp_diff = sendDataBuff[8];
-        thst.fan_speed = sendDataBuff[9];
-        thst.fan_loband = sendDataBuff[10];
-        thst.fan_hiband = sendDataBuff[11];
-        thst.fan_diff = sendDataBuff[12];
-        thst.fan_ctrl = sendDataBuff[13];
-        thst.fan_quiet_start = sendDataBuff[14];
-        thst.fan_quiet_end = sendDataBuff[15];
-        thst.fan_quiet_speed = sendDataBuff[16];
+        thst.group = msg->data[0];
+        thst.master = msg->data[1];
+        thst.th_ctrl = msg->data[2];
+        thst.th_state = msg->data[3];
+        thst.mv_temp = msg->data[4];
+        thst.sp_temp = msg->data[5];
+        thst.sp_min = msg->data[6];
+        thst.sp_max = msg->data[7];
+        thst.sp_diff = msg->data[8];
+        thst.fan_speed = msg->data[9];
+        thst.fan_loband = msg->data[10];
+        thst.fan_hiband = msg->data[11];
+        thst.fan_diff = msg->data[12];
+        thst.fan_ctrl = msg->data[13];
+        thst.fan_quiet_start = msg->data[14];
+        thst.fan_quiet_end = msg->data[15];
+        thst.fan_quiet_speed = msg->data[16];
     }
     
     return TF_STAY;
@@ -537,12 +537,12 @@ TF_Result Thermostat_Setup_Listener(TinyFrame *tf, TF_Msg *msg)
 
 TF_Result Thermostat_Info_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    if((!thst.master) && sendDataBuff[1] && thst.group == sendDataBuff[0])
+    if(thst.master && msg->data[1] && thst.group == msg->data[0])
     {
-        thst.th_ctrl = sendDataBuff[2];
-        thst.th_state = sendDataBuff[3];
-        thst.mv_temp = ((sendDataBuff[4] << 8) & 0xFF00) | sendDataBuff[5];
-        thst.sp_temp = sendDataBuff[6];
+        thst.th_ctrl = msg->data[2];
+        thst.th_state = msg->data[3];
+        thst.mv_temp = ((msg->data[4] << 8) & 0xFF00) | msg->data[5];
+        thst.sp_temp = msg->data[6];
     }
     
     return TF_STAY;
@@ -630,7 +630,7 @@ void RS485_Service(void){
             sendDataCount = 0;
             ZEROFILL(sendDataBuff, COUNTOF(sendDataBuff));
         }
-        else if(thst.master && thst.hasSecondaryInfoChanged)
+        else if((!thst.master) && thst.hasSecondaryInfoChanged)
         {
             sendDataBuff[sendDataCount++] = thst.group;
             sendDataBuff[sendDataCount++] = thst.master;
@@ -657,7 +657,7 @@ void RS485_Service(void){
             
             thst.hasSecondaryInfoChanged = false;
         }
-        else if(thst.master && thst.hasPrimaryInfoChanged)
+        else if((!thst.master) && thst.hasPrimaryInfoChanged)
         {
             sendDataBuff[sendDataCount++] = thst.group;
             sendDataBuff[sendDataCount++] = thst.master;
