@@ -338,7 +338,7 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
                     SetThstHeating();
                 }
                 else if (cmd == SET_THST_COOLING)
-                {
+ {
                     SetThstCooling();
                 }
                 else if (cmd == SET_THST_ON){

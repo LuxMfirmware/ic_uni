@@ -1,2 +1,2 @@
-#define FW_DATE                                	0x00251202
-#define FW_TIME                        			0x00203445 
+#define FW_DATE                                	0x00251302
+#define FW_TIME                        			0x00181904 

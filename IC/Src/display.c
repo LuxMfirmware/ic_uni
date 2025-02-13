@@ -297,6 +297,15 @@ uint8_t isButtonActive_old = 0;
 uint8_t qr_codes[QR_CODE_COUNT][QR_CODE_LENGTH] = {0}, qr_code_draw_id = 0;
 
 enum Languages{BOS = 0, ENG} language = ENG;
+
+//
+//  NAPRAVI NEŠTO OVAKO
+//
+enum{MAIN = 100, CONTROL_SELECT, LIGHT_DIMMER, LED_1_3_RELAY, LED_4_RELAY, THERMOSTAT, RETURN_TO_FIRST, LIGHTS, CURTAINS,
+    SETTINGS_1, SETTINGS_2, SETTINGS_3, SETTINGS_4, SETTINGS_5, SETTINGS_6, SETTINGS_7, RESET_MENU_SWITCHES
+}eScreen;
+//eScreen screen;
+
 #define LANGUAGES_NUM 2
 char langText[40];
 

@@ -64,61 +64,64 @@ void THSTAT_Init(void){
   */
 void THSTAT_Service(void)
 {
-    static int16_t temp_sp = 0U;
-    static uint32_t fan_pcnt = 0U;
-    static uint32_t old_fan_speed = 0U;
-    static uint32_t fancoil_fan_timer = 0U;
-    /** ============================================================================*/
-	/**				T E M P E R A T U R E		C O N T R O L L E R					*/
-	/** ============================================================================*/
-	if(!IsTempRegActiv()){
-        fan_pcnt = 0U;
-        thst.fan_speed = 0U;
-//		FanOff(); // seet to off state all 3 triac/relay outputs controlling 3 winding/speed electric fan
-	}
-	else if(IsTempRegActiv())
+    if(!thst.group)
     {
-        temp_sp =(int16_t) ((thst.sp_temp & 0x3FU) * 10);        
-        if(IsTempRegCooling()){
-            if      ((thst.fan_speed == 0U) && (thst.mv_temp > (temp_sp + thst.fan_loband)))                                    thst.fan_speed = 1U;
-            else if ((thst.fan_speed == 1U) && (thst.mv_temp > (temp_sp + thst.fan_hiband)))                                    thst.fan_speed = 2U;
-            else if ((thst.fan_speed == 1U) && (thst.mv_temp <= temp_sp))                                                       thst.fan_speed = 0U;         
-            else if ((thst.fan_speed == 2U) && (thst.mv_temp > (temp_sp + thst.fan_hiband + thst.fan_loband)))                  thst.fan_speed = 3U;
-            else if ((thst.fan_speed == 2U) && (thst.mv_temp <=(temp_sp + thst.fan_hiband - thst.fan_diff)))                    thst.fan_speed = 1U; 
-            else if ((thst.fan_speed == 3U) && (thst.mv_temp <=(temp_sp + thst.fan_hiband + thst.fan_loband - thst.fan_diff)))  thst.fan_speed = 2U;                 
+        static int16_t temp_sp = 0U;
+        static uint32_t fan_pcnt = 0U;
+        static uint32_t old_fan_speed = 0U;
+        static uint32_t fancoil_fan_timer = 0U;
+        /** ============================================================================*/
+        /**				T E M P E R A T U R E		C O N T R O L L E R					*/
+        /** ============================================================================*/
+        if(!IsTempRegActiv()){
+            fan_pcnt = 0U;
+            thst.fan_speed = 0U;
+    //		FanOff(); // seet to off state all 3 triac/relay outputs controlling 3 winding/speed electric fan
         }
-        else if(IsTempRegHeating())
+        else if(IsTempRegActiv())
         {
-            if      ((thst.fan_speed == 0U) && (thst.mv_temp < (temp_sp - thst.fan_loband)))                                    thst.fan_speed = 1U;
-            else if ((thst.fan_speed == 1U) && (thst.mv_temp < (temp_sp - thst.fan_hiband)))                                    thst.fan_speed = 2U;
-            else if ((thst.fan_speed == 1U) && (thst.mv_temp >= temp_sp))                                                       thst.fan_speed = 0U;
-            else if ((thst.fan_speed == 2U) && (thst.mv_temp < (temp_sp - thst.fan_hiband - thst.fan_loband)))                  thst.fan_speed = 3U;
-            else if ((thst.fan_speed == 2U) && (thst.mv_temp >=(temp_sp - thst.fan_hiband + thst.fan_diff)))                    thst.fan_speed = 1U; 
-            else if ((thst.fan_speed == 3U) && (thst.mv_temp >=(temp_sp - thst.fan_hiband - thst.fan_loband + thst.fan_diff)))  thst.fan_speed = 2U;         
+            temp_sp =(int16_t) ((thst.sp_temp & 0x3FU) * 10);        
+            if(IsTempRegCooling()){
+                if      ((thst.fan_speed == 0U) && (thst.mv_temp > (temp_sp + thst.fan_loband)))                                    thst.fan_speed = 1U;
+                else if ((thst.fan_speed == 1U) && (thst.mv_temp > (temp_sp + thst.fan_hiband)))                                    thst.fan_speed = 2U;
+                else if ((thst.fan_speed == 1U) && (thst.mv_temp <= temp_sp))                                                       thst.fan_speed = 0U;         
+                else if ((thst.fan_speed == 2U) && (thst.mv_temp > (temp_sp + thst.fan_hiband + thst.fan_loband)))                  thst.fan_speed = 3U;
+                else if ((thst.fan_speed == 2U) && (thst.mv_temp <=(temp_sp + thst.fan_hiband - thst.fan_diff)))                    thst.fan_speed = 1U; 
+                else if ((thst.fan_speed == 3U) && (thst.mv_temp <=(temp_sp + thst.fan_hiband + thst.fan_loband - thst.fan_diff)))  thst.fan_speed = 2U;                 
+            }
+            else if(IsTempRegHeating())
+            {
+                if      ((thst.fan_speed == 0U) && (thst.mv_temp < (temp_sp - thst.fan_loband)))                                    thst.fan_speed = 1U;
+                else if ((thst.fan_speed == 1U) && (thst.mv_temp < (temp_sp - thst.fan_hiband)))                                    thst.fan_speed = 2U;
+                else if ((thst.fan_speed == 1U) && (thst.mv_temp >= temp_sp))                                                       thst.fan_speed = 0U;
+                else if ((thst.fan_speed == 2U) && (thst.mv_temp < (temp_sp - thst.fan_hiband - thst.fan_loband)))                  thst.fan_speed = 3U;
+                else if ((thst.fan_speed == 2U) && (thst.mv_temp >=(temp_sp - thst.fan_hiband + thst.fan_diff)))                    thst.fan_speed = 1U; 
+                else if ((thst.fan_speed == 3U) && (thst.mv_temp >=(temp_sp - thst.fan_hiband - thst.fan_loband + thst.fan_diff)))  thst.fan_speed = 2U;         
+            }
+        }
+        /** ============================================================================*/
+        /**		S W I T C H		F A N		S P E E D		W I T H		D E L A Y		*/
+        /** ============================================================================*/
+        if (thst.fan_speed != old_fan_speed)
+        {
+            if((HAL_GetTick() - fancoil_fan_timer) >= FANC_FAN_MIN_ON_TIME){
+                if(fan_pcnt > 1U)  fan_pcnt = 0U;                
+                if(fan_pcnt == 0U){
+                    FanOff();
+                    if (old_fan_speed) fancoil_fan_timer = HAL_GetTick();
+                    ++fan_pcnt;
+                }
+                else if(fan_pcnt == 1U){                
+                    if      (thst.fan_speed == 1) FanLowSpeedOn();
+                    else if (thst.fan_speed == 2) FanMiddleSpeedOn();
+                    else if (thst.fan_speed == 3) FanHighSpeedOn();
+                    if (thst.fan_speed) fancoil_fan_timer = HAL_GetTick();
+                    old_fan_speed = thst.fan_speed;
+                    ++fan_pcnt;
+                }            
+            }
         }
     }
-    /** ============================================================================*/
-	/**		S W I T C H		F A N		S P E E D		W I T H		D E L A Y		*/
-	/** ============================================================================*/
-	if (thst.fan_speed != old_fan_speed)
-    {
-        if((HAL_GetTick() - fancoil_fan_timer) >= FANC_FAN_MIN_ON_TIME){
-            if(fan_pcnt > 1U)  fan_pcnt = 0U;                
-            if(fan_pcnt == 0U){
-                FanOff();
-                if (old_fan_speed) fancoil_fan_timer = HAL_GetTick();
-                ++fan_pcnt;
-            }
-            else if(fan_pcnt == 1U){                
-                if      (thst.fan_speed == 1) FanLowSpeedOn();
-                else if (thst.fan_speed == 2) FanMiddleSpeedOn();
-                else if (thst.fan_speed == 3) FanHighSpeedOn();
-                if (thst.fan_speed) fancoil_fan_timer = HAL_GetTick();
-                old_fan_speed = thst.fan_speed;
-                ++fan_pcnt;
-            }            
-        }
-	}
 }
 
 
