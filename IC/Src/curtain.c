@@ -1,4 +1,5 @@
 #include "curtain.h"
+#include "display.h"
 #include "stm32746g_eeprom.h"
 
 #if (__CURTAIN_CTRL_H__ != FW_BUILD)
@@ -15,10 +16,11 @@
 
 
 
-Curtain curtains[CURTAINS_SIZE];
 uint8_t upDownDurationSeconds = 0;
 uint8_t curtains_send = 0;
 uint8_t curtains_count = 0;
+uint8_t curtainSendDataBuff[4 * CURTAINS_SIZE], curtainSendDataBuffCount = 0;
+Curtain curtains[CURTAINS_SIZE];
 
 
 
@@ -431,6 +433,45 @@ void Curtain_Reset(Curtain* const cur)
     cur->upDown_old = CURTAIN_STOP;
     cur->upDownTimer = 0;
     Curtain_ResendReset(cur);
+}
+
+
+
+
+
+
+
+void Curtain_Service()
+{
+    for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
+    {
+        Curtain* const cur = curtains + i;
+        
+        if(!Curtain_hasRelays(cur)) continue;
+        
+        if(Curtain_hasMoveTimeExpired(cur))
+        {
+            Curtain_Stop(cur);
+        }
+        
+        if(Curtain_hasDirectionChanged(cur))
+        {
+            uint16_t relay = 0;
+            
+            relay = (Curtain_isNewDirectionUp(cur) || (Curtain_isNewDirectionStop(cur) && Curtain_isMovingUp(cur))) ? Curtain_GetRelayUp(cur) : Curtain_GetRelayDown(cur);
+            *(curtainSendDataBuff + curtainSendDataBuffCount) = (relay >> 8) & 0xFF;
+            *(curtainSendDataBuff + curtainSendDataBuffCount + 1) = relay & 0xFF;
+            curtainSendDataBuffCount += 2;
+            curtainSendDataBuff[curtainSendDataBuffCount++] = Curtain_isNewDirectionStop(cur) ? 0 : (Curtain_isNewDirectionUp(cur) ? 1 : 2);
+            
+            if(screen == SCREEN_CURTAINS) shouldDrawScreen = 1;
+            
+            if(Curtain_isNewDirectionStop(cur)) Curtain_Reset(cur);
+            else Curtain_DirectionEqualize(cur);
+            
+            break; // blinds have to be sent one by one
+        }
+    }
 }
 
 

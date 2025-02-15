@@ -97,6 +97,7 @@
   ..\..\Middlewares\STemWin\inc\TEXT.h \
   ..\..\Middlewares\STemWin\inc\TREEVIEW.h \
   ..\..\Middlewares\STemWin\inc\KNOB.h ..\..\Common\common.h \
-  ..\Inc\Resource.h ..\..\Middlewares\LuxNET\LuxNET.h \
+  ..\Inc\Resource.h ..\..\Middlewares\LuxNET\LuxNET.h ..\Inc\display.h \
+  ..\Inc\thermostat.h ..\Inc\lights.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h

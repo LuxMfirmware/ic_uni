@@ -24,9 +24,10 @@ Curtain;
 
 
 
-extern Curtain curtains[CURTAINS_SIZE];
 extern uint8_t upDownDurationSeconds;
 extern uint8_t curtains_send;
+extern uint8_t curtainSendDataBuff[4 * CURTAINS_SIZE], curtainSendDataBuffCount;
+extern Curtain curtains[CURTAINS_SIZE];
 
 
 
@@ -66,6 +67,8 @@ void Curtain_Resend(Curtain* const cur);
 void Curtain_ResendReset(Curtain* const cur);
 bool Curtain_shouldResend(const Curtain* const cur);
 void Curtain_Reset();
+void Curtain_Service();
+
 
 
 
