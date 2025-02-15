@@ -155,6 +155,7 @@ int main(void){
         ADC3_Read();
         TS_Service();
 		DISP_Service();
+        Light_Modbus_Service();
         Curtain_Service();
         RS485_Service();
         THSTAT_Service();
