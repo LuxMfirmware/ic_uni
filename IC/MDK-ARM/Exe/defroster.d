@@ -1,10 +1,4 @@
-./exe/main.o: ..\Src\main.c ..\..\Middlewares\STemWin\png\png.h \
-  ..\..\Middlewares\STemWin\png\pnglibconf.h \
-  ..\..\Middlewares\STemWin\png\pngconf.h \
-  C:\Keil\ARM\ARMCLANG\Bin\..\include\limits.h \
-  C:\Keil\ARM\ARMCLANG\Bin\..\include\stddef.h \
-  C:\Keil\ARM\ARMCLANG\Bin\..\include\setjmp.h \
-  C:\Keil\ARM\ARMCLANG\Bin\..\include\time.h ..\Inc\main.h \
+./exe/defroster.o: ..\Src\defroster.c ..\Inc\defroster.h ..\Inc\main.h \
   ..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h \
   ..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h \
   C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\core_cm7.h \
@@ -75,6 +69,7 @@
   ..\..\Middlewares\STemWin\inc\GUI_Private.h \
   ..\..\Middlewares\STemWin\inc\LCD_Protected.h \
   ..\..\Middlewares\STemWin\inc\GUI_Debug.h \
+  C:\Keil\ARM\ARMCLANG\Bin\..\include\stddef.h \
   ..\..\Middlewares\STemWin\inc\SCROLLBAR.h \
   ..\..\Middlewares\STemWin\inc\CALENDAR.h \
   ..\..\Middlewares\STemWin\inc\CHECKBOX.h \
@@ -102,18 +97,5 @@
   ..\..\Middlewares\STemWin\inc\TEXT.h \
   ..\..\Middlewares\STemWin\inc\TREEVIEW.h \
   ..\..\Middlewares\STemWin\inc\KNOB.h ..\..\Common\common.h \
-  ..\Inc\Resource.h ..\..\Middlewares\LuxNET\LuxNET.h ..\Inc\rs485.h \
-  ..\..\Middlewares\TinyFrame\TinyFrame.h \
-  ..\..\Middlewares\TinyFrame\TF_Config.h ..\Inc\logger.h \
-  ..\Inc\display.h ..\Inc\main.h ..\Inc\thermostat.h ..\Inc\lights.h \
-  ..\Inc\thermostat.h ..\Inc\ventilator.h ..\Inc\curtain.h \
-  ..\Inc\lights.h ..\Inc\defroster.h \
-  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h \
-  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_ts.h \
-  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h \
-  ..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\ft5336\ft5336.h \
-  ..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\ft5336\..\Common\ts.h \
-  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_qspi.h \
-  ..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\n25q128a\n25q128a.h \
-  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h \
-  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h
+  ..\Inc\Resource.h ..\..\Middlewares\LuxNET\LuxNET.h ..\Inc\display.h \
+  ..\Inc\thermostat.h ..\Inc\lights.h
