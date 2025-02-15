@@ -3606,9 +3606,9 @@
       <ActiveTab>0</ActiveTab>
       <Doc>
         <Name>..\Src\rs485.c</Name>
-        <ColumnNumber>37</ColumnNumber>
-        <TopLine>503</TopLine>
-        <CurrentLine>518</CurrentLine>
+        <ColumnNumber>38</ColumnNumber>
+        <TopLine>521</TopLine>
+        <CurrentLine>540</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
