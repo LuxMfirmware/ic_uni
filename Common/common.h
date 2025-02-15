@@ -16,9 +16,9 @@
 /*  time and buld number are result of executing batch files and vb script	is compiled	    */
 /* 	                                                                                        */
 /**/
-#define FW_DATE                                	0x00251302
-#define FW_TIME                        			0x00192808 
-#define FW_BUILD_NUMBER                          12046
+#define FW_DATE                                	0x00251502
+#define FW_TIME                        			0x00151358 
+#define FW_BUILD_NUMBER                          12061
 
 /* select application if preprocessor symbol no defined -----------------*/
 //#define HOTEL_CONTROLLER

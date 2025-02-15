@@ -4737,7 +4737,6 @@ Section Cross References
     display.o(.text.DISP_Service) refers to fd32.o(.constdata) for GUI_FontD32
     display.o(.text.DISP_Service) refers to display.o(.bss.isButtonActive_old) for isButtonActive_old
     display.o(.text.DISP_Service) refers to stm32f7xx_hal_gpio.o(.text.HAL_GPIO_ReadPin) for HAL_GPIO_ReadPin
-    display.o(.text.DISP_Service) refers to curtain.o(.text.Curtains_getCount) for Curtains_getCount
     display.o(.text.DISP_Service) refers to lights.o(.text.Light_Modbus_On) for Light_Modbus_On
     display.o(.text.DISP_Service) refers to lights.o(.text.Light_Modbus_Off) for Light_Modbus_Off
     display.o(.text.DISP_Service) refers to lights.o(.text.Light_Modbus_Flip) for Light_Modbus_Flip

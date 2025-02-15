@@ -2305,7 +2305,7 @@ void DISP_Service(void){
     
     if((isButtonActive_old != IsButtonActive()) && (!isButtonActive_old))
     {
-        for(uint8_t i = 0; i < Curtains_getCount(); i++)
+        for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
         {
             LIGHT_Modbus_CmdTypeDef* const light = lights_modbus + i;
             
