@@ -9,6 +9,8 @@
 
 
 uint8_t lights_count = 0, lights_modbus_rows = 0;
+uint8_t LightNightTimer_isEnabled = 0;
+uint32_t LightNightTimer_StartTime = 0;
 LIGHT_Modbus_CmdTypeDef lights_modbus[LIGHTS_MODBUS_SIZE];
 GUI_CONST_STORAGE GUI_BITMAP* light_modbus_images[] = {&bmSijalicaOff, &bmSijalicaOn, &bmVENTILATOR_OFF, &bmVENTILATOR_ON};
 
@@ -101,6 +103,8 @@ void Lights_Modbus_Init()
     }
     
     Lights_Modbus_Calculate();
+    
+    EE_ReadBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
 }
 
 void Lights_Modbus_Save()
@@ -461,4 +465,59 @@ void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li)
 GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return light_modbus_images[(li->iconID * 2) + Light_Modbus_isNewValueOn(li)];
+}
+
+
+
+
+
+
+
+
+void Light_Modbus_Service()
+{
+    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
+    {
+        if(Light_Modbus_isOnDelayTimeTimerActive(lights_modbus + i) && Light_Modbus_hasOnDelayTimeTimerExpired(lights_modbus + i))
+        {
+            Light_Modbus_OnDelayTimeTimerDeactivate(lights_modbus + i);
+            Light_Modbus_On(lights_modbus + i);
+        }
+        
+        if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
+    }
+    
+    
+    
+    
+    
+    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
+    {
+        if(Light_Modbus_isOffTimeTimerActive(lights_modbus + i) && Light_Modbus_hasOffTimeTimerExpired(lights_modbus + i))
+        {
+            Light_Modbus_OffTimeTimerDeactivate(lights_modbus + i);
+            Light_Modbus_Off(lights_modbus + i);
+        }
+        
+        if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
+    }
+    
+    
+    
+    
+    if(LightNightTimer_StartTime && ((HAL_GetTick() - LightNightTimer_StartTime) >= (LIGHT_NIGHT_TIMER_DURATION * 1000)))
+    {
+        LightNightTimer_StartTime = 0;
+        
+        for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
+        {
+            if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && Light_Modbus_isActive(lights_modbus + i))
+            {
+                Light_Modbus_Off(lights_modbus + i);
+            }
+        }
+        
+        if(screen == SCREEN_RESET_MENU_SWITCHES) screen = 1;
+        shouldDrawScreen = 1;
+    }
 }

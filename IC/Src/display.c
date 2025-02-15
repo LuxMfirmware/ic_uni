@@ -52,8 +52,6 @@ Light_Modbus_settingsWidgets;
 #define LIGHTS_MODBUS_PER_SETTINGS      1
 #define LIGHTS_MODBUS_PER_ROW           3
 
-#define LIGHT_NIGHT_TIMER_DURATION      15
-
 #define VENTILATOR_ON_TIMER_DURATION    15
 
 #define QR_CODE_COUNT                   2
@@ -288,8 +286,6 @@ uint32_t light_settingsTimerStart = 0;
 uint8_t lightsModbusSettingsMenu = 0, light_selectedIndex = LIGHTS_MODBUS_SIZE, lightsMenuSpaceBetween = (400 - (80 * LIGHTS_MODBUS_PER_ROW)) / (LIGHTS_MODBUS_PER_ROW - 1 + 2);
 uint8_t shouldDrawScreen = 1;
 uint8_t bOnlyLeaveScreenSaverAfterTouch = 0;
-uint8_t LightNightTimer_isEnabled = 0;
-uint32_t LightNightTimer_StartTime = 0;
 uint32_t ventilatorOnDelayTimer_Start = 0;
 uint32_t everyMinuteTimerStart = 0;
 uint8_t isButtonActive_old = 0;
@@ -657,29 +653,6 @@ static void DSP_KillSet7Scrn(void);
 static uint8_t DISPMenuSettings(uint8_t btn);
 static void SaveLightController(LIGHT_CtrlTypeDef* lc, uint16_t addr);
 static void ReadLightController(LIGHT_CtrlTypeDef* lc, uint16_t addr);
-uint8_t Lights_Modbus_getCount();
-uint8_t Lights_Modbus_Rows_getCount();
-void Lights_Modbus_Init();
-void Lights_Modbus_Save();
-uint16_t Light_Modbus_GetRelay(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_SetRelay(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t val);
-void Light_Modbus_TieToMainLight(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_UntieFromMainLight(LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isTiedToMainLight(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isActive(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_Flip(LIGHT_Modbus_CmdTypeDef* const li);
-GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_SetColor(LIGHT_Modbus_CmdTypeDef* const li, GUI_COLOR color);
-void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brightness);
-void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li);
-uint32_t Ventilator_GetOnDelayTimer();
-void Ventilator_SetOnDelayTimer(const uint32_t val);
-bool Ventilator_isOnDelayTimerActive();
-bool Ventilator_hasOnDelayTimerExpired();
-void Ventilator_OnDelayTimerDeactivate();
 void Curtain_Select(const uint8_t curtain);
 uint8_t Curtain_getSelected();
 bool Curtain_areAllSelected();
@@ -704,9 +677,7 @@ void DISP_Init(void){
     ReadLightController(&LIGHT_Ctrl1, EE_CTRL1);
     ReadLightController(&LIGHT_Ctrl2, EE_CTRL2);
 //    Ventilator_Init(&ventilator, EE_VENTILATOR);
-    Lights_Modbus_Init();
     EE_ReadBuffer(&bOnlyLeaveScreenSaverAfterTouch, EE_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, 1);
-    EE_ReadBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
     everyMinuteTimerStart = HAL_GetTick();
     GUI_Exec();
 }
@@ -2352,75 +2323,10 @@ void DISP_Service(void){
     
     
     
-    
     if(light_settingsTimerStart && ((HAL_GetTick() - light_settingsTimerStart) >= (2 * 1000)))
     {
         light_settingsTimerStart = 0;
         screen = SCREEN_LIGHT_SETTINGS;
-        shouldDrawScreen = 1;
-    }
-    
-    
-    
-    
-    
-    if(Ventilator_isOnDelayTimerActive() && Ventilator_hasOnDelayTimerExpired())
-    {
-        Ventilator_OnDelayTimerDeactivate();
-        
-        for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
-        {
-            if(Light_Modbus_isOffTimeEnabled(lights_modbus + i)) Light_Modbus_On(lights_modbus + i);
-            if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
-        }
-    }
-    
-    
-    
-    
-    
-    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
-    {
-        if(Light_Modbus_isOnDelayTimeTimerActive(lights_modbus + i) && Light_Modbus_hasOnDelayTimeTimerExpired(lights_modbus + i))
-        {
-            Light_Modbus_OnDelayTimeTimerDeactivate(lights_modbus + i);
-            Light_Modbus_On(lights_modbus + i);
-        }
-        
-        if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
-    }
-    
-    
-    
-    
-    
-    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
-    {
-        if(Light_Modbus_isOffTimeTimerActive(lights_modbus + i) && Light_Modbus_hasOffTimeTimerExpired(lights_modbus + i))
-        {
-            Light_Modbus_OffTimeTimerDeactivate(lights_modbus + i);
-            Light_Modbus_Off(lights_modbus + i);
-        }
-        
-        if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
-    }
-    
-    
-    
-    
-    if(LightNightTimer_StartTime && ((HAL_GetTick() - LightNightTimer_StartTime) >= (LIGHT_NIGHT_TIMER_DURATION * 1000)))
-    {
-        LightNightTimer_StartTime = 0;
-        
-        for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
-        {
-            if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && Light_Modbus_isActive(lights_modbus + i))
-            {
-                Light_Modbus_Off(lights_modbus + i);
-            }
-        }
-        
-        if(screen == SCREEN_RESET_MENU_SWITCHES) screen = 1;
         shouldDrawScreen = 1;
     }
     
@@ -3802,7 +3708,6 @@ void PID_Hook(GUI_PID_STATE * pTS){
                 else
                 {
                     LightNightTimer_StartTime = 0;
-                    if(isAnyLightActive) Ventilator_OnDelayTimerDeactivate();
                     
                     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
                     {
@@ -4086,38 +3991,6 @@ void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
     tc->group           = buf[21];
     tc->master          = buf[22];
 }
-
-
-
-
-
-
-
-uint32_t Ventilator_GetOnDelayTimer()
-{
-    return ventilatorOnDelayTimer_Start;
-}
-
-void Ventilator_SetOnDelayTimer(const uint32_t val)
-{
-    ventilatorOnDelayTimer_Start = val;
-}
-
-bool Ventilator_isOnDelayTimerActive()
-{
-    return Ventilator_GetOnDelayTimer();
-}
-
-bool Ventilator_hasOnDelayTimerExpired()
-{
-    return (HAL_GetTick() - ventilatorOnDelayTimer_Start) >= (2 * 60 * 1000);
-}
-
-void Ventilator_OnDelayTimerDeactivate()
-{
-    ventilatorOnDelayTimer_Start = 0;
-}
-
 
 
 

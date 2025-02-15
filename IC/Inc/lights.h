@@ -12,6 +12,8 @@
 
 #define LIGHTS_MODBUS_SIZE                   6
 
+#define LIGHT_NIGHT_TIMER_DURATION           15
+
 
 
 
@@ -28,13 +30,32 @@ typedef struct
 
 
 extern uint8_t lights_count, lights_modbus_rows;
+extern uint8_t LightNightTimer_isEnabled;
+extern uint32_t LightNightTimer_StartTime;
 extern LIGHT_Modbus_CmdTypeDef lights_modbus[LIGHTS_MODBUS_SIZE];
 
 
 
 
 
-
+uint8_t Lights_Modbus_getCount();
+uint8_t Lights_Modbus_Rows_getCount();
+void Lights_Modbus_Init();
+void Lights_Modbus_Save();
+uint16_t Light_Modbus_GetRelay(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_SetRelay(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t val);
+void Light_Modbus_TieToMainLight(LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_UntieFromMainLight(LIGHT_Modbus_CmdTypeDef* const li);
+bool Light_Modbus_isTiedToMainLight(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li);
+bool Light_Modbus_isActive(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_Flip(LIGHT_Modbus_CmdTypeDef* const li);
+GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_SetColor(LIGHT_Modbus_CmdTypeDef* const li, GUI_COLOR color);
+void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brightness);
+void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li);
 uint8_t Lights_Modbus_getCount();
 void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li);
@@ -78,6 +99,7 @@ bool Light_Modbus_hasOffTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li
 void Light_Modbus_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_Service();
 
 
 

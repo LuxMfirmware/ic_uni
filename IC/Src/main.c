@@ -27,6 +27,7 @@
 #include "thermostat.h"
 #include "ventilator.h"
 #include "curtain.h"
+#include "lights.h"
 #include "stm32746g.h"
 #include "stm32746g_ts.h"
 #include "stm32746g_qspi.h"
@@ -136,6 +137,8 @@ int main(void){
     RAM_Init();
     MX_UART_Init();
     RS485_Init();
+    Lights_Modbus_Init();
+    Curtains_Init();
     DISP_Init();
 //    PresentSystem();
     THSTAT_Init();
@@ -145,7 +148,6 @@ int main(void){
     PCA9685_Init();
     if(pwminit) PCA9685_SetOutputFrequency(PWM_0_15_FREQUENCY_DEFAULT);
 //    Ventilator_Init(&ventilator, EE_VENTILATOR);
-    Curtains_Init();
 #ifdef	USE_WATCHDOG
     HAL_IWDG_Refresh(&hiwdg);
 #endif
