@@ -510,7 +510,7 @@ TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
 
 TF_Result Thermostat_Setup_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    if(thst.master && msg->data[1] && thst.group == msg->data[0])
+    if(thst.master && msg->data[1] && (thst.group == msg->data[0]))
     {
         thst.group = msg->data[0];
         thst.master = msg->data[1];
@@ -537,7 +537,7 @@ TF_Result Thermostat_Setup_Listener(TinyFrame *tf, TF_Msg *msg)
 
 TF_Result Thermostat_Info_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    if(thst.master && msg->data[1] && thst.group == msg->data[0])
+    if(thst.master && msg->data[1] && (thst.group == msg->data[0]))
     {
         thst.th_ctrl = msg->data[2];
         thst.th_state = msg->data[3];
