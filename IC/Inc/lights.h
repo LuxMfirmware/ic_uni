@@ -29,6 +29,7 @@ typedef struct
 
 
 
+
 extern uint8_t lights_count, lights_modbus_rows;
 extern uint8_t LightNightTimer_isEnabled;
 extern uint32_t LightNightTimer_StartTime;

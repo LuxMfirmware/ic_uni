@@ -26,7 +26,6 @@ Curtain;
 
 extern uint8_t upDownDurationSeconds;
 extern uint8_t curtains_send;
-extern uint8_t curtainSendDataBuff[4 * CURTAINS_SIZE], curtainSendDataBuffCount;
 extern Curtain curtains[CURTAINS_SIZE];
 
 

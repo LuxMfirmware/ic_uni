@@ -52,6 +52,16 @@ bool isSendDataBufferEmpty();
 /* Program Code  -------------------------------------------------------------*/
 
 
+void SendData(uint8_t *data, uint8_t length, uint8_t commandType)
+{
+    sendDataCount = 0;
+    ZEROFILL(sendDataBuff, COUNTOF(sendDataBuff));
+}
+
+
+
+
+
 
 void AttachData(TF_Msg* mess)
 {

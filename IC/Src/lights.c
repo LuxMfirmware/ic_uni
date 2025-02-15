@@ -1,4 +1,5 @@
 #include "lights.h"
+#include "rs485.h"
 #include "display.h"
 #include "stm32746g_sdram.h"
 #include "stm32746g_eeprom.h"
@@ -519,5 +520,62 @@ void Light_Modbus_Service()
         
         if(screen == SCREEN_RESET_MENU_SWITCHES) screen = 1;
         shouldDrawScreen = 1;
+    }
+    
+    
+    
+    
+    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
+    {
+        if(Light_Modbus_hasStatusChanged(lights_modbus + i))
+        {
+//                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
+            *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+            sendDataCount += 2;
+            
+            if(Light_Modbus_isBinary(lights_modbus + i) || Light_Modbus_isRGB(lights_modbus + i))
+            {
+                sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
+                
+                //DodajKomandu(, BINARY_SET, sendDataBuff, sendDataCount);
+            }
+            else if(Light_Modbus_isDimmer(lights_modbus + i))
+            {
+                sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0 : 100;
+                
+                //DodajKomandu(, DIMMER_SET, sendDataBuff, sendDataCount);
+            }
+            
+            Light_Modbus_ResetStatus(lights_modbus + i);
+            
+            if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
+            else if(!screen) screen = SCREEN_MAIN;
+        }
+        else if(Light_Modbus_hasBrightnessChanged(lights_modbus + i))
+        {
+            *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+            sendDataCount += 2;
+            sendDataBuff[sendDataCount++] = Light_Modbus_GetBrightness(lights_modbus + i);
+            
+            //DodajKomandu(, DIMMER_SET, sendDataBuff, sendDataCount);
+            
+            Light_Modbus_ResetBrightness(lights_modbus + i);
+        }
+        else if(Light_Modbus_hasColorChanged(lights_modbus + i))
+        {
+            //if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_COLOR_SET;
+            *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+            sendDataCount += 2;
+            sendDataBuff[sendDataCount++] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
+            sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
+            sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
+            
+            //DodajKomandu(, RGB_SET, sendDataBuff, sendDataCount);
+            
+            Light_Modbus_ResetColor(lights_modbus + i);
+        }
     }
 }

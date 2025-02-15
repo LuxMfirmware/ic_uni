@@ -56,6 +56,7 @@ extern uint8_t  tfbra;
 extern uint8_t  tfgwa;
 extern uint16_t sysid;
 extern uint32_t rsflg;
+extern uint8_t sendDataBuff[50], sendDataCount;
 /* Exported Define  ----------------------------------------------------------*/
 /* Exported macros     -------------------------------------------------------*/
 #define StartFwUpdate()             (rsflg |=  ((uint32_t)0x00000001U))

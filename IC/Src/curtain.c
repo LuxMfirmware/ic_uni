@@ -1,4 +1,5 @@
 #include "curtain.h"
+#include "rs485.h"
 #include "display.h"
 #include "stm32746g_eeprom.h"
 
@@ -19,7 +20,6 @@
 uint8_t upDownDurationSeconds = 0;
 uint8_t curtains_send = 0;
 uint8_t curtains_count = 0;
-uint8_t curtainSendDataBuff[4 * CURTAINS_SIZE], curtainSendDataBuffCount = 0;
 Curtain curtains[CURTAINS_SIZE];
 
 
@@ -459,10 +459,12 @@ void Curtain_Service()
             uint16_t relay = 0;
             
             relay = (Curtain_isNewDirectionUp(cur) || (Curtain_isNewDirectionStop(cur) && Curtain_isMovingUp(cur))) ? Curtain_GetRelayUp(cur) : Curtain_GetRelayDown(cur);
-            *(curtainSendDataBuff + curtainSendDataBuffCount) = (relay >> 8) & 0xFF;
-            *(curtainSendDataBuff + curtainSendDataBuffCount + 1) = relay & 0xFF;
-            curtainSendDataBuffCount += 2;
-            curtainSendDataBuff[curtainSendDataBuffCount++] = Curtain_isNewDirectionStop(cur) ? 0 : (Curtain_isNewDirectionUp(cur) ? 1 : 2);
+            *(sendDataBuff + sendDataCount) = (relay >> 8) & 0xFF;
+            *(sendDataBuff + sendDataCount + 1) = relay & 0xFF;
+            sendDataCount += 2;
+            sendDataBuff[sendDataCount++] = Curtain_isNewDirectionStop(cur) ? 0 : (Curtain_isNewDirectionUp(cur) ? 1 : 2);
+            
+            //DodajKomandu(, JALOUSIE_SET, sendDataBuff, sendDataCount);
             
             if(screen == SCREEN_CURTAINS) shouldDrawScreen = 1;
             
