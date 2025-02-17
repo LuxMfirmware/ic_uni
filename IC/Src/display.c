@@ -692,6 +692,8 @@ void DrawEquilateralTriangle(const int16_t x, const int16_t y, const int16_t len
   * @retval
   */
 void DISP_Init(void){
+    uint8_t len;
+    
     GUI_Init();
     GUI_PID_SetHook(PID_Hook);
     WM_MULTIBUF_Enable(1);
@@ -707,6 +709,11 @@ void DISP_Init(void){
     Lights_Modbus_Init();
     EE_ReadBuffer(&bOnlyLeaveScreenSaverAfterTouch, EE_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, 1);
     EE_ReadBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
+    
+    EE_ReadBuffer(&len, EE_QR_CODE1, 1); // uzmi dužinu qr koda 
+    EE_ReadBuffer(&qr_codes[0][0], EE_QR_CODE1+1, len); // učitaj qr kod
+    EE_ReadBuffer(&len, EE_QR_CODE2, 1);
+    EE_ReadBuffer(&qr_codes[1][0], EE_QR_CODE2+1, len);
     everyMinuteTimerStart = HAL_GetTick();
     GUI_Exec();
 }
@@ -2430,8 +2437,8 @@ void DISP_Service(void){
     
     if (!IsScrnsvrActiv()){
         if ((HAL_GetTick() - scrnsvr_tmr) >= (uint32_t)(scrnsvr_tout*1000)){
-            if      (screen == SCREEN_SETTINGS_1) DSP_KillSet1Scrn();
-            else if (screen == SCREEN_SETTINGS_2) DSP_KillSet2Scrn();
+            if      (screen == SCREEN_SETTINGS_1)DSP_KillSet1Scrn();
+            else if (screen == SCREEN_SETTINGS_2)DSP_KillSet2Scrn();
             else if (screen == SCREEN_SETTINGS_3)DSP_KillSet3Scrn();
             else if (screen == SCREEN_SETTINGS_4)DSP_KillSet4Scrn();
             else if (screen == SCREEN_SETTINGS_5)DSP_KillSet5Scrn();
@@ -4025,72 +4032,6 @@ static void ReadLightController(LIGHT_CtrlTypeDef* lc, uint16_t addr){
     lc->Light3.index    = buf[7];
     EE_ReadBuffer((uint8_t*)(&(lc->modbusLight.index)), addr + 8, 2);
 }
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
-    uint8_t buf[23];
-    buf[0] = tc->th_ctrl;
-    buf[1] = tc->th_state;
-    buf[2] = tc->mv_temp>>8;
-    buf[3] = tc->mv_temp&0xFF;
-    buf[4] = tc->mv_offset;
-    buf[5] = tc->mv_ntcref>>8;
-    buf[6] = tc->mv_ntcref&0xFF;
-    buf[7] = tc->mv_nctbeta>>8;
-    buf[8] = tc->mv_nctbeta&0xFF;
-    buf[9] = tc->sp_temp;
-    buf[10] = tc->sp_diff;
-    buf[11] = tc->sp_max;
-    buf[12] = tc->sp_min;
-    buf[13] = tc->fan_ctrl;
-    buf[14] = tc->fan_speed;
-    buf[15] = tc->fan_diff;
-    buf[16] = tc->fan_loband;
-    buf[17] = tc->fan_hiband;
-    buf[18] = tc->fan_quiet_start;
-    buf[19] = tc->fan_quiet_end;
-    buf[20] = tc->fan_quiet_speed;
-    buf[21] = tc->group;
-    buf[22] = tc->master;
-    EE_WriteBuffer(buf, addr, 23);
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr){
-    uint8_t buf[23];
-    EE_ReadBuffer(buf, addr, 23);
-    tc->th_ctrl         = buf[0];
-    tc->th_state        = buf[1];
-    tc->mv_temp         =(buf[2]<<8)|buf[3];
-    tc->mv_offset       = buf[4];
-    tc->mv_ntcref       =(buf[5]<<8)|buf[6];
-    tc->mv_nctbeta      =(buf[7]<<8)|buf[8];
-    tc->sp_temp         = buf[9];
-    tc->sp_diff         = buf[10];
-    tc->sp_max          = buf[11];
-    tc->sp_min          = buf[12];
-    tc->fan_ctrl        = buf[13];
-    tc->fan_speed       = buf[14];
-    tc->fan_diff        = buf[15];
-    tc->fan_loband      = buf[16];
-    tc->fan_hiband      = buf[17];
-    tc->fan_quiet_start = buf[18];
-    tc->fan_quiet_end   = buf[19];
-    tc->fan_quiet_speed = buf[20];
-    tc->group           = buf[21];
-    tc->master          = buf[22];
-}
-
-
-
-
-
 
 
 uint32_t Ventilator_GetOnDelayTimer()

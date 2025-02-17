@@ -29,7 +29,7 @@ extern uint8_t upDownDurationSeconds;
 extern uint8_t curtains_send;
 
 
-
+void Curtain_Service(void);
 uint8_t Curtains_getCount();
 void Curtains_Init();
 void Curtains_Save();
@@ -65,8 +65,8 @@ bool Curtain_hasMoveTimeExpired(const Curtain* const cur);
 void Curtain_Resend(Curtain* const cur);
 void Curtain_ResendReset(Curtain* const cur);
 bool Curtain_shouldResend(const Curtain* const cur);
-void Curtain_Reset();
-
+void Curtain_Reset(Curtain* const cur);
+void Curtain_service(void);
 
 
 #endif

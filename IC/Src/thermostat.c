@@ -7,10 +7,10 @@
  ******************************************************************************
  */
 
- 
+
 #if (__TEMP_CTRL_H__ != FW_BUILD)
-    #error "thermostat header version mismatch"
-#endif 
+#error "thermostat header version mismatch"
+#endif
 /* Include  ------------------------------------------------------------------*/
 #include "png.h"
 #include "main.h"
@@ -49,14 +49,12 @@ uint8_t termfl;
   * @param
   * @retval
   */
-void THSTAT_Init(void){
+void THSTAT_Init(void) {
     thst.hasPrimaryInfoChanged = false;
     thst.hasSecondaryInfoChanged = false;
-	ReadThermostatController(&thst,  EE_THST1);
+    ReadThermostatController(&thst,  EE_THST1);
     TempRegHeating();
 }
-
-
 /**
   * @brief
   * @param
@@ -64,6 +62,13 @@ void THSTAT_Init(void){
   */
 void THSTAT_Service(void)
 {
+    uint8_t buf[sizeof(thst)];
+
+    // trebalo bi if(thst.master) termostat svejedno da li je master ili slave treba id za individualno adresiranje
+    // dakle promjene preko busa se odnose na id termostata (thst.group) svi termostati jedne grupe su jedan isti termostat
+    // samo su im graficki interfejsi razbacani po razlicitim kontrolerima po kuci ali samo što je jedan od njih master termostat
+    // koji ili ima priljucene releje na izlaznim pinovima, a ne mora ni to ili ima ntc senzor za mjerenje tempeature, a ne mora ni to
+    // njegova uloga je bitna što samo on diktira stanje aktuatorima bilo da su izlazni pinovi na PCB ili da su aktuatori na bus- u
     if(!thst.group)
     {
         static int16_t temp_sp = 0U;
@@ -73,21 +78,21 @@ void THSTAT_Service(void)
         /** ============================================================================*/
         /**				T E M P E R A T U R E		C O N T R O L L E R					*/
         /** ============================================================================*/
-        if(!IsTempRegActiv()){
+        if(!IsTempRegActiv()) {
             fan_pcnt = 0U;
             thst.fan_speed = 0U;
-    //		FanOff(); // seet to off state all 3 triac/relay outputs controlling 3 winding/speed electric fan
+            //		FanOff(); // seet to off state all 3 triac/relay outputs controlling 3 winding/speed electric fan
         }
         else if(IsTempRegActiv())
         {
-            temp_sp =(int16_t) ((thst.sp_temp & 0x3FU) * 10);        
-            if(IsTempRegCooling()){
+            temp_sp =(int16_t) ((thst.sp_temp & 0x3FU) * 10);
+            if(IsTempRegCooling()) {
                 if      ((thst.fan_speed == 0U) && (thst.mv_temp > (temp_sp + thst.fan_loband)))                                    thst.fan_speed = 1U;
                 else if ((thst.fan_speed == 1U) && (thst.mv_temp > (temp_sp + thst.fan_hiband)))                                    thst.fan_speed = 2U;
-                else if ((thst.fan_speed == 1U) && (thst.mv_temp <= temp_sp))                                                       thst.fan_speed = 0U;         
+                else if ((thst.fan_speed == 1U) && (thst.mv_temp <= temp_sp))                                                       thst.fan_speed = 0U;
                 else if ((thst.fan_speed == 2U) && (thst.mv_temp > (temp_sp + thst.fan_hiband + thst.fan_loband)))                  thst.fan_speed = 3U;
-                else if ((thst.fan_speed == 2U) && (thst.mv_temp <=(temp_sp + thst.fan_hiband - thst.fan_diff)))                    thst.fan_speed = 1U; 
-                else if ((thst.fan_speed == 3U) && (thst.mv_temp <=(temp_sp + thst.fan_hiband + thst.fan_loband - thst.fan_diff)))  thst.fan_speed = 2U;                 
+                else if ((thst.fan_speed == 2U) && (thst.mv_temp <=(temp_sp + thst.fan_hiband - thst.fan_diff)))                    thst.fan_speed = 1U;
+                else if ((thst.fan_speed == 3U) && (thst.mv_temp <=(temp_sp + thst.fan_hiband + thst.fan_loband - thst.fan_diff)))  thst.fan_speed = 2U;
             }
             else if(IsTempRegHeating())
             {
@@ -95,8 +100,8 @@ void THSTAT_Service(void)
                 else if ((thst.fan_speed == 1U) && (thst.mv_temp < (temp_sp - thst.fan_hiband)))                                    thst.fan_speed = 2U;
                 else if ((thst.fan_speed == 1U) && (thst.mv_temp >= temp_sp))                                                       thst.fan_speed = 0U;
                 else if ((thst.fan_speed == 2U) && (thst.mv_temp < (temp_sp - thst.fan_hiband - thst.fan_loband)))                  thst.fan_speed = 3U;
-                else if ((thst.fan_speed == 2U) && (thst.mv_temp >=(temp_sp - thst.fan_hiband + thst.fan_diff)))                    thst.fan_speed = 1U; 
-                else if ((thst.fan_speed == 3U) && (thst.mv_temp >=(temp_sp - thst.fan_hiband - thst.fan_loband + thst.fan_diff)))  thst.fan_speed = 2U;         
+                else if ((thst.fan_speed == 2U) && (thst.mv_temp >=(temp_sp - thst.fan_hiband + thst.fan_diff)))                    thst.fan_speed = 1U;
+                else if ((thst.fan_speed == 3U) && (thst.mv_temp >=(temp_sp - thst.fan_hiband - thst.fan_loband + thst.fan_diff)))  thst.fan_speed = 2U;
             }
         }
         /** ============================================================================*/
@@ -104,29 +109,65 @@ void THSTAT_Service(void)
         /** ============================================================================*/
         if (thst.fan_speed != old_fan_speed)
         {
-            if((HAL_GetTick() - fancoil_fan_timer) >= FANC_FAN_MIN_ON_TIME){
-                if(fan_pcnt > 1U)  fan_pcnt = 0U;                
-                if(fan_pcnt == 0U){
+            if((HAL_GetTick() - fancoil_fan_timer) >= FANC_FAN_MIN_ON_TIME) {
+                if(fan_pcnt > 1U)  fan_pcnt = 0U;
+                if(fan_pcnt == 0U) {
                     FanOff();
                     if (old_fan_speed) fancoil_fan_timer = HAL_GetTick();
                     ++fan_pcnt;
                 }
-                else if(fan_pcnt == 1U){                
+                else if(fan_pcnt == 1U) {
                     if      (thst.fan_speed == 1) FanLowSpeedOn();
                     else if (thst.fan_speed == 2) FanMiddleSpeedOn();
                     else if (thst.fan_speed == 3) FanHighSpeedOn();
                     if (thst.fan_speed) fancoil_fan_timer = HAL_GetTick();
                     old_fan_speed = thst.fan_speed;
                     ++fan_pcnt;
-                }            
+                }
             }
         }
     }
+    // metni ovdje jer ova funkcija ima vrijeme procesora kad dode na red stalno
+    // ako je ovaj termostat master pošalji cijelu strukturu kod promjene settings-a
+    if((thst.master) && thst.hasSecondaryInfoChanged)
+    {
+        // treba probrat šta se šalje neki od elemenata se i ne koriste nikako u kodu više
+        // najbolje je ovo sve redefinisat šta treba za smart home
+        buf[0] = thst.group;
+        buf[1] = thst.master;
+        buf[2] = thst.th_ctrl;
+        buf[3] = thst.th_state;
+        buf[4] = (thst.mv_temp >> 8) & 0xFF;
+        buf[5] = thst.mv_temp & 0xFF;
+        buf[6] = thst.sp_temp;
+        buf[7] = thst.sp_min;
+        buf[8] = thst.sp_max;
+        buf[9] = thst.sp_diff;
+        buf[10] = thst.fan_speed;
+        buf[11] = thst.fan_loband;
+        buf[12] = thst.fan_hiband;
+        buf[13] = thst.fan_diff;
+        buf[14] = thst.fan_ctrl;
+        buf[15] = thst.fan_quiet_start; // npr. ovaj dio se koristio kod hotelskih sistema
+        buf[16] = thst.fan_quiet_end;   // i služio je da motor ne pravi buku po noci tako
+        buf[17] = thst.fan_quiet_speed; // da ljudi mogu mirno spavat a ovdje nema nikakve svrhe ili ima
+        DodajKomandu(&thermoQueue, THERMOSTAT_INFO, buf, 18);
+        thst.hasSecondaryInfoChanged = false;
+    }
+
+    // treba dodat i za svaku najmanju promjenu izmjerene temperature koju šalje
+    // master - cijelu ovakvu strukturu kao gore, a slave - samo manju kao dole ispod
+    // i obadva šalju na THERMOSTAT_INFO
+    // postoji flag IsMVUpdateActiv() koju setuje ADC3_Read() koji služi za ovo grafici ali 
+    // ga resetuje samo thermostat screeen kad je aktivan tako da treba novi flag samo za ovo
+    // ili jednostavno setovat ovaj clan/flag strukture hasSecondaryInfoChanged tamo u ADC3_Read()
 }
 
 
 void Thermostat_SP_Temp_Set(const uint8_t setpoint)
 {
+    uint8_t buf[7];
+
     if(thst.sp_temp != setpoint)
     {
         if(setpoint < thst.sp_min)
@@ -144,6 +185,16 @@ void Thermostat_SP_Temp_Set(const uint8_t setpoint)
             thst.sp_temp = setpoint;
             thst.hasPrimaryInfoChanged = true;
         }
+
+        buf[0] = thst.group;
+        buf[1] = thst.master;
+        buf[2] = thst.th_ctrl;
+        buf[3] = thst.th_state;
+        buf[4] = (thst.mv_temp >> 8) & 0xFF;
+        buf[5] = thst.mv_temp & 0xFF;
+        buf[6] = thst.sp_temp;
+        DodajKomandu(&thermoQueue, THERMOSTAT_INFO, buf, 7);
+        thst.hasPrimaryInfoChanged = false;
     }
 }
 
@@ -157,5 +208,65 @@ void Thermostat_SP_Temp_Decrement()
     Thermostat_SP_Temp_Set(thst.sp_temp - 1);
 }
 
-
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr) {
+    uint8_t buf[23];
+    buf[0] = tc->th_ctrl;
+    buf[1] = tc->th_state;
+    buf[2] = tc->mv_temp>>8;
+    buf[3] = tc->mv_temp&0xFF;
+    buf[4] = tc->mv_offset;
+    buf[5] = tc->mv_ntcref>>8;
+    buf[6] = tc->mv_ntcref&0xFF;
+    buf[7] = tc->mv_nctbeta>>8;
+    buf[8] = tc->mv_nctbeta&0xFF;
+    buf[9] = tc->sp_temp;
+    buf[10] = tc->sp_diff;
+    buf[11] = tc->sp_max;
+    buf[12] = tc->sp_min;
+    buf[13] = tc->fan_ctrl;
+    buf[14] = tc->fan_speed;
+    buf[15] = tc->fan_diff;
+    buf[16] = tc->fan_loband;
+    buf[17] = tc->fan_hiband;
+    buf[18] = tc->fan_quiet_start;
+    buf[19] = tc->fan_quiet_end;
+    buf[20] = tc->fan_quiet_speed;
+    buf[21] = tc->group;
+    buf[22] = tc->master;
+    EE_WriteBuffer(buf, addr, 23);
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr) {
+    uint8_t buf[23];
+    EE_ReadBuffer(buf, addr, 23);
+    tc->th_ctrl         = buf[0];
+    tc->th_state        = buf[1];
+    tc->mv_temp         =(buf[2]<<8)|buf[3];
+    tc->mv_offset       = buf[4];
+    tc->mv_ntcref       =(buf[5]<<8)|buf[6];
+    tc->mv_nctbeta      =(buf[7]<<8)|buf[8];
+    tc->sp_temp         = buf[9];
+    tc->sp_diff         = buf[10];
+    tc->sp_max          = buf[11];
+    tc->sp_min          = buf[12];
+    tc->fan_ctrl        = buf[13];
+    tc->fan_speed       = buf[14];
+    tc->fan_diff        = buf[15];
+    tc->fan_loband      = buf[16];
+    tc->fan_hiband      = buf[17];
+    tc->fan_quiet_start = buf[18];
+    tc->fan_quiet_end   = buf[19];
+    tc->fan_quiet_speed = buf[20];
+    tc->group           = buf[21];
+    tc->master          = buf[22];
+}
 /******************************   RAZLAZ SIJELA  ********************************/

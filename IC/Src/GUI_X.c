@@ -41,8 +41,8 @@ Purpose     : Config / System dependent externals for GUI
   *
   *        http://www.st.com/software_license_agreement_liberty_v2
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   * See the License for the specific language governing permissions and
   * limitations under the License.
@@ -69,16 +69,16 @@ volatile GUI_TIMER_TIME OS_TimeMS;
   1 ms.
 */
 
-GUI_TIMER_TIME GUI_X_GetTime(void) 
-{ 
-	return OS_TimeMS; 
+GUI_TIMER_TIME GUI_X_GetTime(void)
+{
+    return OS_TimeMS;
 }
 
 
-void GUI_X_Delay(int ms) 
-{ 
-	int tEnd = OS_TimeMS + ms;
-	while ((tEnd - OS_TimeMS) > 0);
+void GUI_X_Delay(int ms)
+{
+    int tEnd = OS_TimeMS + ms;
+    while ((tEnd - OS_TimeMS) > 0);
 }
 
 /*********************************************************************
@@ -118,8 +118,14 @@ Note:
 
 */
 
-void GUI_X_Log     (const char *s) { GUI_USE_PARA(s); }
-void GUI_X_Warn    (const char *s) { GUI_USE_PARA(s); }
-void GUI_X_ErrorOut(const char *s) { GUI_USE_PARA(s); }
+void GUI_X_Log     (const char *s) {
+    GUI_USE_PARA(s);
+}
+void GUI_X_Warn    (const char *s) {
+    GUI_USE_PARA(s);
+}
+void GUI_X_ErrorOut(const char *s) {
+    GUI_USE_PARA(s);
+}
 
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/

@@ -258,7 +258,8 @@ typedef struct{
 extern uint8_t sysfl, initfl;
 extern uint32_t thstfl_memo;
 extern uint8_t dispfl_memo;
-extern uint8_t pwm[32];
+extern uint8_t pwm[32]; 
+extern bool LSE_Failed; // flag oznacava LSE oscilator rtc modula false = 32.768 Hz kristal / true = interni oscilator
 /* Exported macros  --------------------------------------------------------*/
 #define SYS_NewLogSet()             (sysfl |=  (0x1U<<0))
 #define SYS_NewLogReset()           (sysfl &=(~(0x1U<<0)))

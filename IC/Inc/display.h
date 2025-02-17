@@ -19,7 +19,6 @@
 /* Exported Define -----------------------------------------------------------*/
 #define SCRNSVR_TOUT    30  // 10 sec timeout increment to set display in low brigntnes after last touch event
 #define TS_LAYER        1   // touch screen layer event
-
 /* Exported types ------------------------------------------------------------*/
 
 typedef enum{
@@ -168,8 +167,6 @@ void DISPSetPoint(void);
 void DISPResetScrnsvr(void);
 void DISPSetBrightnes(uint8_t val);
 void PID_Hook(GUI_PID_STATE* pState);
-void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr);
-void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr);
 bool QR_Code_isDataLengthShortEnough(uint8_t dataLength);
 bool QR_Code_willDataFit(const uint8_t *data);
 void SetPin(uint8_t pin, uint8_t pinVal);

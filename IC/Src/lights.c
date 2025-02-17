@@ -1,4 +1,5 @@
 #include "lights.h"
+#include "rs485.h"
 #include "display.h"
 #include "stm32746g_sdram.h"
 #include "stm32746g_eeprom.h"
@@ -23,7 +24,7 @@ GUI_CONST_STORAGE GUI_BITMAP* light_modbus_images[] = {&bmSijalicaOff, &bmSijali
 void Lights_Modbus_Count()
 {
     lights_count = 0;
-    
+
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
     {
         if(Light_Modbus_GetRelay(lights_modbus + i)) ++lights_count;
@@ -99,7 +100,7 @@ void Lights_Modbus_Init()
     {
         Light_Modbus_Init(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 14));
     }
-    
+
     Lights_Modbus_Calculate();
 }
 
@@ -109,7 +110,7 @@ void Lights_Modbus_Save()
     {
         Light_Modbus_Save(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 14));
     }
-    
+
     Lights_Modbus_Calculate();
 }
 
@@ -128,7 +129,7 @@ uint8_t Light_Modbus_Set_byIndex(const uint8_t light_index, const uint8_t val)
         if(val) Light_Modbus_On(lights_modbus + light_index);
         else Light_Modbus_Off(lights_modbus + light_index);
     }
-    
+
     return Light_Modbus_isNewValueOn(lights_modbus + light_index);
 }
 
@@ -138,7 +139,7 @@ uint8_t Light_Modbus_Get_byIndex(const uint8_t light_index)
     {
         return Light_Modbus_isNewValueOn(lights_modbus + light_index);
     }
-    
+
     return LIGHT_MODBUS_QUERY_RESPONSE_INDEX_OUT_OF_RANGE;
 }
 
@@ -146,10 +147,10 @@ uint8_t Light_Modbus_Get_byIndex(const uint8_t light_index)
 void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->value = 1;
-    
+
     if(li->local_pin < 5) SetPin(li->local_pin, 1);
     else PCA9685_SetOutput(li->local_pin, 255);
-    
+
     if(Light_Modbus_isOffTimeEnabled(li))
     {
         uint32_t time = HAL_GetTick();
@@ -174,10 +175,10 @@ void Light_Modbus_On_External(LIGHT_Modbus_CmdTypeDef* const li)
 void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->value = 0;
-    
+
     if(li->local_pin < 5) SetPin(li->local_pin, 0);
     else PCA9685_SetOutput(li->local_pin, 0);
-    
+
     Light_Modbus_OffTimeTimerDeactivate(li);
 }
 
@@ -461,4 +462,55 @@ void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li)
 GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return light_modbus_images[(li->iconID * 2) + Light_Modbus_isNewValueOn(li)];
+}
+/**
+* @brief  : Servisiramo promjene svjetala i filamo bafere komandi za slanje bilo cim a ovdje žicom.
+*           ova funkcija ima konstantno vrijeme procesora i tu se procesira sva logika svjetala
+*           a "sa blio cim" znaci da je link sa funkcijom za slanje samo preko bafera komandi
+*           to znaci da može biti preusmejerno na bilo transport->network->datalink
+* @param  :
+* @retval : nema
+*/
+void Light_Modbus_Service(void)
+{
+    uint8_t buf[5] = {0};
+    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
+    {
+        if(Light_Modbus_hasStatusChanged(lights_modbus + i))
+        {
+            buf[0] = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            buf[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+
+            if(Light_Modbus_isBinary(lights_modbus + i) || Light_Modbus_isRGB(lights_modbus + i))
+            {
+                buf[2] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
+                DodajKomandu(&binaryQueue, BINARY_SET, buf, 3);
+            }
+            else if(Light_Modbus_isDimmer(lights_modbus + i))
+            {
+                buf[2] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0 : 100;
+                DodajKomandu(&dimmerQueue, DIMMER_SET, buf, 3);
+            }
+
+            Light_Modbus_ResetStatus(lights_modbus + i);
+        }
+        else if(Light_Modbus_hasBrightnessChanged(lights_modbus + i))
+        {
+            buf[0] = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            buf[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+            buf[2] = Light_Modbus_GetBrightness(lights_modbus + i);
+            DodajKomandu(&dimmerQueue, DIMMER_SET, buf, 3);
+            Light_Modbus_ResetBrightness(lights_modbus + i);
+        }
+        else if(Light_Modbus_hasColorChanged(lights_modbus + i))
+        {
+            buf[0] = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            buf[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+            buf[2] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
+            buf[3] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
+            buf[4] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
+            DodajKomandu(&rgbwQueue, RGB_SET, buf, 5);
+            Light_Modbus_ResetColor(lights_modbus + i);
+        }
+    }
 }

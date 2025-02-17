@@ -30,11 +30,7 @@ typedef struct
 extern uint8_t lights_count, lights_modbus_rows;
 extern LIGHT_Modbus_CmdTypeDef lights_modbus[LIGHTS_MODBUS_SIZE];
 
-
-
-
-
-
+void Light_Modbus_Service(void);
 uint8_t Lights_Modbus_getCount();
 void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li);

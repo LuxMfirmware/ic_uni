@@ -1,8 +1,9 @@
 #include "curtain.h"
+#include "rs485.h"
 #include "stm32746g_eeprom.h"
 
 #if (__CURTAIN_CTRL_H__ != FW_BUILD)
-    #error "curtain header version mismatch"
+#error "curtain header version mismatch"
 #endif
 
 
@@ -27,7 +28,7 @@ uint8_t curtains_count = 0;
 void Curtains_Count()
 {
     curtains_count = 0;
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {
         if(Curtain_hasRelays(curtains + i)) ++curtains_count;
@@ -62,24 +63,24 @@ void Curtain_Save(Curtain* const cur, const uint16_t addr)
 void Curtains_Init()
 {
     EE_ReadBuffer(&upDownDurationSeconds,    EE_CURTAINS_MOVE_TIME,   1);
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {
         Curtain_Init(curtains + i, EE_CURTAINS + (i * 4));
     }
-    
+
     Curtains_Count();
 }
 
 void Curtains_Save()
 {
     EE_WriteBuffer(&upDownDurationSeconds,    EE_CURTAINS_MOVE_TIME,   1);
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {
         Curtain_Save(curtains + i, EE_CURTAINS + (i * 4));
     }
-    
+
     Curtains_Count();
 }
 
@@ -168,7 +169,7 @@ bool Curtains_isAnyCurtainMoving()
     {
         if(Curtain_isMoving(curtains + i)) return true;
     }
-    
+
     return false;
 }
 
@@ -178,7 +179,7 @@ bool Curtains_areAllMoving()
     {
         if(Curtain_hasRelays(curtains + i) && (!Curtain_isMoving(curtains + i))) return false;
     }
-    
+
     return true;
 }
 
@@ -188,7 +189,7 @@ bool Curtains_areAllMovinginSameDirection(const uint8_t direction)
     {
         if(Curtain_hasRelays(curtains + i) && (curtains[i].upDown_old != direction)) return false;
     }
-    
+
     return true;
 }
 
@@ -203,7 +204,7 @@ bool Curtains_isAnyCurtainMovingUp()
     {
         if(Curtain_isMovingUp(curtains + i)) return true;
     }
-    
+
     return false;
 }
 
@@ -218,7 +219,7 @@ bool Curtains_isAnyCurtainMovingDown()
     {
         if(Curtain_isMovingDown(curtains + i)) return true;
     }
-    
+
     return false;
 }
 
@@ -236,7 +237,7 @@ bool Curtains_isNewDirectionStop(const Curtain* const cur)
     {
         if(!Curtain_isNewDirectionStop(cur)) return false;
     }
-    
+
     return true;
 }
 
@@ -248,13 +249,13 @@ bool Curtain_isNewDirectionUp(const Curtain* const cur)
 bool Curtains_isNewDirectionUp()
 {
     uint8_t anyRelay = 0;
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
     {
         if(Curtain_hasRelays(curtains + i) && (!Curtain_isNewDirectionUp(curtains + i))) return false;
         if(Curtain_hasRelays(curtains + i)) anyRelay = 1;
     }
-    
+
     return anyRelay ? true : false;
 }
 
@@ -266,13 +267,13 @@ bool Curtain_isNewDirectionDown(const Curtain* const cur)
 bool Curtains_isNewDirectionDown()
 {
     uint8_t anyRelay = 0;
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
     {
         if(Curtain_hasRelays(curtains + i) && (!Curtain_isNewDirectionDown(curtains + i))) return false;
         if(Curtain_hasRelays(curtains + i)) anyRelay = 1;
     }
-    
+
     return anyRelay ? true : false;
 }
 
@@ -311,14 +312,14 @@ void Curtain_Move(Curtain* const cur, const uint8_t direction)
 
 void Curtain_MoveSignal(Curtain* const cur, const uint8_t direction)
 {
-        if(Curtain_isMoving(cur) && (cur->upDown == direction) && (cur->upDown_old == direction)) Curtain_Stop(cur);
-        else Curtain_Move(cur, direction);
+    if(Curtain_isMoving(cur) && (cur->upDown == direction) && (cur->upDown_old == direction)) Curtain_Stop(cur);
+    else Curtain_Move(cur, direction);
 }
 
 void Curtains_Move(const uint8_t direction)
 {
     curtains_send = 1;
-    
+
     if(Curtains_isAnyCurtainMoving())
     {
         for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
@@ -327,7 +328,7 @@ void Curtains_Move(const uint8_t direction)
                 (curtains + i)->upDown_old = (direction == CURTAIN_UP) ? CURTAIN_DOWN : CURTAIN_UP;
         }
     }
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
     {
         Curtain_Move(curtains + i, direction);
@@ -337,14 +338,14 @@ void Curtains_Move(const uint8_t direction)
 void Curtains_MoveSignal(const uint8_t direction)
 {
     /*const uint8_t newdir = (((direction == CURTAIN_UP) && (Curtains_isAnyCurtainMovingUp())) || ((direction == CURTAIN_DOWN) && (Curtains_isAnyCurtainMovingDown()))) ? CURTAIN_STOP : direction;
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
     {
         if(Curtain_getDirection(curtains + i) == direction) Curtain_Move(curtains + i, newdir);
     }*/
-    
+
     uint8_t stop = 1;
-    
+
     if(direction != CURTAIN_STOP)
     {
         for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
@@ -352,7 +353,7 @@ void Curtains_MoveSignal(const uint8_t direction)
             if((Curtain_hasRelays(curtains + i)) && (!(Curtain_isMoving(curtains + i) && ((curtains + i)->upDown == direction) && ((curtains + i)->upDown_old == direction)))) stop = 0;
         }
     }
-    
+
     if(stop) Curtains_Stop();
     else Curtains_Move(/*Curtains_areAllMovinginSameDirection(direction) ? CURTAIN_STOP : */direction);
 }
@@ -433,9 +434,38 @@ void Curtain_Reset(Curtain* const cur)
     Curtain_ResendReset(cur);
 }
 
+/**
+* @brief  : Ova funkcija se konstantno poziva iz main i u njoj je sva logika žaluzina.
+*           promjene stanja idu u queue komandi i to je jednosmjeran link sa komunikacijom
+*           drugi je iz calbacka za promjene sa busa i ne smije biti blokirajuci niti pozivati
+*           hal drivere jer treba što prije završiti da ne bi bilo smetnji u grafici
+* @param  :
+* @retval : nema
+*/
+void Curtain_Service(void)
+{
+    for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
+    {
+        Curtain* const cur = curtains + i;
 
+        if(!Curtain_hasRelays(cur)) continue;
 
+        if(Curtain_hasMoveTimeExpired(cur))
+        {
+            Curtain_Stop(cur);
+        }
 
-
-
-
+        if(Curtain_hasDirectionChanged(cur))
+        {
+            uint16_t relay = 0;
+            uint8_t buf[3] = {0};
+            relay = (Curtain_isNewDirectionUp(cur) || (Curtain_isNewDirectionStop(cur) && Curtain_isMovingUp(cur))) ? Curtain_GetRelayUp(cur) : Curtain_GetRelayDown(cur);
+            buf[0] = (relay >> 8) & 0xFF;
+            buf[1] = relay & 0xFF;
+            buf[2] = Curtain_isNewDirectionStop(cur) ? 0 : (Curtain_isNewDirectionUp(cur) ? 1 : 2);
+            DodajKomandu(&curtainQueue,JALOUSIE_SET,buf,3);
+            Curtain_Reset(cur); // Reset if stopped
+//            break; // Send one command at a time
+        }
+    }
+}

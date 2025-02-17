@@ -13,9 +13,6 @@
 #include "main.h"
 #include "stm32f7xx.h"
 /* Exported Type  ------------------------------------------------------------*/
-
-
-
 typedef struct{
     uint8_t  th_ctrl;           // thermostat control: off,auto,manual,heating,cooling,enabled,disabled,network
     uint8_t  th_state;          // thermostat status
@@ -35,7 +32,7 @@ typedef struct{
     uint8_t  fan_quiet_start;   // fan quiet mode start hour
     uint8_t  fan_quiet_end;     // fan quiet mode end hour
     uint8_t  fan_quiet_speed;   // fan quiet mode speed limit
-    /*uint16_t relay1;
+    uint16_t relay1;
     uint16_t relay2;
     uint16_t relay3;
     uint16_t relay4;
@@ -43,7 +40,7 @@ typedef struct{
     uint8_t  relay4Delay;
     uint32_t relay3DelayTimerStart;
     uint32_t relay4DelayTimerStart;
-    uint8_t sendChangeSignalFlags;*/
+    uint8_t sendChangeSignalFlags;
     uint8_t group;
     bool master;
     bool hasPrimaryInfoChanged;
@@ -52,6 +49,7 @@ typedef struct{
 
 extern THERMOSTAT_TypeDef thst;
 /* Exported Define  ----------------------------------------------------------*/
+#define USE_THERMOSTAT                              1       // switch kompajlera z akod termostata
 #define FANC_NTC_MEASURING_DELAY_TIME               600000U // 10 min. (x60 sec x 1000 ms)      
 #define FANC_FAN_MIN_ON_TIME                        560U    // 0,5s between two or on/off fan speed switching
 #define FANC_VALVE_MIN_ON_TIME                      5678U	// cooling valve state swith 5,5s min. time	
@@ -104,7 +102,9 @@ extern uint8_t termfl;
 /* Exported Function  ------------------------------------------------------- */
 void THSTAT_Init(void);
 void THSTAT_Service(void);
-void THSTAT_SaveSettings(void);void Thermostat_SP_Temp_Set(const uint8_t setpoint);
+void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr);
+void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr);
+void Thermostat_SP_Temp_Set(const uint8_t setpoint);
 void Thermostat_SP_Temp_Increment();
 void Thermostat_SP_Temp_Decrement();
 

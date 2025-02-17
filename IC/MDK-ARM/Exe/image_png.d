@@ -9,7 +9,6 @@
   ..\..\Middlewares\STemWin\inc\IMAGE.h \
   ..\..\Middlewares\STemWin\inc\WM.h \
   ..\..\Middlewares\STemWin\inc\WM_GUI.h \
-  ..\..\Middlewares\STemWin\inc\GUI.h \
   ..\..\Middlewares\STemWin\inc\DIALOG_Intern.h \
   ..\..\Middlewares\STemWin\inc\WIDGET.h \
   ..\..\Middlewares\STemWin\inc\WM_Intern.h \
