@@ -98,7 +98,7 @@ bool Defroster_isActiveTimeTimerOn()
 
 bool Defroster_hasActiveTimeTimerExpired(const uint32_t tick)
 {
-    return (defroster.activeTime_TimerStart - tick) >= (defroster.activeTime * 1000);
+    return (tick - defroster.activeTime_TimerStart) >= (defroster.activeTime * 1000 * 60);
 }
 
 void Defroster_ActiveTimeTimerStop()
@@ -125,7 +125,7 @@ bool Defroster_isCycleTimerOn()
 
 bool Defroster_hasCycleTimerExpired(const uint32_t tick)
 {
-    return (defroster.cycleTime_TimerStart - HAL_GetTick()) >= (defroster.cycleTime * 1000);
+    return (tick - defroster.cycleTime_TimerStart) >= (defroster.cycleTime * 1000 * 60);
 }
 
 void Defroster_CycleTimerStop()
