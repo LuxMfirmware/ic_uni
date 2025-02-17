@@ -11,9 +11,6 @@ odkomentarisati vec pozvane instance funckije DodajKomandu i proslijediti im odg
 -lights
 add checkbox to set if dimmable light, when clicked, goes between 0-100 or 0-last set value
 
-nevalja ti kurcu setup meni sve zaboravlja šta si prije podesio ako nisi pritisno spasi odma, 
-nećeš valjda svaki put ulazit izlazit iz menija da bi naštimo, kad ideš kroz menije treba ostat
-sve što si prije podesio pa bilo gdje da pritisneš spasi treba sve što je promjenjeno da spasi
 
 iznad dugmeta restart dodaj isto jedno takvo dugme reset ili default pa nek radi kako i piše 
 restart samo restartuje a reset neka ponovo setuje defaultne vrijednosti koje trebaju bit u 
