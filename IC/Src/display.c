@@ -2256,11 +2256,22 @@ void DISP_Service(void){
                 GUI_DrawLine(400,60,450,60);
                 
                 //GUI_DrawRect(20, 20, 100, 100);
-                GUI_SetColor(lights_modbus[light_selectedIndex].color);
+                GUI_SetColor(Light_Modbus_GetColor(lights_modbus + light_selectedIndex));
                 GUI_FillRect(20, 20, 100, 100);
                 
-                GUI_DrawBitmap(&bmcolorSpectrum, 20, 110);
-                GUI_DrawBitmap(&bmblackWhiteGradient, 20, 180);
+                
+                if(Light_Modbus_isDimmer(lights_modbus + light_selectedIndex))
+                {
+                    GUI_DrawBitmap(&bmblackWhiteGradient, 20, 110);
+                }
+                else if(Light_Modbus_isRGB(lights_modbus + light_selectedIndex))
+                {
+                    GUI_SetColor(GUI_WHITE);
+                    GUI_FillRect(200, 20, 280, 100);
+                    
+                    GUI_DrawBitmap(&bmblackWhiteGradient, 20, 110);
+                    GUI_DrawBitmap(&bmcolorSpectrum, 20, 180);
+                }
                 
                 GUI_MULTIBUF_EndEx(1);
             }
@@ -3599,7 +3610,10 @@ void PID_Hook(GUI_PID_STATE * pTS){
                         click = 1;
                         //Light_Modbus_Flip(lights_modbus + lightsInRowSum + i);
                         light_selectedIndex = lightsInRowSum + i;
-                        light_settingsTimerStart = HAL_GetTick();
+                        if(!Light_Modbus_isBinary(lights_modbus + light_selectedIndex))
+                        {
+                            light_settingsTimerStart = HAL_GetTick();
+                        }
                         LightNightTimer_StartTime = 0;
                         break;
                     }
@@ -3702,9 +3716,16 @@ void PID_Hook(GUI_PID_STATE * pTS){
         }
         else if(screen == SCREEN_LIGHT_SETTINGS)  // light settings
         {
-            if(pTS->y < 180) Light_Modbus_SetColor(lights_modbus + light_selectedIndex, LCD_GetPixelColor(pTS->x, pTS->y));
-            else Light_Modbus_SetBrightness(lights_modbus + light_selectedIndex, ((pTS->x - 20) / (float)bmblackWhiteGradient.XSize) * 100);
-            shouldDrawScreen = 1;
+            if(Light_Modbus_isRGB(lights_modbus + light_selectedIndex) && (pTS->x >= 200) && (pTS->x <= 280) && (pTS->y >= 20) && (pTS->x < 100))
+            {
+                Light_Modbus_SetColor(lights_modbus + light_selectedIndex, GUI_WHITE);
+            }
+            else if((pTS->x >= 20) && (pTS->x <= 460))
+            {
+                if((pTS->y >= 110) && (pTS->y <= 170))           Light_Modbus_SetBrightness(lights_modbus + light_selectedIndex, ((pTS->x - 20) / (float)bmblackWhiteGradient.XSize) * 100);
+                else if(Light_Modbus_isRGB(lights_modbus + light_selectedIndex) && (pTS->y >= 180) && (pTS->y <= 240))         Light_Modbus_SetColor(lights_modbus + light_selectedIndex, LCD_GetPixelColor(pTS->x, pTS->y));
+                shouldDrawScreen = 1;
+            }
         }
         else if((pTS->x > 100)&&(pTS->y > 100)&&(pTS->x < 400)&&(pTS->y < 272)&&(screen == SCREEN_RESET_MENU_SWITCHES))
         {
@@ -3864,7 +3885,7 @@ void PID_Hook(GUI_PID_STATE * pTS){
         if(screen == SCREEN_MAIN) screen = SCREEN_RESET_MENU_SWITCHES;
         else if(screen == SCREEN_LIGHTS)
         {
-            if(light_settingsTimerStart)
+            if(Light_Modbus_isBinary(lights_modbus + light_selectedIndex) || ((!Light_Modbus_isBinary(lights_modbus + light_selectedIndex)) && light_settingsTimerStart))
             {
                 light_settingsTimerStart = 0;
                 Light_Modbus_Flip(lights_modbus + light_selectedIndex);
