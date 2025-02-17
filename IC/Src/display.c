@@ -1779,21 +1779,22 @@ void DISP_Service(void){
         //
         case SCREEN_SETTINGS_5:
         {
+            for(uint8_t i = curtainSettingMenu * 4; i < (((CURTAINS_SIZE - (curtainSettingMenu * 4)) >= 4) ? ((curtainSettingMenu * 4) + 4) : CURTAINS_SIZE); i++)
+            {
+                if((Curtain_GetRelayUp(curtains + i) != SPINBOX_GetValue(hCurtainsRelay[i * 2])) || (Curtain_GetRelayDown(curtains + i) != SPINBOX_GetValue(hCurtainsRelay[(i * 2) + 1])))
+                {
+                    settingsChanged = 1;
+                    
+                    Curtain_SetRelayUp(curtains + i, SPINBOX_GetValue(hCurtainsRelay[i * 2]));
+                    Curtain_SetRelayDown(curtains + i, SPINBOX_GetValue(hCurtainsRelay[(i * 2) + 1]));
+//                        curtains[i].relayUp = SPINBOX_GetValue(hCurtainsRelay[i * 2]);
+//                        curtains[i].relayDown = SPINBOX_GetValue(hCurtainsRelay[(i * 2) + 1]);
+                }
+            }
+            
             
             if (BUTTON_IsPressed(hBUTTON_Ok))
             {
-                for(uint8_t i = curtainSettingMenu * 4; i < (((CURTAINS_SIZE - (curtainSettingMenu * 4)) >= 4) ? ((curtainSettingMenu * 4) + 4) : CURTAINS_SIZE); i++)
-                {
-                    if((Curtain_GetRelayUp(curtains + i) != SPINBOX_GetValue(hCurtainsRelay[i * 2])) || (Curtain_GetRelayDown(curtains + i) != SPINBOX_GetValue(hCurtainsRelay[(i * 2) + 1])))
-                    {
-                        settingsChanged = 1;
-                        
-                        Curtain_SetRelayUp(curtains + i, SPINBOX_GetValue(hCurtainsRelay[i * 2]));
-                        Curtain_SetRelayDown(curtains + i, SPINBOX_GetValue(hCurtainsRelay[(i * 2) + 1]));
-//                        curtains[i].relayUp = SPINBOX_GetValue(hCurtainsRelay[i * 2]);
-//                        curtains[i].relayDown = SPINBOX_GetValue(hCurtainsRelay[(i * 2) + 1]);
-                    }
-                }
                 
                 if(settingsChanged)
                 {
@@ -1805,6 +1806,13 @@ void DISP_Service(void){
             }
             else if (BUTTON_IsPressed(hBUTTON_Next))
             {
+                if(settingsChanged)
+                {
+                    Curtains_Save();
+                    settingsChanged = 0;
+                }
+                
+                
                 if((CURTAINS_SIZE - ((curtainSettingMenu + 1) * 4)) > 0)
                 {
                     DSP_KillSet5Scrn();
@@ -1827,96 +1835,97 @@ void DISP_Service(void){
         //
         case SCREEN_SETTINGS_6:
         {
-            if (BUTTON_IsPressed(hBUTTON_Ok))
+            for(uint8_t i = lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS; i < (((LIGHTS_MODBUS_SIZE - (lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS)) >= LIGHTS_MODBUS_PER_SETTINGS) ? ((lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS) + LIGHTS_MODBUS_PER_SETTINGS) : LIGHTS_MODBUS_SIZE); i++)
             {
-                for(uint8_t i = lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS; i < (((LIGHTS_MODBUS_SIZE - (lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS)) >= LIGHTS_MODBUS_PER_SETTINGS) ? ((lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS) + LIGHTS_MODBUS_PER_SETTINGS) : LIGHTS_MODBUS_SIZE); i++)
+                if(Light_Modbus_GetRelay(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].relay))
                 {
-                    if(Light_Modbus_GetRelay(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].relay))
-                    {
-                        settingsChanged = 1;
-                        
-                        Light_Modbus_SetRelay(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].relay));
-                    }
+                    settingsChanged = 1;
                     
-                    if(lights_modbus[i].iconID != SPINBOX_GetValue(lightsWidgets[i].iconID))
-                    {
-                        settingsChanged = 1;
-                        
-                        lights_modbus[i].iconID = SPINBOX_GetValue(lightsWidgets[i].iconID);
-                    }
-                    
-                    if(lights_modbus[i].controllerID_on != SPINBOX_GetValue(lightsWidgets[i].controllerID_on))
-                    {
-                        settingsChanged = 1;
-                        
-                        lights_modbus[i].controllerID_on = SPINBOX_GetValue(lightsWidgets[i].controllerID_on);
-                    }
-                    
-                    if(Light_Modbus_GetOnDelayTime(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay))
-                    {
-                        settingsChanged = 1;
-                        
-                        Light_Modbus_SetOnDelayTime(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay));
-                    }
-                    
-                    if(Light_Modbus_GetOffTime(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].offTime))
-                    {
-                        settingsChanged = 1;
-                        
-                        Light_Modbus_SetOffTime(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].offTime));
-                    }
-                    
-                    if(lights_modbus[i].on_hour != SPINBOX_GetValue(lightsWidgets[i].on_hour))
-                    {
-                        settingsChanged = 1;
-                        
-                        lights_modbus[i].on_hour = SPINBOX_GetValue(lightsWidgets[i].on_hour);
-                    }
-                    
-                    if(lights_modbus[i].on_minute != SPINBOX_GetValue(lightsWidgets[i].on_minute))
-                    {
-                        settingsChanged = 1;
-                        
-                        lights_modbus[i].on_minute = SPINBOX_GetValue(lightsWidgets[i].on_minute);
-                    }
-                    
-                    if(lights_modbus[i].communication_type != SPINBOX_GetValue(lightsWidgets[i].communication_type))
-                    {
-                        settingsChanged = 1;
-                        
-                        lights_modbus[i].communication_type = SPINBOX_GetValue(lightsWidgets[i].communication_type);
-                    }
-                    
-                    if(lights_modbus[i].local_pin != SPINBOX_GetValue(lightsWidgets[i].local_pin))
-                    {
-                        settingsChanged = 1;
-                        
-                        lights_modbus[i].local_pin = SPINBOX_GetValue(lightsWidgets[i].local_pin);
-                    }
-                    
-                    if(lights_modbus[i].sleep_time != SPINBOX_GetValue(lightsWidgets[i].sleep_time))
-                    {
-                        settingsChanged = 1;
-                        
-                        lights_modbus[i].sleep_time = SPINBOX_GetValue(lightsWidgets[i].sleep_time);
-                    }
-                    
-                    if(lights_modbus[i].button_external != SPINBOX_GetValue(lightsWidgets[i].button_external))
-                    {
-                        settingsChanged = 1;
-                        
-                        lights_modbus[i].button_external = SPINBOX_GetValue(lightsWidgets[i].button_external);
-                    }
-                    
-                    if(Light_Modbus_isTiedToMainLight(lights_modbus + i) != CHECKBOX_GetState(lightsWidgets[i].tiedToMainLight))
-                    {
-                        settingsChanged = 1;
-                        
-                        if(CHECKBOX_GetState(lightsWidgets[i].tiedToMainLight)) Light_Modbus_TieToMainLight(lights_modbus + i);
-                        else Light_Modbus_UntieFromMainLight(lights_modbus + i);
-                    }
+                    Light_Modbus_SetRelay(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].relay));
                 }
                 
+                if(lights_modbus[i].iconID != SPINBOX_GetValue(lightsWidgets[i].iconID))
+                {
+                    settingsChanged = 1;
+                    
+                    lights_modbus[i].iconID = SPINBOX_GetValue(lightsWidgets[i].iconID);
+                }
+                
+                if(lights_modbus[i].controllerID_on != SPINBOX_GetValue(lightsWidgets[i].controllerID_on))
+                {
+                    settingsChanged = 1;
+                    
+                    lights_modbus[i].controllerID_on = SPINBOX_GetValue(lightsWidgets[i].controllerID_on);
+                }
+                
+                if(Light_Modbus_GetOnDelayTime(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay))
+                {
+                    settingsChanged = 1;
+                    
+                    Light_Modbus_SetOnDelayTime(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay));
+                }
+                
+                if(Light_Modbus_GetOffTime(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].offTime))
+                {
+                    settingsChanged = 1;
+                    
+                    Light_Modbus_SetOffTime(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].offTime));
+                }
+                
+                if(lights_modbus[i].on_hour != SPINBOX_GetValue(lightsWidgets[i].on_hour))
+                {
+                    settingsChanged = 1;
+                    
+                    lights_modbus[i].on_hour = SPINBOX_GetValue(lightsWidgets[i].on_hour);
+                }
+                
+                if(lights_modbus[i].on_minute != SPINBOX_GetValue(lightsWidgets[i].on_minute))
+                {
+                    settingsChanged = 1;
+                    
+                    lights_modbus[i].on_minute = SPINBOX_GetValue(lightsWidgets[i].on_minute);
+                }
+                
+                if(lights_modbus[i].communication_type != SPINBOX_GetValue(lightsWidgets[i].communication_type))
+                {
+                    settingsChanged = 1;
+                    
+                    lights_modbus[i].communication_type = SPINBOX_GetValue(lightsWidgets[i].communication_type);
+                }
+                
+                if(lights_modbus[i].local_pin != SPINBOX_GetValue(lightsWidgets[i].local_pin))
+                {
+                    settingsChanged = 1;
+                    
+                    lights_modbus[i].local_pin = SPINBOX_GetValue(lightsWidgets[i].local_pin);
+                }
+                
+                if(lights_modbus[i].sleep_time != SPINBOX_GetValue(lightsWidgets[i].sleep_time))
+                {
+                    settingsChanged = 1;
+                    
+                    lights_modbus[i].sleep_time = SPINBOX_GetValue(lightsWidgets[i].sleep_time);
+                }
+                
+                if(lights_modbus[i].button_external != SPINBOX_GetValue(lightsWidgets[i].button_external))
+                {
+                    settingsChanged = 1;
+                    
+                    lights_modbus[i].button_external = SPINBOX_GetValue(lightsWidgets[i].button_external);
+                }
+                
+                if(Light_Modbus_isTiedToMainLight(lights_modbus + i) != CHECKBOX_GetState(lightsWidgets[i].tiedToMainLight))
+                {
+                    settingsChanged = 1;
+                    
+                    if(CHECKBOX_GetState(lightsWidgets[i].tiedToMainLight)) Light_Modbus_TieToMainLight(lights_modbus + i);
+                    else Light_Modbus_UntieFromMainLight(lights_modbus + i);
+                }
+            }
+            
+            
+            if (BUTTON_IsPressed(hBUTTON_Ok))
+            {
                 if(settingsChanged)
                 {
                     Lights_Modbus_Save();
@@ -1927,6 +1936,13 @@ void DISP_Service(void){
             }
             else if (BUTTON_IsPressed(hBUTTON_Next))
             {
+                if(settingsChanged)
+                {
+                    Lights_Modbus_Save();
+                    settingsChanged = 0;
+                }
+                
+                
                 if((LIGHTS_MODBUS_SIZE - ((lightsModbusSettingsMenu + 1) * LIGHTS_MODBUS_PER_SETTINGS)) > 0)
                 {
                     DSP_KillSet6Scrn();
@@ -2069,14 +2085,14 @@ void DISP_Service(void){
             if(BUTTON_IsPressed(hBUTTON_SYSRESTART))
             {
                 SYSRestart();
-            }
-            else if (tfifa != SPINBOX_GetValue(hDEV_ID))
+            } 
+            else
             {
-                tfifa = SPINBOX_GetValue(hDEV_ID);
-            }  
-            else if(BUTTON_IsPressed(hBUTTON_Ok))
-            {
-                if(Curtain_GetMoveTime() != SPINBOX_GetValue(hCurtainsMoveTime))
+                if (tfifa != SPINBOX_GetValue(hDEV_ID))
+                {
+                    tfifa = SPINBOX_GetValue(hDEV_ID);
+                } 
+                else if(Curtain_GetMoveTime() != SPINBOX_GetValue(hCurtainsMoveTime))
                 {
                     Curtain_SetMoveTime(SPINBOX_GetValue(hCurtainsMoveTime));
                     settingsChanged = 1;
@@ -2091,7 +2107,11 @@ void DISP_Service(void){
                     LightNightTimer_isEnabled = CHECKBOX_GetState(hCHKBX_LIGHT_NIGHT_TIMER);
                     settingsChanged = 1;
                 }
-                
+            }
+            
+            
+            if(BUTTON_IsPressed(hBUTTON_Ok))
+            {
                 if(settingsChanged)
                 {
                     Curtains_Save();
@@ -2105,6 +2125,16 @@ void DISP_Service(void){
             }
             else if (BUTTON_IsPressed(hBUTTON_Next))
             {
+                if(settingsChanged)
+                {
+                    Curtains_Save();
+                    EE_WriteBuffer(&tfifa, EE_TFIFA, 1);
+                    EE_WriteBuffer(&bOnlyLeaveScreenSaverAfterTouch, EE_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, 1);
+                    EE_WriteBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
+                    settingsChanged = 0;
+                }
+                
+                
                 DSP_KillSet7Scrn();
                 DSP_InitSet1Scrn();
                 screen = SCREEN_SETTINGS_1;
