@@ -2216,7 +2216,7 @@ void DISP_Service(void){
                 GUI_DrawLine(400,40,450,40);
                 GUI_DrawLine(400,60,450,60);
                 
-                GUI_HMEM hqr = GUI_QR_Create((char*)"www.google.com"/*QR_Code_Get(qr_code_draw_id)*/, 8, GUI_QR_ECLEVEL_M, 0);
+                GUI_HMEM hqr = GUI_QR_Create((char*)QR_Code_Get(qr_code_draw_id), 8, GUI_QR_ECLEVEL_M, 0);
                 GUI_QR_INFO qrInfo;
                 GUI_QR_GetInfo(hqr, &qrInfo);
                 
