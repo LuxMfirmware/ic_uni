@@ -477,6 +477,11 @@ GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef
 
 void Light_Modbus_Service()
 {
+    uint8_t sendDataBuffBin[5], sendDataCountBin = 0;
+    uint8_t sendDataBuffDimm[5], sendDataCountDimm = 0;
+    uint8_t sendDataBuffRGB[5], sendDataCountRGB = 0;
+    
+    
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
     {
         if(Light_Modbus_isOnDelayTimeTimerActive(lights_modbus + i) && Light_Modbus_hasOnDelayTimeTimerExpired(lights_modbus + i))
@@ -527,26 +532,21 @@ void Light_Modbus_Service()
     
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
-        uint8_t sendDataBuff[5], sendDataCount = 0;
-        
         if(Light_Modbus_hasStatusChanged(lights_modbus + i))
         {
-//                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
-            *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-            *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-            sendDataCount += 2;
-            
             if(Light_Modbus_isBinary(lights_modbus + i) || Light_Modbus_isRGB(lights_modbus + i))
             {
-                sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
-                
-                //DodajKomandu(, BINARY_SET, sendDataBuff, sendDataCount);
+                *(sendDataBuffBin + sendDataCountBin) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+                *(sendDataBuffBin + sendDataCountBin + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+                sendDataCountBin += 2;
+                sendDataBuffBin[sendDataCountBin++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
             }
             else if(Light_Modbus_isDimmer(lights_modbus + i))
             {
-                sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0 : 100;
-                
-                //DodajKomandu(, DIMMER_SET, sendDataBuff, sendDataCount);
+                *(sendDataBuffDimm + sendDataCountDimm) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+                *(sendDataBuffDimm + sendDataCountDimm + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+                sendDataCountDimm += 2;
+                sendDataBuffDimm[sendDataCountDimm++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0 : 100;
             }
             
             Light_Modbus_ResetStatus(lights_modbus + i);
@@ -556,28 +556,43 @@ void Light_Modbus_Service()
         }
         else if(Light_Modbus_hasBrightnessChanged(lights_modbus + i))
         {
-            *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-            *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-            sendDataCount += 2;
-            sendDataBuff[sendDataCount++] = Light_Modbus_GetBrightness(lights_modbus + i);
-            
-            //DodajKomandu(, DIMMER_SET, sendDataBuff, sendDataCount);
+            *(sendDataBuffDimm + sendDataCountDimm) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            *(sendDataBuffDimm + sendDataCountDimm + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+            sendDataCountDimm += 2;
+            sendDataBuffDimm[sendDataCountDimm++] = Light_Modbus_GetBrightness(lights_modbus + i);
             
             Light_Modbus_ResetBrightness(lights_modbus + i);
         }
         else if(Light_Modbus_hasColorChanged(lights_modbus + i))
         {
             //if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_COLOR_SET;
-            *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-            *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-            sendDataCount += 2;
-            sendDataBuff[sendDataCount++] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
-            sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
-            sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
-            
-            //DodajKomandu(, RGB_SET, sendDataBuff, sendDataCount);
+            *(sendDataBuffRGB + sendDataCountRGB) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            *(sendDataBuffRGB + sendDataCountRGB + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+            sendDataCountRGB += 2;
+            sendDataBuffRGB[sendDataCountRGB++] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
+            sendDataBuffRGB[sendDataCountRGB++] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
+            sendDataBuffRGB[sendDataCountRGB++] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
             
             Light_Modbus_ResetColor(lights_modbus + i);
         }
     }
+    
+    
+    if(sendDataCountBin)
+    {
+        //DodajKomandu(, BINARY_SET, sendDataBuff, sendDataCount);
+    }
+    else if(sendDataCountDimm)
+    {
+        //DodajKomandu(, DIMMER_SET, sendDataBuff, sendDataCount);
+    }
+    else if(sendDataCountRGB)
+    {
+        //DodajKomandu(, RGB_SET, sendDataBuff, sendDataCount);
+    }
 }
+
+
+
+
+
