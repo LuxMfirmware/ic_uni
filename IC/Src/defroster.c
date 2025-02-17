@@ -1,5 +1,6 @@
 #include "defroster.h"
 #include "display.h"
+#include "stm32746g_eeprom.h"
 
 
 
@@ -11,11 +12,72 @@ Defroster defroster;
 
 
 
+
+
+
 void Defroster_Init()
 {
     defroster.cycleTime_TimerStart = 0;
     defroster.activeTime_TimerStart = 0;
+    
+    EE_ReadBuffer(&defroster.cycleTime,       EE_DEFROSTER,            1);
+    EE_ReadBuffer(&defroster.activeTime,      EE_DEFROSTER + 1,        1);
+    EE_ReadBuffer(&defroster.pin,             EE_DEFROSTER + 2,        1);
 }
+
+
+
+
+
+void Defroster_Save()
+{
+    EE_WriteBuffer(&defroster.cycleTime,       EE_DEFROSTER,            1);
+    EE_WriteBuffer(&defroster.activeTime,      EE_DEFROSTER + 1,        1);
+    EE_WriteBuffer(&defroster.pin,             EE_DEFROSTER + 2,        1);
+}
+
+
+
+
+
+
+
+
+
+
+void Defroster_SetCycleTime(uint8_t time)
+{
+    defroster.cycleTime = time;
+    
+    if(defroster.activeTime > time)
+    {
+        defroster.activeTime = time;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+void Defroster_SetActiveTime(uint8_t time)
+{
+    if(time > defroster.cycleTime)
+    {
+        defroster.activeTime = defroster.cycleTime;
+    }
+    else
+    {
+        defroster.activeTime = time;
+    }
+}
+
+
 
 
 

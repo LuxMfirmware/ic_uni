@@ -16,16 +16,32 @@ Defroster;
 
 
 
+typedef struct
+{
+    SPINBOX_Handle cycleTime, activeTime, pin;
+}
+Defroster_settingsWidgets;
+
+
+
+
+
 
 extern Defroster defroster;
 
 
 
+
+
+
 void Defroster_Init();
+void Defroster_Save();
 bool Defroster_isActive();
 void Defroster_On();
 void Defroster_Off();
 void Defroster_Service();
+void Defroster_SetCycleTime(uint8_t time);
+void Defroster_SetActiveTime(uint8_t time);
 
 
 

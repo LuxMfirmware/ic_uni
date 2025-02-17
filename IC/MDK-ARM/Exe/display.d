@@ -106,7 +106,7 @@
   ..\..\Middlewares\TinyFrame\TinyFrame.h \
   ..\..\Middlewares\TinyFrame\TF_Config.h ..\Inc\logger.h \
   ..\Inc\display.h ..\Inc\main.h ..\Inc\thermostat.h ..\Inc\lights.h \
-  ..\Inc\thermostat.h ..\Inc\curtain.h \
+  ..\Inc\thermostat.h ..\Inc\curtain.h ..\Inc\defroster.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_ts.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h \

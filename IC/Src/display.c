@@ -19,6 +19,7 @@
 #include "display.h"
 #include "thermostat.h"
 #include "curtain.h"
+#include "defroster.h"
 #include "stm32746g.h"
 #include "stm32746g_ts.h"
 #include "stm32746g_qspi.h"
@@ -166,6 +167,10 @@ Light_Modbus_settingsWidgets;
 #define ID_THST_GROUP                   0x979
 #define ID_THST_MASTER                  0x97A
 
+#define ID_DEFROSTER_CYCLE_TIME         0x97B
+#define ID_DEFROSTER_ACTIVE_TIME        0x97C
+#define ID_DEFROSTER_PIN                0x97D
+
 
 /* Private Type --------------------------------------------------------------*/
 BUTTON_Handle   hBUTTON_Increase;
@@ -238,6 +243,8 @@ BUTTON_Handle hBUTTON_SYSRESTART;
 
 CHECKBOX_Handle hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH;
 CHECKBOX_Handle hCHKBX_LIGHT_NIGHT_TIMER;
+
+Defroster_settingsWidgets defroster_settingWidgets;
 
 
 static uint32_t clk_clrs[COLOR_BSIZE] = {                   //  selectable screensaver clock colours
@@ -642,6 +649,7 @@ static void DSP_InitSet4Scrn(void);
 static void DSP_InitSet5Scrn(void);
 static void DSP_InitSet6Scrn(void);
 static void DSP_InitSet7Scrn(void);
+static void DSP_InitSet8Scrn(void);
 static void DSP_KillSet1Scrn(void);
 static void DSP_KillSet2Scrn(void);
 static void DSP_KillSet3Scrn(void);
@@ -649,6 +657,7 @@ static void DSP_KillSet4Scrn(void);
 static void DSP_KillSet5Scrn(void);
 static void DSP_KillSet6Scrn(void);
 static void DSP_KillSet7Scrn(void);
+static void DSP_KillSet8Scrn(void);
 static uint8_t DISPMenuSettings(uint8_t btn);
 static void SaveLightController(LIGHT_CtrlTypeDef* lc, uint16_t addr);
 static void ReadLightController(LIGHT_CtrlTypeDef* lc, uint16_t addr);
@@ -751,7 +760,7 @@ void DISP_Service(void){
                 {
                     t = 1;
                     
-                    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
+                    for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
                     {
                         if(Light_Modbus_isTiedToMainLight(lights_modbus + i)  &&  Light_Modbus_isNewValueOn(lights_modbus + i))
                         {
@@ -1400,6 +1409,7 @@ void DISP_Service(void){
                     
                     if(IsTempRegActiv())
                     {
+                        thst.fan_speed = 0;
                         TempRegOff();
                     }
                     else
@@ -2090,6 +2100,7 @@ void DISP_Service(void){
                 if (tfifa != SPINBOX_GetValue(hDEV_ID))
                 {
                     tfifa = SPINBOX_GetValue(hDEV_ID);
+                    settingsChanged = 1;
                 } 
                 else if(Curtain_GetMoveTime() != SPINBOX_GetValue(hCurtainsMoveTime))
                 {
@@ -2135,8 +2146,8 @@ void DISP_Service(void){
                 
                 
                 DSP_KillSet7Scrn();
-                DSP_InitSet1Scrn();
-                screen = SCREEN_SETTINGS_1;
+                DSP_InitSet8Scrn();
+                screen = SCREEN_SETTINGS_8;
             }
             
             break;
@@ -2279,6 +2290,56 @@ void DISP_Service(void){
             break;
         }
         //
+        //  SETTINGS MENU 8
+        //     
+        case SCREEN_SETTINGS_8:
+        {
+            if(defroster.cycleTime != SPINBOX_GetValue(defroster_settingWidgets.cycleTime))
+            {
+                Defroster_SetCycleTime(SPINBOX_GetValue(defroster_settingWidgets.cycleTime));
+                settingsChanged = 1;
+            }
+            else if(defroster.activeTime != SPINBOX_GetValue(defroster_settingWidgets.activeTime))
+            {
+                Defroster_SetActiveTime(SPINBOX_GetValue(defroster_settingWidgets.activeTime));
+                settingsChanged = 1;
+            }
+            else if(defroster.pin != SPINBOX_GetValue(defroster_settingWidgets.pin))
+            {
+                defroster.pin = SPINBOX_GetValue(defroster_settingWidgets.pin);
+                settingsChanged = 1;
+            }
+            
+            
+            
+            
+            if(BUTTON_IsPressed(hBUTTON_Ok))
+            {
+                if(settingsChanged)
+                {
+                    Defroster_Save();
+                    settingsChanged = 0;
+                }
+                DSP_KillSet8Scrn();
+                screen = SCREEN_RETURN_TO_FIRST;
+            }
+            else if (BUTTON_IsPressed(hBUTTON_Next))
+            {
+                if(settingsChanged)
+                {
+                    Defroster_Save();
+                    settingsChanged = 0;
+                }
+                
+                
+                DSP_KillSet8Scrn();
+                DSP_InitSet1Scrn();
+                screen = SCREEN_SETTINGS_1;
+            }
+            
+            break;
+        }
+        //
         //  RESET MENU SWITCHES
         //        
         case SCREEN_RESET_MENU_SWITCHES:
@@ -2355,6 +2416,7 @@ void DISP_Service(void){
             else if (screen == SCREEN_SETTINGS_5)DSP_KillSet5Scrn();
             else if (screen == SCREEN_SETTINGS_6)DSP_KillSet6Scrn();
             else if (screen == SCREEN_SETTINGS_7)DSP_KillSet7Scrn();
+            else if (screen == SCREEN_SETTINGS_8)DSP_KillSet8Scrn();
             DISPSetBrightnes(low_bcklght);
             ScrnsvrInitReset();
             ScrnsvrSet();            
@@ -3294,6 +3356,85 @@ static void DSP_KillSet7Scrn(void)
 
 
 
+
+static void DSP_InitSet8Scrn(void)
+{
+    GUI_SelectLayer(0);
+    GUI_Clear();
+    GUI_SelectLayer(1);
+    GUI_SetBkColor(GUI_TRANSPARENT);
+    GUI_Clear();
+    GUI_MULTIBUF_BeginEx(1);
+    
+    
+    
+    
+    
+    GUI_SetColor(GUI_WHITE);
+    GUI_SetFont(GUI_FONT_13_1);
+    GUI_SetTextAlign(GUI_TA_LEFT|GUI_TA_VCENTER);
+    
+    
+    
+    defroster_settingWidgets.cycleTime = SPINBOX_CreateEx(10, 10, 110, 40, 0, WM_CF_SHOW, ID_DEFROSTER_CYCLE_TIME, 0, 254);
+    SPINBOX_SetEdge(defroster_settingWidgets.cycleTime, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(defroster_settingWidgets.cycleTime, defroster.cycleTime);
+    
+    GUI_GotoXY(130, 20);
+    GUI_DispString("DEFROSTER");
+    GUI_GotoXY(130, 32);
+    GUI_DispString("CYCLE TIME");
+    
+    
+    
+    
+    defroster_settingWidgets.activeTime = SPINBOX_CreateEx(10, 60, 110, 40, 0, WM_CF_SHOW, ID_DEFROSTER_ACTIVE_TIME, 0, 254);
+    SPINBOX_SetEdge(defroster_settingWidgets.activeTime, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(defroster_settingWidgets.activeTime, defroster.activeTime);
+    
+    GUI_GotoXY(130, 70);
+    GUI_DispString("DEFROSTER");
+    GUI_GotoXY(130, 82);
+    GUI_DispString("ACTIVE TIME");
+    
+    
+    
+    defroster_settingWidgets.pin = SPINBOX_CreateEx(10, 110, 110, 40, 0, WM_CF_SHOW, ID_DEFROSTER_PIN, 0, 6);
+    SPINBOX_SetEdge(defroster_settingWidgets.pin, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(defroster_settingWidgets.pin, defroster.pin);
+    
+    GUI_GotoXY(130, 120);
+    GUI_DispString("DEFROSTER");
+    GUI_GotoXY(130, 132);
+    GUI_DispString("PIN");
+    
+    
+    
+    
+    
+    
+    
+    
+    hBUTTON_Next = BUTTON_Create(410, 180, 60, 30, ID_Next, WM_CF_SHOW);
+    BUTTON_SetText(hBUTTON_Next, "NEXT");
+
+    hBUTTON_Ok = BUTTON_Create(410, 230, 60, 30, ID_Ok, WM_CF_SHOW);
+    BUTTON_SetText(hBUTTON_Ok, "SAVE");
+    
+    GUI_MULTIBUF_EndEx(1);
+}
+
+static void DSP_KillSet8Scrn(void)
+{
+    WM_DeleteWindow(defroster_settingWidgets.cycleTime);
+    WM_DeleteWindow(defroster_settingWidgets.activeTime);
+    WM_DeleteWindow(defroster_settingWidgets.pin);
+    WM_DeleteWindow(hBUTTON_Next);
+    WM_DeleteWindow(hBUTTON_Ok);
+}
+
+
+
 /**
   * @brief  Display Backlight LED brightnes control
   * @param  brightnes_high_level
@@ -3709,7 +3850,7 @@ void PID_Hook(GUI_PID_STATE * pTS){
                 
                 
                 
-                for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
+                for(uint8_t i = 0; i < Lights_Modbus_getCount(); ++i)
                 {
                     if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && Light_Modbus_isActive(lights_modbus + i))
                     {
@@ -3731,7 +3872,7 @@ void PID_Hook(GUI_PID_STATE * pTS){
                 {
                     LightNightTimer_StartTime = 0;
                     
-                    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
+                    for(uint8_t i = 0; i < Lights_Modbus_getCount(); ++i)
                     {
                         if(Light_Modbus_isTiedToMainLight(lights_modbus + i))
                         {

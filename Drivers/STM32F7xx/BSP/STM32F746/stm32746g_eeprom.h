@@ -190,6 +190,7 @@
 #define EE_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH       0x1C6
 #define EE_LIGHT_NIGHT_TIMER                    0x1C7
 #define EE_LIGHTS_MODBUS_OFF_TIMER_TIME         0x1C8   //15 bytes for 15 lights
+#define EE_DEFROSTER                            0x2A9   //15 bytes
 /* Link function for I2C EEPROM peripheral */
 void     EE_Init         (void);
 uint32_t EE_ReadBuffer   (uint8_t *pBuffer, uint16_t ReadAddr,  uint16_t NumByteToRead);
