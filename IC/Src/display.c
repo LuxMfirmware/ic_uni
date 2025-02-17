@@ -2210,18 +2210,19 @@ void DISP_Service(void){
                 
                 GUI_Clear();
                 
-                GUI_SetColor(GUI_WHITE);
-                GUI_FillRect(0, 0, 480, 272);
-                
                 GUI_SetPenSize(9);
                 GUI_SetColor(GUI_GREEN);
                 GUI_DrawLine(400,20,450,20);
                 GUI_DrawLine(400,40,450,40);
                 GUI_DrawLine(400,60,450,60);
                 
-                int siz = strlen((char*)QR_Code_Get(qr_code_draw_id));
+                GUI_HMEM hqr = GUI_QR_Create((char*)"www.google.com"/*QR_Code_Get(qr_code_draw_id)*/, 8, GUI_QR_ECLEVEL_M, 0);
+                GUI_QR_INFO qrInfo;
+                GUI_QR_GetInfo(hqr, &qrInfo);
                 
-                GUI_HMEM hqr = GUI_QR_Create((char*)QR_Code_Get(qr_code_draw_id), 8, GUI_QR_ECLEVEL_M, 0);
+                GUI_SetColor(GUI_WHITE);
+                GUI_FillRect(0, 0, qrInfo.Size + 20, qrInfo.Size + 20);
+                
                 GUI_QR_Draw(hqr, 10, 10);
                 GUI_QR_Delete(hqr);
                 
