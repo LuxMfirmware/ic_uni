@@ -993,11 +993,6 @@
               <FileType>1</FileType>
               <FilePath>..\Src\defroster.c</FilePath>
             </File>
-            <File>
-              <FileName>defroster.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Inc\defroster.h</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>

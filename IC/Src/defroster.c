@@ -96,9 +96,9 @@ bool Defroster_isActiveTimeTimerOn()
     return defroster.activeTime_TimerStart;
 }
 
-bool Defroster_hasActiveTimeTimerExpired()
+bool Defroster_hasActiveTimeTimerExpired(const uint32_t tick)
 {
-    return (defroster.activeTime_TimerStart - HAL_GetTick()) >= (defroster.activeTime * 1000);
+    return (defroster.activeTime_TimerStart - tick) >= (defroster.activeTime * 1000);
 }
 
 void Defroster_ActiveTimeTimerStop()
@@ -123,7 +123,7 @@ bool Defroster_isCycleTimerOn()
     return defroster.cycleTime_TimerStart;
 }
 
-bool Defroster_hasCycleTimerExpired()
+bool Defroster_hasCycleTimerExpired(const uint32_t tick)
 {
     return (defroster.cycleTime_TimerStart - HAL_GetTick()) >= (defroster.cycleTime * 1000);
 }
@@ -167,13 +167,15 @@ void Defroster_Service()
 {
     if(Defroster_isActive())
     {
-        if(Defroster_isCycleTimerOn() && Defroster_hasCycleTimerExpired())
+        const uint32_t tick = HAL_GetTick();
+        
+        if(Defroster_isCycleTimerOn() && Defroster_hasCycleTimerExpired(tick))
         {
             Defroster_CycleTimerStart();
             Defroster_ActiveTimeTimerStart();
             SetPin(defroster.pin, 1);
         }
-        else if(Defroster_isActiveTimeTimerOn() && Defroster_hasActiveTimeTimerExpired())
+        else if(Defroster_isActiveTimeTimerOn() && Defroster_hasActiveTimeTimerExpired(tick))
         {
             Defroster_ActiveTimeTimerStop();
             SetPin(defroster.pin, 0);
