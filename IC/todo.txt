@@ -10,3 +10,36 @@ odkomentarisati vec pozvane instance funckije DodajKomandu i proslijediti im odg
 
 -lights
 add checkbox to set if dimmable light, when clicked, goes between 0-100 or 0-last set value
+
+nevalja ti kurcu setup meni sve zaboravlja šta si prije podesio ako nisi pritisno spasi odma, 
+nećeš valjda svaki put ulazit izlazit iz menija da bi naštimo, kad ideš kroz menije treba ostat
+sve što si prije podesio pa bilo gdje da pritisneš spasi treba sve što je promjenjeno da spasi
+
+iznad dugmeta restart dodaj isto jedno takvo dugme reset ili default pa nek radi kako i piše 
+restart samo restartuje a reset neka ponovo setuje defaultne vrijednosti koje trebaju bit u 
+validnom opsegu varijabli koje imaju u programu ( ako ima tri vrste kontrola bin, dim, rgb ...
+ne može se onda podesit nit pojavit broj 4 u odabiru. 
+
+obriši kolor piker za dimer i napravi dimer kontrolu da nije binarni tip na jedan klik ikone, 
+treba bit isti kao i dimer tip u slideru, obadva treba da su dimer tipa
+
+iz nekog razloga se popale sve ikone sijalica kad uđeš u meni LIGHTS, nisam upratio razlog
+ali desi se samo i kad je meni aktivan vidio sam jednom bez dodira samo se svih pet 
+pocrveniše, a samo su dva vezana za glavni prekidač svjetla pa nije zbog toga
+
+testiraj na raznim kanalima dimera, probaj razne sijalice kako se ponašaju, ako primjetiš
+greške u radu opreme napiši gdje šta kako da mogu popravljat i ja 
+
+ne možeš pin od senzora temperature samo jednostavno proglasit ulaznim, neće senzor radit
+samo ako je termostat slave možeš reincijalizovat ovaj pin i ako se vrati na master ponovo 
+treba reinicijalizovat ADC, ostavi ovu konverziju ja cu dodat kod koristićemo standardni
+filter u automatici eksponencijalno klizno srednje za konverziju da se ne mjenja brzo ali
+ni da je trom ko da mjeri kamen i ovo sa fiksnim vremenom je dobro al ima filter za to,
+prvi pin je pin od senzora ovaj GPIO_PIN_1 u adc init njega ne diraj ako radi termostat  
+ostale možeš šta hoćeš
+
+nemoj da nam ostane vila al hamli na termostatu da ne zaboravimo promjenit bolje da je crn
+
+ako mogneš napravit qr kod da bude u bijelom kvadratu, pitomije nekako, kad se otvori screen 
+bljesne bijela boja samo koliki je qr kod i malo da ima ruba okolo, a ostatak screen-a da 
+ostane crn, elegantnije bi izgledalo ako ne može jebaji ga ostavi kako jest
