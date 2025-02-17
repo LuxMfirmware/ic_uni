@@ -64,7 +64,7 @@ void THSTAT_Init(void){
   */
 void THSTAT_Service(void)
 {
-    if(!thst.group)
+    if(thst.master)
     {
         static int16_t temp_sp = 0U;
         static uint32_t fan_pcnt = 0U;
