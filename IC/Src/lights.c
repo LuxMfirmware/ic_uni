@@ -9,6 +9,7 @@
 
 
 
+uint8_t isButtonActive_old = 0;
 uint8_t lights_count = 0, lights_modbus_rows = 0;
 uint8_t LightNightTimer_isEnabled = 0;
 uint32_t LightNightTimer_StartTime = 0;
@@ -480,6 +481,38 @@ void Light_Modbus_Service()
     uint8_t sendDataBuffBin[5], sendDataCountBin = 0;
     uint8_t sendDataBuffDimm[5], sendDataCountDimm = 0;
     uint8_t sendDataBuffRGB[5], sendDataCountRGB = 0;
+    
+    
+    
+    
+    if((isButtonActive_old != IsButtonActive()) && (!isButtonActive_old))
+    {
+        for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
+        {
+            LIGHT_Modbus_CmdTypeDef* const light = lights_modbus + i;
+            
+            if(!light->button_external)
+            {
+                if(light->button_external == 1)
+                {
+                    Light_Modbus_On(light);
+                }
+                else if(light->button_external == 2)
+                {
+                    Light_Modbus_Off(light);
+                }
+                else if(light->button_external == 3)
+                {
+                    Light_Modbus_Flip(light);
+                }
+            }
+        }
+        
+        isButtonActive_old = IsButtonActive();
+    }
+    
+    
+    
     
     
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)

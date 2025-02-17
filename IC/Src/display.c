@@ -288,7 +288,6 @@ uint8_t shouldDrawScreen = 1;
 uint8_t bOnlyLeaveScreenSaverAfterTouch = 0;
 uint32_t ventilatorOnDelayTimer_Start = 0;
 uint32_t everyMinuteTimerStart = 0;
-uint8_t isButtonActive_old = 0;
 
 uint8_t qr_codes[QR_CODE_COUNT][QR_CODE_LENGTH] = {0}, qr_code_draw_id = 0;
 
@@ -2311,35 +2310,6 @@ void DISP_Service(void){
             menu_out1 = 0;
             break;
         }
-    }
-    
-    
-    
-    
-    if((isButtonActive_old != IsButtonActive()) && (!isButtonActive_old))
-    {
-        for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
-        {
-            LIGHT_Modbus_CmdTypeDef* const light = lights_modbus + i;
-            
-            if(!light->button_external)
-            {
-                if(light->button_external == 1)
-                {
-                    Light_Modbus_On(light);
-                }
-                else if(light->button_external == 2)
-                {
-                    Light_Modbus_Off(light);
-                }
-                else if(light->button_external == 3)
-                {
-                    Light_Modbus_Flip(light);
-                }
-            }
-        }
-        
-        isButtonActive_old = IsButtonActive();
     }
     
     
