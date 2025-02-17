@@ -527,6 +527,8 @@ void Light_Modbus_Service()
     
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
+        uint8_t sendDataBuff[5], sendDataCount = 0;
+        
         if(Light_Modbus_hasStatusChanged(lights_modbus + i))
         {
 //                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
