@@ -492,6 +492,44 @@ GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef
 
 
 
+void Light_Modbus_SetDefault(LIGHT_Modbus_CmdTypeDef* const li)
+{
+    li->index = 0;
+    li->old_index = 0;
+    li->value = 0;
+    li->old_value = 0;
+    li->brightness = 0;
+    li->color = 0;
+    li->iconID = 0;
+    li->local_pin = 0;
+    li->communication_type = LIGHT_COM_BIN;
+    li->button_external = 0;
+    li->controllerID_on = 0;
+    li->controllerID_on_delay = 0;
+    li->off_time = 0;
+    li->off_timer_start = 0;
+    li->on_delay_timer_start = 0;
+    li->on_hour = 0;
+    li->on_minute = 0;
+    li->sleep_time = 0;
+    li->tiedToMainLight = false;
+}
+
+
+void Lights_Modbus_SetDefault()
+{
+    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
+    {
+        Light_Modbus_SetDefault(lights_modbus + i);
+    }
+}
+
+
+
+
+
+
+
 
 
 void Light_Modbus_Service()
