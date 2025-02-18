@@ -149,19 +149,38 @@ uint8_t Light_Modbus_Get_byIndex(const uint8_t light_index)
 }
 
 
+
+void Light_Modbus_Set(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value)
+{
+    if(value)
+    {
+        li->value = 1;
+        
+        if(li->local_pin < 5) SetPin(li->local_pin, 1);
+        else PCA9685_SetOutput(li->local_pin, 255);
+        
+        if(Light_Modbus_isOffTimeEnabled(li))
+        {
+            uint32_t time = HAL_GetTick();
+            if(!time) time = 1;
+            Light_Modbus_SetOffTimeTimer(li, time);
+        }
+    }
+    else
+    {
+        li->value = 0;
+        
+        if(li->local_pin < 5) SetPin(li->local_pin, 0);
+        else PCA9685_SetOutput(li->local_pin, 0);
+        
+        Light_Modbus_OffTimeTimerDeactivate(li);
+    }
+}
+
+
 void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    li->value = 1;
-    
-    if(li->local_pin < 5) SetPin(li->local_pin, 1);
-    else PCA9685_SetOutput(li->local_pin, 255);
-    
-    if(Light_Modbus_isOffTimeEnabled(li))
-    {
-        uint32_t time = HAL_GetTick();
-        if(!time) time = 1;
-        Light_Modbus_SetOffTimeTimer(li, time);
-    }
+    Light_Modbus_Set(li, 1);
 }
 
 void Light_Modbus_On_External(LIGHT_Modbus_CmdTypeDef* const li)
@@ -179,12 +198,7 @@ void Light_Modbus_On_External(LIGHT_Modbus_CmdTypeDef* const li)
 
 void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    li->value = 0;
-    
-    if(li->local_pin < 5) SetPin(li->local_pin, 0);
-    else PCA9685_SetOutput(li->local_pin, 0);
-    
-    Light_Modbus_OffTimeTimerDeactivate(li);
+    Light_Modbus_Set(li, 0);
 }
 
 void Light_Modbus_Off_External(LIGHT_Modbus_CmdTypeDef* const li)
@@ -197,6 +211,14 @@ void Light_Modbus_Off_External(LIGHT_Modbus_CmdTypeDef* const li)
     {
         Light_Modbus_Off(li);
     }
+}
+
+
+
+void Light_Modbus_Flip(LIGHT_Modbus_CmdTypeDef* const li)
+{
+    if(Light_Modbus_isActive(li)) Light_Modbus_Off(li);
+    else Light_Modbus_On(li);
 }
 
 void Light_Modbus_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val)
@@ -220,11 +242,7 @@ bool Light_Modbus_isOldValueOn(const LIGHT_Modbus_CmdTypeDef* const li)
     return li->old_value;
 }
 
-void Light_Modbus_Flip(LIGHT_Modbus_CmdTypeDef* const li)
-{
-    if(Light_Modbus_isActive(li)) Light_Modbus_Off(li);
-    else Light_Modbus_On(li);
-}
+
 
 
 
