@@ -949,7 +949,6 @@ void DISP_Service(void){
                 GUI_DrawBitmap(&bmTermometar, 245, 15);
                 GUI_DrawBitmap(&bmblindMedium, 55, 150);
                 if(Defroster_isActive()) GUI_DrawBitmap(&bmdefrosterOn, 240, 155);     else GUI_DrawBitmap(&bmdefroster, 240, 155);
-                //GUI_DrawBitmap(&bmwifi, 240, 160);
                 
                 
                 
@@ -2181,12 +2180,14 @@ void DISP_Service(void){
                 
                 GUI_DrawLine(380,10,380,262);
                 
-                GUI_DrawLine(190,20,190,252);
+                GUI_DrawLine(126,30,126,242);
+                GUI_DrawLine(252,30,252,242);
                 
-                GUI_DrawBitmap(&bmnext, 385,159);
+                GUI_DrawBitmap(&bmnext, 385, 159);
                 
-                GUI_DrawBitmap(&bmmobilePhone, 70, 76);
-                GUI_DrawBitmap(&bmCLEAN, 245, 76);
+                GUI_DrawBitmap(&bmCLEAN, 18, 76);
+                GUI_DrawBitmap(&bmwifi, 146, 76);
+                GUI_DrawBitmap(&bmmobilePhone, 290, 76);
                 
                 
                 
@@ -2196,13 +2197,18 @@ void DISP_Service(void){
                 
                 
                 GUI_SetTextAlign(GUI_TA_HCENTER|GUI_TA_VCENTER);
-                GUI_GotoXY(95, 176);
-                lng(52);
+                GUI_GotoXY(63, 176);
+                lng(6);
                 GUI_DispString(langText);
                 
                 GUI_SetTextAlign(GUI_TA_HCENTER|GUI_TA_VCENTER);
-                GUI_GotoXY(285, 176);
-                lng(6);
+                GUI_GotoXY(189, 176);
+                lng(51);
+                GUI_DispString(langText);
+                
+                GUI_SetTextAlign(GUI_TA_HCENTER|GUI_TA_VCENTER);
+                GUI_GotoXY(315, 176);
+                lng(52);
                 GUI_DispString(langText);
                 
                 GUI_MULTIBUF_EndEx(1);
@@ -3143,7 +3149,7 @@ static void DSP_InitSet6Scrn(void)
         x = 200;
         y = 5;
         
-        lightsWidgets[i].communication_type = SPINBOX_CreateEx(x, y, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 7, 0, 3);
+        lightsWidgets[i].communication_type = SPINBOX_CreateEx(x, y, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 7, 1, 3);
         SPINBOX_SetEdge(lightsWidgets[i].communication_type, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].communication_type, lights_modbus[i].communication_type);
         
@@ -3650,9 +3656,6 @@ void PID_Hook(GUI_PID_STATE * pTS){
                         
                         menu_lc = 0;*/
                         
-                        /*screen = SCREEN_QR_CODE;
-                        qr_code_draw_id = QR_CODE_WIFI_ID;
-                        shouldDrawScreen = 1;*/
                         
                         if(Defroster_isActive())
                         {
@@ -3679,13 +3682,16 @@ void PID_Hook(GUI_PID_STATE * pTS){
         else if((pTS->x > 0)&&(pTS->x < 120)&&(pTS->y > 200)&&(pTS->y < 272)&&((screen == SCREEN_LED_1_3_RELAY)||(screen == SCREEN_LED_4_RELAY))){
             click = 1;
             screen = SCREEN_LIGHT_DIMMER;
-        }else if((pTS->x > 120)&&(pTS->x < 240)&&(pTS->y > 200)&&(pTS->y < 272)&&((screen == SCREEN_LIGHT_DIMMER)||(screen == SCREEN_LED_4_RELAY))){
+        }
+        else if((pTS->x > 120)&&(pTS->x < 240)&&(pTS->y > 200)&&(pTS->y < 272)&&((screen == SCREEN_LIGHT_DIMMER)||(screen == SCREEN_LED_4_RELAY))){
             click = 1;
             screen = SCREEN_LED_1_3_RELAY;
-        }else if((pTS->x > 240)&&(pTS->y > 200)&&(pTS->x < 360)&&(pTS->y < 272)&&((screen == SCREEN_LIGHT_DIMMER)||(screen == SCREEN_LED_1_3_RELAY))){
+        }
+        else if((pTS->x > 240)&&(pTS->y > 200)&&(pTS->x < 360)&&(pTS->y < 272)&&((screen == SCREEN_LIGHT_DIMMER)||(screen == SCREEN_LED_1_3_RELAY))){
             click = 1;
             screen = SCREEN_LED_4_RELAY;
-        }else if((pTS->x > 360)&&(pTS->y > 200)&&(pTS->x < 480)&&(pTS->y < 272)&&((screen == SCREEN_LIGHT_DIMMER)||(screen == SCREEN_LED_1_3_RELAY)||(screen == SCREEN_LED_4_RELAY))){
+        }
+        else if((pTS->x > 360)&&(pTS->y > 200)&&(pTS->x < 480)&&(pTS->y < 272)&&((screen == SCREEN_LIGHT_DIMMER)||(screen == SCREEN_LED_1_3_RELAY)||(screen == SCREEN_LED_4_RELAY))){
             click = 1;
             screen = SCREEN_RETURN_TO_FIRST;
         }
@@ -3821,15 +3827,21 @@ void PID_Hook(GUI_PID_STATE * pTS){
             {
                 if((pTS->y > 116) && (pTS->y < 216))
                 {
-                    if(pTS->x < 190)
+                    if(pTS->x < 126)
+                    {
+                        screen = SCREEN_CLEAN;
+                    }
+                    else if(pTS->x < 252)
                     {
                         screen = SCREEN_QR_CODE;
-                        qr_code_draw_id = QR_CODE_APP_ID;
+                        qr_code_draw_id = QR_CODE_WIFI_ID;
                         shouldDrawScreen = 1;
                     }
                     else
                     {
-                        screen = SCREEN_CLEAN;
+                        screen = SCREEN_QR_CODE;
+                        qr_code_draw_id = QR_CODE_APP_ID;
+                        shouldDrawScreen = 1;
                     }
                 }
             }
