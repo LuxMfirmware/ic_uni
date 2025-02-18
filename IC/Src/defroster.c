@@ -165,6 +165,25 @@ void Defroster_Off()
 
 
 
+
+
+void Defroster_SetDefault()
+{
+    defroster.cycleTime = 0;
+    defroster.cycleTime_TimerStart = 0;
+    defroster.activeTime = 0;
+    defroster.activeTime_TimerStart = 0;
+    defroster.pin = 0;
+}
+
+
+
+
+
+
+
+
+
 void Defroster_Service()
 {
     if(Defroster_isActive())

@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Tue Feb 18 11:43:28 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Tue Feb 18 11:47:06 2025
 <BR><P>
 <H3>Maximum Stack Usage =       2468 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -3201,9 +3201,7 @@ Global Symbols
 <LI><a href="#[353]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_LCD_DisplayOn
 <LI><a href="#[354]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_LCD_DisplayOff
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ShowBuffer
-<LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVis
-<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVRAMAddr
+<BR>[Called By]<UL><LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVRAMAddr
 <LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetSize
 <LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetPos
 <LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetOrg
@@ -3227,6 +3225,8 @@ Global Symbols
 <LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_On
 <LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Off
 <LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Init
+<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ShowBuffer
+<LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVis
 </UL>
 
 <P><STRONG><a name="[9d]"></a>LTDC_IRQHandler</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, stm32f7xx_it.o(.text.LTDC_IRQHandler))
@@ -5505,9 +5505,9 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
 <LI> fd48.o(.constdata)
+<LI> f16b_1.o(.constdata)
 <LI> f13_1.o(.constdata)
 <LI> f20_1.o(.constdata)
-<LI> f16b_1.o(.constdata)
 <LI> f24_1.o(.constdata)
 <LI> fd80.o(.constdata)
 <LI> fd64.o(.constdata)
@@ -5522,9 +5522,9 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
 <LI> fd48.o(.constdata)
+<LI> f16b_1.o(.constdata)
 <LI> f13_1.o(.constdata)
 <LI> f20_1.o(.constdata)
-<LI> f16b_1.o(.constdata)
 <LI> f24_1.o(.constdata)
 <LI> fd80.o(.constdata)
 <LI> fd64.o(.constdata)
@@ -5535,9 +5535,9 @@ Global Symbols
 <P><STRONG><a name="[15f]"></a>GUIPROP_GetFontInfo</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, gui_charp.o(i.GUIPROP_GetFontInfo))
 <BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
 <LI> fd48.o(.constdata)
+<LI> f16b_1.o(.constdata)
 <LI> f13_1.o(.constdata)
 <LI> f20_1.o(.constdata)
-<LI> f16b_1.o(.constdata)
 <LI> f24_1.o(.constdata)
 <LI> fd80.o(.constdata)
 <LI> fd64.o(.constdata)
@@ -5552,9 +5552,9 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
 <LI> fd48.o(.constdata)
+<LI> f16b_1.o(.constdata)
 <LI> f13_1.o(.constdata)
 <LI> f20_1.o(.constdata)
-<LI> f16b_1.o(.constdata)
 <LI> f24_1.o(.constdata)
 <LI> fd80.o(.constdata)
 <LI> fd64.o(.constdata)
@@ -6994,8 +6994,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[4c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_Index2Color
 <LI><a href="#[4ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_GetColorIndex
 </UL>
-<BR>[Called By]<UL><LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
-<LI><a href="#[63b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap
+<BR>[Called By]<UL><LI><a href="#[63b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap
+<LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
 <LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP_DispChar
 <LI><a href="#[4c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawGradient
 </UL>
@@ -7078,16 +7078,16 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[52e]"></a>GUI_GetpfColor2IndexEx</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, lcd_getex.o(i.GUI_GetpfColor2IndexEx))
-<BR><BR>[Called By]<UL><LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
-<LI><a href="#[633]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap_RGB
+<BR><BR>[Called By]<UL><LI><a href="#[633]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap_RGB
 <LI><a href="#[63b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap
+<LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
 <LI><a href="#[4fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_WriteToActiveOpaque_8
 </UL>
 
 <P><STRONG><a name="[52a]"></a>GUI_GetpfIndex2ColorEx</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, lcd_getex.o(i.GUI_GetpfIndex2ColorEx))
-<BR><BR>[Called By]<UL><LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
-<LI><a href="#[528]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DoAlphaBlending
+<BR><BR>[Called By]<UL><LI><a href="#[528]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DoAlphaBlending
 <LI><a href="#[63b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap
+<LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
 <LI><a href="#[4fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_WriteToActiveOpaque_8
 </UL>
 
@@ -7608,8 +7608,8 @@ Global Symbols
 <LI><a href="#[256]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet1Scrn
 <LI><a href="#[1f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISPDateTime
 <LI><a href="#[39d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PresentSystem
-<LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
 <LI><a href="#[63b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap
+<LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
 <LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP_DispChar
 <LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_DrawSkinFlex
 <LI><a href="#[16]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_DrawSkinFlex
@@ -8075,9 +8075,9 @@ Global Symbols
 <LI><a href="#[4fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__RegisterExit
 <LI><a href="#[48d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
 </UL>
-<BR>[Called By]<UL><LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
-<LI><a href="#[528]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DoAlphaBlending
+<BR>[Called By]<UL><LI><a href="#[528]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DoAlphaBlending
 <LI><a href="#[51f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__AllocAlphaBuffer
+<LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
 </UL>
 
 <P><STRONG><a name="[622]"></a>GUI__GetCursorCharacter</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, gui__getcursorpos.o(i.GUI__GetCursorCharacter))
@@ -8336,12 +8336,12 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_FillRect
 </UL>
-<BR>[Called By]<UL><LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
-<LI><a href="#[468]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GL_DrawBitmap
+<BR>[Called By]<UL><LI><a href="#[468]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GL_DrawBitmap
 <LI><a href="#[67d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_NextPixel_FlushBuffer
 <LI><a href="#[634]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap_RLE
 <LI><a href="#[632]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap_Pal
 <LI><a href="#[63b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap
+<LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
 <LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP_DispChar
 <LI><a href="#[175]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIMONO_DispChar
 <LI><a href="#[4fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_WriteToActiveOpaque_HT
@@ -8386,11 +8386,11 @@ Global Symbols
 <LI><a href="#[46a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DrawBitmap
 <LI><a href="#[22d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_FillRect
 <LI><a href="#[201]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ClearRect
-<LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
 <LI><a href="#[4d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;emWin_LCD_Init
 <LI><a href="#[634]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap_RLE
 <LI><a href="#[550]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD__DrawBitmap_1bpp
 <LI><a href="#[63b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap
+<LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
 <LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP_DispChar
 <LI><a href="#[175]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIMONO_DispChar
 <LI><a href="#[4c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawGradient
@@ -8411,9 +8411,9 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[4ca]"></a>LCD_GetColorIndex</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, lcd_getcolorindex.o(i.LCD_GetColorIndex))
-<BR><BR>[Called By]<UL><LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
-<LI><a href="#[485]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetColor
+<BR><BR>[Called By]<UL><LI><a href="#[485]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetColor
 <LI><a href="#[64d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmapHW
+<LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
 </UL>
 
 <P><STRONG><a name="[3f5]"></a>LCD_GetDevFunc</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, lcd_getex.o(i.LCD_GetDevFunc))
@@ -8756,10 +8756,10 @@ Global Symbols
 
 <P><STRONG><a name="[481]"></a>LCD_SetColor</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, lcd.o(i.LCD_SetColor))
 <BR><BR>[Called By]<UL><LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetColor
-<LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
 <LI><a href="#[4d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_InitContext
 <LI><a href="#[47f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GL_SetDefault
 <LI><a href="#[63b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap
+<LI><a href="#[52c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DrawBitmap16bpp
 <LI><a href="#[19]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_DrawSkinFlex
 <LI><a href="#[454]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Paint
 <LI><a href="#[4c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawGradient
@@ -13256,9 +13256,9 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[4a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__Read32
 </UL>
-<BR>[Address Reference Count : 3]<UL><LI> gui_bmp.o(i._Draw)
-<LI> gui_bmp.o(i._DrawBitmap_RGB)
+<BR>[Address Reference Count : 3]<UL><LI> gui_bmp.o(i._DrawBitmap_RGB)
 <LI> gui_bmp.o(.data)
+<LI> gui_bmp.o(i._Draw)
 </UL>
 <P><STRONG><a name="[67c]"></a>_GetBitfieldsPara</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, gui_bmp.o(i._GetBitfieldsPara))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = _GetBitfieldsPara
@@ -14401,9 +14401,7 @@ Local Symbols
 <BR>[Calls]<UL><LI><a href="#[676]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__memset
 <LI><a href="#[48d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ShowBuffer
-<LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVis
-<LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVSize
+<BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVSize
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVRAMAddr
 <LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetSize
 <LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetPos
@@ -14412,6 +14410,8 @@ Local Symbols
 <LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Init
 <LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetPos
 <LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_CopyBuffer
+<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ShowBuffer
+<LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVis
 </UL>
 
 <P><STRONG><a name="[f6]"></a>_Off</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, guidrv_lin_16.o(i._Off))
@@ -14482,9 +14482,9 @@ Local Symbols
 <P><STRONG><a name="[14a]"></a>_SetPixelIndex</STRONG> (Thumb, 18 bytes, Stack size 12 bytes, guidrv_lin_16.o(i._SetPixelIndex))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = _SetPixelIndex
 </UL>
-<BR>[Called By]<UL><LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_XorPixel
-<LI><a href="#[63a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitLine4BPP
+<BR>[Called By]<UL><LI><a href="#[63a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitLine4BPP
 <LI><a href="#[639]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitLine2BPP
+<LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_XorPixel
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> guidrv_lin_16.o(.constdata)
 </UL>
@@ -14494,8 +14494,8 @@ Local Symbols
 <BR>[Calls]<UL><LI><a href="#[34f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_X_DisplayDriver
 <LI><a href="#[4d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_GetYSizeDisplay
 <LI><a href="#[4d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_GetXSizeDisplay
-<LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVis
 <LI><a href="#[62c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_InitOnce
+<LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVis
 <LI><a href="#[38a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> guidrv_lin_16.o(i._GetDevFunc)

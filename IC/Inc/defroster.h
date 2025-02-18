@@ -42,6 +42,7 @@ void Defroster_Off();
 void Defroster_Service();
 void Defroster_SetCycleTime(uint8_t time);
 void Defroster_SetActiveTime(uint8_t time);
+void Defroster_SetDefault();
 
 
 
