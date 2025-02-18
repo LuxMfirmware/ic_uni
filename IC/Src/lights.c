@@ -435,17 +435,17 @@ void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li)
 
 bool Light_Modbus_isBinary(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->communication_type == 0;
+    return li->communication_type == LIGHT_COM_BIN;
 }
 
 bool Light_Modbus_isDimmer(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->communication_type == 1;
+    return li->communication_type == LIGHT_COM_DIM;
 }
 
 bool Light_Modbus_isRGB(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->communication_type == 2;
+    return li->communication_type == LIGHT_COM_COLOR;
 }
 
 
