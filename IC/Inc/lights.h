@@ -31,7 +31,7 @@ extern uint8_t lights_count, lights_modbus_rows;
 extern LIGHT_Modbus_CmdTypeDef lights_modbus[LIGHTS_MODBUS_SIZE];
 
 void Light_Modbus_Service(void);
-uint8_t Lights_Modbus_getCount();
+uint8_t Lights_Modbus_getCount(void);
 void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li);
 uint8_t Light_Modbus_Set_byIndex(const uint8_t light_index, const uint8_t val);

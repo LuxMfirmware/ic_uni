@@ -71,7 +71,6 @@ DMA2D_HandleTypeDef hdma2d;
 uint8_t sysfl   = 0, initfl = 0;
 uint16_t sysid;
 uint32_t rstsrc = 0;
-static uint32_t lastCheckTime = 0;
 static volatile float adc_refcor = 1.0f;
 bool LSE_Failed = false;  // Flag koji pokazuje da je LSE trajno otkazan
 bool pwminit = true;
@@ -344,7 +343,7 @@ static void TS_Service(void) {
   * @retval
   */
 static void RAM_Init(void) {
-    int x;
+//    int x;
     uint8_t ebuf[EE_INIT_ADDR+2];
     EE_ReadBuffer(ebuf, EE_TERMFL, EE_INIT_ADDR+2);
 //    if (ebuf[EE_INIT_ADDR] != EE_MARKER){
@@ -895,10 +894,10 @@ static void ADC3_Read(void) {
             sample_value[i] = HAL_ADC_GetValue(&hadc3);
         }
 
-        // Racunanje prosecne vrednosti prije nego što pozovemo ROOM_GetTemperature
+        // Racunanje prosecne vrijednosti prije nego što pozovemo ROOM_GetTemperature
         tmp = 0;
         for (t = 0; t < 10; t++) tmp += sample_value[t];
-        tmp /= 10; // Srednja vreijdnost 10 uzoraka
+        tmp /= 10; // Srednja vrijednost 10 uzoraka
 
         // Koristi tu vrijednost za izracunavanje pocetne temperature
         filtered_temp = ROOM_GetTemperature(tmp);
@@ -928,14 +927,15 @@ static void ADC3_Read(void) {
 
             // Eksponencijalno klizno srednje za stabilizaciju ocitanja
             new_temp = ROOM_GetTemperature(tmp);
-            filtered_temp = (filtered_temp * 0.9f) + (new_temp * 0.1f);
+            filtered_temp = (filtered_temp * 0.9f) + (new_temp * 0.1f); // 10% nove vrijednosti utice na rezultat
 
             ntc_temp = filtered_temp * 10;
 
-            // Histereza: promena se dešava samo ako razlika prede prag
+            // Histereza: promjena se dešava samo ako razlika prede prag
             if (abs((thst.mv_temp / 10) - (ntc_temp / 10)) > 0.2f) {
                 thst.mv_temp = ntc_temp;
                 MVUpdateSet();
+                thst.hasInfoChanged = true; // šalji promjenu temperature
             }
         }
     }

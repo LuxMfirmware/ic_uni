@@ -35,7 +35,7 @@ static TinyFrame tfapp;
 #define BIN_ACK_POZICIJA		3   // gdje ocekujem ACK bajt u baferu odgovora binarnog upita
 #define DIM_ACK_POZICIJA		9   // pozicija ACK bajta u odgovoru na komande dimeru
 #define JAL_ACK_POZICIJA		3   // pozicija ACK bajta u odgovoru na komande žaluzinama
-#define THE_ACK_POZICIJA		3   // pozicija ACK bajta u odgovoru na komande termostatu
+#define THE_ACK_POZICIJA		18  // pozicija ACK bajta u odgovoru na komande termostatu
 #define RGB_ACK_POZICIJA		3   // pozicija ACK bajta u odgovoru na komande rgbw
 #define MAX_RETRIES 5           // Maksimalan broj pokušaja
 #define TIMEOUT_MS 10           // Timeout u ms za cekanje odgovora
@@ -257,6 +257,7 @@ TF_Result THERMOSTAT_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 TF_Result THERMOSTAT_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
 {
     bool all_zero = true;
+    uint8_t resp[19] = {0};
     // provjeri je li slave uredaj poslao praznu strukturu
     // što je zahtjev za sinhronizaciju
     for (int i = 1; i <= msg->len; i++) {
@@ -292,8 +293,29 @@ TF_Result THERMOSTAT_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
 //            if(all_zero){
 //                thst.hasSecondaryInfoChanged = true; // ne mora odmah nek ceka malo
 //            }
-            // a možda je najbolje odgovoriti svima vidicemo šta se dešava kad proradi
-            thst.hasSecondaryInfoChanged = true; // ne mora odmah nek ceka malo
+            // mora se odavde ogovorit radi response listenera koji ocekuje id poruke kao što je i poslana
+            resp[0] = thst.group;
+            resp[1] = thst.master;
+            resp[2] = thst.th_ctrl;
+            resp[3] = thst.th_state;
+            resp[4] = (thst.mv_temp >> 8) & 0xFF;
+            resp[5] = thst.mv_temp & 0xFF;
+            resp[6] = thst.sp_temp;
+            resp[7] = thst.sp_min;
+            resp[8] = thst.sp_max;
+            resp[9] = thst.sp_diff;
+            resp[10] = thst.fan_speed;
+            resp[11] = thst.fan_loband;
+            resp[12] = thst.fan_hiband;
+            resp[13] = thst.fan_diff;
+            resp[14] = thst.fan_ctrl;
+            resp[15] = thst.fan_quiet_start; // npr. ovaj dio se koristio kod hotelskih sistema
+            resp[16] = thst.fan_quiet_end;   // i služio je da motor ne pravi buku po noci tako
+            resp[17] = thst.fan_quiet_speed; // da ljudi mogu mirno spavat a ovdje nema nikakve svrhe ili ima
+            resp[18] = ACK; // ovdje sam dodao i potvrdu
+            msg->data = resp; // prikaci paket
+            msg->len = 19; // vrati dva bajta
+            TF_Respond(tf, msg);
         }
     }
     return TF_STAY;
@@ -441,43 +463,11 @@ TF_Result TIME_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
 */
 TF_Result RESPONSE_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    ack_flag = false; // resetujemo flag za raznorazne prolaze kroz listener
-    // Provjerimo da li je ACK i da li odgovara poslednjem poslatom upitu
-    if (msg->type == BINARY_SET || msg->type == JALOUSIE_SET || msg->type == DIMMER_SET  || msg->type == RGB_SET  || msg->type == THERMOSTAT_INFO) {
-        switch(msg->type) {
-        case BINARY_SET:
-            if(msg->data[BIN_ACK_POZICIJA] == ACK) ack_flag = true; // Oznacimo da je odgovor stigao
-            break;
-        case JALOUSIE_SET:
-            if(msg->data[JAL_ACK_POZICIJA] == ACK) ack_flag = true;
-            break;
-        case DIMMER_SET:
-            if(msg->data[DIM_ACK_POZICIJA] == ACK) ack_flag = true;
-            break;
-        case RGB_SET:
-            if(msg->data[RGB_ACK_POZICIJA] == ACK) ack_flag = true;
-            break;
-        case THERMOSTAT_INFO:
-            if(msg->data[THE_ACK_POZICIJA] == ACK) ack_flag = true;
-            break;
-        default:
-            ack_flag = false;
-            break;
-        }
-        // Uklanjamo poslatu komandu iz reda
-        CommandQueue *queue = NULL;
-        if (msg->type == RGB_SET) queue = &rgbwQueue;
-        if (msg->type == BINARY_SET) queue = &binaryQueue;
-        if (msg->type == DIMMER_SET) queue = &dimmerQueue;
-        if (msg->type == JALOUSIE_SET) queue = &curtainQueue;
-        if (msg->type == THERMOSTAT_INFO) queue = &thermoQueue;
-
-        if (queue && queue->count > 0) {
-            queue->head = (queue->head + 1) % COMMAND_QUEUE_SIZE; // Pomeri na sledeci ako ima
-            queue->count--;
-        }
+    // Provjera da li je ACK bajt na pravoj poziciji
+    if (msg->len > ack_pozicija && msg->data[ack_pozicija] == ACK)
+    {
+        ack_flag = true; // Samo postavljamo flag, ne diramo queue
     }
-
     return TF_CLOSE;
 }
 /**
@@ -485,14 +475,14 @@ TF_Result RESPONSE_Listener(TinyFrame *tf, TF_Msg *msg)
 * @param :
 * @retval:  ne vraca ništa samo izade ako je dug red treba proširit memoriju
 */
-void DodajKomandu(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8_t length)
+bool DodajKomandu(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8_t length)
 {
     if (queue->count >= COMMAND_QUEUE_SIZE) {
         // Ako je queue pun, odluciti da:
         // 1. Prebaciš u "overflow buffer" i kasnije obradiš
         // 2. Prepišeš najstariju komandu (ring buffer stil)
         // 3. Samo odbaci novu komandu
-        return; // 3
+        return false; // 3
     }
 
     // Upisujemo novu komandu u red
@@ -502,6 +492,7 @@ void DodajKomandu(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8
     // Kružno pomjeranje repa
     queue->tail = (queue->tail + 1) % COMMAND_QUEUE_SIZE;
     queue->count++;
+    return true;
 }
 /**
 * @brief :  šalji slijedecu komandu iz reda na cekanju sa resend mehanizmom i cekanjem odgovora
@@ -510,56 +501,41 @@ void DodajKomandu(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8
 */
 void SaljiKomandu(CommandQueue *queue)
 {
-    if (queue->count == 0 || ack_flag == false) return; // Cekamo odgovor, ne šaljemo novu
+    if (queue->count == 0) return; // Ako nema komandi, izlazimo
 
-    // Uzimamo prvu komandu iz reda
     Command *cmd = &queue->commands[queue->head];
-
+    // gdje ocekujem ACK bajt u baferu odgovora
+    if      (cmd->commandType == BINARY_SET)        ack_pozicija = BIN_ACK_POZICIJA;    
+    else if (cmd->commandType == DIMMER_SET)        ack_pozicija = DIM_ACK_POZICIJA;   
+    else if (cmd->commandType == JALOUSIE_SET)      ack_pozicija = JAL_ACK_POZICIJA; 
+    else if (cmd->commandType == THERMOSTAT_INFO)   ack_pozicija = THE_ACK_POZICIJA;  
+    else if (cmd->commandType == RGB_SET)           ack_pozicija = RGB_ACK_POZICIJA; 
+    
     // Pokušaj ponovnog slanja komande
-    int broj_pokusaja = MAX_RETRIES;
-    while (broj_pokusaja > 0) {
+    for (int pokusaj = 0; pokusaj < MAX_RETRIES; pokusaj++) {
 
-        ack_flag = false; // Resetujemo flag, cekamo potvrdu
+        ack_flag = false; // Resetujemo flag pre slanja komande
 
-        // Pošaljemo prvi TinyFrame upit
-        TF_QuerySimple(&tfapp, cmd->commandType, cmd->data, cmd->length, RESPONSE_Listener, TF_PARSER_TIMEOUT_TICKS);
-        // Asinhrono cekanje odgovora (neblokirajuce tj "maloblokirajuce")
-        // mada 10ms nije kriticno, vrijeme odgovora esp-m2 je oko 6 ms a LUX modula ispod 100 us
-        // mada je sada namještena i oprema na kašnjenje 1 ~ 2 ms kao i ovoga kontrolera sada,
-        // ovdje je odredeno staickom pauzom do punog algoritma random pauze i backof timeouta
-        int exit = TIMEOUT_MS;
-        while (exit--) {
-            if (ack_flag) {
-                // Ako je odgovor stigao, izlazimo
-                break;
-            }
-            HAL_Delay(1);  // Kratka pauza dok cekamo odgovor
+        // Šaljemo komandu
+        TF_QuerySimple(&tfapp, cmd->commandType, cmd->data, cmd->length, RESPONSE_Listener, TIMEOUT_MS);
+
+        // Cekamo odgovor sa timeoutom
+        int timeout = TIMEOUT_MS;
+        while (timeout--) {
+            if (ack_flag) break;  // Ako ACK stigne, prekini cekanje
+            HAL_Delay(1);
         }
 
-        if (ack_flag) {
-            // Ako smo dobili odgovor, izlazimo iz petlje
-            break;
-        } else {
-            // Ako nismo dobili odgovor, smanjujemo broj pokušaja
-            broj_pokusaja--;
-        }
-
-        if (broj_pokusaja == 0) {
-            // Ako je broj pokušaja ispražnjen, možemo obaviti neki fallback ili flag
-            // Na primer, obavesti korisnika ili pokušaj ponovnog slanja sa novim parametrima
-            ack_flag = true; // ali samo jednostavno odbaci komandu jer ne prolazi
-            // razmislicemo i o resend mehanizmu
-        }
+        if (ack_flag) break; // Ako smo dobili odgovor, izlazimo iz petlje
     }
 
-    // Obrisana je komanda iz reda tek kad stigne ACK
-    // ili je obriši da ne blokira ostale možda je uredaj pregorio
-    if (ack_flag) {
-        queue->head = (queue->head + 1) % COMMAND_QUEUE_SIZE; // Pomeri na sledeci
-        queue->count--;
-    }
+    // Ako je komanda završena (bilo zbog ACK-a ili timeouta), ukloni je iz reda
+    queue->head = (queue->head + 1) % COMMAND_QUEUE_SIZE;
+    queue->count--;
+
+    // Resetujemo flag da ne utice na sledece komande
+    ack_flag = false;
 }
-
 /**
 * @brief :  init usart interface to rs485 9 bit receiving
 * @param :  and init state to receive packet control block
@@ -640,7 +616,7 @@ void RS485_Service(void)
     if(th_info_delay && (now - th_info_delay) >=0 )
     {
         th_info_delay = 0;
-        thst.hasSecondaryInfoChanged = true;
+        thst.hasInfoChanged = true;
     }
 
 }
@@ -673,7 +649,11 @@ void TF_WriteImpl(TinyFrame *tf, const uint8_t *buff, uint32_t len)
   */
 void RS485_RxCpltCallback(void)
 {
+    static uint8_t cnt = 0;
+    static uint8_t buf[256] = {0};
     TF_AcceptChar(&tfapp, rec);
+    buf[cnt] = rec;
+    if(++cnt >= 255) cnt = 0;
     HAL_UART_Receive_IT(&huart1, &rec, 1);
 }
 /**

@@ -43,8 +43,7 @@ typedef struct{
     uint8_t sendChangeSignalFlags;
     uint8_t group;
     bool master;
-    bool hasPrimaryInfoChanged;
-    bool hasSecondaryInfoChanged;
+    bool hasInfoChanged;
 }THERMOSTAT_TypeDef;
 
 extern THERMOSTAT_TypeDef thst;
@@ -105,8 +104,8 @@ void THSTAT_Service(void);
 void SaveThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr);
 void ReadThermostatController(THERMOSTAT_TypeDef* tc, uint16_t addr);
 void Thermostat_SP_Temp_Set(const uint8_t setpoint);
-void Thermostat_SP_Temp_Increment();
-void Thermostat_SP_Temp_Decrement();
+void Thermostat_SP_Temp_Increment(void);
+void Thermostat_SP_Temp_Decrement(void);
 
 #endif
 /******************************   END OF FILE  ********************************/

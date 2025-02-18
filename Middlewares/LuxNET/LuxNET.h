@@ -40,7 +40,7 @@ typedef enum {
     THERMOSTAT_SETUP    = 43,   // cijela nova termostat struktura parametara....  treba definisat termostat strukturu
     THERMOSTAT_INFO     = 44,   // izmjerena nova temperature senzora, promjenjena zadana temeratura, termostat isključen.... treba definisat info strukturu
     // ostavi prostora za dopune
-    CUSTOM_SET          = 48,
+    CUSTOM              = 48,
     QR_REQUEST			= 49,	// zahtjev za qr kod sa uSD kartice ili upis novog qr koda
 	FIRMWARE_REQUEST    = 50,   // zahtjev za update firmware-a sa dragona i uSD kartice 
     FIRMWARE_UPDATE     = 51,   // upit i provjera verzije, backup trenutne verzije, formatiranje i početak transfera

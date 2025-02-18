@@ -52,6 +52,6 @@ void RS485_Service(void);
 void RS485_RxCpltCallback(void);
 void RS485_TxCpltCallback(void);
 void RS485_ErrorCallback(void);
-void DodajKomandu(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8_t length);
+bool DodajKomandu(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8_t length);
 #endif
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/

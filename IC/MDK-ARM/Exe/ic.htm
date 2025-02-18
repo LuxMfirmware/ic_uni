@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Mon Feb 17 16:43:13 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Tue Feb 18 15:10:54 2025
 <BR><P>
 <H3>Maximum Stack Usage =       1772 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1172,7 +1172,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[1e9]"></a>Curtain_Service</STRONG> (Thumb, 260 bytes, Stack size 32 bytes, curtain.o(.text.Curtain_Service))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Curtain_Service &rArr; DodajKomandu &rArr; __aeabi_memcpy
+<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = Curtain_Service &rArr; DodajKomandu &rArr; __aeabi_memcpy
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_isNewDirectionUp
 <LI><a href="#[1f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_GetRelayDown
@@ -1471,7 +1471,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[220]"></a>DISP_Service</STRONG> (Thumb, 16900 bytes, Stack size 800 bytes, display.o(.text.DISP_Service))
+<P><STRONG><a name="[220]"></a>DISP_Service</STRONG> (Thumb, 16908 bytes, Stack size 800 bytes, display.o(.text.DISP_Service))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1756<LI>Call Chain = DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 </UL>
 <BR>[Calls]<UL><LI><a href="#[25d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
@@ -1596,13 +1596,12 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[220]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[1f1]"></a>DodajKomandu</STRONG> (Thumb, 130 bytes, Stack size 24 bytes, rs485.o(.text.DodajKomandu))
-<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = DodajKomandu &rArr; __aeabi_memcpy
+<P><STRONG><a name="[1f1]"></a>DodajKomandu</STRONG> (Thumb, 146 bytes, Stack size 32 bytes, rs485.o(.text.DodajKomandu))
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = DodajKomandu &rArr; __aeabi_memcpy
 </UL>
 <BR>[Calls]<UL><LI><a href="#[27e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SP_Temp_Set
-<LI><a href="#[3ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Service
+<BR>[Called By]<UL><LI><a href="#[3ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Service
 <LI><a href="#[348]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_Service
 <LI><a href="#[1e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_Service
 </UL>
@@ -3161,7 +3160,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[348]"></a>Light_Modbus_Service</STRONG> (Thumb, 622 bytes, Stack size 32 bytes, lights.o(.text.Light_Modbus_Service))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Light_Modbus_Service &rArr; DodajKomandu &rArr; __aeabi_memcpy
+<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = Light_Modbus_Service &rArr; DodajKomandu &rArr; __aeabi_memcpy
 </UL>
 <BR>[Calls]<UL><LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_GetRelay
 <LI><a href="#[224]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_isNewValueOn
@@ -3569,8 +3568,8 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f746xx.o(RESET)
 </UL>
-<P><STRONG><a name="[cd]"></a>RESPONSE_Listener</STRONG> (Thumb, 460 bytes, Stack size 16 bytes, rs485.o(.text.RESPONSE_Listener))
-<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = RESPONSE_Listener
+<P><STRONG><a name="[cd]"></a>RESPONSE_Listener</STRONG> (Thumb, 68 bytes, Stack size 8 bytes, rs485.o(.text.RESPONSE_Listener))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = RESPONSE_Listener
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> rs485.o(.text.SaljiKomandu)
 </UL>
@@ -3602,7 +3601,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[317]"></a>RS485_RxCpltCallback</STRONG> (Thumb, 48 bytes, Stack size 16 bytes, rs485.o(.text.RS485_RxCpltCallback))
+<P><STRONG><a name="[317]"></a>RS485_RxCpltCallback</STRONG> (Thumb, 106 bytes, Stack size 16 bytes, rs485.o(.text.RS485_RxCpltCallback))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = RS485_RxCpltCallback &rArr; TF_AcceptChar &rArr; TF_HandleReceivedMessage &rArr; cleanup_id_listener
 </UL>
 <BR>[Calls]<UL><LI><a href="#[383]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Receive_IT
@@ -3704,8 +3703,8 @@ Global Symbols
 <LI><a href="#[373]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PCA9685_SetOutputFrequency
 </UL>
 
-<P><STRONG><a name="[389]"></a>SaljiKomandu</STRONG> (Thumb, 258 bytes, Stack size 32 bytes, rs485.o(.text.SaljiKomandu))
-<BR><BR>[Stack]<UL><LI>Max Depth = 248<LI>Call Chain = SaljiKomandu &rArr; TF_QuerySimple &rArr; TF_SendFrame &rArr; TF_SendFrame_Chunk &rArr; TF_WriteImpl &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
+<P><STRONG><a name="[389]"></a>SaljiKomandu</STRONG> (Thumb, 348 bytes, Stack size 40 bytes, rs485.o(.text.SaljiKomandu))
+<BR><BR>[Stack]<UL><LI>Max Depth = 256<LI>Call Chain = SaljiKomandu &rArr; TF_QuerySimple &rArr; TF_SendFrame &rArr; TF_SendFrame_Chunk &rArr; TF_WriteImpl &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[38f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TF_QuerySimple
@@ -3796,6 +3795,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QR_REQUEST_Listener
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THERMOSTAT_SETUP_Listener
+<LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THERMOSTAT_INFO_Listener
 <LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THERMOSTAT_SET_Listener
 <LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THERMOSTAT_GET_Listener
 </UL>
@@ -3834,8 +3834,10 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> rs485.o(.text.RS485_Init)
 </UL>
-<P><STRONG><a name="[ca]"></a>THERMOSTAT_INFO_Listener</STRONG> (Thumb, 254 bytes, Stack size 16 bytes, rs485.o(.text.THERMOSTAT_INFO_Listener))
-<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = THERMOSTAT_INFO_Listener
+<P><STRONG><a name="[ca]"></a>THERMOSTAT_INFO_Listener</STRONG> (Thumb, 412 bytes, Stack size 48 bytes, rs485.o(.text.THERMOSTAT_INFO_Listener))
+<BR><BR>[Stack]<UL><LI>Max Depth = 248<LI>Call Chain = THERMOSTAT_INFO_Listener &rArr; TF_Respond &rArr; TF_Send &rArr; TF_SendFrame &rArr; TF_SendFrame_Chunk &rArr; TF_WriteImpl &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
+</UL>
+<BR>[Calls]<UL><LI><a href="#[37c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TF_Respond
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> rs485.o(.text.RS485_Init)
 </UL>
@@ -3855,7 +3857,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> rs485.o(.text.RS485_Init)
 </UL>
-<P><STRONG><a name="[3ac]"></a>THSTAT_Init</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, thermostat.o(.text.THSTAT_Init))
+<P><STRONG><a name="[3ac]"></a>THSTAT_Init</STRONG> (Thumb, 36 bytes, Stack size 16 bytes, thermostat.o(.text.THSTAT_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 328<LI>Call Chain = THSTAT_Init &rArr; ReadThermostatController &rArr; EE_ReadBuffer &rArr; EE_ReadData &rArr; I2Cx_ReadMultiple &rArr; I2Cx_Error &rArr; I2Cx_Init &rArr; I2Cx_MspInit &rArr; HAL_GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[38c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ReadThermostatController
@@ -3863,8 +3865,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[3ad]"></a>THSTAT_Service</STRONG> (Thumb, 1546 bytes, Stack size 72 bytes, thermostat.o(.text.THSTAT_Service))
-<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = THSTAT_Service &rArr; DodajKomandu &rArr; __aeabi_memcpy
+<P><STRONG><a name="[3ad]"></a>THSTAT_Service</STRONG> (Thumb, 1672 bytes, Stack size 72 bytes, thermostat.o(.text.THSTAT_Service))
+<BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = THSTAT_Service &rArr; DodajKomandu &rArr; __aeabi_memcpy
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 <LI><a href="#[2c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
@@ -3963,7 +3965,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[22b]"></a>Thermostat_SP_Temp_Decrement</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SP_Temp_Decrement))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Thermostat_SP_Temp_Decrement &rArr; Thermostat_SP_Temp_Set &rArr; DodajKomandu &rArr; __aeabi_memcpy
+<BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = Thermostat_SP_Temp_Decrement &rArr; Thermostat_SP_Temp_Set
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SP_Temp_Set
 </UL>
@@ -3971,17 +3973,15 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[229]"></a>Thermostat_SP_Temp_Increment</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SP_Temp_Increment))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Thermostat_SP_Temp_Increment &rArr; Thermostat_SP_Temp_Set &rArr; DodajKomandu &rArr; __aeabi_memcpy
+<BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = Thermostat_SP_Temp_Increment &rArr; Thermostat_SP_Temp_Set
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SP_Temp_Set
 </UL>
 <BR>[Called By]<UL><LI><a href="#[220]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[3b6]"></a>Thermostat_SP_Temp_Set</STRONG> (Thumb, 224 bytes, Stack size 24 bytes, thermostat.o(.text.Thermostat_SP_Temp_Set))
-<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = Thermostat_SP_Temp_Set &rArr; DodajKomandu &rArr; __aeabi_memcpy
-</UL>
-<BR>[Calls]<UL><LI><a href="#[1f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DodajKomandu
+<P><STRONG><a name="[3b6]"></a>Thermostat_SP_Temp_Set</STRONG> (Thumb, 132 bytes, Stack size 4 bytes, thermostat.o(.text.Thermostat_SP_Temp_Set))
+<BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = Thermostat_SP_Temp_Set
 </UL>
 <BR>[Called By]<UL><LI><a href="#[22b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SP_Temp_Decrement
 <LI><a href="#[229]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SP_Temp_Increment
@@ -4987,14 +4987,14 @@ Global Symbols
 <LI><a href="#[45a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetBkColor
 <LI><a href="#[458]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP__FindChar
 </UL>
-<BR>[Address Reference Count : 10]<UL><LI> fd32.o(.constdata)
-<LI> f13_1.o(.constdata)
+<BR>[Address Reference Count : 10]<UL><LI> f13_1.o(.constdata)
+<LI> fd32.o(.constdata)
 <LI> fd48.o(.constdata)
 <LI> f20_1.o(.constdata)
 <LI> f24_1.o(.constdata)
 <LI> fd64.o(.constdata)
-<LI> fd80.o(.constdata)
 <LI> f24b_1.o(.constdata)
+<LI> fd80.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
 </UL>
@@ -5003,26 +5003,26 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[458]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP__FindChar
 </UL>
-<BR>[Address Reference Count : 10]<UL><LI> fd32.o(.constdata)
-<LI> f13_1.o(.constdata)
+<BR>[Address Reference Count : 10]<UL><LI> f13_1.o(.constdata)
+<LI> fd32.o(.constdata)
 <LI> fd48.o(.constdata)
 <LI> f20_1.o(.constdata)
 <LI> f24_1.o(.constdata)
 <LI> fd64.o(.constdata)
-<LI> fd80.o(.constdata)
 <LI> f24b_1.o(.constdata)
+<LI> fd80.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
 </UL>
 <P><STRONG><a name="[167]"></a>GUIPROP_GetFontInfo</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, gui_charp.o(i.GUIPROP_GetFontInfo))
-<BR>[Address Reference Count : 10]<UL><LI> fd32.o(.constdata)
-<LI> f13_1.o(.constdata)
+<BR>[Address Reference Count : 10]<UL><LI> f13_1.o(.constdata)
+<LI> fd32.o(.constdata)
 <LI> fd48.o(.constdata)
 <LI> f20_1.o(.constdata)
 <LI> f24_1.o(.constdata)
 <LI> fd64.o(.constdata)
-<LI> fd80.o(.constdata)
 <LI> f24b_1.o(.constdata)
+<LI> fd80.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
 </UL>
@@ -5031,14 +5031,14 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[458]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP__FindChar
 </UL>
-<BR>[Address Reference Count : 10]<UL><LI> fd32.o(.constdata)
-<LI> f13_1.o(.constdata)
+<BR>[Address Reference Count : 10]<UL><LI> f13_1.o(.constdata)
+<LI> fd32.o(.constdata)
 <LI> fd48.o(.constdata)
 <LI> f20_1.o(.constdata)
 <LI> f24_1.o(.constdata)
 <LI> fd64.o(.constdata)
-<LI> fd80.o(.constdata)
 <LI> f24b_1.o(.constdata)
+<LI> fd80.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
 </UL>
@@ -7547,8 +7547,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = GUI__GetLineDistX &rArr; GUI_UC__GetCharCodeInc
 </UL>
 <BR>[Calls]<UL><LI><a href="#[507]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_UC__GetCharCodeInc
-<LI><a href="#[509]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetOverlap
 <LI><a href="#[508]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetCharDistX
+<LI><a href="#[509]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetOverlap
 </UL>
 <BR>[Called By]<UL><LI><a href="#[210]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispString
 <LI><a href="#[432]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetStringDistX
@@ -12242,7 +12242,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[1c1]"></a>ADC3_Read</STRONG> (Thumb, 700 bytes, Stack size 40 bytes, main.o(.text.ADC3_Read))
+<P><STRONG><a name="[1c1]"></a>ADC3_Read</STRONG> (Thumb, 704 bytes, Stack size 40 bytes, main.o(.text.ADC3_Read))
 <BR><BR>[Stack]<UL><LI>Max Depth = 264<LI>Call Chain = ADC3_Read &rArr; ROOM_GetTemperature &rArr; __hardfp_log &rArr; __kernel_poly &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_GetValue

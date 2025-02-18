@@ -1443,7 +1443,7 @@ void DISP_Service(void){
                     {
                         TempRegHeating();
                     }
-                    
+                    thst.hasInfoChanged = true;
                     SaveThermostatController(&thst, EE_THST1);
                 }
             }
@@ -1536,7 +1536,7 @@ void DISP_Service(void){
                 if(thsta)
                 {
                     SaveThermostatController(&thst, EE_THST1);
-                    thst.hasSecondaryInfoChanged = true;
+                    thst.hasInfoChanged = true;
                 }
                 thsta = 0;
                 DSP_KillSet1Scrn();

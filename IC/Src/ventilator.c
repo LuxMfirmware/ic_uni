@@ -113,7 +113,7 @@ void Ventilator_On(const bool useDelay)
     }
 }
 
-void Ventilator_Off()
+void Ventilator_Off(void)
 {
     if(!ventilator.relay) return;
 
@@ -135,7 +135,7 @@ void Ventilator_Off()
 
 
 
-void Ventilator_Service()
+void Ventilator_Service(void)
 {
     if(ventilator.DelayOffTimerStart && ((HAL_GetTick() - ventilator.DelayOffTimerStart) >= (ventilator.delayOffTime * 10 * 1000)))
     {

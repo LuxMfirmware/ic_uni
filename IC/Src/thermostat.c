@@ -50,8 +50,7 @@ uint8_t termfl;
   * @retval
   */
 void THSTAT_Init(void) {
-    thst.hasPrimaryInfoChanged = false;
-    thst.hasSecondaryInfoChanged = false;
+    thst.hasInfoChanged = false;
     ReadThermostatController(&thst,  EE_THST1);
     TempRegHeating();
 }
@@ -129,7 +128,7 @@ void THSTAT_Service(void)
     }
     // metni ovdje jer ova funkcija ima vrijeme procesora kad dode na red stalno
     // ako je ovaj termostat master pošalji cijelu strukturu kod promjene settings-a
-    if((thst.master) && thst.hasSecondaryInfoChanged)
+    if(thst.master && thst.hasInfoChanged)
     {
         // treba probrat šta se šalje neki od elemenata se i ne koriste nikako u kodu više
         // najbolje je ovo sve redefinisat šta treba za smart home
@@ -152,40 +151,16 @@ void THSTAT_Service(void)
         buf[16] = thst.fan_quiet_end;   // i služio je da motor ne pravi buku po noci tako
         buf[17] = thst.fan_quiet_speed; // da ljudi mogu mirno spavat a ovdje nema nikakve svrhe ili ima
         DodajKomandu(&thermoQueue, THERMOSTAT_INFO, buf, 18);
-        thst.hasSecondaryInfoChanged = false;
+        thst.hasInfoChanged = false;
     }
-
     // treba dodat i za svaku najmanju promjenu izmjerene temperature koju šalje
     // master - cijelu ovakvu strukturu kao gore, a slave - samo manju kao dole ispod
     // i obadva šalju na THERMOSTAT_INFO
     // postoji flag IsMVUpdateActiv() koju setuje ADC3_Read() koji služi za ovo grafici ali 
     // ga resetuje samo thermostat screeen kad je aktivan tako da treba novi flag samo za ovo
     // ili jednostavno setovat ovaj clan/flag strukture hasSecondaryInfoChanged tamo u ADC3_Read()
-}
-
-
-void Thermostat_SP_Temp_Set(const uint8_t setpoint)
-{
-    uint8_t buf[7];
-
-    if(thst.sp_temp != setpoint)
+    else if(!thst.master && thst.hasInfoChanged)
     {
-        if(setpoint < thst.sp_min)
-        {
-            thst.sp_temp = thst.sp_min;
-            thst.hasPrimaryInfoChanged = true;
-        }
-        else if(setpoint > thst.sp_max)
-        {
-            thst.sp_temp = thst.sp_max;
-            thst.hasPrimaryInfoChanged = true;
-        }
-        else
-        {
-            thst.sp_temp = setpoint;
-            thst.hasPrimaryInfoChanged = true;
-        }
-
         buf[0] = thst.group;
         buf[1] = thst.master;
         buf[2] = thst.th_ctrl;
@@ -194,16 +169,28 @@ void Thermostat_SP_Temp_Set(const uint8_t setpoint)
         buf[5] = thst.mv_temp & 0xFF;
         buf[6] = thst.sp_temp;
         DodajKomandu(&thermoQueue, THERMOSTAT_INFO, buf, 7);
-        thst.hasPrimaryInfoChanged = false;
+        thst.hasInfoChanged = false;
     }
 }
 
-void Thermostat_SP_Temp_Increment()
+
+void Thermostat_SP_Temp_Set(const uint8_t setpoint)
+{
+    if(thst.sp_temp != setpoint)
+    {
+        if      (setpoint < thst.sp_min)    thst.sp_temp = thst.sp_min;
+        else if (setpoint > thst.sp_max)    thst.sp_temp = thst.sp_max;
+        else                                thst.sp_temp = setpoint;
+        thst.hasInfoChanged = true;
+    }
+}
+
+void Thermostat_SP_Temp_Increment(void)
 {
     Thermostat_SP_Temp_Set(thst.sp_temp + 1);
 }
 
-void Thermostat_SP_Temp_Decrement()
+void Thermostat_SP_Temp_Decrement(void)
 {
     Thermostat_SP_Temp_Set(thst.sp_temp - 1);
 }
