@@ -440,6 +440,31 @@ void Curtain_Reset(Curtain* const cur)
 
 
 
+void Curtain_SetDefault(Curtain* const cur)
+{
+    cur->relayUp = 0;
+    cur->relayDown = 0;
+    cur->upDown = 0;
+    cur->upDown_old = 0;
+    cur->upDownTimer = 0;
+    cur->upDownTimer = 0;
+    cur->resend = 0;
+}
+
+
+void Curtains_SetDefault()
+{
+    for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
+    {
+        Curtain_SetDefault(curtains + i);
+    }
+}
+
+
+
+
+
+
 
 void Curtain_Service()
 {
