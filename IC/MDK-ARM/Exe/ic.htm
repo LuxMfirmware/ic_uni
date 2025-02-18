@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Tue Feb 18 11:51:36 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Tue Feb 18 12:04:18 2025
 <BR><P>
 <H3>Maximum Stack Usage =       2468 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -816,10 +816,10 @@ Global Symbols
 <P><STRONG><a name="[1a7]"></a>__aeabi_dadd</STRONG> (Thumb, 322 bytes, Stack size 48 bytes, dadd.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_round
-<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
-<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_lasr
+<BR>[Calls]<UL><LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_lasr
 <LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsl
+<LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_round
+<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
 <LI><a href="#[246]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DrawEquilateralTriangle
@@ -945,18 +945,18 @@ Global Symbols
 
 <P><STRONG><a name="[1a8]"></a>__aeabi_llsl</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, llshl.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[1a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 <LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
 <LI><a href="#[1b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
+<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 
 <P><STRONG><a name="[6cb]"></a>_ll_shift_l</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llshl.o(.text), UNUSED)
 
 <P><STRONG><a name="[1b3]"></a>__aeabi_llsr</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, llushr.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
-<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 <LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
 <LI><a href="#[1b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
+<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 
 <P><STRONG><a name="[6cc]"></a>_ll_ushift_r</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llushr.o(.text), UNUSED)
@@ -986,9 +986,9 @@ Global Symbols
 <P><STRONG><a name="[1aa]"></a>_double_epilogue</STRONG> (Thumb, 156 bytes, Stack size 32 bytes, depilogue.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = _double_epilogue &rArr; _double_round
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_round
-<LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsr
+<BR>[Calls]<UL><LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsr
 <LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsl
+<LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_round
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
 <LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
@@ -3201,9 +3201,7 @@ Global Symbols
 <LI><a href="#[353]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_LCD_DisplayOn
 <LI><a href="#[354]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_LCD_DisplayOff
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetChromaMode
-<LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetChroma
-<LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetAlphaMode
+<BR>[Called By]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetAlphaMode
 <LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetAlpha
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_On
 <LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Off
@@ -3227,6 +3225,8 @@ Global Symbols
 <LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetSize
 <LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetPos
 <LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetOrg
+<LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetChromaMode
+<LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetChroma
 </UL>
 
 <P><STRONG><a name="[9d]"></a>LTDC_IRQHandler</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, stm32f7xx_it.o(.text.LTDC_IRQHandler))
@@ -5504,16 +5504,16 @@ Global Symbols
 <LI><a href="#[484]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP__FindChar
 </UL>
 <BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
-<LI> f16b_1.o(.constdata)
 <LI> fd48.o(.constdata)
+<LI> f16b_1.o(.constdata)
 <LI> f13_1.o(.constdata)
 <LI> f20_1.o(.constdata)
-<LI> fd64.o(.constdata)
 <LI> f24_1.o(.constdata)
+<LI> fd80.o(.constdata)
+<LI> fd64.o(.constdata)
 <LI> f24b_1.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
-<LI> fd80.o(.constdata)
 </UL>
 <P><STRONG><a name="[15e]"></a>GUIPROP_GetCharDistX</STRONG> (Thumb, 64 bytes, Stack size 12 bytes, gui_charp.o(i.GUIPROP_GetCharDistX))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = GUIPROP_GetCharDistX
@@ -5521,29 +5521,29 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[484]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP__FindChar
 </UL>
 <BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
-<LI> f16b_1.o(.constdata)
 <LI> fd48.o(.constdata)
+<LI> f16b_1.o(.constdata)
 <LI> f13_1.o(.constdata)
 <LI> f20_1.o(.constdata)
-<LI> fd64.o(.constdata)
 <LI> f24_1.o(.constdata)
+<LI> fd80.o(.constdata)
+<LI> fd64.o(.constdata)
 <LI> f24b_1.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
-<LI> fd80.o(.constdata)
 </UL>
 <P><STRONG><a name="[15f]"></a>GUIPROP_GetFontInfo</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, gui_charp.o(i.GUIPROP_GetFontInfo))
 <BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
-<LI> f16b_1.o(.constdata)
 <LI> fd48.o(.constdata)
+<LI> f16b_1.o(.constdata)
 <LI> f13_1.o(.constdata)
 <LI> f20_1.o(.constdata)
-<LI> fd64.o(.constdata)
 <LI> f24_1.o(.constdata)
+<LI> fd80.o(.constdata)
+<LI> fd64.o(.constdata)
 <LI> f24b_1.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
-<LI> fd80.o(.constdata)
 </UL>
 <P><STRONG><a name="[160]"></a>GUIPROP_IsInFont</STRONG> (Thumb, 16 bytes, Stack size 4 bytes, gui_charp.o(i.GUIPROP_IsInFont))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = GUIPROP_IsInFont
@@ -5551,16 +5551,16 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[484]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP__FindChar
 </UL>
 <BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
-<LI> f16b_1.o(.constdata)
 <LI> fd48.o(.constdata)
+<LI> f16b_1.o(.constdata)
 <LI> f13_1.o(.constdata)
 <LI> f20_1.o(.constdata)
-<LI> fd64.o(.constdata)
 <LI> f24_1.o(.constdata)
+<LI> fd80.o(.constdata)
+<LI> fd64.o(.constdata)
 <LI> f24b_1.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
-<LI> fd80.o(.constdata)
 </UL>
 <P><STRONG><a name="[484]"></a>GUIPROP__FindChar</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, gui_charp.o(i.GUIPROP__FindChar))
 <BR><BR>[Called By]<UL><LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP_IsInFont
@@ -8668,10 +8668,10 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> gui__alpha.o(i.GUI__DoAlphaBlending)
 </UL>
 <P><STRONG><a name="[d5]"></a>LCD_Index2Color_8888</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, guicc_8888_index2color.o(i.LCD_Index2Color_8888))
-<BR>[Address Reference Count : 5]<UL><LI> guicc_8888.o(.constdata)
-<LI> gui__alpha.o(i.GUI__DoAlphaBlending)
+<BR>[Address Reference Count : 5]<UL><LI> gui__alpha.o(i.GUI__DoAlphaBlending)
 <LI> gui_drawbitmap_8888.o(i._DrawBitmap_8888)
 <LI> gui_drawbitmap_8888.o(.constdata)
+<LI> guicc_8888.o(.constdata)
 <LI> guidev_writetoactivealpha.o(i._WriteToActiveAlpha)
 </UL>
 <P><STRONG><a name="[ea]"></a>LCD_Index2Color_M555</STRONG> (Thumb, 32 bytes, Stack size 8 bytes, guicc_m555_index2color.o(i.LCD_Index2Color_M555))
@@ -14401,8 +14401,7 @@ Local Symbols
 <BR>[Calls]<UL><LI><a href="#[676]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__memset
 <LI><a href="#[48d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetDevFunc
-<LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetAlpha
+<BR>[Called By]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetAlpha
 <LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Init
 <LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetPos
 <LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_CopyBuffer
@@ -14412,6 +14411,7 @@ Local Symbols
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVRAMAddr
 <LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetSize
 <LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetPos
+<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetDevFunc
 </UL>
 
 <P><STRONG><a name="[f6]"></a>_Off</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, guidrv_lin_16.o(i._Off))

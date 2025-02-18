@@ -158,4 +158,32 @@ void Thermostat_SP_Temp_Decrement()
 }
 
 
+
+
+void Thermostat_SetDefault()
+{
+    thst.group = 0;
+    thst.master = false;
+    thst.th_ctrl = 0;
+    thst.th_state = 0;
+    thst.mv_temp = 0;
+    thst.sp_temp = 15;
+    thst.sp_min = 15;
+    thst.sp_max = 35;
+    thst.sp_diff = 0;
+    thst.fan_speed = 0;
+    thst.fan_loband = 1;
+    thst.fan_hiband = 2;
+    thst.fan_diff = 1;
+    thst.fan_ctrl = 0;
+    thst.fan_quiet_start = 0;
+    thst.fan_quiet_end = 0;
+    thst.fan_quiet_speed = 0;
+    thst.mv_ntcref = 0;
+    thst.mv_nctbeta = 0;
+    thst.hasPrimaryInfoChanged = false;
+    thst.hasSecondaryInfoChanged = false;
+}
+
+
 /******************************   RAZLAZ SIJELA  ********************************/
