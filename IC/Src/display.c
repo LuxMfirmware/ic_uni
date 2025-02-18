@@ -171,6 +171,8 @@ Light_Modbus_settingsWidgets;
 #define ID_DEFROSTER_ACTIVE_TIME        0x97C
 #define ID_DEFROSTER_PIN                0x97D
 
+#define ID_SET_DEFAULTS                 0x97E
+
 
 /* Private Type --------------------------------------------------------------*/
 BUTTON_Handle   hBUTTON_Increase;
@@ -239,6 +241,7 @@ SPINBOX_Handle  hLightsModbusOffTime[LIGHTS_MODBUS_SIZE];
 CHECKBOX_Handle  hLightsModbusTiedToMainLight[LIGHTS_MODBUS_SIZE];
 Light_Modbus_settingsWidgets lightsWidgets[LIGHTS_MODBUS_SIZE];
 
+BUTTON_Handle hBUTTON_SET_DEFAULTS;
 BUTTON_Handle hBUTTON_SYSRESTART;
 
 CHECKBOX_Handle hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH;
@@ -2093,7 +2096,11 @@ void DISP_Service(void){
         //     
         case SCREEN_SETTINGS_7:
         {
-            if(BUTTON_IsPressed(hBUTTON_SYSRESTART))
+            if(BUTTON_IsPressed(hBUTTON_SET_DEFAULTS))
+            {
+                SetDefault();
+            }
+            else if(BUTTON_IsPressed(hBUTTON_SYSRESTART))
             {
                 SYSRestart();
             } 
@@ -3317,7 +3324,10 @@ static void DSP_InitSet7Scrn(void)
     
     
     
-    hBUTTON_SYSRESTART = BUTTON_Create(10, 230, 60, 30, ID_SYSRESTART, WM_CF_SHOW);
+    hBUTTON_SET_DEFAULTS = BUTTON_Create(10, 190, 80, 30, ID_SET_DEFAULTS, WM_CF_SHOW);
+    BUTTON_SetText(hBUTTON_SET_DEFAULTS, "SET DEFAULTS");
+    
+    hBUTTON_SYSRESTART = BUTTON_Create(10, 230, 80, 30, ID_SYSRESTART, WM_CF_SHOW);
     BUTTON_SetText(hBUTTON_SYSRESTART, "RESTART");
     
     
@@ -3358,6 +3368,7 @@ static void DSP_KillSet7Scrn(void)
     WM_DeleteWindow(hCurtainsMoveTime);
     WM_DeleteWindow(hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH);
     WM_DeleteWindow(hCHKBX_LIGHT_NIGHT_TIMER);
+    WM_DeleteWindow(hBUTTON_SET_DEFAULTS);
     WM_DeleteWindow(hBUTTON_SYSRESTART);
     WM_DeleteWindow(hBUTTON_Next);
     WM_DeleteWindow(hBUTTON_Ok);

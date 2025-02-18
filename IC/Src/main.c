@@ -1434,4 +1434,21 @@ void PCA9685_SetOutput(const uint8_t pin, const uint8_t value)
     pwm[pin - 1] = value;
     PCA9685_OutputUpdate();
 }
+
+
+
+void SetDefault() // Not all settings from the settings menu are set to default
+{
+    Thermostat_SetDefault();
+    SaveThermostatController(&thst, EE_THST1);
+    
+    Lights_Modbus_SetDefault();
+    Lights_Modbus_Save();
+    
+    Curtains_SetDefault();
+    Curtains_Save();
+    
+    Defroster_SetDefault();
+    Defroster_Save();
+}
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/
