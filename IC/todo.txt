@@ -12,10 +12,6 @@ odkomentarisati vec pozvane instance funckije DodajKomandu i proslijediti im odg
 add checkbox to set if dimmable light, when clicked, goes between 0-100 or 0-last set value
 
 
-iznad dugmeta restart dodaj isto jedno takvo dugme reset ili default pa nek radi kako i piše 
-restart samo restartuje a reset neka ponovo setuje defaultne vrijednosti koje trebaju bit u 
-validnom opsegu varijabli koje imaju u programu ( ako ima tri vrste kontrola bin, dim, rgb ...
-ne može se onda podesit nit pojavit broj 4 u odabiru.
 
 iz nekog razloga se popale sve ikone sijalica kad uđeš u meni LIGHTS, nisam upratio razlog
 ali desi se samo i kad je meni aktivan vidio sam jednom bez dodira samo se svih pet 
