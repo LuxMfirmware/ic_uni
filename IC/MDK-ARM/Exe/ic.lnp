@@ -28,6 +28,8 @@
 ".\exe\mobilephone.o"
 ".\exe\colorspectrum.o"
 ".\exe\blackwhitegradient.o"
+".\exe\defroster.o"
+".\exe\defrosteron.o"
 ".\exe\system_stm32f7xx.o"
 ".\exe\ft5336.o"
 ".\exe\stm32746g.o"
@@ -112,7 +114,7 @@
 ".\exe\ventilator.o"
 ".\exe\curtain.o"
 ".\exe\lights.o"
-".\exe\defroster.o"
+".\exe\defroster_1.o"
 --library_type=microlib --strict --scatter ".\Run\db.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

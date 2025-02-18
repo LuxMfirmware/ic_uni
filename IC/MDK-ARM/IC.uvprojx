@@ -528,6 +528,16 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Display\blackWhiteGradient.c</FilePath>
             </File>
+            <File>
+              <FileName>defroster.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\defroster.c</FilePath>
+            </File>
+            <File>
+              <FileName>defrosterOn.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\defrosterOn.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

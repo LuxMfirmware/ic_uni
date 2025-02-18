@@ -365,6 +365,7 @@ void lng(uint8_t t)
                 case 50: strcpy(langText, "ALL"); break;
                 case 51: strcpy(langText, "Wi-Fi"); break;
                 case 52: strcpy(langText, "APP"); break;
+                case 53: strcpy(langText, "DEFROSTER"); break;
             }
             break;
         }
@@ -424,6 +425,7 @@ void lng(uint8_t t)
                 case 50: strcpy(langText, "SVE"); break;
                 case 51: strcpy(langText, "Wi-Fi"); break;
                 case 52: strcpy(langText, "APP"); break;
+                case 53: strcpy(langText, "ODMRZIVAC"); break;
             }
             break;
         }
@@ -946,7 +948,8 @@ void DISP_Service(void){
                 GUI_DrawBitmap(&bmSijalicaOff, 55, 10);
                 GUI_DrawBitmap(&bmTermometar, 245, 15);
                 GUI_DrawBitmap(&bmblindMedium, 55, 150);
-                GUI_DrawBitmap(&bmwifi, 240, 160);
+                if(Defroster_isActive()) GUI_DrawBitmap(&bmdefrosterOn, 240, 155);     else GUI_DrawBitmap(&bmdefroster, 240, 155);
+                //GUI_DrawBitmap(&bmwifi, 240, 160);
                 
                 
                 
@@ -971,7 +974,7 @@ void DISP_Service(void){
                 
                 GUI_SetTextAlign(GUI_TA_HCENTER|GUI_TA_VCENTER);
                 GUI_GotoXY(285, 250);
-                lng(51);
+                lng(53);
                 GUI_DispString(langText);
                 
                 
@@ -3647,9 +3650,20 @@ void PID_Hook(GUI_PID_STATE * pTS){
                         
                         menu_lc = 0;*/
                         
-                        screen = SCREEN_QR_CODE;
+                        /*screen = SCREEN_QR_CODE;
                         qr_code_draw_id = QR_CODE_WIFI_ID;
-                        shouldDrawScreen = 1;
+                        shouldDrawScreen = 1;*/
+                        
+                        if(Defroster_isActive())
+                        {
+                            Defroster_Off();
+                        }
+                        else
+                        {
+                            Defroster_On();
+                        }
+                        
+                        menu_lc = 0;
                     }
                 }
             }

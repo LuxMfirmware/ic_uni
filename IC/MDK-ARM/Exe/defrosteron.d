@@ -1,4 +1,4 @@
-./exe/defroster.o: ..\Src\Display\defroster.c \
+./exe/defrosteron.o: ..\Src\Display\defrosterOn.c \
   C:\Keil\ARM\ARMCLANG\Bin\..\include\stdlib.h ..\Inc\Resource.h \
   ..\..\Middlewares\STemWin\inc\GUI.h \
   ..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h ..\Inc\GUIConf.h \
