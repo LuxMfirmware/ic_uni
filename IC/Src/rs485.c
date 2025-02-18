@@ -633,7 +633,7 @@ void RS485_Service(void){
             }
             else
             {
-                TF_QuerySimple(&tfapp, CUSTOM_SET, sendDataBuff, sendDataCount, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
+                TF_QuerySimple(&tfapp, CUSTOM, sendDataBuff, sendDataCount, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
             }
             sendData.data = NULL;
             sendData.len = 0;

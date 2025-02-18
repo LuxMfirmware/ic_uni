@@ -197,7 +197,7 @@ typedef enum {
     THERMOSTAT_SETUP    = 43,   // cijela nova termostat struktura parametara....  treba definisat termostat strukturu
     THERMOSTAT_INFO     = 44,   // izmjerena nova temperature senzora, promjenjena zadana temeratura, termostat isključen.... treba definisat info strukturu
     // ostavi prostora za dopune
-    CUSTOM_SET          = 48
+    CUSTOM              = 48
 } tf_types_t;
 
 
