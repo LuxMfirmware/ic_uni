@@ -166,6 +166,11 @@ void Light_Modbus_StatusSet(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val
     {
         li->value = 1;
         
+        if((!Light_Modbus_isBinary(li) && (!Light_Modbus_isBrightnessRemembered(li))))
+        {
+            Light_Modbus_SetBrightness(li, 100);
+        }
+        
         if(li->local_pin < 5) SetPin(li->local_pin, 1);
         else PCA9685_SetOutput(li->local_pin, 255);
         
@@ -659,12 +664,12 @@ void Light_Modbus_Service()
                 sendDataCountBin += 2;
                 sendDataBuffBin[sendDataCountBin++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
             }
-            else if(Light_Modbus_isDimmer(lights_modbus + i))
+            else
             {
                 *(sendDataBuffDimm + sendDataCountDimm) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
                 *(sendDataBuffDimm + sendDataCountDimm + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
                 sendDataCountDimm += 2;
-                sendDataBuffDimm[sendDataCountDimm++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0 : 100;
+                sendDataBuffDimm[sendDataCountDimm++] = Light_Modbus_GetBrightness(lights_modbus + i);
             }
             
             Light_Modbus_ResetStatus(lights_modbus + i);
