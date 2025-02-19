@@ -78,6 +78,7 @@ void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* li, const uint16_t addr)
     EE_ReadBuffer(&li->local_pin,                      addr + 11,       1);
     EE_ReadBuffer(&li->sleep_time,                     addr + 12,       1);
     EE_ReadBuffer(&li->button_external,                addr + 13,       1);
+    EE_ReadBuffer(&li->brightness_old,                 addr + 14,       1);
 }
 
 
@@ -95,6 +96,7 @@ void Light_Modbus_Save(LIGHT_Modbus_CmdTypeDef* li, const uint16_t addr)
     EE_WriteBuffer(&li->local_pin,                      addr + 11,       1);
     EE_WriteBuffer(&li->sleep_time,                     addr + 12,       1);
     EE_WriteBuffer(&li->button_external,                addr + 13,       1);
+    EE_WriteBuffer(&li->brightness_old,                 addr + 14,       1);
 }
 
 void Lights_Modbus_Init()
@@ -422,12 +424,12 @@ uint8_t Light_Modbus_GetBrightness(const LIGHT_Modbus_CmdTypeDef* const li)
 
 bool Light_Modbus_hasBrightnessChanged(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return Light_Modbus_GetBrightness(li);
+    return Light_Modbus_GetBrightness(li) != li->brightness_old;
 }
 
 void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    li->brightness = 0;
+    li->brightness_old = li->brightness;
 }
 
 
@@ -499,6 +501,7 @@ void Light_Modbus_SetDefault(LIGHT_Modbus_CmdTypeDef* const li)
     li->value = 0;
     li->old_value = 0;
     li->brightness = 0;
+    li->brightness_old = 0;
     li->color = 0;
     li->iconID = 0;
     li->local_pin = 0;

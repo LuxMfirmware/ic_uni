@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Tue Feb 18 12:49:20 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Wed Feb 19 09:04:46 2025
 <BR><P>
 <H3>Maximum Stack Usage =       2468 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -3222,8 +3222,7 @@ Global Symbols
 <LI><a href="#[356]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_LCD_DisplayOn
 <LI><a href="#[357]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_LCD_DisplayOff
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Init
-<LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ShowBuffer
+<BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ShowBuffer
 <LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVis
 <LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVRAMAddr
 <LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetSize
@@ -3248,6 +3247,7 @@ Global Symbols
 <LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetAlpha
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_On
 <LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Off
+<LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Init
 </UL>
 
 <P><STRONG><a name="[9d]"></a>LTDC_IRQHandler</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, stm32f7xx_it.o(.text.LTDC_IRQHandler))
@@ -3341,8 +3341,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[29e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_Light_Modbus
 </UL>
 
-<P><STRONG><a name="[363]"></a>Light_Modbus_Init</STRONG> (Thumb, 314 bytes, Stack size 72 bytes, lights.o(.text.Light_Modbus_Init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 404<LI>Call Chain = Light_Modbus_Init &rArr; EE_ReadBuffer &rArr; EE_ReadData &rArr; I2Cx_ReadMultiple &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
+<P><STRONG><a name="[363]"></a>Light_Modbus_Init</STRONG> (Thumb, 338 bytes, Stack size 80 bytes, lights.o(.text.Light_Modbus_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 412<LI>Call Chain = Light_Modbus_Init &rArr; EE_ReadBuffer &rArr; EE_ReadData &rArr; I2Cx_ReadMultiple &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_ReadBuffer
 </UL>
@@ -3425,8 +3425,8 @@ Global Symbols
 <LI><a href="#[366]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_Service
 </UL>
 
-<P><STRONG><a name="[365]"></a>Light_Modbus_Save</STRONG> (Thumb, 304 bytes, Stack size 72 bytes, lights.o(.text.Light_Modbus_Save))
-<BR><BR>[Stack]<UL><LI>Max Depth = 444<LI>Call Chain = Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
+<P><STRONG><a name="[365]"></a>Light_Modbus_Save</STRONG> (Thumb, 328 bytes, Stack size 80 bytes, lights.o(.text.Light_Modbus_Save))
+<BR><BR>[Stack]<UL><LI>Max Depth = 452<LI>Call Chain = Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_WriteBuffer
 </UL>
@@ -3493,7 +3493,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_Hook
 </UL>
 
-<P><STRONG><a name="[382]"></a>Light_Modbus_SetDefault</STRONG> (Thumb, 88 bytes, Stack size 4 bytes, lights.o(.text.Light_Modbus_SetDefault))
+<P><STRONG><a name="[382]"></a>Light_Modbus_SetDefault</STRONG> (Thumb, 92 bytes, Stack size 4 bytes, lights.o(.text.Light_Modbus_SetDefault))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = Light_Modbus_SetDefault
 </UL>
 <BR>[Called By]<UL><LI><a href="#[381]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_SetDefault
@@ -3552,7 +3552,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GEN_Listener
 </UL>
 
-<P><STRONG><a name="[371]"></a>Light_Modbus_hasBrightnessChanged</STRONG> (Thumb, 22 bytes, Stack size 16 bytes, lights.o(.text.Light_Modbus_hasBrightnessChanged))
+<P><STRONG><a name="[371]"></a>Light_Modbus_hasBrightnessChanged</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, lights.o(.text.Light_Modbus_hasBrightnessChanged))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = Light_Modbus_hasBrightnessChanged &rArr; Light_Modbus_GetBrightness
 </UL>
 <BR>[Calls]<UL><LI><a href="#[372]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_GetBrightness
@@ -3726,7 +3726,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[380]"></a>Lights_Modbus_Init</STRONG> (Thumb, 98 bytes, Stack size 16 bytes, lights.o(.text.Lights_Modbus_Init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 420<LI>Call Chain = Lights_Modbus_Init &rArr; Light_Modbus_Init &rArr; EE_ReadBuffer &rArr; EE_ReadData &rArr; I2Cx_ReadMultiple &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
+<BR><BR>[Stack]<UL><LI>Max Depth = 428<LI>Call Chain = Lights_Modbus_Init &rArr; Light_Modbus_Init &rArr; EE_ReadBuffer &rArr; EE_ReadData &rArr; I2Cx_ReadMultiple &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_ReadBuffer
 <LI><a href="#[37d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_Calculate
@@ -3749,7 +3749,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[241]"></a>Lights_Modbus_Save</STRONG> (Thumb, 80 bytes, Stack size 16 bytes, lights.o(.text.Lights_Modbus_Save))
-<BR><BR>[Stack]<UL><LI>Max Depth = 460<LI>Call Chain = Lights_Modbus_Save &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
+<BR><BR>[Stack]<UL><LI>Max Depth = 468<LI>Call Chain = Lights_Modbus_Save &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[37d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_Calculate
 <LI><a href="#[365]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_Save
@@ -4212,7 +4212,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[24a]"></a>SetDefault</STRONG> (Thumb, 46 bytes, Stack size 8 bytes, main.o(.text.SetDefault))
-<BR><BR>[Stack]<UL><LI>Max Depth = 468<LI>Call Chain = SetDefault &rArr; Lights_Modbus_Save &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
+<BR><BR>[Stack]<UL><LI>Max Depth = 476<LI>Call Chain = SetDefault &rArr; Lights_Modbus_Save &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetDefault
 <LI><a href="#[220]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SaveThermostatController
@@ -8011,9 +8011,9 @@ Global Symbols
 <P><STRONG><a name="[631]"></a>GUI__CompactPixelIndices</STRONG> (Thumb, 304 bytes, Stack size 8 bytes, gui__compactpixelindices.o(i.GUI__CompactPixelIndices))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = GUI__CompactPixelIndices
 </UL>
-<BR>[Called By]<UL><LI><a href="#[632]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Convert8
+<BR>[Called By]<UL><LI><a href="#[671]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_FlushBuffer
+<LI><a href="#[632]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Convert8
 <LI><a href="#[630]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Convert16
-<LI><a href="#[671]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_FlushBuffer
 </UL>
 
 <P><STRONG><a name="[52b]"></a>GUI__CompactPixelIndicesEx</STRONG> (Thumb, 12 bytes, Stack size 16 bytes, gui__compactpixelindices.o(i.GUI__CompactPixelIndicesEx))
@@ -14457,8 +14457,7 @@ Local Symbols
 <BR>[Calls]<UL><LI><a href="#[67d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__memset
 <LI><a href="#[494]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_GetFixedBlock
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Init
-<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetPos
+<BR>[Called By]<UL><LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GetPos
 <LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_CopyBuffer
 <LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ShowBuffer
 <LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetVis
@@ -14468,6 +14467,7 @@ Local Symbols
 <LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetPos
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetDevFunc
 <LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SetAlpha
+<LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Init
 </UL>
 
 <P><STRONG><a name="[f6]"></a>_Off</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, guidrv_lin_16.o(i._Off))
