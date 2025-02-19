@@ -2187,8 +2187,8 @@ void DISP_Service(void){
                 
                 GUI_DrawLine(380,10,380,262);
                 
-                GUI_DrawLine(126,30,126,242);
-                GUI_DrawLine(252,30,252,242);
+                GUI_DrawLine(126,40,126,232);
+                GUI_DrawLine(252,40,252,232);
                 
                 GUI_DrawBitmap(&bmnext, 385, 159);
                 

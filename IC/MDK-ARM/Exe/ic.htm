@@ -3,9 +3,9 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Wed Feb 19 09:07:55 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Wed Feb 19 09:14:04 2025
 <BR><P>
-<H3>Maximum Stack Usage =       2468 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =       2460 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 main &rArr; DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 <P>
@@ -1520,8 +1520,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[214]"></a>DISP_Service</STRONG> (Thumb, 18286 bytes, Stack size 1480 bytes, display.o(.text.DISP_Service))
-<BR><BR>[Stack]<UL><LI>Max Depth = 2436<LI>Call Chain = DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
+<P><STRONG><a name="[214]"></a>DISP_Service</STRONG> (Thumb, 18268 bytes, Stack size 1472 bytes, display.o(.text.DISP_Service))
+<BR><BR>[Stack]<UL><LI>Max Depth = 2428<LI>Call Chain = DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[1dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_WriteBuffer
@@ -4714,7 +4714,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[a7]"></a>main</STRONG> (Thumb, 216 bytes, Stack size 32 bytes, main.o(.text.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 2468<LI>Call Chain = main &rArr; DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
+<BR><BR>[Stack]<UL><LI>Max Depth = 2460<LI>Call Chain = main &rArr; DISP_Service &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 </UL>
 <BR>[Calls]<UL><LI><a href="#[282]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_Init
 <LI><a href="#[3c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SDRAM_Init
