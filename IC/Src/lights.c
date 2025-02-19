@@ -66,6 +66,8 @@ void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
 {
     li->value = 0;
     li->old_value = 0;
+    li->color = 0;
+    
     EE_ReadBuffer((uint8_t*)&li->index,                addr,           2);
     EE_ReadBuffer(&li->tiedToMainLight,                addr + 2,       1);
     EE_ReadBuffer(&li->off_time,                       addr + 3,       1);
@@ -78,7 +80,10 @@ void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
     EE_ReadBuffer(&li->local_pin,                      addr + 11,       1);
     EE_ReadBuffer(&li->sleep_time,                     addr + 12,       1);
     EE_ReadBuffer(&li->button_external,                addr + 13,       1);
-    EE_ReadBuffer(&li->brightness_old,                 addr + 14,       1);
+    EE_ReadBuffer(&li->rememberBrightness,             addr + 14,       1);
+    EE_ReadBuffer(&li->brightness,                     addr + 15,       1);
+    
+    li->brightness_old = li->brightness;
 }
 
 
@@ -96,27 +101,30 @@ void Light_Modbus_Save(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
     EE_WriteBuffer(&li->local_pin,                      addr + 11,       1);
     EE_WriteBuffer(&li->sleep_time,                     addr + 12,       1);
     EE_WriteBuffer(&li->button_external,                addr + 13,       1);
-    EE_WriteBuffer(&li->brightness_old,                 addr + 14,       1);
+    EE_WriteBuffer(&li->rememberBrightness,             addr + 14,       1);
+    EE_WriteBuffer(&li->brightness,                     addr + 15,       1);
 }
 
 void Lights_Modbus_Init()
 {
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
-        Light_Modbus_Init(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 14));
+        Light_Modbus_Init(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 16));
     }
     
-    Lights_Modbus_Calculate();
-    
     EE_ReadBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
+    
+    Lights_Modbus_Calculate();
 }
 
 void Lights_Modbus_Save()
 {
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
-        Light_Modbus_Save(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 14));
+        Light_Modbus_Save(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 16));
     }
+    
+    EE_WriteBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
     
     Lights_Modbus_Calculate();
 }
@@ -152,7 +160,7 @@ uint8_t Light_Modbus_Get_byIndex(const uint8_t light_index)
 
 
 
-void Light_Modbus_Set(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value)
+void Light_Modbus_StatusSet(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value)
 {
     if(value)
     {
@@ -182,7 +190,7 @@ void Light_Modbus_Set(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value)
 
 void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    Light_Modbus_Set(li, 1);
+    Light_Modbus_StatusSet(li, 1);
 }
 
 void Light_Modbus_On_External(LIGHT_Modbus_CmdTypeDef* const li)
@@ -200,7 +208,7 @@ void Light_Modbus_On_External(LIGHT_Modbus_CmdTypeDef* const li)
 
 void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    Light_Modbus_Set(li, 0);
+    Light_Modbus_StatusSet(li, 0);
 }
 
 void Light_Modbus_Off_External(LIGHT_Modbus_CmdTypeDef* const li)
@@ -242,6 +250,20 @@ bool Light_Modbus_isNewValueOn(const LIGHT_Modbus_CmdTypeDef* const li)
 bool Light_Modbus_isOldValueOn(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return li->old_value;
+}
+
+
+
+
+
+bool Light_Modbus_hasStatusChanged(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return Light_Modbus_isOldValueOn(li) != Light_Modbus_isNewValueOn(li);
+}
+
+void Light_Modbus_ResetStatus(LIGHT_Modbus_CmdTypeDef* const li)
+{
+    li->old_value = li->value;
 }
 
 
@@ -415,6 +437,11 @@ void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brigh
     if(brightness > 100) li->brightness = 100;
     else if(brightness < 0) li->brightness = 0;
     else li->brightness = brightness;
+    
+    if(Light_Modbus_isBrightnessRemembered(li))
+    {
+        Light_Modbus_Save(li, EE_LIGHTS_MODBUS + ((li - lights_modbus) * 16));
+    }
 }
 
 uint8_t Light_Modbus_GetBrightness(const LIGHT_Modbus_CmdTypeDef* const li)
@@ -454,22 +481,6 @@ bool Light_Modbus_isRGB(const LIGHT_Modbus_CmdTypeDef* const li)
 
 
 
-
-
-bool Light_Modbus_hasStatusChanged(const LIGHT_Modbus_CmdTypeDef* const li)
-{
-    return Light_Modbus_isOldValueOn(li) != Light_Modbus_isNewValueOn(li);
-}
-
-void Light_Modbus_ResetStatus(LIGHT_Modbus_CmdTypeDef* const li)
-{
-    li->old_value = li->value;
-}
-
-
-
-
-
 bool Light_Modbus_hasChanged(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return Light_Modbus_hasStatusChanged(li) || Light_Modbus_hasBrightnessChanged(li) || Light_Modbus_hasColorChanged(li);
@@ -487,6 +498,21 @@ void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li)
 GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return light_modbus_images[(li->iconID * 2) + Light_Modbus_isNewValueOn(li)];
+}
+
+
+
+
+
+void Light_Modbus_RememberBrightnessSet(LIGHT_Modbus_CmdTypeDef* const li, const bool remember)
+{
+    li->rememberBrightness = remember;
+}
+
+
+bool Light_Modbus_isBrightnessRemembered(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return li->rememberBrightness;
 }
 
 

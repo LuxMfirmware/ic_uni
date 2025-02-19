@@ -23,7 +23,7 @@ typedef struct
     GUI_COLOR color;
     uint32_t off_timer_start, on_delay_timer_start;
     uint16_t index, old_index, controllerID_on;
-    uint8_t value, old_value, iconID, tiedToMainLight, off_time, controllerID_on_delay, on_hour, on_minute, communication_type, local_pin, sleep_time, button_external, brightness, brightness_old;
+    uint8_t value, old_value, iconID, tiedToMainLight, rememberBrightness, off_time, controllerID_on_delay, on_hour, on_minute, communication_type, local_pin, sleep_time, button_external, brightness, brightness_old;
 } LIGHT_Modbus_CmdTypeDef;
 
 
@@ -100,6 +100,8 @@ bool Light_Modbus_hasOffTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li
 void Light_Modbus_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_RememberBrightnessSet(LIGHT_Modbus_CmdTypeDef* const li, const bool remember);
+bool Light_Modbus_isBrightnessRemembered(const LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_SetDefault(LIGHT_Modbus_CmdTypeDef* const li);
 void Lights_Modbus_SetDefault();
 void Light_Modbus_Service();

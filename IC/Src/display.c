@@ -30,7 +30,7 @@
 typedef struct
 {
     SPINBOX_Handle  relay, offTime, iconID, controllerID_on, controllerID_on_delay, on_hour, on_minute, communication_type, local_pin, sleep_time, button_external;
-    CHECKBOX_Handle  tiedToMainLight;
+    CHECKBOX_Handle  tiedToMainLight, rememberBrightness;
 }
 Light_Modbus_settingsWidgets;
 
@@ -158,7 +158,7 @@ Light_Modbus_settingsWidgets;
 #define ID_CurtainsRelay                0x894  //holds 30 bytes for 15 curtains
 #define ID_CurtainsMoveTime             0x8B2
 
-#define ID_LightsModbusRelay            0x8B3  //holds 30 bytes for 15 lights
+#define ID_LightsModbusRelay            0x8B3  //holds 195 bytes for 15 lights
 
 #define ID_SYSRESTART                   0x976
 
@@ -1857,83 +1857,78 @@ void DISP_Service(void){
                     
                     Light_Modbus_SetRelay(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].relay));
                 }
-                
-                if(lights_modbus[i].iconID != SPINBOX_GetValue(lightsWidgets[i].iconID))
+                else if(lights_modbus[i].iconID != SPINBOX_GetValue(lightsWidgets[i].iconID))
                 {
                     settingsChanged = 1;
                     
                     lights_modbus[i].iconID = SPINBOX_GetValue(lightsWidgets[i].iconID);
                 }
-                
-                if(lights_modbus[i].controllerID_on != SPINBOX_GetValue(lightsWidgets[i].controllerID_on))
+                else if(lights_modbus[i].controllerID_on != SPINBOX_GetValue(lightsWidgets[i].controllerID_on))
                 {
                     settingsChanged = 1;
                     
                     lights_modbus[i].controllerID_on = SPINBOX_GetValue(lightsWidgets[i].controllerID_on);
                 }
-                
-                if(Light_Modbus_GetOnDelayTime(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay))
+                else if(Light_Modbus_GetOnDelayTime(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay))
                 {
                     settingsChanged = 1;
                     
                     Light_Modbus_SetOnDelayTime(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].controllerID_on_delay));
                 }
-                
-                if(Light_Modbus_GetOffTime(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].offTime))
+                else if(Light_Modbus_GetOffTime(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].offTime))
                 {
                     settingsChanged = 1;
                     
                     Light_Modbus_SetOffTime(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].offTime));
                 }
-                
-                if(lights_modbus[i].on_hour != SPINBOX_GetValue(lightsWidgets[i].on_hour))
+                else if(lights_modbus[i].on_hour != SPINBOX_GetValue(lightsWidgets[i].on_hour))
                 {
                     settingsChanged = 1;
                     
                     lights_modbus[i].on_hour = SPINBOX_GetValue(lightsWidgets[i].on_hour);
                 }
-                
-                if(lights_modbus[i].on_minute != SPINBOX_GetValue(lightsWidgets[i].on_minute))
+                else if(lights_modbus[i].on_minute != SPINBOX_GetValue(lightsWidgets[i].on_minute))
                 {
                     settingsChanged = 1;
                     
                     lights_modbus[i].on_minute = SPINBOX_GetValue(lightsWidgets[i].on_minute);
                 }
-                
-                if(lights_modbus[i].communication_type != SPINBOX_GetValue(lightsWidgets[i].communication_type))
+                else if(lights_modbus[i].communication_type != SPINBOX_GetValue(lightsWidgets[i].communication_type))
                 {
                     settingsChanged = 1;
                     
                     lights_modbus[i].communication_type = SPINBOX_GetValue(lightsWidgets[i].communication_type);
                 }
-                
-                if(lights_modbus[i].local_pin != SPINBOX_GetValue(lightsWidgets[i].local_pin))
+                else if(lights_modbus[i].local_pin != SPINBOX_GetValue(lightsWidgets[i].local_pin))
                 {
                     settingsChanged = 1;
                     
                     lights_modbus[i].local_pin = SPINBOX_GetValue(lightsWidgets[i].local_pin);
                 }
-                
-                if(lights_modbus[i].sleep_time != SPINBOX_GetValue(lightsWidgets[i].sleep_time))
+                else if(lights_modbus[i].sleep_time != SPINBOX_GetValue(lightsWidgets[i].sleep_time))
                 {
                     settingsChanged = 1;
                     
                     lights_modbus[i].sleep_time = SPINBOX_GetValue(lightsWidgets[i].sleep_time);
                 }
-                
-                if(lights_modbus[i].button_external != SPINBOX_GetValue(lightsWidgets[i].button_external))
+                else if(lights_modbus[i].button_external != SPINBOX_GetValue(lightsWidgets[i].button_external))
                 {
                     settingsChanged = 1;
                     
                     lights_modbus[i].button_external = SPINBOX_GetValue(lightsWidgets[i].button_external);
                 }
-                
-                if(Light_Modbus_isTiedToMainLight(lights_modbus + i) != CHECKBOX_GetState(lightsWidgets[i].tiedToMainLight))
+                else if(Light_Modbus_isTiedToMainLight(lights_modbus + i) != CHECKBOX_GetState(lightsWidgets[i].tiedToMainLight))
                 {
                     settingsChanged = 1;
                     
                     if(CHECKBOX_GetState(lightsWidgets[i].tiedToMainLight)) Light_Modbus_TieToMainLight(lights_modbus + i);
                     else Light_Modbus_UntieFromMainLight(lights_modbus + i);
+                }
+                else if(Light_Modbus_isBrightnessRemembered(lights_modbus + i) != CHECKBOX_GetState(lightsWidgets[i].rememberBrightness))
+                {
+                    settingsChanged = 1;
+                    
+                    Light_Modbus_RememberBrightnessSet(lights_modbus + i, CHECKBOX_GetState(lightsWidgets[i].tiedToMainLight));
                 }
             }
             
@@ -2136,7 +2131,6 @@ void DISP_Service(void){
                     Curtains_Save();
                     EE_WriteBuffer(&tfifa, EE_TFIFA, 1);
                     EE_WriteBuffer(&bOnlyLeaveScreenSaverAfterTouch, EE_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, 1);
-                    EE_WriteBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
                     settingsChanged = 0;
                 }
                 DSP_KillSet7Scrn();
@@ -2149,7 +2143,6 @@ void DISP_Service(void){
                     Curtains_Save();
                     EE_WriteBuffer(&tfifa, EE_TFIFA, 1);
                     EE_WriteBuffer(&bOnlyLeaveScreenSaverAfterTouch, EE_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, 1);
-                    EE_WriteBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
                     settingsChanged = 0;
                 }
                 
@@ -3177,6 +3170,11 @@ static void DSP_InitSet6Scrn(void)
         CHECKBOX_SetText(lightsWidgets[i].tiedToMainLight, "TIED TO MAIN LIGHT");
         CHECKBOX_SetState(lightsWidgets[i].tiedToMainLight, Light_Modbus_isTiedToMainLight(lights_modbus + i));
         
+        lightsWidgets[i].rememberBrightness = CHECKBOX_Create(x, y + 132, 130, 15, 0, (ID_LightsModbusRelay * i) + 12, WM_CF_SHOW);
+        CHECKBOX_SetTextColor(lightsWidgets[i].rememberBrightness, GUI_GREEN);
+        CHECKBOX_SetText(lightsWidgets[i].rememberBrightness, "REMEMBER BRIGHTNESS");
+        CHECKBOX_SetState(lightsWidgets[i].rememberBrightness, Light_Modbus_isBrightnessRemembered(lights_modbus + i));
+        
         GUI_GotoXY(x + 90 + 10, y + 8);
         GUI_DispString("LIGHT ");
         GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
@@ -3280,6 +3278,7 @@ static void DSP_KillSet6Scrn(void)
         WM_DeleteWindow(lightsWidgets[i].sleep_time);
         WM_DeleteWindow(lightsWidgets[i].button_external);
         WM_DeleteWindow(lightsWidgets[i].tiedToMainLight);
+        WM_DeleteWindow(lightsWidgets[i].rememberBrightness);
     }
     WM_DeleteWindow(hBUTTON_Next);
     WM_DeleteWindow(hBUTTON_Ok);
