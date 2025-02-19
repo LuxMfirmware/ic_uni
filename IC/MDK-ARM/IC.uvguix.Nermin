@@ -3625,8 +3625,8 @@
       <Doc>
         <Name>..\Src\lights.c</Name>
         <ColumnNumber>0</ColumnNumber>
-        <TopLine>138</TopLine>
-        <CurrentLine>498</CurrentLine>
+        <TopLine>30</TopLine>
+        <CurrentLine>86</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders>27,38,46,51,58,65,85,102,114,126,132,143,155,183,188,201,206,220,226,232,237,242,253,258,265,270,275,284,289,294,301,306,311,316,321,330,335,340,347,352,357,362,367,375,380,389,394,399,404,413,420,425,430,438,443,448,459,464,473,478,487,497,522</ContractedFolders>
         <PaneID>0</PaneID>
@@ -3634,7 +3634,7 @@
       <Doc>
         <Name>..\Inc\lights.h</Name>
         <ColumnNumber>194</ColumnNumber>
-        <TopLine>10</TopLine>
+        <TopLine>75</TopLine>
         <CurrentLine>26</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>

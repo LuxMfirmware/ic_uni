@@ -17,8 +17,8 @@
 /* 	                                                                                        */
 /**/
 #define FW_DATE                                	0x00251902
-#define FW_TIME                        			0x00090443 
-#define FW_BUILD_NUMBER                          12194
+#define FW_TIME                        			0x00090751 
+#define FW_BUILD_NUMBER                          12195
 
 /* select application if preprocessor symbol no defined -----------------*/
 //#define HOTEL_CONTROLLER

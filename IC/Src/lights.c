@@ -62,7 +62,7 @@ void Lights_Modbus_Calculate()
 }
 
 
-void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* li, const uint16_t addr)
+void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
 {
     li->value = 0;
     li->old_value = 0;
@@ -82,7 +82,7 @@ void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* li, const uint16_t addr)
 }
 
 
-void Light_Modbus_Save(LIGHT_Modbus_CmdTypeDef* li, const uint16_t addr)
+void Light_Modbus_Save(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
 {
     EE_WriteBuffer((uint8_t*)&li->index,                addr,           2);
     EE_WriteBuffer(&li->tiedToMainLight,                addr + 2,       1);
