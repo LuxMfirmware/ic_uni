@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Thu Feb 20 12:12:44 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Thu Feb 20 12:28:44 2025
 <BR><P>
 <H3>Maximum Stack Usage =       2476 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -3468,12 +3468,12 @@ Global Symbols
 <LI><a href="#[379]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_ResetColor
 <LI><a href="#[377]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_ResetBrightness
 <LI><a href="#[374]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_GetBrightness
-<LI><a href="#[36c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_isOnDelayTimeTimerActive
 <LI><a href="#[36f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_isOffTimeTimerActive
 <LI><a href="#[36d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_hasOnDelayTimeTimerExpired
 <LI><a href="#[370]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_hasOffTimeTimerExpired
 <LI><a href="#[36e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_OnDelayTimeTimerDeactivate
 <LI><a href="#[371]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_OffTimeTimerDeactivate
+<LI><a href="#[36c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_isOnDelayTimeTimerActive
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -3756,8 +3756,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 436<LI>Call Chain = Lights_Modbus_Init &rArr; Light_Modbus_Init &rArr; EE_ReadBuffer &rArr; EE_ReadData &rArr; I2Cx_ReadMultiple &rArr; HAL_I2C_Mem_Read &rArr; I2C_RequestMemoryRead &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_ReadBuffer
-<LI><a href="#[382]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_Calculate
 <LI><a href="#[367]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_Init
+<LI><a href="#[382]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_Calculate
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -3779,8 +3779,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 476<LI>Call Chain = Lights_Modbus_Save &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_WriteBuffer
-<LI><a href="#[382]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_Calculate
 <LI><a href="#[369]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_Save
+<LI><a href="#[382]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lights_Modbus_Calculate
 </UL>
 <BR>[Called By]<UL><LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetDefault
 <LI><a href="#[214]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
@@ -5607,9 +5607,9 @@ Global Symbols
 <LI> f20_1.o(.constdata)
 <LI> f24_1.o(.constdata)
 <LI> f24b_1.o(.constdata)
-<LI> fd80.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
+<LI> fd80.o(.constdata)
 </UL>
 <P><STRONG><a name="[15e]"></a>GUIPROP_GetCharDistX</STRONG> (Thumb, 64 bytes, Stack size 12 bytes, gui_charp.o(i.GUIPROP_GetCharDistX))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = GUIPROP_GetCharDistX
@@ -5624,9 +5624,9 @@ Global Symbols
 <LI> f20_1.o(.constdata)
 <LI> f24_1.o(.constdata)
 <LI> f24b_1.o(.constdata)
-<LI> fd80.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
+<LI> fd80.o(.constdata)
 </UL>
 <P><STRONG><a name="[15f]"></a>GUIPROP_GetFontInfo</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, gui_charp.o(i.GUIPROP_GetFontInfo))
 <BR>[Address Reference Count : 11]<UL><LI> fd32.o(.constdata)
@@ -5637,9 +5637,9 @@ Global Symbols
 <LI> f20_1.o(.constdata)
 <LI> f24_1.o(.constdata)
 <LI> f24b_1.o(.constdata)
-<LI> fd80.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
+<LI> fd80.o(.constdata)
 </UL>
 <P><STRONG><a name="[160]"></a>GUIPROP_IsInFont</STRONG> (Thumb, 16 bytes, Stack size 4 bytes, gui_charp.o(i.GUIPROP_IsInFont))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = GUIPROP_IsInFont
@@ -5654,9 +5654,9 @@ Global Symbols
 <LI> f20_1.o(.constdata)
 <LI> f24_1.o(.constdata)
 <LI> f24b_1.o(.constdata)
-<LI> fd80.o(.constdata)
 <LI> f32_1.o(.constdata)
 <LI> f32b_1.o(.constdata)
+<LI> fd80.o(.constdata)
 </UL>
 <P><STRONG><a name="[48f]"></a>GUIPROP__FindChar</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, gui_charp.o(i.GUIPROP__FindChar))
 <BR><BR>[Called By]<UL><LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUIPROP_IsInFont
@@ -5736,11 +5736,11 @@ Global Symbols
 <LI><a href="#[4ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_MEMDEV_Delete
 <LI><a href="#[4f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_USAGE_DecUseCnt
 <LI><a href="#[4ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_MEMDEV__CreateFixed
-<LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GUI_USAGE_BM_Delete
 <LI><a href="#[2e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_NextPixel_End
 <LI><a href="#[6ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ReleaseBuffer
 <LI><a href="#[506]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_WriteToActiveOpaque_HT
 <LI><a href="#[505]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_WriteToActiveOpaque_8
+<LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GUI_USAGE_BM_Delete
 </UL>
 
 <P><STRONG><a name="[4bb]"></a>GUI_ALLOC_FreeFixedBlock</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, gui_alloc.o(i.GUI_ALLOC_FreeFixedBlock))

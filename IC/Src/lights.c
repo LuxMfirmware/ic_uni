@@ -461,6 +461,7 @@ bool Light_Modbus_hasBrightnessChanged(const LIGHT_Modbus_CmdTypeDef* const li)
 
 
 
+
 void Light_Modbus_RememberBrightnessSet(LIGHT_Modbus_CmdTypeDef* const li, const bool remember)
 {
     li->rememberBrightness = remember;
@@ -477,6 +478,33 @@ bool Light_Modbus_isBrightnessRemembered(const LIGHT_Modbus_CmdTypeDef* const li
 void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->brightness_old = li->brightness;
+}
+
+
+
+void Light_Modbus_Brightness_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value)
+{
+    if(value > 100)
+    {
+        li->brightness = 100;
+    }
+    if(value < 0)
+    {
+        li->brightness = 0;
+    }
+    else
+    {
+        li->brightness = value;
+    }
+    
+    Light_Modbus_ResetBrightness(li);
+    
+    
+    
+    if(Light_Modbus_isBrightnessRemembered(li))
+    {
+        Light_Modbus_Save(li, EE_LIGHTS_MODBUS + ((li - lights_modbus) * 16));
+    }
 }
 
 
