@@ -1478,11 +1478,13 @@ void DISP_Service(void){
                 ++thsta;
             }
             else if (thst.sp_max != SPINBOX_GetValue(hThstMaxSetPoint)){
-                thst.sp_max  = SPINBOX_GetValue(hThstMaxSetPoint);
+                Thermostat_Set_SP_Max(SPINBOX_GetValue(hThstMaxSetPoint));
+                SPINBOX_SetValue(hThstMaxSetPoint, thst.sp_max);
                 ++thsta;
             }            
             else if (thst.sp_min != SPINBOX_GetValue(hThstMinSetPoint)){
-                thst.sp_min  = SPINBOX_GetValue(hThstMinSetPoint);
+                Thermostat_Set_SP_Min(SPINBOX_GetValue(hThstMinSetPoint));
+                SPINBOX_SetValue(hThstMinSetPoint, thst.sp_min);
                 ++thsta;
             }
             else if (thst.fan_diff != SPINBOX_GetValue(hFanDiff)){
@@ -2481,11 +2483,11 @@ static void DSP_InitSet1Scrn(void){
     RADIO_SetText(hFanControl, "3 SPEED", 1);
     RADIO_SetValue(hFanControl, thst.fan_ctrl);
 
-    hThstMaxSetPoint = SPINBOX_CreateEx(110, 20, 90, 30, 0, WM_CF_SHOW, ID_ThstMaxSetPoint, 5, 40);
+    hThstMaxSetPoint = SPINBOX_CreateEx(110, 20, 90, 30, 0, WM_CF_SHOW, ID_ThstMaxSetPoint, THST_SP_MIN, THST_SP_MAX);
     SPINBOX_SetEdge(hThstMaxSetPoint, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hThstMaxSetPoint, thst.sp_max);
 
-    hThstMinSetPoint = SPINBOX_CreateEx(110, 70, 90, 30, 0, WM_CF_SHOW, ID_ThstMinSetPoint, 5, 40);
+    hThstMinSetPoint = SPINBOX_CreateEx(110, 70, 90, 30, 0, WM_CF_SHOW, ID_ThstMinSetPoint, THST_SP_MIN, THST_SP_MAX);
     SPINBOX_SetEdge(hThstMinSetPoint, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hThstMinSetPoint, thst.sp_min);
 
