@@ -13,9 +13,6 @@ add checkbox to set if dimmable light, when clicked, goes between 0-100 or 0-las
 brightness should be remembered after external update
 
 
-thermostat setpoint limit from 5 to 40
-
-
 
 iz nekog razloga se popale sve ikone sijalica kad uđeš u meni LIGHTS, nisam upratio razlog
 ali desi se samo i kad je meni aktivan vidio sam jednom bez dodira samo se svih pet 
