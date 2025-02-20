@@ -166,7 +166,15 @@ void Thermostat_Set_SP_Min(const uint8_t value)
 {
     if(value >= thst.sp_max)
     {
-        thst.sp_min = value - 1;
+        thst.sp_min = thst.sp_max - 1;
+    }
+    else if(value < THST_SP_MIN)
+    {
+        thst.sp_min = THST_SP_MIN;
+    }
+    else
+    {
+        thst.sp_min = value;
     }
 }
 
@@ -174,7 +182,15 @@ void Thermostat_Set_SP_Max(const uint8_t value)
 {
     if(value <= thst.sp_min)
     {
-        thst.sp_max = value + 1;
+        thst.sp_max = thst.sp_min + 1;
+    }
+    else if(value > THST_SP_MAX)
+    {
+        thst.sp_max = THST_SP_MAX;
+    }
+    else
+    {
+        thst.sp_max = value;
     }
 }
 

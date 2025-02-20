@@ -57,6 +57,9 @@ extern THERMOSTAT_TypeDef thst;
 #define FANC_VALVE_MIN_ON_TIME                      5678U	// cooling valve state swith 5,5s min. time	
 #define FANC_NTC_UPDATE_TIME                        2345U   // 2.3 second fancoil ntc temperature update rate
 #define THSTAT_POWER_ON_DELAY_TIME                  3456U   // 2,5 sec. power on startup time
+
+#define THST_SP_MIN                                 5
+#define THST_SP_MAX                                 40
 /* Exported Variable   -------------------------------------------------------*/
 extern uint8_t termfl;
 /* Exported Macro ------------------------------------------------------------*/
