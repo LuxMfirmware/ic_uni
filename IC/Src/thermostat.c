@@ -160,6 +160,30 @@ void Thermostat_SP_Temp_Decrement()
 
 
 
+
+
+void Thermostat_Set_SP_Min(const uint8_t value)
+{
+    if(value >= thst.sp_max)
+    {
+        thst.sp_min = value - 1;
+    }
+}
+
+void Thermostat_Set_SP_Max(const uint8_t value)
+{
+    if(value <= thst.sp_min)
+    {
+        thst.sp_max = value + 1;
+    }
+}
+
+
+
+
+
+
+
 void Thermostat_SetDefault()
 {
     thst.group = 0;

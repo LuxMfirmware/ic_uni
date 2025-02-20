@@ -107,6 +107,8 @@ void THSTAT_Service(void);
 void THSTAT_SaveSettings(void);void Thermostat_SP_Temp_Set(const uint8_t setpoint);
 void Thermostat_SP_Temp_Increment();
 void Thermostat_SP_Temp_Decrement();
+void Thermostat_Set_SP_Min(const uint8_t value);
+void Thermostat_Set_SP_Max(const uint8_t value);
 void Thermostat_SetDefault();
 
 #endif
