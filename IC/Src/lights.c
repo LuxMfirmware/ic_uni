@@ -459,6 +459,21 @@ bool Light_Modbus_hasBrightnessChanged(const LIGHT_Modbus_CmdTypeDef* const li)
     return Light_Modbus_GetBrightness(li) != li->brightness_old;
 }
 
+
+
+void Light_Modbus_RememberBrightnessSet(LIGHT_Modbus_CmdTypeDef* const li, const bool remember)
+{
+    li->rememberBrightness = remember;
+}
+
+
+bool Light_Modbus_isBrightnessRemembered(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return li->rememberBrightness;
+}
+
+
+
 void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->brightness_old = li->brightness;
@@ -503,21 +518,6 @@ void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li)
 GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return light_modbus_images[(li->iconID * 2) + Light_Modbus_isNewValueOn(li)];
-}
-
-
-
-
-
-void Light_Modbus_RememberBrightnessSet(LIGHT_Modbus_CmdTypeDef* const li, const bool remember)
-{
-    li->rememberBrightness = remember;
-}
-
-
-bool Light_Modbus_isBrightnessRemembered(const LIGHT_Modbus_CmdTypeDef* const li)
-{
-    return li->rememberBrightness;
 }
 
 

@@ -6001,6 +6001,7 @@ Section Cross References
     lights.o(.ARM.exidx.text.Light_Modbus_GetBrightness) refers to lights.o(.text.Light_Modbus_GetBrightness) for [Anonymous Symbol]
     lights.o(.text.Light_Modbus_hasBrightnessChanged) refers to lights.o(.text.Light_Modbus_GetBrightness) for Light_Modbus_GetBrightness
     lights.o(.ARM.exidx.text.Light_Modbus_hasBrightnessChanged) refers to lights.o(.text.Light_Modbus_hasBrightnessChanged) for [Anonymous Symbol]
+    lights.o(.ARM.exidx.text.Light_Modbus_RememberBrightnessSet) refers to lights.o(.text.Light_Modbus_RememberBrightnessSet) for [Anonymous Symbol]
     lights.o(.ARM.exidx.text.Light_Modbus_ResetBrightness) refers to lights.o(.text.Light_Modbus_ResetBrightness) for [Anonymous Symbol]
     lights.o(.ARM.exidx.text.Light_Modbus_isDimmer) refers to lights.o(.text.Light_Modbus_isDimmer) for [Anonymous Symbol]
     lights.o(.ARM.exidx.text.Light_Modbus_isRGB) refers to lights.o(.text.Light_Modbus_isRGB) for [Anonymous Symbol]
@@ -6015,7 +6016,6 @@ Section Cross References
     lights.o(.text.Light_Modbus_GetIcon) refers to lights.o(.text.Light_Modbus_isNewValueOn) for Light_Modbus_isNewValueOn
     lights.o(.text.Light_Modbus_GetIcon) refers to lights.o(.data.light_modbus_images) for light_modbus_images
     lights.o(.ARM.exidx.text.Light_Modbus_GetIcon) refers to lights.o(.text.Light_Modbus_GetIcon) for [Anonymous Symbol]
-    lights.o(.ARM.exidx.text.Light_Modbus_RememberBrightnessSet) refers to lights.o(.text.Light_Modbus_RememberBrightnessSet) for [Anonymous Symbol]
     lights.o(.ARM.exidx.text.Light_Modbus_SetDefault) refers to lights.o(.text.Light_Modbus_SetDefault) for [Anonymous Symbol]
     lights.o(.text.Lights_Modbus_SetDefault) refers to lights.o(.bss.lights_modbus) for lights_modbus
     lights.o(.text.Lights_Modbus_SetDefault) refers to lights.o(.text.Light_Modbus_SetDefault) for Light_Modbus_SetDefault
@@ -16269,6 +16269,7 @@ Removing Unused input sections from the image.
     Removing lights.o(.ARM.exidx.text.Light_Modbus_ResetColor), (8 bytes).
     Removing lights.o(.ARM.exidx.text.Light_Modbus_GetBrightness), (8 bytes).
     Removing lights.o(.ARM.exidx.text.Light_Modbus_hasBrightnessChanged), (8 bytes).
+    Removing lights.o(.ARM.exidx.text.Light_Modbus_RememberBrightnessSet), (8 bytes).
     Removing lights.o(.ARM.exidx.text.Light_Modbus_ResetBrightness), (8 bytes).
     Removing lights.o(.ARM.exidx.text.Light_Modbus_isDimmer), (8 bytes).
     Removing lights.o(.ARM.exidx.text.Light_Modbus_isRGB), (8 bytes).
@@ -16277,7 +16278,6 @@ Removing Unused input sections from the image.
     Removing lights.o(.text.Light_Modbus_ResetChange), (28 bytes).
     Removing lights.o(.ARM.exidx.text.Light_Modbus_ResetChange), (8 bytes).
     Removing lights.o(.ARM.exidx.text.Light_Modbus_GetIcon), (8 bytes).
-    Removing lights.o(.ARM.exidx.text.Light_Modbus_RememberBrightnessSet), (8 bytes).
     Removing lights.o(.ARM.exidx.text.Light_Modbus_SetDefault), (8 bytes).
     Removing lights.o(.ARM.exidx.text.Lights_Modbus_SetDefault), (8 bytes).
     Removing lights.o(.ARM.exidx.text.Light_Modbus_Service), (8 bytes).
@@ -25258,7 +25258,7 @@ Memory Map of the image
     0x08012a0c   0x08012a0c   0x00000004   PAD
     0x08012a10   0x08012a10   0x0000000c   Code   RO         4608    .text.Light_Modbus_GetColor  lights.o
     0x08012a1c   0x08012a1c   0x00000004   PAD
-    0x08012a20   0x08012a20   0x00000026   Code   RO         4628    .text.Light_Modbus_GetIcon  lights.o
+    0x08012a20   0x08012a20   0x00000026   Code   RO         4630    .text.Light_Modbus_GetIcon  lights.o
     0x08012a46   0x08012a46   0x00000002   PAD
     0x08012a48   0x08012a48   0x0000000c   Code   RO         4592    .text.Light_Modbus_GetOffTime  lights.o
     0x08012a54   0x08012a54   0x00000004   PAD
@@ -25285,9 +25285,9 @@ Memory Map of the image
     0x08012cce   0x08012cce   0x00000002   PAD
     0x08012cd0   0x08012cd0   0x0000003a   Code   RO         4552    .text.Light_Modbus_On_External  lights.o
     0x08012d0a   0x08012d0a   0x00000006   PAD
-    0x08012d10   0x08012d10   0x0000001a   Code   RO         4630    .text.Light_Modbus_RememberBrightnessSet  lights.o
+    0x08012d10   0x08012d10   0x0000001a   Code   RO         4618    .text.Light_Modbus_RememberBrightnessSet  lights.o
     0x08012d2a   0x08012d2a   0x00000006   PAD
-    0x08012d30   0x08012d30   0x00000010   Code   RO         4618    .text.Light_Modbus_ResetBrightness  lights.o
+    0x08012d30   0x08012d30   0x00000010   Code   RO         4620    .text.Light_Modbus_ResetBrightness  lights.o
     0x08012d40   0x08012d40   0x0000000e   Code   RO         4612    .text.Light_Modbus_ResetColor  lights.o
     0x08012d4e   0x08012d4e   0x00000002   PAD
     0x08012d50   0x08012d50   0x0000000e   Code   RO         4566    .text.Light_Modbus_ResetStatus  lights.o
@@ -25331,7 +25331,7 @@ Memory Map of the image
     0x080138f4   0x080138f4   0x00000004   PAD
     0x080138f8   0x080138f8   0x00000012   Code   RO         4542    .text.Light_Modbus_isBrightnessRemembered  lights.o
     0x0801390a   0x0801390a   0x00000006   PAD
-    0x08013910   0x08013910   0x00000014   Code   RO         4620    .text.Light_Modbus_isDimmer  lights.o
+    0x08013910   0x08013910   0x00000014   Code   RO         4622    .text.Light_Modbus_isDimmer  lights.o
     0x08013924   0x08013924   0x00000004   PAD
     0x08013928   0x08013928   0x00000030   Code   RO         4526    .text.Light_Modbus_isIndexInRange  lights.o
     0x08013958   0x08013958   0x00000012   Code   RO         4534    .text.Light_Modbus_isNewValueOn  lights.o
@@ -25344,7 +25344,7 @@ Memory Map of the image
     0x080139b2   0x080139b2   0x00000006   PAD
     0x080139b8   0x080139b8   0x00000016   Code   RO         4586    .text.Light_Modbus_isOnDelayTimeTimerActive  lights.o
     0x080139ce   0x080139ce   0x00000002   PAD
-    0x080139d0   0x080139d0   0x00000014   Code   RO         4622    .text.Light_Modbus_isRGB  lights.o
+    0x080139d0   0x080139d0   0x00000014   Code   RO         4624    .text.Light_Modbus_isRGB  lights.o
     0x080139e4   0x080139e4   0x00000004   PAD
     0x080139e8   0x080139e8   0x00000012   Code   RO         4574    .text.Light_Modbus_isTiedToMainLight  lights.o
     0x080139fa   0x080139fa   0x00000006   PAD
