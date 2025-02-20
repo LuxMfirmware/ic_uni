@@ -13,6 +13,9 @@ add checkbox to set if dimmable light, when clicked, goes between 0-100 or 0-las
 brightness should be remembered after external update
 
 
+thermostat setpoint limit from 5 to 40
+
+
 
 iz nekog razloga se popale sve ikone sijalica kad uđeš u meni LIGHTS, nisam upratio razlog
 ali desi se samo i kad je meni aktivan vidio sam jednom bez dodira samo se svih pet 
@@ -27,3 +30,6 @@ prvi pin je pin od senzora ovaj GPIO_PIN_1 u adc init njega ne diraj ako radi te
 ostale možeš šta hoćeš
 
 nemoj da nam ostane vila al hamli na termostatu da ne zaboravimo promjenit bolje da je crn
+
+
+bool getState(command type 16bit address, buffer)
