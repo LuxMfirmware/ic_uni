@@ -596,9 +596,9 @@ void Lights_Modbus_SetDefault()
 
 void Light_Modbus_Service()
 {
-    uint8_t sendDataBuffBin[5], sendDataCountBin = 0;
-    uint8_t sendDataBuffDimm[5], sendDataCountDimm = 0;
-    uint8_t sendDataBuffRGB[5], sendDataCountRGB = 0;
+    uint8_t sendDataBuffBin[5] = {0}, sendDataCountBin = 0;
+    uint8_t sendDataBuffDimm[5] = {0}, sendDataCountDimm = 0;
+    uint8_t sendDataBuffRGB[5] = {0}, sendDataCountRGB = 0;
     
     
     
