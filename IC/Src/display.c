@@ -2180,8 +2180,8 @@ void DISP_Service(void){
                 
                 GUI_DrawLine(380,10,380,262);
                 
-                GUI_DrawLine(126,40,126,232);
-                GUI_DrawLine(252,40,252,232);
+                GUI_DrawLine(126,60,126,212);
+                GUI_DrawLine(252,60,252,212);
                 
                 GUI_DrawBitmap(&bmnext, 385, 159);
                 
@@ -3053,7 +3053,7 @@ static void DSP_InitSet6Scrn(void)
     GUI_Clear();
     GUI_MULTIBUF_BeginEx(1);
     
-    int x = 30, y = 5;
+    int x = 10, y = 5;
     
     for(uint8_t i = lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS; i < (((LIGHTS_MODBUS_SIZE - (lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS)) >= LIGHTS_MODBUS_PER_SETTINGS) ? ((lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS) + LIGHTS_MODBUS_PER_SETTINGS) : LIGHTS_MODBUS_SIZE); i++)
     {
@@ -3072,31 +3072,27 @@ static void DSP_InitSet6Scrn(void)
         
         
         
-        lightsWidgets[i].relay = SPINBOX_CreateEx(x, y, 90, 30, 0, WM_CF_SHOW, ID_LightsModbusRelay * i, 0, 512);
+        lightsWidgets[i].relay = SPINBOX_CreateEx(x, y, 100, 40, 0, WM_CF_SHOW, ID_LightsModbusRelay * i, 0, 512);
         SPINBOX_SetEdge(lightsWidgets[i].relay, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].relay, Light_Modbus_GetRelay(lights_modbus + i));
         
-        lightsWidgets[i].iconID = SPINBOX_CreateEx(x, y + 33, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 1, 0, 512);
+        lightsWidgets[i].iconID = SPINBOX_CreateEx(x, y + 43, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 1, 0, 512);
         SPINBOX_SetEdge(lightsWidgets[i].iconID, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].iconID, lights_modbus[i].iconID);
         
-        lightsWidgets[i].controllerID_on = SPINBOX_CreateEx(x, y + 66, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 2, 0, 512);
+        lightsWidgets[i].controllerID_on = SPINBOX_CreateEx(x, y + 86, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 2, 0, 512);
         SPINBOX_SetEdge(lightsWidgets[i].controllerID_on, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].controllerID_on, lights_modbus[i].controllerID_on);
         
-        lightsWidgets[i].controllerID_on_delay = SPINBOX_CreateEx(x, y + 99, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 3, 0, 512);
+        lightsWidgets[i].controllerID_on_delay = SPINBOX_CreateEx(x, y + 129, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 3, 0, 512);
         SPINBOX_SetEdge(lightsWidgets[i].controllerID_on_delay, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].controllerID_on_delay, lights_modbus[i].controllerID_on_delay);
         
-        lightsWidgets[i].offTime = SPINBOX_CreateEx(x, y + 132, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 4, 0, 512);
-        SPINBOX_SetEdge(lightsWidgets[i].offTime, SPINBOX_EDGE_CENTER);
-        SPINBOX_SetValue(lightsWidgets[i].offTime, Light_Modbus_GetOffTime(lights_modbus + i));
-        
-        lightsWidgets[i].on_hour = SPINBOX_CreateEx(x, y + 165, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 5, 0, 512);
+        lightsWidgets[i].on_hour = SPINBOX_CreateEx(x, y + 172, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 4, 0, 512);
         SPINBOX_SetEdge(lightsWidgets[i].on_hour, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].on_hour, lights_modbus[i].on_hour);
         
-        lightsWidgets[i].on_minute = SPINBOX_CreateEx(x, y + 198, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 6, 0, 512);
+        lightsWidgets[i].on_minute = SPINBOX_CreateEx(x, y + 215, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 5, 0, 512);
         SPINBOX_SetEdge(lightsWidgets[i].on_minute, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].on_minute, lights_modbus[i].on_minute);
         
@@ -3104,99 +3100,103 @@ static void DSP_InitSet6Scrn(void)
         GUI_SetFont(GUI_FONT_13_1);
         GUI_SetTextAlign(GUI_TA_LEFT|GUI_TA_VCENTER);
         
-        GUI_GotoXY(x + 90 + 10, y + 8);
+        GUI_GotoXY(x + 100 + 10, y + 10);
         GUI_DispString("LIGHT ");
         GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
-        GUI_GotoXY(x + 90 + 10, y + 8 + 12);
+        GUI_GotoXY(x + 100 + 10, y + 10 + 12);
         GUI_DispString("RELAY");
         
-        GUI_GotoXY(x + 90 + 10, y + 33 + 8);
+        GUI_GotoXY(x + 100 + 10, y + 43 + 10);
         GUI_DispString("LIGHT ");
         GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
-        GUI_GotoXY(x + 90 + 10, y + 33 + 8 + 12);
+        GUI_GotoXY(x + 100 + 10, y + 43 + 10 + 12);
         GUI_DispString("ICON");
         
-        GUI_GotoXY(x + 90 + 10, y + 66 + 8);
+        GUI_GotoXY(x + 100 + 10, y + 86 + 10);
         GUI_DispString("LIGHT ");
         GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
-        GUI_GotoXY(x + 90 + 10, y + 66 + 8 + 12);
+        GUI_GotoXY(x + 100 + 10, y + 86 + 10 + 12);
         GUI_DispString("ON ID");
         
-        GUI_GotoXY(x + 90 + 10, y + 99 + 8);
+        GUI_GotoXY(x + 100 + 10, y + 129 + 10);
         GUI_DispString("LIGHT ");
         GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
-        GUI_GotoXY(x + 90 + 10, y + 99 + 8 + 12);
+        GUI_GotoXY(x + 100 + 10, y + 129 + 10 + 12);
         GUI_DispString("ON ID DELAY");
         
-        GUI_GotoXY(x + 90 + 10, y + 132 + 8);
+        GUI_GotoXY(x + 100 + 10, y + 172 + 10);
         GUI_DispString("LIGHT ");
         GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
-        GUI_GotoXY(x + 90 + 10, y + 132 + 8 + 12);
-        GUI_DispString("DELAY OFF");
-        
-        GUI_GotoXY(x + 90 + 10, y + 165 + 8);
-        GUI_DispString("LIGHT ");
-        GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
-        GUI_GotoXY(x + 90 + 10, y + 165 + 8 + 12);
+        GUI_GotoXY(x + 100 + 10, y + 172 + 10 + 12);
         GUI_DispString("HOUR ON");
         
-        GUI_GotoXY(x + 90 + 10, y + 198 + 8);
+        GUI_GotoXY(x + 100 + 10, y + 215 + 10);
         GUI_DispString("LIGHT ");
         GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
-        GUI_GotoXY(x + 90 + 10, y + 198 + 8 + 12);
+        GUI_GotoXY(x + 100 + 10, y + 215 + 10 + 12);
         GUI_DispString("MINUTE ON");
         
         x = 200;
         y = 5;
         
-        lightsWidgets[i].communication_type = SPINBOX_CreateEx(x, y, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 7, 1, 3);
+        lightsWidgets[i].offTime = SPINBOX_CreateEx(x, y, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 6, 0, 512);
+        SPINBOX_SetEdge(lightsWidgets[i].offTime, SPINBOX_EDGE_CENTER);
+        SPINBOX_SetValue(lightsWidgets[i].offTime, Light_Modbus_GetOffTime(lights_modbus + i));
+        
+        lightsWidgets[i].communication_type = SPINBOX_CreateEx(x, y + 43, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 7, 1, 3);
         SPINBOX_SetEdge(lightsWidgets[i].communication_type, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].communication_type, lights_modbus[i].communication_type);
         
-        lightsWidgets[i].local_pin = SPINBOX_CreateEx(x, y + 33, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 8, 0, 512);
+        lightsWidgets[i].local_pin = SPINBOX_CreateEx(x, y + 86, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 8, 0, 512);
         SPINBOX_SetEdge(lightsWidgets[i].local_pin, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].local_pin, lights_modbus[i].local_pin);
         
-        lightsWidgets[i].sleep_time = SPINBOX_CreateEx(x, y + 66, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 9, 0, 512);
+        lightsWidgets[i].sleep_time = SPINBOX_CreateEx(x, y + 129, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 9, 0, 512);
         SPINBOX_SetEdge(lightsWidgets[i].sleep_time, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].sleep_time, lights_modbus[i].sleep_time);
         
-        lightsWidgets[i].button_external = SPINBOX_CreateEx(x, y + 99, 90, 30, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 10, 0, 512);
+        lightsWidgets[i].button_external = SPINBOX_CreateEx(x, y + 172, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 10, 0, 512);
         SPINBOX_SetEdge(lightsWidgets[i].button_external, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].button_external, lights_modbus[i].button_external);
         
-        lightsWidgets[i].tiedToMainLight = CHECKBOX_Create(x, y + 132, 130, 15, 0, (ID_LightsModbusRelay * i) + 11, WM_CF_SHOW);
+        lightsWidgets[i].tiedToMainLight = CHECKBOX_Create(x, y + 215, 130, 20, 0, (ID_LightsModbusRelay * i) + 11, WM_CF_SHOW);
         CHECKBOX_SetTextColor(lightsWidgets[i].tiedToMainLight, GUI_GREEN);
         CHECKBOX_SetText(lightsWidgets[i].tiedToMainLight, "TIED TO MAIN LIGHT");
         CHECKBOX_SetState(lightsWidgets[i].tiedToMainLight, Light_Modbus_isTiedToMainLight(lights_modbus + i));
         
-        lightsWidgets[i].rememberBrightness = CHECKBOX_Create(x, y + 132, 130, 15, 0, (ID_LightsModbusRelay * i) + 12, WM_CF_SHOW);
+        lightsWidgets[i].rememberBrightness = CHECKBOX_Create(x, y + 238, 140, 20, 0, (ID_LightsModbusRelay * i) + 12, WM_CF_SHOW);
         CHECKBOX_SetTextColor(lightsWidgets[i].rememberBrightness, GUI_GREEN);
         CHECKBOX_SetText(lightsWidgets[i].rememberBrightness, "REMEMBER BRIGHTNESS");
         CHECKBOX_SetState(lightsWidgets[i].rememberBrightness, Light_Modbus_isBrightnessRemembered(lights_modbus + i));
         
-        GUI_GotoXY(x + 90 + 10, y + 8);
+        GUI_GotoXY(x + 100 + 10, y + 10);
         GUI_DispString("LIGHT ");
         GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
-        GUI_GotoXY(x + 90 + 10, y + 8 + 12);
+        GUI_GotoXY(x + 100 + 10, y + 10 + 12);
+        GUI_DispString("DELAY OFF");
+        
+        GUI_GotoXY(x + 100 + 10, y + 43 + 10);
+        GUI_DispString("LIGHT ");
+        GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
+        GUI_GotoXY(x + 100 + 10, y + 43 + 10 + 12);
         GUI_DispString("COMM. TYPE");
         
-        GUI_GotoXY(x + 90 + 10, y + 33 + 8);
+        GUI_GotoXY(x + 100 + 10, y + 86 + 10);
         GUI_DispString("LIGHT ");
         GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
-        GUI_GotoXY(x + 90 + 10, y + 33 + 8 + 12);
+        GUI_GotoXY(x + 100 + 10, y + 86 + 10 + 12);
         GUI_DispString("LOCAL PIN");
         
-        GUI_GotoXY(x + 90 + 10, y + 66 + 8);
+        GUI_GotoXY(x + 100 + 10, y + 129 + 10);
         GUI_DispString("LIGHT ");
         GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
-        GUI_GotoXY(x + 90 + 10, y + 66 + 8 + 12);
+        GUI_GotoXY(x + 100 + 10, y + 129 + 10 + 12);
         GUI_DispString("SLEEP TIME");
         
-        GUI_GotoXY(x + 90 + 10, y + 99 + 8);
+        GUI_GotoXY(x + 100 + 10, y + 172 + 10);
         GUI_DispString("LIGHT ");
         GUI_DispDec(i + 1, ((i + 1) < 10 ? 1 : 2));
-        GUI_GotoXY(x + 90 + 10, y + 99 + 8 + 12);
+        GUI_GotoXY(x + 100 + 10, y + 172 + 10 + 12);
         GUI_DispString("BUTTON EXT.");
         
         
@@ -3301,20 +3301,20 @@ static void DSP_InitSet7Scrn(void)
     GUI_MULTIBUF_BeginEx(1);
     
     
-    hDEV_ID = SPINBOX_CreateEx(10, 10, 90, 30, 0, WM_CF_SHOW, ID_DEV_ID, 1, 254);
+    hDEV_ID = SPINBOX_CreateEx(10, 10, 110, 40, 0, WM_CF_SHOW, ID_DEV_ID, 1, 254);
     SPINBOX_SetEdge(hDEV_ID, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hDEV_ID, tfifa);
     
-    hCurtainsMoveTime = SPINBOX_CreateEx(10, 50, 110, 40, 0, WM_CF_SHOW, ID_CurtainsMoveTime, 0, 60);
+    hCurtainsMoveTime = SPINBOX_CreateEx(10, 60, 110, 40, 0, WM_CF_SHOW, ID_CurtainsMoveTime, 0, 60);
     SPINBOX_SetEdge(hCurtainsMoveTime, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hCurtainsMoveTime, Curtain_GetMoveTime());
     
-    hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH = CHECKBOX_Create(10, 100, 205, 20, 0, ID_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, WM_CF_SHOW);
+    hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH = CHECKBOX_Create(10, 110, 205, 20, 0, ID_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, WM_CF_SHOW);
     CHECKBOX_SetTextColor(hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, GUI_GREEN);
     CHECKBOX_SetText(hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, "ONLY LEAVE SCRNSVR AFTER TOUCH");
     CHECKBOX_SetState(hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH, bOnlyLeaveScreenSaverAfterTouch);
     
-    hCHKBX_LIGHT_NIGHT_TIMER = CHECKBOX_Create(10, 130, 170, 20, 0, ID_LIGHT_NIGHT_TIMER, WM_CF_SHOW);
+    hCHKBX_LIGHT_NIGHT_TIMER = CHECKBOX_Create(10, 140, 170, 20, 0, ID_LIGHT_NIGHT_TIMER, WM_CF_SHOW);
     CHECKBOX_SetTextColor(hCHKBX_LIGHT_NIGHT_TIMER, GUI_GREEN);
     CHECKBOX_SetText(hCHKBX_LIGHT_NIGHT_TIMER, "LiGHT OFF TIMER AFTER 20h");
     CHECKBOX_SetState(hCHKBX_LIGHT_NIGHT_TIMER, LightNightTimer_isEnabled);
@@ -3335,14 +3335,14 @@ static void DSP_InitSet7Scrn(void)
     GUI_SetFont(GUI_FONT_13_1);
     GUI_SetTextAlign(GUI_TA_LEFT|GUI_TA_VCENTER);
     
-    GUI_GotoXY(110, 14);
+    GUI_GotoXY(10 + 110 + 10, 10 + 10);
     GUI_DispString("DEVICE");
-    GUI_GotoXY(110, 26);
+    GUI_GotoXY(10 + 110 + 10, 10 + 10 + 12);
     GUI_DispString("BUS ID");
     
-    GUI_GotoXY(130, 58);
+    GUI_GotoXY(10 + 110 + 10, 60 + 10);
     GUI_DispString("CURTAINS");
-    GUI_GotoXY(130, 70);
+    GUI_GotoXY(10 + 110 + 10, 60 + 10 + 12);
     GUI_DispString("MOVE TIME");
     
     
