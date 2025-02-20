@@ -3166,7 +3166,7 @@ static void DSP_InitSet6Scrn(void)
         CHECKBOX_SetText(lightsWidgets[i].tiedToMainLight, "TIED TO MAIN LIGHT");
         CHECKBOX_SetState(lightsWidgets[i].tiedToMainLight, Light_Modbus_isTiedToMainLight(lights_modbus + i));
         
-        lightsWidgets[i].rememberBrightness = CHECKBOX_Create(x, y + 238, 140, 20, 0, (ID_LightsModbusRelay * i) + 12, WM_CF_SHOW);
+        lightsWidgets[i].rememberBrightness = CHECKBOX_Create(x, y + 238, 145, 20, 0, (ID_LightsModbusRelay * i) + 12, WM_CF_SHOW);
         CHECKBOX_SetTextColor(lightsWidgets[i].rememberBrightness, GUI_GREEN);
         CHECKBOX_SetText(lightsWidgets[i].rememberBrightness, "REMEMBER BRIGHTNESS");
         CHECKBOX_SetState(lightsWidgets[i].rememberBrightness, Light_Modbus_isBrightnessRemembered(lights_modbus + i));
