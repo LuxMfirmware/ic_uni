@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Thu Feb 20 13:12:49 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Thu Feb 20 14:08:31 2025
 <BR><P>
 <H3>Maximum Stack Usage =       2476 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -3445,7 +3445,7 @@ Global Symbols
 <LI><a href="#[37a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_SetBrightness
 </UL>
 
-<P><STRONG><a name="[36a]"></a>Light_Modbus_Service</STRONG> (Thumb, 1686 bytes, Stack size 96 bytes, lights.o(.text.Light_Modbus_Service))
+<P><STRONG><a name="[36a]"></a>Light_Modbus_Service</STRONG> (Thumb, 1728 bytes, Stack size 96 bytes, lights.o(.text.Light_Modbus_Service))
 <BR><BR>[Stack]<UL><LI>Max Depth = 620<LI>Call Chain = Light_Modbus_Service &rArr; Light_Modbus_Flip &rArr; Light_Modbus_On &rArr; Light_Modbus_StatusSet &rArr; Light_Modbus_SetBrightness &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick

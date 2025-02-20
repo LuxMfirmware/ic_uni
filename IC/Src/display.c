@@ -1930,7 +1930,7 @@ void DISP_Service(void){
                 {
                     settingsChanged = 1;
                     
-                    Light_Modbus_RememberBrightnessSet(lights_modbus + i, CHECKBOX_GetState(lightsWidgets[i].tiedToMainLight));
+                    Light_Modbus_RememberBrightnessSet(lights_modbus + i, CHECKBOX_GetState(lightsWidgets[i].rememberBrightness));
                 }
             }
             
