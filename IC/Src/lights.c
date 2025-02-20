@@ -697,7 +697,7 @@ void Light_Modbus_Service()
                 *(sendDataBuffDimm + sendDataCountDimm) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
                 *(sendDataBuffDimm + sendDataCountDimm + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
                 sendDataCountDimm += 2;
-                sendDataBuffDimm[sendDataCountDimm++] = Light_Modbus_GetBrightness(lights_modbus + i);
+                sendDataBuffDimm[sendDataCountDimm++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? Light_Modbus_GetBrightness(lights_modbus + i) : 0;
             }
             
             Light_Modbus_ResetStatus(lights_modbus + i);
