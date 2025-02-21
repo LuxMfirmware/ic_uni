@@ -1822,13 +1822,6 @@ void DISP_Service(void){
             }
             else if (BUTTON_IsPressed(hBUTTON_Next))
             {
-                if(settingsChanged)
-                {
-                    Curtains_Save();
-                    settingsChanged = 0;
-                }
-                
-                
                 if((CURTAINS_SIZE - ((curtainSettingMenu + 1) * 4)) > 0)
                 {
                     DSP_KillSet5Scrn();
@@ -1837,6 +1830,12 @@ void DISP_Service(void){
                 }
                 else
                 {
+                    if(settingsChanged)
+                    {
+                        Curtains_Save();
+                        settingsChanged = 0;
+                    }
+                    
                     DSP_KillSet5Scrn();
                     curtainSettingMenu = 0;
                     
