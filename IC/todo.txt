@@ -9,7 +9,6 @@ odkomentarisati vec pozvane instance funckije DodajKomandu i proslijediti im odg
 
 
 -lights
-add checkbox to set if dimmable light, when clicked, goes between 0-100 or 0-last set value
 brightness should be remembered after external update
 
 
