@@ -1,10 +1,7 @@
-- defroster
-time(minute) - trajanje jednog ciklusa
-duty(minute) - koliko dugo ce u ciklusu biti aktivan defroster
+
 
 
 - rs485
-u funkciji DodajKomandu() isprazniti sendDataBuff i SendDataCount
 odkomentarisati vec pozvane instance funckije DodajKomandu i proslijediti im odgovarajuci queue
 
 
