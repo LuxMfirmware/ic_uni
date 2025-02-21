@@ -1851,6 +1851,9 @@ void DISP_Service(void){
         //
         case SCREEN_SETTINGS_6:
         {
+            GUI_MULTIBUF_BeginEx(1);
+            
+            
             for(uint8_t i = lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS; i < (((LIGHTS_MODBUS_SIZE - (lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS)) >= LIGHTS_MODBUS_PER_SETTINGS) ? ((lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS) + LIGHTS_MODBUS_PER_SETTINGS) : LIGHTS_MODBUS_SIZE); i++)
             {
                 if(Light_Modbus_GetRelay(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].relay))
@@ -1859,11 +1862,11 @@ void DISP_Service(void){
                     
                     Light_Modbus_SetRelay(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].relay));
                 }
-                else if(lights_modbus[i].iconID != SPINBOX_GetValue(lightsWidgets[i].iconID))
+                else if(Light_Modbus_GetIconID(lights_modbus + i) != SPINBOX_GetValue(lightsWidgets[i].iconID))
                 {
                     settingsChanged = 1;
                     
-                    lights_modbus[i].iconID = SPINBOX_GetValue(lightsWidgets[i].iconID);
+                    Light_Modbus_SetIcon(lights_modbus + i, SPINBOX_GetValue(lightsWidgets[i].iconID));
                 }
                 else if(lights_modbus[i].controllerID_on != SPINBOX_GetValue(lightsWidgets[i].controllerID_on))
                 {
@@ -1932,7 +1935,13 @@ void DISP_Service(void){
                     
                     Light_Modbus_RememberBrightnessSet(lights_modbus + i, CHECKBOX_GetState(lightsWidgets[i].rememberBrightness));
                 }
+                
+                // drawing light assumes there's one light per screen
+                GUI_ClearRect(380, 0, 480, 100);
+                GUI_DrawBitmap(Light_Modbus_GetIcon(lights_modbus + i), 480 - Light_Modbus_GetIcon(lights_modbus + i)->XSize, 0);
             }
+            
+            
             
             
             if (BUTTON_IsPressed(hBUTTON_Ok))
@@ -1969,6 +1978,9 @@ void DISP_Service(void){
                     screen = SCREEN_SETTINGS_7;
                 }
             }
+            
+            GUI_MULTIBUF_EndEx(1);
+            
             break;
         }
         //
@@ -2013,8 +2025,10 @@ void DISP_Service(void){
                         
                         int x = (lightsMenuSpaceBetween * ((i % lightsInRow) + 1)) + (80 * (i % lightsInRow));
                         
-                        if(Light_Modbus_isActive(light)) GUI_DrawBitmap(Light_Modbus_GetIcon(light), x, y);
-                        else GUI_DrawBitmap(Light_Modbus_GetIcon(light), x, y);
+                        GUI_DrawBitmap(Light_Modbus_GetIcon(light), x, y);
+                        
+                        /*if(Light_Modbus_isActive(light)) GUI_DrawBitmap(Light_Modbus_GetIcon(light), x, y);
+                        else GUI_DrawBitmap(Light_Modbus_GetIcon(light), x, y);*/
                         
                         /*GUI_SetFont(GUI_FONT_24B_1);
                         GUI_SetColor(GUI_ORANGE);
@@ -3078,7 +3092,7 @@ static void DSP_InitSet6Scrn(void)
         SPINBOX_SetEdge(lightsWidgets[i].relay, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].relay, Light_Modbus_GetRelay(lights_modbus + i));
         
-        lightsWidgets[i].iconID = SPINBOX_CreateEx(x, y + 43, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 1, 0, 512);
+        lightsWidgets[i].iconID = SPINBOX_CreateEx(x, y + 43, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 1, 0, LIGHT_ICON_COUNT - 1);
         SPINBOX_SetEdge(lightsWidgets[i].iconID, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].iconID, lights_modbus[i].iconID);
         

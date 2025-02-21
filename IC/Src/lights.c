@@ -543,9 +543,34 @@ void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li)
 
 
 
+
+
 GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return light_modbus_images[(li->iconID * 2) + Light_Modbus_isNewValueOn(li)];
+}
+
+
+uint8_t Light_Modbus_GetIconID(const LIGHT_Modbus_CmdTypeDef* const li)
+{
+    return li->iconID;
+}
+
+
+void Light_Modbus_SetIcon(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t id)
+{
+    if(id < 0)
+    {
+        li->iconID = LIGHT_ICON_ID_BULB;
+    }
+    else if(id >= LIGHT_ICON_COUNT)
+    {
+        li->iconID = LIGHT_ICON_ID_VENTILATOR;
+    }
+    else
+    {
+        li->iconID = id;
+    }
 }
 
 

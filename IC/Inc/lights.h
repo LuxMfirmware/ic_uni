@@ -10,6 +10,10 @@
 #define LIGHT_COM_DIM                        2
 #define LIGHT_COM_COLOR                      3
 
+#define LIGHT_ICON_COUNT                     2
+#define LIGHT_ICON_ID_BULB                   0   // IDs must go from 0 to LIGHT_ICON_COUNT - 1
+#define LIGHT_ICON_ID_VENTILATOR             1
+
 #define LIGHTS_MODBUS_SIZE                   6
 
 #define LIGHT_NIGHT_TIMER_DURATION           15
@@ -53,6 +57,8 @@ void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isActive(const LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_Flip(LIGHT_Modbus_CmdTypeDef* const li);
 GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li);
+uint8_t Light_Modbus_GetIconID(const LIGHT_Modbus_CmdTypeDef* const li);
+void Light_Modbus_SetIcon(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t id);
 void Light_Modbus_SetColor(LIGHT_Modbus_CmdTypeDef* const li, GUI_COLOR color);
 void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brightness);

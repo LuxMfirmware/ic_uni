@@ -260,7 +260,7 @@
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>8</SubType>
-          <ItemText>\\ic\../Src/rs485.c\GEN_Listener\msg</ItemText>
+          <ItemText>sendDataBuffBin[5]</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>
