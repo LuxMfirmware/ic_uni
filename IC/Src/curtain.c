@@ -468,7 +468,7 @@ void Curtains_SetDefault()
 
 void Curtain_Service()
 {
-    uint8_t sendDataBuff[45], sendDataCount = 0;
+    uint8_t sendDataBuff[3 * CURTAINS_SIZE], sendDataCount = 0;
     
     for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {
