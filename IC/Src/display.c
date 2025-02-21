@@ -1956,13 +1956,6 @@ void DISP_Service(void){
             }
             else if (BUTTON_IsPressed(hBUTTON_Next))
             {
-                if(settingsChanged)
-                {
-                    Lights_Modbus_Save();
-                    settingsChanged = 0;
-                }
-                
-                
                 if((LIGHTS_MODBUS_SIZE - ((lightsModbusSettingsMenu + 1) * LIGHTS_MODBUS_PER_SETTINGS)) > 0)
                 {
                     DSP_KillSet6Scrn();
@@ -1971,6 +1964,12 @@ void DISP_Service(void){
                 }
                 else
                 {
+                    if(settingsChanged)
+                    {
+                        Lights_Modbus_Save();
+                        settingsChanged = 0;
+                    }
+                    
                     DSP_KillSet6Scrn();
                     lightsModbusSettingsMenu = 0;
                     
