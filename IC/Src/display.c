@@ -935,7 +935,7 @@ void DISP_Service(void){
                 GUI_Clear();
                 
                 GUI_SetPenSize(9);
-                GUI_SetColor(GUI_RED);
+                GUI_SetColor(clk_clrs[scrnsvr_clk_clr]);
                 
                 GUI_DrawLine(400,20,450,20);
                 GUI_DrawLine(400,40,450,40);
@@ -1994,7 +1994,7 @@ void DISP_Service(void){
                 
                 GUI_Clear();
                 GUI_SetPenSize(9);
-                GUI_SetColor(GUI_GREEN);
+                GUI_SetColor(clk_clrs[scrnsvr_clk_clr]);
                 GUI_DrawLine(400,20,450,20);
                 GUI_DrawLine(400,40,450,40);
                 GUI_DrawLine(400,60,450,60);
@@ -2061,7 +2061,7 @@ void DISP_Service(void){
                 
                 GUI_Clear();
                 GUI_SetPenSize(9);
-                GUI_SetColor(GUI_GREEN);
+                GUI_SetColor(clk_clrs[scrnsvr_clk_clr]);
                 
                 GUI_DrawLine(400,20,450,20);
                 GUI_DrawLine(400,40,450,40);
@@ -2186,7 +2186,7 @@ void DISP_Service(void){
                 GUI_Clear();
                 
                 GUI_SetPenSize(9);
-                GUI_SetColor(GUI_RED);
+                GUI_SetColor(clk_clrs[scrnsvr_clk_clr]);
                 
                 GUI_DrawLine(400,20,450,20);
                 GUI_DrawLine(400,40,450,40);
@@ -2244,7 +2244,7 @@ void DISP_Service(void){
                 GUI_Clear();
                 
                 GUI_SetPenSize(9);
-                GUI_SetColor(GUI_GREEN);
+                GUI_SetColor(clk_clrs[scrnsvr_clk_clr]);
                 GUI_DrawLine(400,20,450,20);
                 GUI_DrawLine(400,40,450,40);
                 GUI_DrawLine(400,60,450,60);
@@ -2283,7 +2283,7 @@ void DISP_Service(void){
                 GUI_Clear();
                 
                 GUI_SetPenSize(9);
-                GUI_SetColor(GUI_RED);
+                GUI_SetColor(clk_clrs[scrnsvr_clk_clr]);
                 
                 GUI_DrawLine(400,20,450,20);
                 GUI_DrawLine(400,40,450,40);
