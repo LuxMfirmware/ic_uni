@@ -1302,6 +1302,16 @@ void DISP_Service(void){
                 GUI_SetColor(GUI_BLACK);
                 GUI_Clear();
                 GUI_BMP_Draw(&thstat, 0, 0);
+                
+                GUI_SetPenSize(9);
+                GUI_SetColor(clk_clrs[scrnsvr_clk_clr]);
+                
+                GUI_ClearRect(380, 0, 480, 100);
+                
+                GUI_DrawLine(400,20,450,20);
+                GUI_DrawLine(400,40,450,40);
+                GUI_DrawLine(400,60,450,60);
+                
                 GUI_ClearRect(350, 80, 480, 180);
                 GUI_ClearRect(310, 180, 420, 205);
                 GUI_MULTIBUF_EndEx(0);
