@@ -26,3 +26,7 @@ nemoj da nam ostane vila al hamli na termostatu da ne zaboravimo promjenit bolje
 
 
 bool getState(command type 16bit address, buffer)
+
+
+
+(opzional) ako su za zaluzine razliciti releji onda se koristi binary listener
