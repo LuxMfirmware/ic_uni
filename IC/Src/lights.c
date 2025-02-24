@@ -578,6 +578,31 @@ void Light_Modbus_SetIcon(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t id)
 
 
 
+void Lights_Modbus_StatusSet(const bool state)
+{
+    for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
+    {
+        Light_Modbus_StatusSet(lights_modbus + i, state);
+    }
+}
+
+
+void Lights_Modbus_On(void)
+{
+    Lights_Modbus_StatusSet(1);
+}
+
+
+void Lights_Modbus_Off(void)
+{
+    Lights_Modbus_StatusSet(0);
+}
+
+
+
+
+
+
 void Light_Modbus_SetDefault(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->index = 0;

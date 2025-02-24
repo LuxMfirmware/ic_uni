@@ -65,6 +65,7 @@ bool Curtain_hasMoveTimeExpired(const Curtain* const cur);
 void Curtain_Resend(Curtain* const cur);
 void Curtain_ResendReset(Curtain* const cur);
 bool Curtain_shouldResend(const Curtain* const cur);
+void Curtains_Stop(void);
 void Curtain_Reset(Curtain* const cur);
 void Curtain_SetDefault(Curtain* const cur);
 void Curtains_SetDefault(void);

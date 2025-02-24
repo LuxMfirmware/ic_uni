@@ -109,6 +109,9 @@ bool Light_Modbus_hasOffTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li
 void Light_Modbus_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li);
+void Lights_Modbus_StatusSet(const bool state);
+void Lights_Modbus_On(void);
+void Lights_Modbus_Off(void);
 void Light_Modbus_SetDefault(LIGHT_Modbus_CmdTypeDef* const li);
 void Lights_Modbus_SetDefault(void);
 void Light_Modbus_Service(void);

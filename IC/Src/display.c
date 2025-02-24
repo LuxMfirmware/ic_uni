@@ -2474,6 +2474,12 @@ void DISP_Service(void){
     //  DISPLAY SETTINGS MENU
     //
     if (DISPMenuSettings(btnset)&&(screen < SCREEN_SETTINGS_1)){
+        
+        thst.th_ctrl = 0;
+        Lights_Modbus_Off();
+        Curtains_Stop();
+        Defroster_Off();
+        
         DSP_InitSet1Scrn();
         screen = SCREEN_SETTINGS_1;
     }
