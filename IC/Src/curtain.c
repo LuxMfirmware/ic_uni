@@ -468,7 +468,7 @@ void Curtains_SetDefault()
 
 void Curtain_Service()
 {
-    uint8_t sendDataBuff[3 * CURTAINS_SIZE], sendDataCount = 0;
+    uint8_t sendDataBuff[3], sendDataCount = 0;
     
     for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {
@@ -491,18 +491,13 @@ void Curtain_Service()
             sendDataCount += 2;
             sendDataBuff[sendDataCount++] = Curtain_isNewDirectionStop(cur) ? 0 : (Curtain_isNewDirectionUp(cur) ? 1 : 2);
             
+            //DodajKomandu(, JALOUSIE_SET, sendDataBuff, sendDataCount);
+            
             if(screen == SCREEN_CURTAINS) shouldDrawScreen = 1;
             
             if(Curtain_isNewDirectionStop(cur)) Curtain_Reset(cur);
             else Curtain_DirectionEqualize(cur);
-            
-            //break; // blinds have to be sent one by one
         }
-    }
-    
-    if(sendDataCount)
-    {
-        //DodajKomandu(, JALOUSIE_SET, sendDataBuff, sendDataCount);
     }
 }
 
