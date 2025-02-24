@@ -2083,8 +2083,11 @@ void DISP_Service(void){
 //                GUI_DrawLine(380,10,380,262);
                 
                 
-                GUI_DrawBitmap(&bmprevious, 0, 192);
-                GUI_DrawBitmap(&bmnext, 320, 192);
+                if(Curtains_getCount() > 1)
+                {
+                    GUI_DrawBitmap(&bmprevious, 0, 192);
+                    GUI_DrawBitmap(&bmnext, 320, 192);
+                }
                 
                 
                 GUI_ClearRect(0, 0, 70, 70);
@@ -3824,7 +3827,7 @@ void PID_Hook(GUI_PID_STATE * pTS){
                     
                     click = 1;
                 }
-                else if(pTS->y > 192)
+                else if((Curtains_getCount() > 1) && (pTS->y > 192))
                 {
                     if(pTS->x > 320)
                     {
