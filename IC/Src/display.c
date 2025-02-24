@@ -2536,7 +2536,7 @@ static void DSP_InitSet1Scrn(void){
     SPINBOX_SetEdge(hFanHiBand, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hFanHiBand, thst.fan_hiband);
     
-    hThstGroup = SPINBOX_CreateEx(320, 20, 110, 40, 0, WM_CF_SHOW, ID_THST_GROUP, 0, 254);
+    hThstGroup = SPINBOX_CreateEx(320, 20, 100, 40, 0, WM_CF_SHOW, ID_THST_GROUP, 0, 254);
     SPINBOX_SetEdge(hThstGroup, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hThstGroup, thst.group);
     
@@ -2584,6 +2584,9 @@ static void DSP_InitSet1Scrn(void){
     GUI_DispString("THERMOSTAT CONTROL MODE");
     GUI_GotoXY(10, 120);
     GUI_DispString("FAN SPEED CONTROL MODE");
+    
+    GUI_GotoXY(320 + 100 + 10, 20 + 17);
+    GUI_DispString("GROUP");
     
     GUI_DrawHLine(12, 5, 320);
     GUI_DrawHLine(130, 5, 320);
