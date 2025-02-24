@@ -2475,7 +2475,7 @@ void DISP_Service(void){
     //
     if (DISPMenuSettings(btnset)&&(screen < SCREEN_SETTINGS_1)){
         
-        thst.th_ctrl = 0;
+        TempRegOff();
         Lights_Modbus_Off();
         Curtains_Stop();
         Defroster_Off();
