@@ -468,8 +468,6 @@ void Curtains_SetDefault()
 
 void Curtain_Service()
 {
-    uint8_t sendDataBuff[3], sendDataCount = 0;
-    
     for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {
         Curtain* const cur = curtains + i;
@@ -483,6 +481,7 @@ void Curtain_Service()
         
         if(Curtain_hasDirectionChanged(cur))
         {
+            uint8_t sendDataBuff[3], sendDataCount = 0;
             uint16_t relay = 0;
             
             relay = (Curtain_isNewDirectionUp(cur) || (Curtain_isNewDirectionStop(cur) && Curtain_isMovingUp(cur))) ? Curtain_GetRelayUp(cur) : Curtain_GetRelayDown(cur);
