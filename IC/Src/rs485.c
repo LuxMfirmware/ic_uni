@@ -48,7 +48,7 @@ uint8_t *lctrl1 =(uint8_t*) &LIGHT_Ctrl1.Main1;
 uint8_t *lctrl2 =(uint8_t*) &LIGHT_Ctrl2.Main1;
 /* Private macros   ----------------------------------------------------------*/
 /* Private Function Prototypes -----------------------------------------------*/
-bool isSendDataBufferEmpty();
+bool isSendDataBufferEmpty(void);
 /* Program Code  -------------------------------------------------------------*/
 
 
@@ -78,28 +78,28 @@ void SetRoomTemp(TF_Msg* message)
     menu_thst = 0;
 }
 
-void SetThstHeating()
+void SetThstHeating(void)
 {
     TempRegHeating();
     menu_thst = 0;
     SaveThermostatController(&thst, EE_THST1);
 }
 
-void SetThstCooling()
+void SetThstCooling(void)
 {
     TempRegCooling();
     menu_thst = 0;
     SaveThermostatController(&thst, EE_THST1);
 }
 
-void SetThstOn()
+void SetThstOn(void)
 {
     TempRegHeating();
     menu_thst = 0;
     SaveThermostatController(&thst, EE_THST1);
 }
 
-void SetThstOff()
+void SetThstOff(void)
 {
     TempRegOff();
     menu_thst = 0;
@@ -988,7 +988,7 @@ void RS485_ErrorCallback(void){
 
 
 
-bool isSendDataBufferEmpty()
+bool isSendDataBufferEmpty(void)
 {
     return !sendDataCount;
 }

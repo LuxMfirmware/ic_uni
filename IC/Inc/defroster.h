@@ -34,15 +34,15 @@ extern Defroster defroster;
 
 
 
-void Defroster_Init();
-void Defroster_Save();
-bool Defroster_isActive();
-void Defroster_On();
-void Defroster_Off();
-void Defroster_Service();
+void Defroster_Init(void);
+void Defroster_Save(void);
+bool Defroster_isActive(void);
+void Defroster_On(void);
+void Defroster_Off(void);
+void Defroster_Service(void);
 void Defroster_SetCycleTime(uint8_t time);
 void Defroster_SetActiveTime(uint8_t time);
-void Defroster_SetDefault();
+void Defroster_SetDefault(void);
 
 
 

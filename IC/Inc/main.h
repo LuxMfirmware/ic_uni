@@ -331,6 +331,6 @@ void PCA9685_Reset(void);
 void PCA9685_OutputUpdate(void);
 void PCA9685_SetOutput(const uint8_t pin, const uint8_t value);
 void PCA9685_SetOutputFrequency(uint16_t frequency);
-void SetDefault();
+void SetDefault(void);
 #endif /* __MAIN_H */
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/

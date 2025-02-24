@@ -575,29 +575,29 @@ bool ReadPin(const uint8_t pin)
     {
         case 1:
             return IsLight1Active();
-            break;
+            //break;
 
         case 2:
         {
             return IsLight2Active();
-            break;
+            //break;
         }
 
         case 3:
             return IsLight3Active();
-            break;
+            //break;
                         
         case 4:
             return IsLight4Active();
-            break;
+            //break;
 
         case 5:
             return IsLight5Active();
-            break;
+            //break;
 
         case 6:
             return IsLight6Active();
-            break;
+            //break;
         
         default:
             break;                                        
@@ -667,9 +667,9 @@ static uint8_t DISPMenuSettings(uint8_t btn);
 static void SaveLightController(LIGHT_CtrlTypeDef* lc, uint16_t addr);
 static void ReadLightController(LIGHT_CtrlTypeDef* lc, uint16_t addr);
 void Curtain_Select(const uint8_t curtain);
-uint8_t Curtain_getSelected();
-bool Curtain_areAllSelected();
-void Curtain_ResetSelection();
+uint8_t Curtain_getSelected(void);
+bool Curtain_areAllSelected(void);
+void Curtain_ResetSelection(void);
 void DrawEquilateralTriangle(const int16_t x, const int16_t y, const int16_t length, double rotation, const GUI_COLOR color, const GUI_COLOR fillColor);
 /* Program Code  -------------------------------------------------------------*/
 /**

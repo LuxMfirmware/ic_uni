@@ -24,7 +24,7 @@ GUI_CONST_STORAGE GUI_BITMAP* light_modbus_images[] = {&bmSijalicaOff, &bmSijali
 
 
 
-void Lights_Modbus_Count()
+void Lights_Modbus_Count(void)
 {
     lights_count = 0;
     
@@ -35,7 +35,7 @@ void Lights_Modbus_Count()
     }
 }
 
-uint8_t Lights_Modbus_getCount()
+uint8_t Lights_Modbus_getCount(void)
 {
     return lights_count;
 }
@@ -43,19 +43,19 @@ uint8_t Lights_Modbus_getCount()
 
 
 
-void Lights_Modbus_Rows_Count()
+void Lights_Modbus_Rows_Count(void)
 {
     lights_modbus_rows = (Lights_Modbus_getCount() / 4) + 1;
 }
 
-uint8_t Lights_Modbus_Rows_getCount()
+uint8_t Lights_Modbus_Rows_getCount(void)
 {
     return lights_modbus_rows;
 }
 
 
 
-void Lights_Modbus_Calculate()
+void Lights_Modbus_Calculate(void)
 {
     Lights_Modbus_Count();
     Lights_Modbus_Rows_Count();
@@ -105,7 +105,7 @@ void Light_Modbus_Save(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
     EE_WriteBuffer(&li->brightness,                     addr + 15,       1);
 }
 
-void Lights_Modbus_Init()
+void Lights_Modbus_Init(void)
 {
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
@@ -117,7 +117,7 @@ void Lights_Modbus_Init()
     Lights_Modbus_Calculate();
 }
 
-void Lights_Modbus_Save()
+void Lights_Modbus_Save(void)
 {
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
@@ -603,7 +603,7 @@ void Light_Modbus_SetDefault(LIGHT_Modbus_CmdTypeDef* const li)
 }
 
 
-void Lights_Modbus_SetDefault()
+void Lights_Modbus_SetDefault(void)
 {
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
@@ -619,7 +619,7 @@ void Lights_Modbus_SetDefault()
 
 
 
-void Light_Modbus_Service()
+void Light_Modbus_Service(void)
 {
     if((isButtonActive_old != IsButtonActive()) && (!isButtonActive_old))
     {

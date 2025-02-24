@@ -46,12 +46,12 @@ void Ventilator_setDelayOffUse(Ventilator* const vent, const uint8_t val);
 uint8_t Ventilator_getDelayOffUse(Ventilator* const vent);
 
 void Ventilator_On(const bool useDelay);
-void Ventilator_Off();
+void Ventilator_Off(void);
 
 void Ventilator_Save(Ventilator* const vent, const uint16_t addr);
 void Ventilator_Init(Ventilator* const vent, const uint16_t addr);
 
-void Ventilator_Service();
+void Ventilator_Service(void);
 
 
 

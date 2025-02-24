@@ -17,7 +17,7 @@ Defroster defroster;
 
 
 
-void Defroster_Init()
+void Defroster_Init(void)
 {
     defroster.cycleTime_TimerStart = 0;
     defroster.activeTime_TimerStart = 0;
@@ -31,7 +31,7 @@ void Defroster_Init()
 
 
 
-void Defroster_Save()
+void Defroster_Save(void)
 {
     EE_WriteBuffer(&defroster.cycleTime,       EE_DEFROSTER,            1);
     EE_WriteBuffer(&defroster.activeTime,      EE_DEFROSTER + 1,        1);
@@ -87,13 +87,13 @@ void Defroster_SetActiveTime(uint8_t time)
 
 
 
-void Defroster_ActiveTimeTimerStart()
+void Defroster_ActiveTimeTimerStart(void)
 {
     uint32_t tick = HAL_GetTick();
     defroster.activeTime_TimerStart = tick ? (tick - 1) : 1;
 }
 
-bool Defroster_isActiveTimeTimerOn()
+bool Defroster_isActiveTimeTimerOn(void)
 {
     return defroster.activeTime_TimerStart;
 }
@@ -103,7 +103,7 @@ bool Defroster_hasActiveTimeTimerExpired(const uint32_t tick)
     return (tick - defroster.activeTime_TimerStart) >= (defroster.activeTime * 1000 * 60);
 }
 
-void Defroster_ActiveTimeTimerStop()
+void Defroster_ActiveTimeTimerStop(void)
 {
     defroster.activeTime_TimerStart = 0;
 }
@@ -114,13 +114,13 @@ void Defroster_ActiveTimeTimerStop()
 
 
 
-void Defroster_CycleTimerStart()
+void Defroster_CycleTimerStart(void)
 {
     uint32_t tick = HAL_GetTick();
     defroster.cycleTime_TimerStart = tick ? (tick - 1) : 1;
 }
 
-bool Defroster_isCycleTimerOn()
+bool Defroster_isCycleTimerOn(void)
 {
     return defroster.cycleTime_TimerStart;
 }
@@ -130,7 +130,7 @@ bool Defroster_hasCycleTimerExpired(const uint32_t tick)
     return (tick - defroster.cycleTime_TimerStart) >= (defroster.cycleTime * 1000 * 60);
 }
 
-void Defroster_CycleTimerStop()
+void Defroster_CycleTimerStop(void)
 {
     defroster.cycleTime_TimerStart = 0;
 }
@@ -140,19 +140,19 @@ void Defroster_CycleTimerStop()
 
 
 
-bool Defroster_isActive()
+bool Defroster_isActive(void)
 {
     return Defroster_isCycleTimerOn();
 }
 
-void Defroster_On()
+void Defroster_On(void)
 {
     Defroster_CycleTimerStart();
     Defroster_ActiveTimeTimerStart();
     SetPin(defroster.pin, 1);
 }
 
-void Defroster_Off()
+void Defroster_Off(void)
 {
     Defroster_CycleTimerStop();
     Defroster_ActiveTimeTimerStop();
@@ -167,7 +167,7 @@ void Defroster_Off()
 
 
 
-void Defroster_SetDefault()
+void Defroster_SetDefault(void)
 {
     defroster.cycleTime = 0;
     defroster.cycleTime_TimerStart = 0;
@@ -184,7 +184,7 @@ void Defroster_SetDefault()
 
 
 
-void Defroster_Service()
+void Defroster_Service(void)
 {
     if(Defroster_isActive())
     {

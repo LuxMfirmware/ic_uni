@@ -43,10 +43,10 @@ extern LIGHT_Modbus_CmdTypeDef lights_modbus[LIGHTS_MODBUS_SIZE];
 
 
 
-uint8_t Lights_Modbus_getCount();
-uint8_t Lights_Modbus_Rows_getCount();
-void Lights_Modbus_Init();
-void Lights_Modbus_Save();
+uint8_t Lights_Modbus_getCount(void);
+uint8_t Lights_Modbus_Rows_getCount(void);
+void Lights_Modbus_Init(void);
+void Lights_Modbus_Save(void);
 uint16_t Light_Modbus_GetRelay(const LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_SetRelay(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t val);
 void Light_Modbus_TieToMainLight(LIGHT_Modbus_CmdTypeDef* const li);
@@ -63,7 +63,7 @@ void Light_Modbus_SetColor(LIGHT_Modbus_CmdTypeDef* const li, GUI_COLOR color);
 void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brightness);
 void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li);
-uint8_t Lights_Modbus_getCount();
+uint8_t Lights_Modbus_getCount(void);
 void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li);
 uint8_t Light_Modbus_Set_byIndex(const uint8_t light_index, const uint8_t val);
@@ -110,8 +110,8 @@ void Light_Modbus_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li);
 bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li);
 void Light_Modbus_SetDefault(LIGHT_Modbus_CmdTypeDef* const li);
-void Lights_Modbus_SetDefault();
-void Light_Modbus_Service();
+void Lights_Modbus_SetDefault(void);
+void Light_Modbus_Service(void);
 
 
 

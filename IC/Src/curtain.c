@@ -26,7 +26,7 @@ Curtain curtains[CURTAINS_SIZE];
 
 
 
-void Curtains_Count()
+void Curtains_Count(void)
 {
     curtains_count = 0;
     
@@ -38,7 +38,7 @@ void Curtains_Count()
 }
 
 
-uint8_t Curtains_getCount()
+uint8_t Curtains_getCount(void)
 {
     return curtains_count;
 }
@@ -61,7 +61,7 @@ void Curtain_Save(Curtain* const cur, const uint16_t addr)
     EE_WriteBuffer((uint8_t*)&cur->relayDown,      addr + 2,   2);
 }
 
-void Curtains_Init()
+void Curtains_Init(void)
 {
     EE_ReadBuffer(&upDownDurationSeconds,    EE_CURTAINS_MOVE_TIME,   1);
     
@@ -73,7 +73,7 @@ void Curtains_Init()
     Curtains_Count();
 }
 
-void Curtains_Save()
+void Curtains_Save(void)
 {
     EE_WriteBuffer(&upDownDurationSeconds,    EE_CURTAINS_MOVE_TIME,   1);
     
@@ -137,7 +137,7 @@ void Curtain_SetMoveTime(const uint8_t seconds)
     upDownDurationSeconds = seconds;
 }
 
-uint8_t Curtain_GetMoveTime()
+uint8_t Curtain_GetMoveTime(void)
 {
     return upDownDurationSeconds;
 }
@@ -164,7 +164,7 @@ bool Curtain_isMoving(const Curtain* const cur)
     return (Curtain_hasRelays(cur)) ? (cur->upDown_old != CURTAIN_STOP) : false;
 }
 
-bool Curtains_isAnyCurtainMoving()
+bool Curtains_isAnyCurtainMoving(void)
 {
     for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
     {
@@ -174,7 +174,7 @@ bool Curtains_isAnyCurtainMoving()
     return false;
 }
 
-bool Curtains_areAllMoving()
+bool Curtains_areAllMoving(void)
 {
     for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
     {
@@ -199,7 +199,7 @@ bool Curtain_isMovingUp(const Curtain* const cur)
     return cur->upDown_old == CURTAIN_UP;
 }
 
-bool Curtains_isAnyCurtainMovingUp()
+bool Curtains_isAnyCurtainMovingUp(void)
 {
     for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
     {
@@ -214,7 +214,7 @@ bool Curtain_isMovingDown(const Curtain* const cur)
     return cur->upDown_old == CURTAIN_DOWN;
 }
 
-bool Curtains_isAnyCurtainMovingDown()
+bool Curtains_isAnyCurtainMovingDown(void)
 {
     for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
     {
@@ -247,7 +247,7 @@ bool Curtain_isNewDirectionUp(const Curtain* const cur)
     return cur->upDown == CURTAIN_UP;
 }
 
-bool Curtains_isNewDirectionUp()
+bool Curtains_isNewDirectionUp(void)
 {
     uint8_t anyRelay = 0;
     
@@ -265,7 +265,7 @@ bool Curtain_isNewDirectionDown(const Curtain* const cur)
     return cur->upDown == CURTAIN_DOWN;
 }
 
-bool Curtains_isNewDirectionDown()
+bool Curtains_isNewDirectionDown(void)
 {
     uint8_t anyRelay = 0;
     
@@ -452,7 +452,7 @@ void Curtain_SetDefault(Curtain* const cur)
 }
 
 
-void Curtains_SetDefault()
+void Curtains_SetDefault(void)
 {
     for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {
@@ -466,7 +466,7 @@ void Curtains_SetDefault()
 
 
 
-void Curtain_Service()
+void Curtain_Service(void)
 {
     for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {

@@ -147,12 +147,12 @@ void Thermostat_SP_Temp_Set(const uint8_t setpoint)
     }
 }
 
-void Thermostat_SP_Temp_Increment()
+void Thermostat_SP_Temp_Increment(void)
 {
     Thermostat_SP_Temp_Set(thst.sp_temp + 1);
 }
 
-void Thermostat_SP_Temp_Decrement()
+void Thermostat_SP_Temp_Decrement(void)
 {
     Thermostat_SP_Temp_Set(thst.sp_temp - 1);
 }
@@ -200,7 +200,7 @@ void Thermostat_Set_SP_Max(const uint8_t value)
 
 
 
-void Thermostat_SetDefault()
+void Thermostat_SetDefault(void)
 {
     thst.group = 0;
     thst.master = false;

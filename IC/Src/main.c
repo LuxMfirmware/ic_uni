@@ -502,7 +502,7 @@ static void TS_Service(void){
   * @retval
   */
 static void RAM_Init(void){
-    int x;
+//    int x;
     uint8_t ebuf[EE_INIT_ADDR+2];
     EE_ReadBuffer(ebuf, EE_TERMFL, EE_INIT_ADDR+2);
 //    if (ebuf[EE_INIT_ADDR] != EE_MARKER){
@@ -1437,7 +1437,7 @@ void PCA9685_SetOutput(const uint8_t pin, const uint8_t value)
 
 
 
-void SetDefault() // Not all settings from the settings menu are set to default
+void SetDefault(void) // Not all settings from the settings menu are set to default
 {
     Thermostat_SetDefault();
     SaveThermostatController(&thst, EE_THST1);
