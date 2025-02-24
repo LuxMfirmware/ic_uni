@@ -349,7 +349,7 @@ void Curtains_MoveSignal(const uint8_t direction)
     
     if(direction != CURTAIN_STOP)
     {
-        for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
+        for(uint8_t i = 0; i < Curtains_getCount(); ++i)
         {
             if((Curtain_hasRelays(curtains + i)) && (!(Curtain_isMoving(curtains + i) && ((curtains + i)->upDown == direction) && ((curtains + i)->upDown_old == direction)))) stop = 0;
         }
