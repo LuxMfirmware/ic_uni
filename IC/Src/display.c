@@ -293,7 +293,7 @@ static uint8_t btninc, _btninc, btndec, _btndec, menu_lc;
 uint8_t settingsChanged = 0;
 uint8_t curtainSettingMenu = 0, curtainMenu = 0, curtainMenuCurtainCount = 1, curtainMenuStartIndex = 0, curtainMenuCurtainLength = 120, curtainMenuSpaceBetween = 0, curtain_selected = 0;
 uint32_t light_settingsTimerStart = 0;
-uint8_t lightsModbusSettingsMenu = 0, light_selectedIndex = LIGHTS_MODBUS_SIZE, lightsMenuSpaceBetween = (400 - (80 * LIGHTS_MODBUS_PER_ROW)) / (LIGHTS_MODBUS_PER_ROW - 1 + 2);
+uint8_t lightsModbusSettingsMenu = 0, light_selectedIndex = LIGHTS_MODBUS_SIZE + 1, lights_allSelected_hasRGB = 0, lightsMenuSpaceBetween = (400 - (80 * LIGHTS_MODBUS_PER_ROW)) / (LIGHTS_MODBUS_PER_ROW - 1 + 2);
 uint8_t shouldDrawScreen = 1;
 uint8_t bOnlyLeaveScreenSaverAfterTouch = 0;
 uint32_t ventilatorOnDelayTimer_Start = 0;
@@ -1468,6 +1468,8 @@ void DISP_Service(void){
             curtainSettingMenu = 0;
             curtainMenu = 0;
             lightsModbusSettingsMenu = 0;
+            light_selectedIndex = LIGHTS_MODBUS_SIZE + 1;
+            lights_allSelected_hasRGB = false;
             shouldDrawScreen = 1;
             break;
         }
@@ -2305,15 +2307,15 @@ void DISP_Service(void){
                 GUI_DrawLine(400,60,450,60);
                 
                 //GUI_DrawRect(20, 20, 100, 100);
-                GUI_SetColor(Light_Modbus_GetColor(lights_modbus + light_selectedIndex));
-                GUI_FillRect(20, 20, 100, 100);
+                //GUI_SetColor(Light_Modbus_GetColor(lights_modbus + light_selectedIndex));
+                //GUI_FillRect(20, 20, 100, 100);
                 
                 
-                if(Light_Modbus_isDimmer(lights_modbus + light_selectedIndex))
+                if(((light_selectedIndex == LIGHTS_MODBUS_SIZE) && (!lights_allSelected_hasRGB)) || Light_Modbus_isDimmer(lights_modbus + light_selectedIndex))
                 {
                     GUI_DrawBitmap(&bmblackWhiteGradient, 20, 110);
                 }
-                else if(Light_Modbus_isRGB(lights_modbus + light_selectedIndex))
+                else if(((light_selectedIndex == LIGHTS_MODBUS_SIZE) && lights_allSelected_hasRGB) || Light_Modbus_isRGB(lights_modbus + light_selectedIndex))
                 {
                     GUI_SetColor(GUI_WHITE);
                     GUI_FillRect(200, 20, 280, 100);
@@ -3763,7 +3765,7 @@ void PID_Hook(GUI_PID_STATE * pTS){
         }
         else if(screen == SCREEN_LIGHTS) //lights
         {
-            light_selectedIndex = LIGHTS_MODBUS_SIZE; // clear selected light
+            light_selectedIndex = LIGHTS_MODBUS_SIZE + 1; // clear selected light
             
             int y = (Lights_Modbus_Rows_getCount() > 1) ? 10 : 86;
             uint8_t lightsInRowSum = 0;
@@ -3902,92 +3904,73 @@ void PID_Hook(GUI_PID_STATE * pTS){
         }
         else if(screen == SCREEN_LIGHT_SETTINGS)  // light settings
         {
-            if(Light_Modbus_isRGB(lights_modbus + light_selectedIndex) && (pTS->x >= 200) && (pTS->x <= 280) && (pTS->y >= 20) && (pTS->x < 100))
+            uint8_t brightness = 255;
+            GUI_COLOR color = 0;
+            
+            if(((light_selectedIndex == LIGHTS_MODBUS_SIZE) && (lights_allSelected_hasRGB)) || Light_Modbus_isRGB(lights_modbus + light_selectedIndex) && (pTS->x >= 200) && (pTS->x <= 280) && (pTS->y >= 20) && (pTS->x < 100))
             {
-                Light_Modbus_SetColor(lights_modbus + light_selectedIndex, GUI_WHITE);
+                color = GUI_WHITE;
             }
             else if((pTS->x >= 20) && (pTS->x <= 460))
             {
-                if((pTS->y >= 110) && (pTS->y <= 170))           Light_Modbus_SetBrightness(lights_modbus + light_selectedIndex, ((pTS->x - 20) / (float)bmblackWhiteGradient.XSize) * 100);
-                else if(Light_Modbus_isRGB(lights_modbus + light_selectedIndex) && (pTS->y >= 180) && (pTS->y <= 240))         Light_Modbus_SetColor(lights_modbus + light_selectedIndex, LCD_GetPixelColor(pTS->x, pTS->y));
+                if((pTS->y >= 110) && (pTS->y <= 170))      brightness = ((pTS->x - 20) / (float)bmblackWhiteGradient.XSize) * 100;
+                else if((((light_selectedIndex == LIGHTS_MODBUS_SIZE) && (lights_allSelected_hasRGB)) || Light_Modbus_isRGB(lights_modbus + light_selectedIndex)) && (pTS->y >= 180) && (pTS->y <= 240))     color = LCD_GetPixelColor(pTS->x, pTS->y);
                 shouldDrawScreen = 1;
+            }
+            
+            
+            if(light_selectedIndex == LIGHTS_MODBUS_SIZE)
+            {
+                for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
+                {
+                    if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && (!Light_Modbus_isBinary(lights_modbus + i)))
+                    {
+                        if(brightness != 255)
+                        {
+                            Light_Modbus_SetBrightness(lights_modbus + i, brightness);
+                        }
+                        else if(Light_Modbus_isRGB(lights_modbus + i) && color)
+                        {
+                            Light_Modbus_SetColor(lights_modbus + i, color);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(brightness != 255)
+                {
+                    Light_Modbus_SetBrightness(lights_modbus + light_selectedIndex, brightness);
+                }
+                else if(Light_Modbus_isRGB(lights_modbus + light_selectedIndex) && color)
+                {
+                    Light_Modbus_SetColor(lights_modbus + light_selectedIndex, color);
+                }
             }
         }
         else if((pTS->x > 100)&&(pTS->y > 100)&&(pTS->x < 400)&&(pTS->y < 272)&&(screen == SCREEN_RESET_MENU_SWITCHES))
         {
             if((!bOnlyLeaveScreenSaverAfterTouch) || (bOnlyLeaveScreenSaverAfterTouch && (!IsScrnsvrActiv())))
             {
-                uint8_t isAnyLightActive = 0;
+                light_selectedIndex = LIGHTS_MODBUS_SIZE + 1;
                 
-                click = 1;
-                screen = SCREEN_MAIN;
-                
-                
-                
-                for(uint8_t i = 0; i < Lights_Modbus_getCount(); ++i)
+                for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
                 {
-                    if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && Light_Modbus_isActive(lights_modbus + i))
+                    if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && (!Light_Modbus_isBinary(lights_modbus + i)))
                     {
-                        isAnyLightActive = 1;
-                        break;
+                        light_selectedIndex = LIGHTS_MODBUS_SIZE;
+                        if(Light_Modbus_isRGB(lights_modbus + i)) lights_allSelected_hasRGB = true;
                     }
                 }
                 
                 
-                if((isAnyLightActive)
-                    && LightNightTimer_isEnabled
-                && (!LightNightTimer_StartTime)
-                && (!((Bcd2Dec(rtctm.Hours) > 6) && (Bcd2Dec(rtctm.Hours) < 20))))
+                
+                if(light_selectedIndex == LIGHTS_MODBUS_SIZE)
                 {
-                    LightNightTimer_StartTime = HAL_GetTick();
-                    if(!LightNightTimer_StartTime) LightNightTimer_StartTime = 1;
+                    light_settingsTimerStart = HAL_GetTick();
                 }
-                else
-                {
-                    LightNightTimer_StartTime = 0;
-                    
-                    for(uint8_t i = 0; i < Lights_Modbus_getCount(); ++i)
-                    {
-                        if(Light_Modbus_isTiedToMainLight(lights_modbus + i))
-                        {
-                            if(isAnyLightActive)
-                            {
-                                Light_Modbus_Off(lights_modbus + i);
-                            }
-                            else
-                            {
-                                /*if(Light_Modbus_isOffTimeEnabled(lights_modbus + i))
-                                {
-                                    uint32_t currentTickTime = HAL_GetTick();
-                                    if(!currentTickTime) currentTickTime = 1;
-                                    Ventilator_SetOnDelayTimer(currentTickTime);
-                                }*/
-                                
-                                Light_Modbus_On(lights_modbus + i);
-                            }
-                        }
-                        
-                        
-                        
-                        
-                        /*if(Light_Modbus_isTiedToMainLight(lights_modbus + i))
-                        {
-                            if(Light_Modbus_isActive(lights_modbus + i))
-                            {
-                                isActive = 1;
-                                Light_Modbus_Off(lights_modbus + i);
-                            }
-                        }
-                        
-                        if((i == (LIGHTS_MODBUS_SIZE - 1)) && (!isActive))
-                        {
-                            for(uint8_t j = 0; j < LIGHTS_MODBUS_SIZE; j++)
-                            {
-                                if(Light_Modbus_isTiedToMainLight(lights_modbus + j)) Light_Modbus_On(lights_modbus + j);
-                            }
-                        }*/
-                    }
-                }
+                
+                
                 
                 
                 
@@ -4077,6 +4060,83 @@ void PID_Hook(GUI_PID_STATE * pTS){
                 Light_Modbus_Flip(lights_modbus + light_selectedIndex);
             }
             
+        }
+        else if(screen == SCREEN_RESET_MENU_SWITCHES)
+        {
+            if((pTS->x > 100) && (pTS->y > 100) && (pTS->x < 400) && (pTS->y < 272) && ((light_selectedIndex == (LIGHTS_MODBUS_SIZE + 1)) || ((light_selectedIndex == LIGHTS_MODBUS_SIZE) && light_settingsTimerStart)))
+            {
+                uint8_t isAnyLightActive = 0;
+                
+                click = 1;
+                screen = SCREEN_MAIN;
+                
+                light_settingsTimerStart = 0;
+                
+                for(uint8_t i = 0; i < Lights_Modbus_getCount(); ++i)
+                {
+                    if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && Light_Modbus_isActive(lights_modbus + i))
+                    {
+                        isAnyLightActive = 1;
+                        break;
+                    }
+                }
+                
+                
+                if((isAnyLightActive)
+                    && LightNightTimer_isEnabled
+                && (!LightNightTimer_StartTime)
+                && (!((Bcd2Dec(rtctm.Hours) > 6) && (Bcd2Dec(rtctm.Hours) < 20))))
+                {
+                    LightNightTimer_StartTime = HAL_GetTick();
+                    if(!LightNightTimer_StartTime) LightNightTimer_StartTime = 1;
+                }
+                else
+                {
+                    LightNightTimer_StartTime = 0;
+                    
+                    for(uint8_t i = 0; i < Lights_Modbus_getCount(); ++i)
+                    {
+                        if(Light_Modbus_isTiedToMainLight(lights_modbus + i))
+                        {
+                            if(isAnyLightActive)
+                            {
+                                Light_Modbus_Off(lights_modbus + i);
+                            }
+                            else
+                            {
+                                /*if(Light_Modbus_isOffTimeEnabled(lights_modbus + i))
+                                {
+                                    uint32_t currentTickTime = HAL_GetTick();
+                                    if(!currentTickTime) currentTickTime = 1;
+                                    Ventilator_SetOnDelayTimer(currentTickTime);
+                                }*/
+                                
+                                Light_Modbus_On(lights_modbus + i);
+                            }
+                        }
+                        
+                        
+                        
+                        
+                        /*if(Light_Modbus_isTiedToMainLight(lights_modbus + i))
+                        {
+                            if(Light_Modbus_isActive(lights_modbus + i))
+                            {
+                                isActive = 1;
+                                Light_Modbus_Off(lights_modbus + i);
+                            }
+                        }
+                        
+                        if((i == (LIGHTS_MODBUS_SIZE - 1)) && (!isActive))
+                        {
+                            for(uint8_t j = 0; j < LIGHTS_MODBUS_SIZE; j++)
+                            {
+                                if(Light_Modbus_isTiedToMainLight(lights_modbus + j)) Light_Modbus_On(lights_modbus + j);
+                            }
+                        }*/
+                    }
+                }
+            }
         }
         btnset = 0;
         btndec = 0U;   
