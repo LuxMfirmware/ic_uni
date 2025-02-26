@@ -7,10 +7,10 @@
  ******************************************************************************
  */
 
- 
+
 #if (__RS485_H__ != FW_BUILD)
-    #error "rs485 header version mismatch"
-#endif 
+#error "rs485 header version mismatch"
+#endif
 /* Includes ------------------------------------------------------------------*/
 #include "png.h"
 #include "main.h"
@@ -32,496 +32,304 @@
 /* Private Typedef -----------------------------------------------------------*/
 static TinyFrame tfapp;
 /* Private Define  -----------------------------------------------------------*/
+#define BIN_ACK_POZICIJA		3   // gdje ocekujem ACK bajt u baferu odgovora binarnog upita
+#define DIM_ACK_POZICIJA		3   // pozicija ACK bajta u odgovoru na komande dimeru
+#define JAL_ACK_POZICIJA		3   // pozicija ACK bajta u odgovoru na komande žaluzinama
+#define THE_ACK_POZICIJA		18  // pozicija ACK bajta u odgovoru na komande termostatu
+#define RGB_ACK_POZICIJA		5   // pozicija ACK bajta u odgovoru na komande rgbw
+#define MAX_RETRIES 5           // Maksimalan broj pokušaja
+#define TIMEOUT_MS 10           // Timeout u ms za cekanje odgovora
+#define TH_INFO_DELAY 100       // Kašnjenje termostat info poruke maste->slave nakon što master dobije set paket
+#define RESPONSE_TIME   200  // ms
+#define MAX_GET_RETRY   3
 /* Private Variables  --------------------------------------------------------*/
 TF_Msg sendData;
-bool init_tf = false;
-static uint8_t ud1, ud2;
-static uint32_t rstmr = 0;
-static uint32_t wradd = 0;
-static uint32_t bcnt = 0;
-uint16_t sysid;
-uint32_t rsflg, tfbps, dlen, etmr;
-uint8_t lbuf[32], dbuf[32], tbuf[32], sendDataBuff[50] = {0}, sendDataCount = 0, lcnt = 0, dcnt = 0, tcnt = 0, cmd = 0;
-uint8_t responseData[6] = {0}, responseDataLength = 0;
-uint8_t  ethst, efan,  etsp,  rec, tfifa, tfgra, tfbra, tfgwa;
-uint8_t *lctrl1 =(uint8_t*) &LIGHT_Ctrl1.Main1;
-uint8_t *lctrl2 =(uint8_t*) &LIGHT_Ctrl2.Main1;
+bool init_tf = false;               // true = tf inicijalizovan, sprjecava blokadu kada sys timer krene a tf još nije inicijalizovan
+volatile bool fw_flag = false;      // true = u toku je transfer firmwera, false = nije
+volatile bool ack_flag = true;     // true = ACK ogovora primljen, false = nije,  Signalizira da je odgovor stigao
+volatile bool isSending = false;    // Flag koji oznacava da li je trenutno aktivno slanje
+volatile bool th_save = false;      // treba spasiti postavke termostata
+volatile uint8_t qr_save;           // new qr code ready for eeprom
+volatile uint32_t th_info_delay;    // delay za slanje termostat info ako je master dobio set paket
+uint32_t rstmr = 0;
+uint32_t wradd = 0;
+uint32_t bcnt = 0;;
+uint8_t rec, tfifa;
+uint8_t eebuf[64]; // bufer za upis u eeprom
+static uint8_t ack_pozicija;
+
+// Globalne promenljive
+CommandQueue binaryQueue = {0};
+CommandQueue dimmerQueue = {0};
+CommandQueue rgbwQueue = {0};
+CommandQueue curtainQueue = {0};
+CommandQueue thermoQueue = {0};
+static GetResponseBuffer getResponseBuffer;
 /* Private macros   ----------------------------------------------------------*/
 /* Private Function Prototypes -----------------------------------------------*/
-bool isSendDataBufferEmpty(void);
 /* Program Code  -------------------------------------------------------------*/
-
-
-void SendData(uint8_t *data, uint8_t length, uint8_t commandType)
-{
-    sendDataCount = 0;
-    ZEROFILL(sendDataBuff, COUNTOF(sendDataBuff));
-}
-
-
-
-
-
-
-void AttachData(TF_Msg* mess)
-{
-    mess->data = responseData;
-    mess->len = (TF_LEN) responseDataLength;
-}
-
-void SetRoomTemp(TF_Msg* message)
-{
-    if(message->data[2] > thst.sp_max) thst.sp_temp = thst.sp_max;
-    else if(message->data[2] < thst.sp_min) thst.sp_temp = thst.sp_min;
-    else thst.sp_temp = message->data[2];
-    
-    menu_thst = 0;
-}
-
-void SetThstHeating(void)
-{
-    TempRegHeating();
-    menu_thst = 0;
-    SaveThermostatController(&thst, EE_THST1);
-}
-
-void SetThstCooling(void)
-{
-    TempRegCooling();
-    menu_thst = 0;
-    SaveThermostatController(&thst, EE_THST1);
-}
-
-void SetThstOn(void)
-{
-    TempRegHeating();
-    menu_thst = 0;
-    SaveThermostatController(&thst, EE_THST1);
-}
-
-void SetThstOff(void)
-{
-    TempRegOff();
-    menu_thst = 0;
-    SaveThermostatController(&thst, EE_THST1);
-}
-
-void SendFanDiff(TF_Msg* message)
-{
-    responseData[responseDataLength++] = GET_FAN_DIFFERENCE;
-    responseData[responseDataLength++] = thst.fan_diff;
-                    
-    AttachData(message);
-}
-
-void SendFanBand(TF_Msg* message)
-{
-    responseData[responseDataLength++] = GET_FAN_BAND;
-    responseData[responseDataLength++] = thst.fan_loband;
-    responseData[responseDataLength++] = thst.fan_hiband;
-    
-    message->data=responseData;
-    message->len=(TF_LEN) responseDataLength;
-}
-
-void SendRoomTemp(TinyFrame* tinyframe, TF_Msg* message)
-{
-    ud1 = thst.mv_temp >> 8;
-    ud2 = thst.mv_temp & 0xFF;
-    tinyframe->userdata = &ud1;
-    tfapp.data[0] = '1';
-    tfapp.data[1] = '2';
-    tfapp.data[2] = '3';
-    
-    responseData[responseDataLength++] = GET_ROOM_TEMP;
-    responseData[responseDataLength++] =  (thst.mv_temp / 10) + thst.mv_offset;
-    responseData[responseDataLength++] = thst.sp_temp;
-    
-    message->data=responseData;
-    message->len=(TF_LEN) responseDataLength;
-}
-
-void Send_SP_Max(TF_Msg* message)
-{
-    responseData[responseDataLength++] = GET_SP_MAX;
-    responseData[responseDataLength++] = thst.sp_max;
-    
-    AttachData(message);
-}
-
-void Set_SP_Max(TF_Msg* message)
-{
-    thst.sp_max = message->data[2];
-    SaveThermostatController(&thst, EE_THST1);
-}
-
-void Send_SP_Min(TF_Msg* message)
-{
-    responseData[responseDataLength++] = GET_SP_MIN;
-    responseData[responseDataLength++] = thst.sp_min;
-    
-    AttachData(message);
-}
-
-void Set_SP_Min(TF_Msg* message)
-{
-    thst.sp_min = message->data[2];
-    SaveThermostatController(&thst, EE_THST1);
-}
-
-
-
-void Send_Light_Modbus(TF_Msg* message)
-{
-    responseData[responseDataLength++] = LIGHT_MODBUS_GET;
-    
-    if(Light_Modbus_isIndexInRange(message->data[2] - 1))
-    {
-        responseData[responseDataLength++] = Light_Modbus_Get_byIndex(message->data[2] - 1);
-    }
-    else
-    {
-        responseData[responseDataLength++] = LIGHT_MODBUS_QUERY_RESPONSE_INDEX_OUT_OF_RANGE;
-    }
-    
-    AttachData(message);
-}
-
-void Set_Light_Modbus(TF_Msg* message)
-{
-    if(Light_Modbus_isIndexInRange(message->data[2] - 1))
-    {
-        Light_Modbus_Set_byIndex(message->data[2] - 1, message->data[3]);
-    }
-    else
-    {
-        responseData[responseDataLength++] = LIGHT_MODBUS_SET;
-        responseData[responseDataLength++] = LIGHT_MODBUS_QUERY_RESPONSE_INDEX_OUT_OF_RANGE;
-        AttachData(message);
-    }
-}
-
-
-
-void Send_Curtain_Modbus(TF_Msg* message)
-{
-    responseData[responseDataLength++] = CURTAIN_MODBUS_GET;
-    
-    if(Curtain_Modbus_isIndexInRange(message->data[2] - 1))
-    {
-        responseData[responseDataLength++] = Curtain_Modbus_Get_byIndex(message->data[2] - 1);
-    }
-    else
-    {
-        responseData[responseDataLength++] = CURTAIN_MODBUS_QUERY_RESPONSE_INDEX_OUT_OF_RANGE;
-    }
-    
-    AttachData(message);
-}
-
-void Set_Curtain_Modbus(TF_Msg* message)
-{
-    if(!message->data[2])
-    {
-        Curtains_MoveSignal(message->data[3]);
-    }
-    else if(Curtain_Modbus_isIndexInRange(message->data[2] - 1))
-    {
-        if(message->data[2]) Curtain_MoveSignal_byIndex(message->data[2] - 1, message->data[3]);
-    }
-    else
-    {
-        responseData[responseDataLength++] = CURTAIN_MODBUS_SET;
-        responseData[responseDataLength++] = CURTAIN_MODBUS_QUERY_RESPONSE_INDEX_OUT_OF_RANGE;
-        AttachData(message);
-    }
-}
-
-
-
-
-void Set_QR_Code_RS485(TF_Msg* message)
-{
-    if(QR_Code_isDataLengthShortEnough(message->len - 3))
-    {
-        QR_Code_Set(message->data[2], message->data + 3);
-        if(screen == SCREEN_QR_CODE) shouldDrawScreen = true;
-    }
-    else
-    {
-        responseData[responseDataLength++] = QR_CODE_SET;
-        responseData[responseDataLength++] = QR_CODE_QUERY_RESPONSE_DATA_TOO_LONG;
-        AttachData(message);
-    }
-}
-
-
-
-
-
 /**
-  * @brief
+  * @brief  staticka inline funkcija pauze 1~2ms za kašnjenje odgovora za stabilne repeatere
   * @param
   * @retval
   */
-TF_Result ID_Listener(TinyFrame *tf, TF_Msg *msg){
-    
-    return TF_CLOSE;
-}
-
-TF_Result FWREQ_Listener(TinyFrame *tf, TF_Msg *msg){          
-    if (IsFwUpdateActiv()){
-        MX_QSPI_Init();
-        if (QSPI_Write ((uint8_t*)msg->data, wradd, msg->len) == QSPI_OK){
-            wradd += msg->len; 
-        }else{
-            wradd = 0;
-            bcnt = 0;
-        }            
-        MX_QSPI_Init();
-        QSPI_MemMapMode();        
+static inline void delay_us(uint32_t us) {
+    volatile uint32_t cycles = (HAL_RCC_GetHCLKFreq() / 20000000) * us;  // Smanjen faktor
+    while (cycles--) {
+        __asm volatile("NOP");  // Izbegava optimizaciju
     }
-    TF_Respond(tf, msg);
-    rstmr = HAL_GetTick();
-    return TF_STAY;
 }
-TF_Result GEN_Listener(TinyFrame *tf, TF_Msg *msg){
-    if (!IsFwUpdateActiv()){
-        if ((msg->data[9] == ST_FIRMWARE_REQUEST)&& (msg->data[8] == tfifa)){
-            wradd = ((msg->data[0]<<24)|(msg->data[1]<<16)|(msg->data[2] <<8)|msg->data[3]);
-            bcnt  = ((msg->data[4]<<24)|(msg->data[5]<<16)|(msg->data[6] <<8)|msg->data[7]);
-            MX_QSPI_Init();
-            if (QSPI_Erase(wradd, wradd + bcnt) == QSPI_OK){
-                StartFwUpdate();
-                TF_AddTypeListener(&tfapp, ST_FIRMWARE_REQUEST, FWREQ_Listener);
-                TF_Respond(tf, msg);
-                rstmr = HAL_GetTick();
-            }else{
-                wradd = 0;
-                bcnt = 0;
-            }
-            MX_QSPI_Init();
-            QSPI_MemMapMode();
-        }
-        else if((msg->data[1] == tfifa)
-            &&  ((msg->data[0] == RESTART_CTRL)
-            ||  (msg->data[0] == LOAD_DEFAULT)
-            ||  (msg->data[0] == FORMAT_EXTFLASH)
-            ||  (msg->data[0] == GET_ROOM_TEMP)
-            ||  (msg->data[0] == SET_ROOM_TEMP)
-            ||  (msg->data[0] == SET_THST_HEATING)
-            ||  (msg->data[0] == SET_THST_COOLING)
-            ||  (msg->data[0] == SET_THST_ON)
-            ||  (msg->data[0] == SET_THST_OFF)
-            ||  (msg->data[0] == GET_APPL_STAT)
-            ||  (msg->data[0] == GET_FAN_DIFFERENCE)
-            ||  (msg->data[0] == GET_FAN_BAND)
-            ||  (msg->data[0] == GET_SP_MAX)
-            ||  (msg->data[0] == SET_SP_MAX)
-            ||  (msg->data[0] == GET_SP_MIN)
-            ||  (msg->data[0] == SET_SP_MIN)
-            ||  (msg->data[0] == LIGHT_MODBUS_SET)
-            ||  (msg->data[0] == LIGHT_MODBUS_GET)
-            ||  (msg->data[0] == CURTAIN_MODBUS_SET)
-            ||  (msg->data[0] == CURTAIN_MODBUS_GET)
-            ||  (msg->data[0] == QR_CODE_SET)
-            ||  (msg->data[0] == GET_APPL_STAT)))
-            {
-                //TF_Respond(tf, msg);
-                cmd = msg->data[0];
-                if (cmd == SET_ROOM_TEMP){
-                    SetRoomTemp(msg);
-                    
-//                    if(msg->data[3] == 10)
-//                    {
-//                        GUI_DispDec(msg->data[3], 3); 
-//                        
-//                        responseData[0] = 1;
-//                        responseData[1] = 10;
-//                        responseData[2] = 5; 
-//                        responseData[3] = tfifa; 
-//                        
-//                        TF_QuerySimple(&tfapp, S_TEMP, responseData, 4, ID_Listener, TF_PARSER_TIMEOUT_TICKS*4);
-//                    }
-                }
-                else if (cmd == SET_THST_HEATING){
-                    SetThstHeating();
-                }
-                else if (cmd == SET_THST_COOLING)
- {
-                    SetThstCooling();
-                }
-                else if (cmd == SET_THST_ON){
-                    SetThstOn();
-                }
-                else if (cmd == SET_THST_OFF){
-                    SetThstOff();
-                }
-                else if (cmd == GET_FAN_DIFFERENCE){
-                    SendFanDiff(msg);
-                }
-                else if (cmd == GET_FAN_BAND){
-                    SendFanBand(msg);
-                }
-                else if (cmd == GET_ROOM_TEMP){
-                    SendRoomTemp(tf, msg);
-                }
-                else if(cmd == GET_SP_MAX)
-                {
-                    Send_SP_Max(msg);
-                }
-                else if(cmd == SET_SP_MAX)
-                {
-                    Set_SP_Max(msg);
-                }
-                else if(cmd == GET_SP_MIN)
-                {
-                    Send_SP_Min(msg);
-                }
-                else if(cmd == SET_SP_MIN)
-                {
-                    Set_SP_Min(msg);
-                }
-                else if(cmd == LIGHT_MODBUS_GET)
-                {
-                    Send_Light_Modbus(msg);
-                }
-                else if(cmd == LIGHT_MODBUS_SET)
-                {
-                    Set_Light_Modbus(msg);
-                }
-                else if(cmd == CURTAIN_MODBUS_GET)
-                {
-                    Send_Curtain_Modbus(msg);
-                }
-                else if(cmd == CURTAIN_MODBUS_SET)
-                {
-                    Set_Curtain_Modbus(msg);
-                }
-                else if(cmd == QR_CODE_SET)
-                {
-                    Set_QR_Code_RS485(msg);
-                }
-                
-                TF_Respond(tf, msg);
-                
-                ZEROFILL(responseData, sizeof(responseData));
-                responseDataLength = 0;
-        }
-        else if(msg->data[0] == MODBUS_SEND_WRITE_SINGLE_REGISTER)
-        {
-            /*if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
-            *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-            *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-            sendDataCount += 2;
-            sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;*/
-            
-            
-            
-            for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
-            {
-                if(Light_Modbus_GetRelay(lights_modbus + i) == (((((uint16_t)msg->data[1]) << 8) & 0xFF00) | msg->data[2]))
-                {
-                    if((!msg->data[3]) && Light_Modbus_isNewValueOn(lights_modbus + i))
-                    {
-                        Light_Modbus_Off_External(lights_modbus + i);
-                    }
-                    else if(msg->data[3] && (!Light_Modbus_isNewValueOn(lights_modbus + i)))
-                    {
-                        Light_Modbus_On_External(lights_modbus + i);
-                    }
-                }
-            }
-            
-            if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
-        }
-        else if(msg->data[1] == tfbra)
-        {
-            if  (msg->data[0] == SET_RTC_DATE_TIME)
-            {
-                rtcdt.WeekDay = msg->data[2];
-                rtcdt.Date    = msg->data[3];
-                rtcdt.Month   = msg->data[4];
-                rtcdt.Year    = msg->data[5];
-                rtctm.Hours   = msg->data[6];
-                rtctm.Minutes = msg->data[7];
-                rtctm.Seconds = msg->data[8];
-                HAL_RTC_SetTime(&hrtc, &rtctm, RTC_FORMAT_BCD);
-                HAL_RTC_SetDate(&hrtc, &rtcdt, RTC_FORMAT_BCD);
-                RtcTimeValidSet();
-            }
-            else if(msg->data[0] == MODBUS_SEND_READ_REGISTERS)
-            {
-                for(uint8_t i = 2;    i < msg->len;    i += 3)
-                {
-                    const uint16_t relay = (*(uint16_t*)(msg->data + i));
-                    const uint8_t val = ((*(msg->data + i + 2)) == 0x01) ? 1 : 0 ;
-                    
-                    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
-                    {
-                        if(relay == Light_Modbus_GetRelay(lights_modbus + i))
-                        {
-                            Light_Modbus_Update_External(lights_modbus + i, val);
-                            
-                            if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
-                            else if(!screen) screen = SCREEN_MAIN;
-                            
-                            continue;
-                        }
-                    }
-                    
-                    /*if((!val) && ((relay == thst.relay1) || (relay == thst.relay2) || (relay == thst.relay3) || (relay == thst.relay4)) && IsTempRegActiv())
-                    {
-                        TempRegOff();
-                        
-                        continue;
-                    }*/
-                    
-                    /*for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
-                    {
-                        if(relay == Curtain_GetRelayUp(curtains + i))
-                        {
-                            if((val != Curtain_isMoving(curtains + i)) && (!Curtain_hasDirectionChanged(curtains + i)))
-                            {
-                                Curtain_Move(curtains + i, CURTAIN_UP);
-                                Curtain_DirectionEqualize(curtains + i);
-                                
-                                if(screen == SCREEN_CURTAINS) shouldDrawScreen = 1;
-                            }
-                            
-                            continue;
-                        }
-                        else if((relay == Curtain_GetRelayDown(curtains + i)) && (!Curtain_hasDirectionChanged(curtains + i)))
-                        {
-                            if(val != Curtain_isMoving(curtains + i))
-                            {
-                                Curtain_Move(curtains + i, CURTAIN_DOWN);
-                                Curtain_DirectionEqualize(curtains + i);
-                                
-                                if(screen == SCREEN_CURTAINS) shouldDrawScreen = 1;
-                            }
-                            
-                            continue;
-                        }
-                    }*/
-                    
-                    
-//                    updateModbusRegisterEnd:;
-                }
-            }
-        }
-    }
-    return TF_STAY;
-}
-
-
-
-
-
-TF_Result Thermostat_Setup_Listener(TinyFrame *tf, TF_Msg *msg)
+/**
+* @brief :  Sluša sve promjene binarnog tipa, provjerava sopstvene registrovane
+*           i mijenja prema novom stanju, ove promjene su promjene statusa i
+*           ne pokrecu update aktuatora t.j. ne reaguju kao direktna touch komanda
+*           user interfejsa nego su flagovi za grafiku i podešavanje stanja za sledecu
+*           korisnicku komandu
+* @param :
+* @retval:  TF_STAY / ne odgovaraj ne ovu poruku, ovo je iskljucivo za aktuatore
+*/
+TF_Result BINARY_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    if(thst.master && msg->data[1] && thst.group == msg->data[0])
+    uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
+
+    for(int i = 0; i < LIGHTS_MODBUS_SIZE; i++) // provjeri sve strukture za svjetla
     {
+        if(adr && lights_modbus[i].index && (adr == lights_modbus[i].index)) // uradi sve provjere na nule i adrese
+        {
+            Light_Modbus_Update_External(&lights_modbus[i], msg->data[2] == 1 ? 1:0); // podesi novo stanje bez akcije
+        }
+    }
+    return TF_STAY;
+}
+/**
+* @brief :  Sluša sve promjene dimmer tipa. u trenutnoj grafici sa sliderom nema
+*           pozicije slidera ali su komande dimera za 0/100% on/off tipa na ovom
+*           kanalu tako da pratimo i ovu komunikaciju
+* @param :
+* @retval:  TF_STAY / ne odgovaraj ne ovu poruku, ovo je iskljucivo za aktuatore
+*/
+TF_Result DIMMER_SET_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+    uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
+
+    for(int i = 0; i < LIGHTS_MODBUS_SIZE; i++) // provjeri sve strukture za svjetla
+    {
+        if(adr && lights_modbus[i].index && (adr == lights_modbus[i].index)) // uradi sve provjere na nule i adrese
+        {
+            Light_Modbus_Brightness_Update_External(&lights_modbus[i], msg->data[2]); // podesi novu vrijednost dimera
+        }
+    }
+    return TF_STAY;
+}
+/**
+* @brief :  Promjene i update žaluzina je malo vjerovatno da ce donijet neku bitnu korist
+            softveru ali je jako korisno kada se stoka igra sa displejima tako da svaka
+            naredna komnda sa bilo kojeg displeja bude u skladu sa stvarnim stanjem
+* @param :
+* @retval:  TF_STAY / ne odgovaraj ne ovu poruku, ovo je iskljucivo za aktuatore
+*/
+TF_Result JALOUSIE_SET_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+
+    uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1];  // sastavi adresu iz upita
+    uint8_t dir = msg->data[2]; // smejr šaluzine
+    // provjeri sve strukture za žaluzina
+    for(int i = 0; i < CURTAINS_SIZE; i++)
+    {
+        if (adr && (curtains[i].relayUp != 0) && (curtains[i].relayDown != 0))
+        {
+            if (((adr == curtains[i].relayUp) && (dir == 1)) || ((adr == curtains[i].relayDown) && (dir == 2)))
+            {
+                Curtain_Update_External(&curtains[i], dir);
+            }
+        }
+
+    }
+    return TF_STAY;
+}
+/**
+* @brief :  Promjene i update rgb vrijednosti sa uredaja unutar rs485 busa
+* @param :
+* @retval:  TF_STAY / ne odgovaraj ne ovu poruku, ovo je iskljucivo za aktuatore
+*/
+TF_Result RGB_SET_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+
+    return TF_STAY;
+}
+/**
+* @brief :  Promjene i update rgb vrijednosti sa wifi/json interfejsa
+*           docemo i do toga ako budemo koristili
+* @param :
+* @retval:  TF_STAY
+*/
+TF_Result RGB_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+
+    return TF_STAY;
+}
+#ifdef USE_THERMOSTAT
+/**
+* @brief :  Ovo je tip samo za explicitan zahtjev sa http-a inace svi uredaji
+*           u busu imaju sve zadnje promjene stanja preko info poruka
+*           ako ovaj kontroler ima registrovan master termostat
+*           reagovace na ovaj zahtjev prema svom id termostata
+*           tako što ce poslati cijelu strukturu termostata,
+*           struktura treba biti kreirana pazeci na padding
+*           ili koristeci __attribute__((packed)) ili jedan po jedan
+*           element kopirana u bafer, najbolje koristiti padding
+*           tako da se zna tacan rapored elemenata u strukturi
+*           koristi read->modify->write na klijentu, nakon read fail
+*           odma vrati termostat nedostupan za http zahtjev
+*
+* @param :
+* @retval:  TF_STAY / vrati cijelu strukturu termostata koja je u cijelom projektu ista
+*/
+TF_Result THERMOSTAT_GET_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+    uint8_t resp[15] = {0};
+
+    if(thst.master && thst.group == msg->data[0])
+    {
+        resp[0] = thst.group;
+        resp[1] = thst.master;
+        resp[2] = thst.th_ctrl;
+        resp[3] = thst.th_state;
+        resp[4] = (thst.mv_temp >> 8) & 0xFF;
+        resp[5] = thst.mv_temp & 0xFF;
+        resp[6] = thst.sp_temp;
+        resp[7] = thst.sp_min;
+        resp[8] = thst.sp_max;
+        resp[9] = thst.sp_diff;
+        resp[10] = thst.fan_speed;
+        resp[11] = thst.fan_loband;
+        resp[12] = thst.fan_hiband;
+        resp[13] = thst.fan_diff;
+        resp[14] = thst.fan_ctrl;
+        msg->len = 15;
+        msg->data = resp;
+        TF_Respond(tf, msg);
+    }
+    return TF_STAY;
+}
+/**
+* @brief :  Ako ovaj kontroler ima registrovan master termostat sa istim
+*           id kao iz poruke promjenice svoju vrijednost, master termostat
+*           ce odgovoriti na ovaj paket i još dodatno poslati info paket
+*           nakon backoff vremena, a takoder i promjenu aktuatora prema
+*           procesiranom novom stanju
+* @param :
+* @retval:  TF_STAY
+*/
+TF_Result THERMOSTAT_SET_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+    uint8_t resp[3] = {0};
+
+    // provjeri i nule i ulogu i adresu
+    if(thst.master && thst.group && thst.group == msg->data[0])
+    {
+        thst.sp_temp = msg->data[1];
+        resp[0] = msg->data[0];
+        resp[1] = msg->data[1];
+        resp[2] = ACK;
+        msg->data = resp;
+        msg->len = 3; // vrati tri  bajta
+        TF_Respond(tf, msg);
+
+        // podesi slanje info paketa sa kašnjenjem nakon ove poruke
+        th_info_delay = HAL_GetTick() + TH_INFO_DELAY;
+
+        // digni flag ako treba za grafiku
+    }
+    return TF_STAY;
+}
+/**
+* @brief :  Ako ovaj kontroler ima termostat slušace poruke ovog tipa
+*           svi termostati sa istim id iz poruke se sinhronizuju prema
+*           ovim paketima, mater termostat dodatno još odgovara na slave
+*           zahtjeve, ako je primljen info sa praznom strukturom to je
+*           zahtjev masteru da sinhronizuje uredaj koji se tek ukljucio
+* @param :
+* @retval:  TF_STAY / samo master odgovara na poruku
+*/
+TF_Result THERMOSTAT_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+    bool all_zero = true;
+    uint8_t resp[16] = {0};
+    // provjeri je li slave uredaj poslao praznu strukturu
+    // što je zahtjev za sinhronizaciju
+    for (int i = 1; i <= msg->len; i++) {
+        if (msg->data[i] != 0) {
+            all_zero = false;
+        }
+    }
+    // na koju se grupu odnosi poruka
+    if(thst.group == msg->data[0])
+    {
+        // svi cemo u grupi primit poklone ako nije zahtjev od siromaha
+        if(!all_zero) {
+            thst.th_ctrl = msg->data[2];    // nova kontrola off/heating/cooling
+            thst.th_state = msg->data[3];   // novo stanje aktivan / neaktivan
+            thst.sp_temp = msg->data[6];    // novi Set Point Temperature
+
+            // samo slave termostat ce prihvatit Measured Value Temperature koja je potpisana (ide i u minus)
+            if(!thst.master) {
+                thst.mv_temp = (int16_t) (msg->data[4] << 8) | msg->data[5];
+                MVUpdateSet(); // obavijesti grafiku
+            }
+        }
+
+        // ako je ovo je master termostat onda on ima još dodatnog posla
+        if(thst.master) {
+            // ovo je sada trenutno master termostat u grupi
+            // provjeri da li je drugi master dodjeljen grupi
+            if(msg->data[1]) {
+                thst.th_ctrl = 0; // ako jeste promjeni svoju ulogu trajno i
+                th_save = true; // setuj flag za upis u eeprom van interrupta
+            }
+            // ako je slave imao zahtjev za sinhronizaciju mora se odavde ogovoriti radi njegovog response
+            // listenera koji ocekuje isti id poruke u odgovoru kao što je onaj u poruci koju je poslao
+            resp[0] = thst.group;
+            resp[1] = thst.master;
+            resp[2] = thst.th_ctrl;
+            resp[3] = thst.th_state;
+            resp[4] = (thst.mv_temp >> 8) & 0xFF;
+            resp[5] = thst.mv_temp & 0xFF;
+            resp[6] = thst.sp_temp;
+            resp[7] = thst.sp_min;
+            resp[8] = thst.sp_max;
+            resp[9] = thst.sp_diff;
+            resp[10] = thst.fan_speed;
+            resp[11] = thst.fan_loband;
+            resp[12] = thst.fan_hiband;
+            resp[13] = thst.fan_diff;
+            resp[14] = thst.fan_ctrl;
+            resp[15] = ACK; // ovdje sam dodao i potvrdu
+            msg->data = resp; // prikaci paket
+            msg->len = 16; // vrati šesnaest bajta
+            TF_Respond(tf, msg);
+        }
+    }
+    return TF_STAY;
+}
+/**
+* @brief :  Ako ovaj kontroler ima registrovan master termostat sa istim
+*           id kao iz poruke promjenice svoju strukturu, master termostat
+*           ce odgovoriti na ovaj paket i još dodatno poslati info paket
+*           nakon backoff vremena, a takoder i promjenu aktuatora prema
+*           procesiranom novom stanju, nakon promjene reinicijalizovati
+*           termostat
+* @param :
+* @retval:  TF_STAY
+*/
+TF_Result THERMOSTAT_SETUP_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+    uint8_t resp[2] = {0,NAK};
+
+    // samo master ce primiti ovaj paket i odgovoriti na njega
+    if(thst.master && thst.group == msg->data[0])
+    {
+        // da li treba provjeravati podatke
         thst.group = msg->data[0];
         thst.master = msg->data[1];
         thst.th_ctrl = msg->data[2];
@@ -536,33 +344,233 @@ TF_Result Thermostat_Setup_Listener(TinyFrame *tf, TF_Msg *msg)
         thst.fan_hiband = msg->data[11];
         thst.fan_diff = msg->data[12];
         thst.fan_ctrl = msg->data[13];
-        thst.fan_quiet_start = msg->data[14];
-        thst.fan_quiet_end = msg->data[15];
-        thst.fan_quiet_speed = msg->data[16];
+        // ako je sve provjereno da je u rangu potvrdi
+        resp[0] = msg->data[0];
+        resp[1] = ACK;
+        msg->data = resp;
+        msg->len = 2; // vrati dva bajta
+        TF_Respond(tf, msg);
+
+        // podesi slanje info paketa sa kašnjenjem nakon ove poruke
+        th_info_delay = HAL_GetTick() + TH_INFO_DELAY;
+
+        // digni flag ako treba za grafiku
     }
-    
     return TF_STAY;
 }
-
-
-TF_Result Thermostat_Info_Listener(TinyFrame *tf, TF_Msg *msg)
-{
-    if(thst.master && msg->data[1] && thst.group == msg->data[0])
-    {
-        thst.th_ctrl = msg->data[2];
-        thst.th_state = msg->data[3];
-        thst.mv_temp = ((msg->data[4] << 8) & 0xFF00) | msg->data[5];
-        thst.sp_temp = msg->data[6];
-    }
-    
-    return TF_STAY;
-}
-
-
-
+#endif
 /**
-* @brief :  init usart interface to rs485 9 bit receiving 
-* @param :  and init state to receive packet control block 
+* @brief :  Zahtjev za update firmvera je na ovom callback-u
+*           u zahtjevu je nova firmvare verzija koji ce ovaj kontroler
+*           uporediti sa svojom zato je bitno da je kompajlirana uz sve
+*           user run sekcije u uVision. ako i adresa ovog kontrolera
+*           odgovara zahtjevu pravi se backup kopija flash memorije ovog
+*           koda mikrokontrolera, formatira se prostor za novi firmware,
+*           pokrece se transfer binarnog fajla, izracunava crc na cijeli
+*           fajl i poredi sa pecatom unutar bin fajla i ako je sve u redu
+*           restartuje se mikrokontroler. bootloader ce odraditi ostalo
+*           i ako se novi kod uspješno pokrene, oznacice flag u eepromu,
+*           ukoliko se sruši prije ovoga, bootloader ce vratiti stari kod,
+*           i takoder oznaciti da je neuspješan update, svo ovo vrijeme
+*           aplikacija koja je zapocela update ceka finalni odgovor od
+*           kontrolera koji je validan tek nakon reboota, što u najgorem
+*           slucaju može biti i 10-tak sekundi.
+*
+* @param :
+* @retval:
+*/
+TF_Result FIRMWARE_UPDATE_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+
+    return TF_STAY;
+}
+/**
+* @brief :  Promjena QR koda za wifi i app, kako smo u interruptu usarta
+*           ovdje se ne može koristit hal delay koji je sastavni dio hal
+*           drivera pa cemo koristit flag za upis primljenog qr koda u eeprom
+*           display funkcija ce qr kod ucitavati iz eeproma u initu displeja
+*           svaki je qr kod dobrodošao a samo na explicitno adresiran inetrfejs
+*           adresu odgovaramo potvrdno
+*
+* @param :
+* @retval:  TF_STAY
+*/
+TF_Result QR_REQUEST_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+#ifndef QR_CODE_COUNT
+#define QR_CODE_COUNT 2 // ovdje nije dostupno dok se ne premjesti u header zato i postoji common.h
+#endif
+
+    uint8_t resp[2] = {QR_CODE_SET, QR_CODE_QUERY_RESPONSE_DATA_TOO_LONG}; // iako je život sam pozitivan, odgovor je defaultno negativan
+    bool len_valid = QR_Code_isDataLengthShortEnough(msg->len - 3); // provjeri limit velicine
+    bool data_valid = ((msg->data[2] > 0) && (msg->data[2] <= QR_CODE_COUNT)); // provjeri validan index
+
+    if(len_valid && data_valid)
+    {
+        QR_Code_Set(msg->data[2], msg->data + 3);
+        if(screen == SCREEN_QR_CODE) shouldDrawScreen = true; // obavijesti screen
+        eebuf[0] = msg->len - 3; // spasi dužinu qr koda u prvom bajtu
+        memcpy(&eebuf[1], msg->data + 3, msg->len - 3); // kopiraj qr kod u temp buffer
+        qr_save = msg->data[2]; // ovdje nije moguc siguran upis zato setuj flag/id za upis u eeprom
+    }
+    // ako je direktno adresirano na tinyframe interface address odgovori
+    if(msg->data[1] == tfifa)
+    {
+        if (len_valid && data_valid) resp[1] = ACK; // vrati i potvrdan odgovor
+        msg->data = resp; // prikaci paket
+        msg->len = 2; // vrati dva bajta
+        TF_Respond(tf, msg);
+    }
+    return TF_STAY;
+}
+/**
+* @brief :  Koliko je sati ?
+* @param :
+* @retval:  TF_STAY
+*/
+TF_Result TIME_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+    rtcdt.WeekDay = msg->data[0];
+    rtcdt.Date    = msg->data[1];
+    rtcdt.Month   = msg->data[2];
+    rtcdt.Year    = msg->data[3];
+    rtctm.Hours   = msg->data[4];
+    rtctm.Minutes = msg->data[5];
+    rtctm.Seconds = msg->data[6];
+    HAL_RTC_SetTime(&hrtc, &rtctm, RTC_FORMAT_BCD);
+    HAL_RTC_SetDate(&hrtc, &rtcdt, RTC_FORMAT_BCD);
+    RtcTimeValidSet();
+    return TF_STAY;
+}
+/**
+* @brief :  ovo je ID listener registrovan za sve SET upite, takav nacin mogucava više
+*           razlicitih simultanih upita sa po jedan FIFO bufer komandi sa push / pop
+*           mehanizmom, idealno treba dograditi provjeru poruke iz upita sa odgovorom
+*           tako da je sigurno odgovor na taj upit
+* @param :
+* @retval:  samouništenje bez odgovora za svaki pojedinacni tip komande za koji je registrovan u pozivima
+*/
+TF_Result SET_RESPONSE_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+    // Provjera da li je ACK bajt na pravoj poziciji, najbrži metod
+    if (msg->len > ack_pozicija && msg->data[ack_pozicija] == ACK)
+    {
+        ack_flag = true; // Samo postavljamo flag, ne diramo queue
+    }
+    return TF_CLOSE;
+}
+/**
+* @brief :  ovo je ID listener registrovan za sve GET upite
+* @param :
+* @retval:  samouništenje bez odgovora za svaki pojedinacni tip komande za koji je registrovan u pozivima
+*/
+TF_Result GET_RESPONSE_Listener(TinyFrame *tf, TF_Msg *msg) {
+    if (msg->len > sizeof(getResponseBuffer.data)) return TF_CLOSE; // Osigurajmo da ne prepunimo bafer
+
+    getResponseBuffer.commandType = msg->type;
+    getResponseBuffer.length = msg->len;
+    memcpy(getResponseBuffer.data, msg->data, msg->len);
+    getResponseBuffer.ready = true;
+    return TF_CLOSE;
+}
+/**
+* @brief :  Ubaci sljedecu komandu u red komandi na cekanju
+* @param :
+* @retval:  ne vraca ništa samo izade ako je dug red treba proširit memoriju
+*/
+bool DodajKomandu(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8_t length)
+{
+    if (queue->count >= COMMAND_QUEUE_SIZE) {
+        // Ako je queue pun, odluciti da:
+        // 1. Prebaciš u "overflow buffer" i kasnije obradiš
+        // 2. Prepišeš najstariju komandu (ring buffer stil)
+        // 3. Samo odbaci novu komandu
+        return false; // vrati pozivaocu status
+    }
+
+    // Upisujemo novu komandu u red
+    queue->commands[queue->tail].commandType = commandType;
+    memcpy(queue->commands[queue->tail].data, data, length);
+    queue->commands[queue->tail].length = length;
+    // Kružno pomjeranje repa
+    queue->tail = (queue->tail + 1) % COMMAND_QUEUE_SIZE;
+    queue->count++;
+    return true; // komanda uspješno dodana u red komandi
+}
+/**
+* @brief :  šalji slijedecu komandu iz reda na cekanju sa resend mehanizmom i cekanjem odgovora
+* @param :
+* @retval:  ne vraca ništa samo izadje ako je prazan red
+*/
+void SaljiKomandu(CommandQueue *queue)
+{
+    if (queue->count == 0) return; // Ako nema komandi, izlazimo
+
+    Command *cmd = &queue->commands[queue->head];
+    // gdje ocekujem ACK bajt u baferu odgovora
+    if      (cmd->commandType == BINARY_SET)        ack_pozicija = BIN_ACK_POZICIJA;
+    else if (cmd->commandType == DIMMER_SET)        ack_pozicija = DIM_ACK_POZICIJA;
+    else if (cmd->commandType == JALOUSIE_SET)      ack_pozicija = JAL_ACK_POZICIJA;
+    else if (cmd->commandType == THERMOSTAT_INFO)   ack_pozicija = THE_ACK_POZICIJA;
+    else if (cmd->commandType == RGB_SET)           ack_pozicija = RGB_ACK_POZICIJA;
+
+    // Pokušaj ponovnog slanja komande
+    for (int pokusaj = 0; pokusaj < MAX_RETRIES; pokusaj++) {
+
+        ack_flag = false; // Resetujemo flag prije slanja komande
+
+        // Šaljemo komandu
+        TF_QuerySimple(&tfapp, cmd->commandType, cmd->data, cmd->length, SET_RESPONSE_Listener, TIMEOUT_MS);
+
+        // Cekamo odgovor sa timeoutom
+        int timeout = TIMEOUT_MS;
+        while (timeout--) {
+            if (ack_flag) break;  // Ako ACK stigne, prekini cekanje
+            HAL_Delay(1); // ovo je nužno zlo
+        }
+
+        if (ack_flag) break; // Ako smo dobili odgovor, izlazimo iz petlje
+    }
+
+    // Ako je komanda završena (bilo zbog ACK-a ili timeouta), ukloni je iz reda
+    queue->head = (queue->head + 1) % COMMAND_QUEUE_SIZE;
+    queue->count--;
+
+    // Resetujemo flag da ne utice na sledece komande
+    ack_flag = false;
+}
+/**
+* @brief :  traži stanje bilo cega na busu
+* @param :
+* @retval:  true = odgovor u baferu / false = odgovora nije bilo
+*/
+bool GetState(uint8_t commandType, uint16_t address, uint8_t *response)
+{
+    uint8_t buf[2];
+    buf[0] = (address >> 8) & 0xFF;
+    buf[1] = address & 0xFF;
+
+    for (int attempt = 0; attempt < MAX_GET_RETRY; attempt++) {
+        getResponseBuffer.ready = false;  // Resetujemo status odgovora
+        getResponseBuffer.commandType = 0;
+
+        TF_QuerySimple(&tfapp, commandType, buf, sizeof(buf), GET_RESPONSE_Listener, RESPONSE_TIME);
+
+        int timeout = RESPONSE_TIME;
+        while (timeout--) {
+            if (getResponseBuffer.ready && getResponseBuffer.commandType == commandType) {
+                memcpy(response, getResponseBuffer.data, getResponseBuffer.length);
+                return true;  // Uspješno primljen odgovor
+            }
+            HAL_Delay(1);  // Odbrojavamo timeout
+        }
+    }
+
+    return false;  // Ako nakon svih pokušaja nema odgovora, vracamo false
+}
+/**
+* @brief :  init usart interface to rs485 9 bit receiving
+* @param :  and init state to receive packet control block
 * @retval:  wait to receive:
 *           packet start address marker SOH or STX  2 byte  (1 x 9 bit)
 *           packet receiver address 4 bytes msb + lsb       (2 x 9 bit)
@@ -573,374 +581,81 @@ void RS485_Init(void)
 {
     sendData.data = NULL;
     sendData.len = 0;
-    
-    if(!init_tf){
-        init_tf = TF_InitStatic(&tfapp, TF_MASTER); // 1 = master, 0 = slave
-        TF_AddGenericListener(&tfapp, GEN_Listener);
-        TF_AddTypeListener(&tfapp, THERMOSTAT_INFO, Thermostat_Info_Listener);
-        TF_AddTypeListener(&tfapp, THERMOSTAT_SETUP, Thermostat_Setup_Listener);
+
+    if(!init_tf) {
+        init_tf = TF_InitStatic(&tfapp, TF_MASTER);
+
+        TF_AddTypeListener(&tfapp, RGB_SET, RGB_SET_Listener);
+        TF_AddTypeListener(&tfapp, RGB_INFO, RGB_INFO_Listener);
+        TF_AddTypeListener(&tfapp, BINARY_SET, BINARY_SET_Listener);
+        TF_AddTypeListener(&tfapp, DIMMER_SET, DIMMER_SET_Listener);
+        TF_AddTypeListener(&tfapp, JALOUSIE_SET, JALOUSIE_SET_Listener);
+        TF_AddTypeListener(&tfapp, QR_REQUEST, QR_REQUEST_Listener);
+        TF_AddTypeListener(&tfapp, TIME_INFO, TIME_INFO_Listener);
+#ifdef USE_THERMOSTAT
+        TF_AddTypeListener(&tfapp, THERMOSTAT_GET, THERMOSTAT_GET_Listener);
+        TF_AddTypeListener(&tfapp, THERMOSTAT_SET, THERMOSTAT_SET_Listener);
+        TF_AddTypeListener(&tfapp, THERMOSTAT_INFO, THERMOSTAT_INFO_Listener);
+        TF_AddTypeListener(&tfapp, THERMOSTAT_SETUP, THERMOSTAT_SETUP_Listener);
+        TF_AddTypeListener(&tfapp, FIRMWARE_UPDATE, FIRMWARE_UPDATE_Listener);
+#endif
     }
-	HAL_UART_Receive_IT(&huart1, &rec, 1);
+    HAL_UART_Receive_IT(&huart1, &rec, 1);
 }
 /**
-* @brief  : rs485 service function is  called from every
-* @param  : main loop cycle to service rs485 communication
-* @retval : receive and send on regulary base 
+* @brief  : Servisiramo bufere za slanje i flagove na cekanju
+*           zasad je ili<->ili  fimware update <-> normalan rad
+*           dok se ne razvije precizan timing vremenskih slotova
+*           u toku transfera novog firmware-a
+* @param  :
+* @retval : nema
 */
-void RS485_Service(void){
-    uint8_t i; 
-    if (IsFwUpdateActiv()){
-        if(HAL_GetTick() > rstmr + 5000){
-            TF_RemoveTypeListener(&tfapp, ST_FIRMWARE_REQUEST);
+void RS485_Service(void)
+{
+    uint32_t now = HAL_GetTick();
+
+    if (IsFwUpdateActiv())
+    {
+        if(now >= rstmr + 5000)
+        {
             StopFwUpdate();
             wradd = 0;
             bcnt = 0;
         }
-    } else if ((HAL_GetTick() - etmr) >= TF_PARSER_TIMEOUT_TICKS){
-        if (cmd){
-            switch (cmd){
-                case LOAD_DEFAULT:
-                    i = 1;
-                    EE_WriteBuffer(&i, EE_INIT_ADDR, 1);
-                case RESTART_CTRL:
-                    SYSRestart();
-                    break;
-                case FORMAT_EXTFLASH:
-                    MX_QSPI_Init();
-                    QSPI_Erase(0x90000000, 0x90FFFFFF);
-                    MX_QSPI_Init();
-                    QSPI_MemMapMode();
-                    break;
-                case GET_APPL_STAT:
-                    PresentSystem();
-                    HAL_UART_Receive_IT(&huart1, &rec, 1);
-                    break;
-                case GET_ROOM_TEMP:                   
-                    tbuf[0] = thst.mv_temp >> 8;
-                    tbuf[1] = thst.mv_temp & 0xFF;
-                    tcnt = 2;
-                    break;
-                case SET_ROOM_TEMP:
-                    break;
-            }
-            cmd = 0;
-        }
-        else if((!isSendDataBufferEmpty()) || sendData.data)
-        {
-            if(sendData.data)
-            {
-                TF_Query(&tfapp, &sendData, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
-            }
-            else
-            {
-                TF_QuerySimple(&tfapp, CUSTOM, sendDataBuff, sendDataCount, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
-            }
-            sendData.data = NULL;
-            sendData.len = 0;
-            sendDataCount = 0;
-            ZEROFILL(sendDataBuff, COUNTOF(sendDataBuff));
-        }
-        else if((!thst.master) && thst.hasSecondaryInfoChanged)
-        {
-            sendDataBuff[sendDataCount++] = thst.group;
-            sendDataBuff[sendDataCount++] = thst.master;
-            sendDataBuff[sendDataCount++] = thst.th_ctrl;
-            sendDataBuff[sendDataCount++] = thst.th_state;
-            sendDataBuff[sendDataCount++] = (thst.mv_temp >> 8) & 0xFF;
-            sendDataBuff[sendDataCount++] = thst.mv_temp & 0xFF;
-            sendDataBuff[sendDataCount++] = thst.sp_temp;
-            sendDataBuff[sendDataCount++] = thst.sp_min;
-            sendDataBuff[sendDataCount++] = thst.sp_max;
-            sendDataBuff[sendDataCount++] = thst.sp_diff;
-            sendDataBuff[sendDataCount++] = thst.fan_speed;
-            sendDataBuff[sendDataCount++] = thst.fan_loband;
-            sendDataBuff[sendDataCount++] = thst.fan_hiband;
-            sendDataBuff[sendDataCount++] = thst.fan_diff;
-            sendDataBuff[sendDataCount++] = thst.fan_ctrl;
-            sendDataBuff[sendDataCount++] = thst.fan_quiet_start;
-            sendDataBuff[sendDataCount++] = thst.fan_quiet_end;
-            sendDataBuff[sendDataCount++] = thst.fan_quiet_speed;
-            
-            sendData.data = sendDataBuff;
-            sendData.len = sendDataCount;
-            sendData.type = THERMOSTAT_SETUP;
-            
-            thst.hasSecondaryInfoChanged = false;
-        }
-        else if((!thst.master) && thst.hasPrimaryInfoChanged)
-        {
-            sendDataBuff[sendDataCount++] = thst.group;
-            sendDataBuff[sendDataCount++] = thst.master;
-            sendDataBuff[sendDataCount++] = thst.th_ctrl;
-            sendDataBuff[sendDataCount++] = thst.th_state;
-            sendDataBuff[sendDataCount++] = (thst.mv_temp >> 8) & 0xFF;
-            sendDataBuff[sendDataCount++] = thst.mv_temp & 0xFF;
-            sendDataBuff[sendDataCount++] = thst.sp_temp;
-            
-            sendData.data = sendDataBuff;
-            sendData.len = sendDataCount;
-            sendData.type = THERMOSTAT_INFO;
-            
-            thst.hasPrimaryInfoChanged = false;
-        }
-        else if (tcnt) {
-            TF_QuerySimple(&tfapp, THERMOSTAT_TEMP_SET, tbuf, tcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
-            etmr = HAL_GetTick();
-            tcnt = 0;
-        }
-        else if (lcnt) {
-            TF_QuerySimple(&tfapp, BINARY_SET, lbuf, lcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
-            etmr = HAL_GetTick();
-            lcnt = 0;
-        } else if (dcnt){
-            TF_QuerySimple(&tfapp, DIMMER_SET, dbuf, dcnt, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
-            etmr = HAL_GetTick();
-            dcnt = 0;
-        }
-        /*else if(LightInitRequestShouldSend())
-        {
-            LightInitDisable();
-            
-            sendDataBuff[0] = ;
-            
-            TF_QuerySimple(&tfapp, S_CUSTOM, sendDataBuff, 4, ID_Listener, TF_PARSER_TIMEOUT_TICKS);
-            ZEROFILL(sendDataBuff, COUNTOF(sendDataBuff));
-        }*/
-        /*else if(VENTILATOR_HAS_CHANGED())
-        {
-            VENTILATOR_CHANGE_RESET();
-            modbusSendData[modbusSendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
-            modbusSendData[modbusSendDataCount++] = (ventilator.relay >> 8) & 0xFF;
-            modbusSendData[modbusSendDataCount++] = ventilator.relay & 0xFF;
-            modbusSendData[modbusSendDataCount++] = VENTILATOR_IS_ACTIVE();
-        }*/
-        else
-        {
-            if(!isSendDataBufferEmpty())
-            {
-                goto check_changes_loops_end;   // IMPORTANT!
-            }
-            
-            
-            
-            for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
-            {
-                Curtain* const cur = curtains + i;
-                
-                if(!Curtain_hasRelays(cur)) continue;
-                
-                if(Curtain_hasMoveTimeExpired(cur))
-                {
-                    Curtain_Stop(cur);
-                }
-                
-                if(Curtain_hasDirectionChanged(cur))
-                {
-                    uint16_t relay = 0;
-                    
-                    /*if(Curtain_isMoving(cur) && (!Curtain_isNewDirectionStop(cur)) && (!Curtain_shouldResend(cur)))
-                    {
-                        Curtain_Resend(cur);
-                        
-                        if(sendDataBuff[0] != MODBUS_SEND_WRITE_SINGLE_REGISTER) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
-                        relay = Curtain_isMovingUp(cur) ? Curtain_GetRelayUp(cur) : Curtain_GetRelayDown(cur);
-                        *(sendDataBuff + sendDataCount) = (relay >> 8) & 0xFF;
-                        *(sendDataBuff + sendDataCount + 1) = relay & 0xFF;
-                        sendDataCount += 2;
-                        sendDataBuff[sendDataCount++] = 0x2;
-                        
-                        if(screen == SCREEN_CURTAINS) shouldDrawScreen = 1;
-                        
-                        Curtain_RestartTimer(cur);
-                    }
-                    else if((!Curtain_shouldResend(cur)) || (Curtain_shouldResend(cur) && Curtain_HasSwitchDirectionTimeExpired(cur)))
-                    {*/
-                        /*if(Curtain_shouldResend(cur))
-                        {
-                            Curtain_ResendReset(cur);
-                            Curtain_RestartTimer(cur);
-                        }*/
-                        
-//                        if(sendDataBuff[0] != MODBUS_SEND_WRITE_SINGLE_REGISTER) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
-                        relay = (Curtain_isNewDirectionUp(cur) || (Curtain_isNewDirectionStop(cur) && Curtain_isMovingUp(cur))) ? Curtain_GetRelayUp(cur) : Curtain_GetRelayDown(cur);
-                        *(sendDataBuff + sendDataCount) = (relay >> 8) & 0xFF;
-                        *(sendDataBuff + sendDataCount + 1) = relay & 0xFF;
-                        sendDataCount += 2;
-                        sendDataBuff[sendDataCount++] = Curtain_isNewDirectionStop(cur) ? 0 : (Curtain_isNewDirectionUp(cur) ? 1 : 2);
-                        
-                        if(screen == SCREEN_CURTAINS) shouldDrawScreen = 1;
-                        
-                        if(Curtain_isNewDirectionStop(cur)) Curtain_Reset(cur);
-                        else Curtain_DirectionEqualize(cur);
-                        
-                        break; // blinds have to be sent one by one
-//                    }
-                }
-            }
-            
-            
-            if(!isSendDataBufferEmpty())
-            {
-                sendData.data = sendDataBuff;
-                sendData.len = sendDataCount;
-                sendData.type = JALOUSIE_SET;
-                goto check_changes_loops_end;   // IMPORTANT!
-            }
-            
-            
-            
-            for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
-            {
-                if(Light_Modbus_hasStatusChanged(lights_modbus + i))
-                {
-//                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = MODBUS_SEND_WRITE_SINGLE_REGISTER;
-                    *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-                    *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-                    sendDataCount += 2;
-                    
-                    if(Light_Modbus_isBinary(lights_modbus + i) || Light_Modbus_isRGB(lights_modbus + i))
-                    {
-                        sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
-                        sendData.type = BINARY_SET;
-                    }
-                    else if(Light_Modbus_isDimmer(lights_modbus + i))
-                    {
-                        sendDataBuff[sendDataCount++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0 : 100;
-                        sendData.type = DIMMER_SET;
-                    }
-                    
-                    Light_Modbus_ResetStatus(lights_modbus + i);
-                    
-                    if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
-                    else if(!screen) screen = SCREEN_MAIN;
-                }
-                else if(Light_Modbus_hasBrightnessChanged(lights_modbus + i))
-                {
-                    *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-                    *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-                    sendDataCount += 2;
-                    sendDataBuff[sendDataCount++] = Light_Modbus_GetBrightness(lights_modbus + i);
-                    
-                    sendData.type = DIMMER_SET;
-                    
-                    Light_Modbus_ResetBrightness(lights_modbus + i);
-                }
-                else if(Light_Modbus_hasColorChanged(lights_modbus + i))
-                {
-                    //if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_COLOR_SET;
-                    *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-                    *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-                    sendDataCount += 2;
-                    sendDataBuff[sendDataCount++] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
-                    sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
-                    sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
-                    
-                    sendData.type = RGB_SET;
-                    
-                    Light_Modbus_ResetColor(lights_modbus + i);
-                }
-                
-                if(!isSendDataBufferEmpty())
-                {
-                    sendData.data = sendDataBuff;
-                    sendData.len = sendDataCount;
-                    break;
-                }
-            }
-            
-            
-            /*if(!isSendDataBufferEmpty())
-            {
-                sendData.data = sendDataBuff;
-                sendData.len = sendDataCount;
-                sendData.type = BINARY_SET;
-                goto check_changes_loops_end;   // IMPORTANT!
-            }
-            
-            
-            for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
-            {
-                if(Light_Modbus_hasBrightnessChanged(lights_modbus + i))
-                {
-//                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_BRIGHTNESS_SET;
-                    *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-                    *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-                    sendDataCount += 2;
-                    sendDataBuff[sendDataCount++] = Light_Modbus_GetBrightness(lights_modbus + i);
-                    
-                    Light_Modbus_ResetBrightness(lights_modbus + i);
-                }
-            }
-            
-            
-            if(!isSendDataBufferEmpty())
-            {
-                sendData.data = sendDataBuff;
-                sendData.len = sendDataCount;
-                sendData.type = DIMMER_SET;
-                goto check_changes_loops_end;   // IMPORTANT!
-            }
-            
-            
-            for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
-            {
-                if(Light_Modbus_hasColorChanged(lights_modbus + i))
-                {
-                    if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_COLOR_SET;
-                    *(sendDataBuff + sendDataCount) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-                    *(sendDataBuff + sendDataCount + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-                    sendDataCount += 2;
-                    sendDataBuff[sendDataCount++] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
-                    sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
-                    sendDataBuff[sendDataCount++] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
-                    
-                    Light_Modbus_ResetColor(lights_modbus + i);
-                }
-            }
-            
-            
-            if(!isSendDataBufferEmpty()) goto check_changes_loops_end;   // IMPORTANT!*/
-            
-            
-            /*lcnt = 0;
-            dcnt = 0;
-            tcnt = 0;
-            ZEROFILL(tbuf,COUNTOF(tbuf));
-            ZEROFILL(lbuf,COUNTOF(lbuf));
-            ZEROFILL(dbuf,COUNTOF(dbuf));            
-            lctrl1 =(uint8_t*)&LIGHT_Ctrl1.Main1;
-            lctrl2 =(uint8_t*)&LIGHT_Ctrl2.Main1;
-            for(i = 0; i < 8; i++){
-                if (*(lctrl1+3) != *(lctrl1+2)){
-                    *(lctrl1+3)  = *(lctrl1+2);
-                    if (*lctrl1){
-                        if (i < 5){ 
-                            lbuf[lcnt++] = *lctrl1;
-                            lbuf[lcnt++] = *(lctrl1+2);
-                            if (*lctrl2){
-                                lbuf[lcnt++] = *lctrl2;
-                                lbuf[lcnt++] = *(lctrl1+2);
-                            }
-                        } else {
-                            dbuf[dcnt++] = *lctrl1;
-                            dbuf[dcnt++] = *(lctrl1+2);
-                        }
-                    }
-                }
-                lctrl1 += 4;
-                lctrl2 += 4;
-            }*/
-            
-            check_changes_loops_end:;
-        }
+        return;
     }
+    // šalji komande na redu
+    SaljiKomandu(&binaryQueue);
+    SaljiKomandu(&dimmerQueue);
+    SaljiKomandu(&rgbwQueue);
+    SaljiKomandu(&curtainQueue);
+    SaljiKomandu(&thermoQueue);
+    // spasinovi qr kod ako je na cekanju
+    if(qr_save)
+    {
+        EE_WriteBuffer(eebuf, (qr_save == 1 ? EE_QR_CODE1 : EE_QR_CODE2), eebuf[0]+1); // racunaj i prvi bajt
+        qr_save = 0;
+    }
+    // spasi postavke termostata ako su na cekanju
+    if(th_save)
+    {
+
+    }
+    // pošalji termostatima info paket ako je na cekanju
+    if(th_info_delay && (now - th_info_delay) >=0 )
+    {
+        th_info_delay = 0;
+        thst.hasInfoChanged = true;
+    }
+
 }
 /**
   * @brief
   * @param
   * @retval
   */
-void RS485_Tick(void){
+void RS485_Tick(void)
+{
     if (init_tf == true) {
         TF_Tick(&tfapp);
     }
@@ -950,46 +665,45 @@ void RS485_Tick(void){
   * @param
   * @retval
   */
-void TF_WriteImpl(TinyFrame *tf, const uint8_t *buff, uint32_t len){
+void TF_WriteImpl(TinyFrame *tf, const uint8_t *buff, uint32_t len)
+{
+    delay_us(2000);
     HAL_UART_Transmit(&huart1,(uint8_t*)buff, len, RESP_TOUT);
     HAL_UART_Receive_IT(&huart1, &rec, 1);
 }
 /**
-  * @brief  
-  * @param  
-  * @retval 
+  * @brief
+  * @param
+  * @retval
   */
-void RS485_RxCpltCallback(void){
+void RS485_RxCpltCallback(void)
+{
     TF_AcceptChar(&tfapp, rec);
-	HAL_UART_Receive_IT(&huart1, &rec, 1);
+    HAL_UART_Receive_IT(&huart1, &rec, 1);
 }
 /**
 * @brief : all data send from buffer ?
-* @param : what  should one to say   ? well done,   
+* @param : what  should one to say   ? well done,
 * @retval: well done, and there will be more..
 */
-void RS485_TxCpltCallback(void){
+void RS485_TxCpltCallback(void)
+{
 }
 /**
 * @brief : usart error occured during transfer
 * @param : clear error flags and reinit usaart
-* @retval: and wait for address mark from master 
+* @retval: and wait for address mark from master
 */
-void RS485_ErrorCallback(void){
+void RS485_ErrorCallback(void)
+{
     __HAL_UART_CLEAR_PEFLAG(&huart1);
     __HAL_UART_CLEAR_FEFLAG(&huart1);
     __HAL_UART_CLEAR_NEFLAG(&huart1);
     __HAL_UART_CLEAR_IDLEFLAG(&huart1);
     __HAL_UART_CLEAR_OREFLAG(&huart1);
-	__HAL_UART_FLUSH_DRREGISTER(&huart1);
-	huart1.ErrorCode = HAL_UART_ERROR_NONE;
-	HAL_UART_Receive_IT(&huart1, &rec, 1);
+    __HAL_UART_FLUSH_DRREGISTER(&huart1);
+    huart1.ErrorCode = HAL_UART_ERROR_NONE;
+    HAL_UART_Receive_IT(&huart1, &rec, 1);
 }
 
-
-
-bool isSendDataBufferEmpty(void)
-{
-    return !sendDataCount;
-}
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/

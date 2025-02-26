@@ -4,7 +4,7 @@
 #include "stm32746g_eeprom.h"
 
 #if (__CURTAIN_CTRL_H__ != FW_BUILD)
-    #error "curtain header version mismatch"
+#error "curtain header version mismatch"
 #endif
 
 
@@ -29,7 +29,7 @@ Curtain curtains[CURTAINS_SIZE];
 void Curtains_Count(void)
 {
     curtains_count = 0;
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {
         if(Curtain_hasRelays(curtains + i)) ++curtains_count;
@@ -64,24 +64,24 @@ void Curtain_Save(Curtain* const cur, const uint16_t addr)
 void Curtains_Init(void)
 {
     EE_ReadBuffer(&upDownDurationSeconds,    EE_CURTAINS_MOVE_TIME,   1);
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {
         Curtain_Init(curtains + i, EE_CURTAINS + (i * 4));
     }
-    
+
     Curtains_Count();
 }
 
 void Curtains_Save(void)
 {
     EE_WriteBuffer(&upDownDurationSeconds,    EE_CURTAINS_MOVE_TIME,   1);
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {
         Curtain_Save(curtains + i, EE_CURTAINS + (i * 4));
     }
-    
+
     Curtains_Count();
 }
 
@@ -170,7 +170,7 @@ bool Curtains_isAnyCurtainMoving(void)
     {
         if(Curtain_isMoving(curtains + i)) return true;
     }
-    
+
     return false;
 }
 
@@ -180,7 +180,7 @@ bool Curtains_areAllMoving(void)
     {
         if(Curtain_hasRelays(curtains + i) && (!Curtain_isMoving(curtains + i))) return false;
     }
-    
+
     return true;
 }
 
@@ -190,7 +190,7 @@ bool Curtains_areAllMovinginSameDirection(const uint8_t direction)
     {
         if(Curtain_hasRelays(curtains + i) && (curtains[i].upDown_old != direction)) return false;
     }
-    
+
     return true;
 }
 
@@ -205,7 +205,7 @@ bool Curtains_isAnyCurtainMovingUp(void)
     {
         if(Curtain_isMovingUp(curtains + i)) return true;
     }
-    
+
     return false;
 }
 
@@ -220,7 +220,7 @@ bool Curtains_isAnyCurtainMovingDown(void)
     {
         if(Curtain_isMovingDown(curtains + i)) return true;
     }
-    
+
     return false;
 }
 
@@ -238,7 +238,7 @@ bool Curtains_isNewDirectionStop(const Curtain* const cur)
     {
         if(!Curtain_isNewDirectionStop(cur)) return false;
     }
-    
+
     return true;
 }
 
@@ -250,13 +250,13 @@ bool Curtain_isNewDirectionUp(const Curtain* const cur)
 bool Curtains_isNewDirectionUp(void)
 {
     uint8_t anyRelay = 0;
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
     {
         if(Curtain_hasRelays(curtains + i) && (!Curtain_isNewDirectionUp(curtains + i))) return false;
         if(Curtain_hasRelays(curtains + i)) anyRelay = 1;
     }
-    
+
     return anyRelay ? true : false;
 }
 
@@ -268,13 +268,13 @@ bool Curtain_isNewDirectionDown(const Curtain* const cur)
 bool Curtains_isNewDirectionDown(void)
 {
     uint8_t anyRelay = 0;
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
     {
         if(Curtain_hasRelays(curtains + i) && (!Curtain_isNewDirectionDown(curtains + i))) return false;
         if(Curtain_hasRelays(curtains + i)) anyRelay = 1;
     }
-    
+
     return anyRelay ? true : false;
 }
 
@@ -313,14 +313,14 @@ void Curtain_Move(Curtain* const cur, const uint8_t direction)
 
 void Curtain_MoveSignal(Curtain* const cur, const uint8_t direction)
 {
-        if(Curtain_isMoving(cur) && (cur->upDown == direction) && (cur->upDown_old == direction)) Curtain_Stop(cur);
-        else Curtain_Move(cur, direction);
+    if(Curtain_isMoving(cur) && (cur->upDown == direction) && (cur->upDown_old == direction)) Curtain_Stop(cur);
+    else Curtain_Move(cur, direction);
 }
 
 void Curtains_Move(const uint8_t direction)
 {
     curtains_send = 1;
-    
+
     if(Curtains_isAnyCurtainMoving())
     {
         for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
@@ -329,7 +329,7 @@ void Curtains_Move(const uint8_t direction)
                 (curtains + i)->upDown_old = (direction == CURTAIN_UP) ? CURTAIN_DOWN : CURTAIN_UP;
         }
     }
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
     {
         Curtain_Move(curtains + i, direction);
@@ -339,14 +339,14 @@ void Curtains_Move(const uint8_t direction)
 void Curtains_MoveSignal(const uint8_t direction)
 {
     /*const uint8_t newdir = (((direction == CURTAIN_UP) && (Curtains_isAnyCurtainMovingUp())) || ((direction == CURTAIN_DOWN) && (Curtains_isAnyCurtainMovingDown()))) ? CURTAIN_STOP : direction;
-    
+
     for(uint8_t i = 0; i < CURTAINS_SIZE; ++i)
     {
         if(Curtain_getDirection(curtains + i) == direction) Curtain_Move(curtains + i, newdir);
     }*/
-    
+
     uint8_t stop = 1;
-    
+
     if(direction != CURTAIN_STOP)
     {
         for(uint8_t i = 0; i < Curtains_getCount(); ++i)
@@ -354,7 +354,7 @@ void Curtains_MoveSignal(const uint8_t direction)
             if((Curtain_hasRelays(curtains + i)) && (!(Curtain_isMoving(curtains + i) && ((curtains + i)->upDown == direction) && ((curtains + i)->upDown_old == direction)))) stop = 0;
         }
     }
-    
+
     if(stop) Curtains_Stop();
     else Curtains_Move(/*Curtains_areAllMovinginSameDirection(direction) ? CURTAIN_STOP : */direction);
 }
@@ -466,34 +466,39 @@ void Curtains_SetDefault(void)
 
 
 
+void Curtain_Update_External(Curtain* cur, uint8_t val)
+{
+    Curtain_RestartTimer(cur);
+    cur->upDown_old = val;
+    cur->upDown = val;
+}
+
 void Curtain_Service(void)
 {
     for(uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {
         Curtain* const cur = curtains + i;
-        
+
         if(!Curtain_hasRelays(cur)) continue;
-        
+
         if(Curtain_hasMoveTimeExpired(cur))
         {
             Curtain_Stop(cur);
         }
-        
+
         if(Curtain_hasDirectionChanged(cur))
         {
-            uint8_t sendDataBuff[3], sendDataCount = 0;
+            uint8_t sendDataBuff[3];
             uint16_t relay = 0;
-            
+
             relay = (Curtain_isNewDirectionUp(cur) || (Curtain_isNewDirectionStop(cur) && Curtain_isMovingUp(cur))) ? Curtain_GetRelayUp(cur) : Curtain_GetRelayDown(cur);
-            *(sendDataBuff + sendDataCount) = (relay >> 8) & 0xFF;
-            *(sendDataBuff + sendDataCount + 1) = relay & 0xFF;
-            sendDataCount += 2;
-            sendDataBuff[sendDataCount++] = Curtain_isNewDirectionStop(cur) ? 0 : (Curtain_isNewDirectionUp(cur) ? 1 : 2);
-            
-            //DodajKomandu(, JALOUSIE_SET, sendDataBuff, sendDataCount);
-            
+            sendDataBuff[0] = (relay >> 8) & 0xFF;
+            sendDataBuff[1] = relay & 0xFF;
+            sendDataBuff[2] = Curtain_isNewDirectionStop(cur) ? 0 : (Curtain_isNewDirectionUp(cur) ? 1 : 2);
+            DodajKomandu(&curtainQueue, JALOUSIE_SET, sendDataBuff, 3);
+
             if(screen == SCREEN_CURTAINS) shouldDrawScreen = 1;
-            
+
             if(Curtain_isNewDirectionStop(cur)) Curtain_Reset(cur);
             else Curtain_DirectionEqualize(cur);
         }

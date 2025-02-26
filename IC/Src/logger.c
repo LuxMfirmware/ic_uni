@@ -10,7 +10,7 @@
  */
 
 #if (__LOGGER_H__ != FW_BUILD)
-    #error "logger header version mismatch"
+#error "logger header version mismatch"
 #endif
 /* Includes ------------------------------------------------------------------*/
 #include "ow.h"
@@ -51,14 +51,14 @@ void LOGGER_Init(void)
     logger_next_log_address = EE_LOG_LIST_START_ADDR;
     if (EE_ReadBuffer(log_buff, logger_next_log_address, LOG_DSIZE) != HAL_OK)      ErrorHandler(LOGGER_FUNC, I2C_DRV);
     while(logger_next_log_address <= (EE_LOG_LIST_END_ADDR - LOG_DSIZE))
-    {	
+    {
 #ifdef	USE_WATCHDOG
         HAL_IWDG_Refresh(&hiwdg);
 #endif
         if((log_buff[0] == 0U) && (log_buff[1] == 0U)) break;
         ++logger_next_log_id;
         ++logger_list_count;
-        logger_next_log_address += LOG_DSIZE;                                                
+        logger_next_log_address += LOG_DSIZE;
         if (EE_ReadBuffer(log_buff, logger_next_log_address, LOG_DSIZE) != HAL_OK)  ErrorHandler(LOGGER_FUNC, I2C_DRV);
     }
     /**
@@ -75,16 +75,16 @@ void LOGGER_Init(void)
   */
 LOGGER_StatusTypeDef LOGGER_Write(void)
 {
-	RTC_TimeTypeDef time_log;
+    RTC_TimeTypeDef time_log;
     RTC_DateTypeDef date_log;
     uint8_t log_buff[LOG_DSIZE];
-    
-	if(logger_next_log_address > (EE_LOG_LIST_END_ADDR - LOG_DSIZE))
-	{
-		SYS_LogListFullSet();
-		return (LOGGER_FULL);
-	}
-    
+
+    if(logger_next_log_address > (EE_LOG_LIST_END_ADDR - LOG_DSIZE))
+    {
+        SYS_LogListFullSet();
+        return (LOGGER_FULL);
+    }
+
     HAL_RTC_GetTime(&hrtc, &time_log, RTC_FORMAT_BCD);
     HAL_RTC_GetDate(&hrtc, &date_log, RTC_FORMAT_BCD);
     log_buff[0] = (logger_next_log_id >> 8);
@@ -103,7 +103,7 @@ LOGGER_StatusTypeDef LOGGER_Write(void)
     log_buff[13] = time_log.Hours;
     log_buff[14] = time_log.Minutes;
     log_buff[15] = time_log.Seconds;
-    
+
     memset(&LogEvent, 0U, sizeof(LogEvent));
     if (EE_WriteBuffer (log_buff, logger_next_log_address, LOG_DSIZE) != HAL_OK)    ErrorHandler(LOGGER_FUNC, I2C_DRV);
     if (EE_IsDeviceReady(EE_ADDR, DRV_TRIAL) != HAL_OK)                             ErrorHandler(LOGGER_FUNC, I2C_DRV);
@@ -121,7 +121,7 @@ LOGGER_StatusTypeDef LOGGER_Write(void)
   */
 LOGGER_StatusTypeDef LOGGER_Read(uint8_t *buff)
 {
-	if (logger_list_count == 0U) return(LOGGER_EMPTY);
+    if (logger_list_count == 0U) return(LOGGER_EMPTY);
     if (EE_ReadBuffer (buff, logger_next_log_address - LOG_DSIZE,  LOG_DSIZE) != HAL_OK)    ErrorHandler(LOGGER_FUNC, I2C_DRV);
     return(LOGGER_OK);
 }
@@ -133,8 +133,8 @@ LOGGER_StatusTypeDef LOGGER_Read(uint8_t *buff)
 LOGGER_StatusTypeDef LOGGER_Delete(void)
 {
     uint8_t log_buff[LOG_DSIZE];
-    
-	if (logger_list_count == 0U) return(LOGGER_EMPTY);
+
+    if (logger_list_count == 0U) return(LOGGER_EMPTY);
     ZEROFILL(log_buff, LOG_DSIZE);
     if (EE_WriteBuffer (log_buff, logger_next_log_address - LOG_DSIZE, LOG_DSIZE) != HAL_OK)    ErrorHandler(LOGGER_FUNC, I2C_DRV);
     if (EE_IsDeviceReady(EE_ADDR, DRV_TRIAL) != HAL_OK)                                         ErrorHandler(LOGGER_FUNC, I2C_DRV);

@@ -27,7 +27,7 @@ GUI_CONST_STORAGE GUI_BITMAP* light_modbus_images[] = {&bmSijalicaOff, &bmSijali
 void Lights_Modbus_Count(void)
 {
     lights_count = 0;
-    
+
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
     {
         if(Light_Modbus_GetRelay(lights_modbus + i)) ++lights_count;
@@ -67,7 +67,7 @@ void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
     li->value = 0;
     li->old_value = 0;
     li->color = 0;
-    
+
     EE_ReadBuffer((uint8_t*)&li->index,                addr,           2);
     EE_ReadBuffer(&li->tiedToMainLight,                addr + 2,       1);
     EE_ReadBuffer(&li->off_time,                       addr + 3,       1);
@@ -82,7 +82,7 @@ void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
     EE_ReadBuffer(&li->button_external,                addr + 13,       1);
     EE_ReadBuffer(&li->rememberBrightness,             addr + 14,       1);
     EE_ReadBuffer(&li->brightness,                     addr + 15,       1);
-    
+
     li->brightness_old = li->brightness;
 }
 
@@ -111,9 +111,9 @@ void Lights_Modbus_Init(void)
     {
         Light_Modbus_Init(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 16));
     }
-    
+
     EE_ReadBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
-    
+
     Lights_Modbus_Calculate();
 }
 
@@ -123,9 +123,9 @@ void Lights_Modbus_Save(void)
     {
         Light_Modbus_Save(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 16));
     }
-    
+
     EE_WriteBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
-    
+
     Lights_Modbus_Calculate();
 }
 
@@ -144,7 +144,7 @@ uint8_t Light_Modbus_Set_byIndex(const uint8_t light_index, const uint8_t val)
         if(val) Light_Modbus_On(lights_modbus + light_index);
         else Light_Modbus_Off(lights_modbus + light_index);
     }
-    
+
     return Light_Modbus_isNewValueOn(lights_modbus + light_index);
 }
 
@@ -154,7 +154,7 @@ uint8_t Light_Modbus_Get_byIndex(const uint8_t light_index)
     {
         return Light_Modbus_isNewValueOn(lights_modbus + light_index);
     }
-    
+
     return LIGHT_MODBUS_QUERY_RESPONSE_INDEX_OUT_OF_RANGE;
 }
 
@@ -165,15 +165,15 @@ void Light_Modbus_StatusSet(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val
     if(value)
     {
         li->value = 1;
-        
+
         if((!Light_Modbus_isBinary(li) && (!Light_Modbus_isBrightnessRemembered(li))))
         {
             Light_Modbus_SetBrightness(li, 100);
         }
-        
+
         if(li->local_pin < 5) SetPin(li->local_pin, 1);
         else PCA9685_SetOutput(li->local_pin, 255);
-        
+
         if(Light_Modbus_isOffTimeEnabled(li))
         {
             uint32_t time = HAL_GetTick();
@@ -184,10 +184,10 @@ void Light_Modbus_StatusSet(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val
     else
     {
         li->value = 0;
-        
+
         if(li->local_pin < 5) SetPin(li->local_pin, 0);
         else PCA9685_SetOutput(li->local_pin, 0);
-        
+
         Light_Modbus_OffTimeTimerDeactivate(li);
     }
 }
@@ -442,7 +442,7 @@ void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brigh
     if(brightness > 100) li->brightness = 100;
     else if(brightness < 0) li->brightness = 0;
     else li->brightness = brightness;
-    
+
     if(Light_Modbus_isBrightnessRemembered(li))
     {
         Light_Modbus_Save(li, EE_LIGHTS_MODBUS + ((li - lights_modbus) * 16));
@@ -488,19 +488,15 @@ void Light_Modbus_Brightness_Update_External(LIGHT_Modbus_CmdTypeDef* const li, 
     {
         li->brightness = 100;
     }
-    if(value < 0)
-    {
-        li->brightness = 0;
-    }
     else
     {
         li->brightness = value;
     }
-    
+
     Light_Modbus_ResetBrightness(li);
-    
-    
-    
+
+
+
     if(Light_Modbus_isBrightnessRemembered(li))
     {
         Light_Modbus_Save(li, EE_LIGHTS_MODBUS + ((li - lights_modbus) * 16));
@@ -651,7 +647,7 @@ void Light_Modbus_Service(void)
         for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
         {
             LIGHT_Modbus_CmdTypeDef* const light = lights_modbus + i;
-            
+
             if(!light->button_external)
             {
                 if(light->button_external == 1)
@@ -668,14 +664,14 @@ void Light_Modbus_Service(void)
                 }
             }
         }
-        
+
         isButtonActive_old = IsButtonActive();
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
     {
         if(Light_Modbus_isOnDelayTimeTimerActive(lights_modbus + i) && Light_Modbus_hasOnDelayTimeTimerExpired(lights_modbus + i))
@@ -683,14 +679,14 @@ void Light_Modbus_Service(void)
             Light_Modbus_OnDelayTimeTimerDeactivate(lights_modbus + i);
             Light_Modbus_On(lights_modbus + i);
         }
-        
+
         if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
     {
         if(Light_Modbus_isOffTimeTimerActive(lights_modbus + i) && Light_Modbus_hasOffTimeTimerExpired(lights_modbus + i))
@@ -698,17 +694,17 @@ void Light_Modbus_Service(void)
             Light_Modbus_OffTimeTimerDeactivate(lights_modbus + i);
             Light_Modbus_Off(lights_modbus + i);
         }
-        
+
         if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
     }
-    
-    
-    
-    
+
+
+
+
     if(LightNightTimer_StartTime && ((HAL_GetTick() - LightNightTimer_StartTime) >= (LIGHT_NIGHT_TIMER_DURATION * 1000)))
     {
         LightNightTimer_StartTime = 0;
-        
+
         for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
         {
             if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && Light_Modbus_isActive(lights_modbus + i))
@@ -716,76 +712,78 @@ void Light_Modbus_Service(void)
                 Light_Modbus_Off(lights_modbus + i);
             }
         }
-        
+
         if(screen == SCREEN_RESET_MENU_SWITCHES) screen = 1;
         shouldDrawScreen = 1;
     }
-    
-    
-    
-    
+
+
+
+
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
         if(Light_Modbus_hasStatusChanged(lights_modbus + i))
         {
             if(Light_Modbus_isBinary(lights_modbus + i) || Light_Modbus_isRGB(lights_modbus + i))
             {
-                uint8_t sendDataBuffBin[3] = {0}, sendDataCountBin = 0;
-                
-                *(sendDataBuffBin + sendDataCountBin) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-                *(sendDataBuffBin + sendDataCountBin + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-                sendDataCountBin += 2;
-                sendDataBuffBin[sendDataCountBin++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
-                
-                //DodajKomandu(, BINARY_SET, sendDataBuff, sendDataCount);
+                uint8_t sendDataBuffBin[3] = {0};
+
+                sendDataBuffBin[0] = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+                sendDataBuffBin[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+                sendDataBuffBin[2] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
+                DodajKomandu(&binaryQueue, BINARY_SET, sendDataBuffBin, 3);
             }
             else
             {
-                uint8_t sendDataBuffDimm[3] = {0}, sendDataCountDimm = 0;
-                
-                *(sendDataBuffDimm + sendDataCountDimm) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-                *(sendDataBuffDimm + sendDataCountDimm + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-                sendDataCountDimm += 2;
-                sendDataBuffDimm[sendDataCountDimm++] = Light_Modbus_isNewValueOn(lights_modbus + i) ? Light_Modbus_GetBrightness(lights_modbus + i) : 0;
-                
-                //DodajKomandu(, DIMMER_SET, sendDataBuff, sendDataCount);
+                uint8_t sendDataBuffDimm[3] = {0};
+
+                sendDataBuffDimm[0] = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+                sendDataBuffDimm[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+                sendDataBuffDimm[2] = Light_Modbus_isNewValueOn(lights_modbus + i) ? Light_Modbus_GetBrightness(lights_modbus + i) : 0;
+                DodajKomandu(&dimmerQueue, DIMMER_SET, sendDataBuffDimm, 3);
             }
-            
+
             Light_Modbus_ResetStatus(lights_modbus + i);
-            
+
             if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
             else if(!screen) screen = SCREEN_MAIN;
         }
         else if(Light_Modbus_hasBrightnessChanged(lights_modbus + i))
         {
-            uint8_t sendDataBuffDimm[3] = {0}, sendDataCountDimm = 0;
-            
-            *(sendDataBuffDimm + sendDataCountDimm) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-            *(sendDataBuffDimm + sendDataCountDimm + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-            sendDataCountDimm += 2;
-            sendDataBuffDimm[sendDataCountDimm++] = Light_Modbus_GetBrightness(lights_modbus + i);
-            
-            //DodajKomandu(, DIMMER_SET, sendDataBuff, sendDataCount);
-            
+            uint8_t sendDataBuffDimm[3] = {0};
+
+            sendDataBuffDimm[0] = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            sendDataBuffDimm[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+            sendDataBuffDimm[2] = Light_Modbus_GetBrightness(lights_modbus + i);
+            DodajKomandu(&dimmerQueue, DIMMER_SET, sendDataBuffDimm, 3);
             Light_Modbus_ResetBrightness(lights_modbus + i);
         }
         else if(Light_Modbus_hasColorChanged(lights_modbus + i))
         {
-            uint8_t sendDataBuffRGB[5] = {0}, sendDataCountRGB = 0;
-            
+            uint8_t sendDataBuffRGB[5] = {0};
+
             //if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_COLOR_SET;
-            *(sendDataBuffRGB + sendDataCountRGB) = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-            *(sendDataBuffRGB + sendDataCountRGB + 1) = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-            sendDataCountRGB += 2;
-            sendDataBuffRGB[sendDataCountRGB++] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
-            sendDataBuffRGB[sendDataCountRGB++] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
-            sendDataBuffRGB[sendDataCountRGB++] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
-            
-            //DodajKomandu(, RGB_SET, sendDataBuff, sendDataCount);
-            
+            sendDataBuffRGB[0] = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            sendDataBuffRGB[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+            sendDataBuffRGB[2] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
+            sendDataBuffRGB[3] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
+            sendDataBuffRGB[4] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
+            DodajKomandu(&rgbwQueue, RGB_SET, sendDataBuffRGB, 5);
             Light_Modbus_ResetColor(lights_modbus + i);
         }
     }
+
+    // ovo je samo za konstrukta upita, na ovaj nacin, sa ovim upitom traži šta hoceš, kad hoceš, gdje hoceš
+    // samo obezbjedi lokalni bafer dovoljno velik za odgovor, na njega nema provjere pa pazi da ne prelije
+    /**
+    uint16_t address = 0x0001;
+    uint8_t response[16];
+    if (GetState(BINARY_GET, address, response)) {
+        // odgovor došo eto ga u baferu
+    } else {
+        // odgovor nije došo, dženaza
+    }
+    */
 }
 
 

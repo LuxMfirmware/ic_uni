@@ -190,7 +190,10 @@
 #define EE_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH       0x1C6
 #define EE_LIGHT_NIGHT_TIMER                    0x1C7
 #define EE_LIGHTS_MODBUS_OFF_TIMER_TIME         0x1C8   //15 bytes for 15 lights
-#define EE_DEFROSTER                            0x2A9   //15 bytes
+#define EE_QR_CODE1                             0x200   // 64 bajta za qr kod 1
+#define EE_QR_CODE2                             0x240   // 64 bajta za qr kod 2
+#define EE_DEFROSTER                            0x280   // 15 bytes
+#define EE_NEXT                                 0x290   // sljedecu rezervaciju nastavi na ovoj adresi
 /* Link function for I2C EEPROM peripheral */
 void     EE_Init         (void);
 uint32_t EE_ReadBuffer   (uint8_t *pBuffer, uint16_t ReadAddr,  uint16_t NumByteToRead);

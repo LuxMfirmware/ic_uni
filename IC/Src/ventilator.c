@@ -2,7 +2,7 @@
 #include "stm32746g_eeprom.h"
 
 #if (__VENTILATOR_CTRL_H__ != FW_BUILD)
-    #error "ventilator header version mismatch"
+#error "ventilator header version mismatch"
 #endif
 
 
@@ -101,7 +101,7 @@ void Ventilator_Init(Ventilator* const vent, const uint16_t addr)
 void Ventilator_On(const bool useDelay)
 {
     if(!ventilator.relay) return;
-    
+
     if(useDelay && ventilator.delayOnUse)
     {
         ventilator.delayOnTimerStart = HAL_GetTick();
@@ -116,7 +116,7 @@ void Ventilator_On(const bool useDelay)
 void Ventilator_Off()
 {
     if(!ventilator.relay) return;
-    
+
     if(ventilator.delayOnTimerStart)
     {
         ventilator.delayOnTimerStart = 0;
@@ -131,7 +131,7 @@ void Ventilator_Off()
         VENTILATOR_DEACTIVATE();
     }
 }
-    
+
 
 
 

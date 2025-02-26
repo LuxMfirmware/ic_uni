@@ -259,6 +259,7 @@ extern uint8_t sysfl, initfl;
 extern uint32_t thstfl_memo;
 extern uint8_t dispfl_memo;
 extern uint8_t pwm[32];
+extern bool LSE_Failed; // flag oznacava LSE oscilator rtc modula false = 32.768 Hz kristal / true = interni oscilator
 /* Exported macros  --------------------------------------------------------*/
 #define SYS_NewLogSet()             (sysfl |=  (0x1U<<0))
 #define SYS_NewLogReset()           (sysfl &=(~(0x1U<<0)))
@@ -323,7 +324,6 @@ extern UART_HandleTypeDef huart2;
 extern DMA2D_HandleTypeDef hdma2d;
 /* Exported function --------------------------------------------------------*/
 void SYSRestart(void);
-void PresentSystem(void);
 void RTC_GetDateTime(RTC_t* data, uint32_t format);
 void ErrorHandler(uint8_t function, uint8_t driver);
 void PCA9685_Init(void);

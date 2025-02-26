@@ -21,8 +21,6 @@ typedef struct{
     uint8_t  th_state;          // thermostat status
     int16_t  mv_temp;           // temperature measured value  
     int8_t   mv_offset;         // temperature measured value  offset +/- 10.0°C
-    uint16_t mv_ntcref;         // measured value ntc reference & pull up resistance x 0.1kOhm
-    uint16_t mv_nctbeta;        // measured value ntc beta constant
     uint8_t  sp_temp;           // temperature setpoint  x 1°C
     uint8_t  sp_diff;           // temperature setpoint difference x 0.1°C
     uint8_t  sp_max;            // temperature setpoint maximum for user x 1°C
@@ -32,34 +30,17 @@ typedef struct{
     uint8_t  fan_diff;          // fan speed minimum difference to switch output
     uint8_t  fan_loband;        // fan speed controller low band 
     uint8_t  fan_hiband;        // fan speed controller high band
-    uint8_t  fan_quiet_start;   // fan quiet mode start hour
-    uint8_t  fan_quiet_end;     // fan quiet mode end hour
-    uint8_t  fan_quiet_speed;   // fan quiet mode speed limit
-    /*uint16_t relay1;
-    uint16_t relay2;
-    uint16_t relay3;
-    uint16_t relay4;
-    uint8_t  relay3Delay;
-    uint8_t  relay4Delay;
-    uint32_t relay3DelayTimerStart;
-    uint32_t relay4DelayTimerStart;
-    uint8_t sendChangeSignalFlags;*/
     uint8_t group;
     bool master;
-    bool hasPrimaryInfoChanged;
-    bool hasSecondaryInfoChanged;
+    bool hasInfoChanged;
 }THERMOSTAT_TypeDef;
 
 extern THERMOSTAT_TypeDef thst;
 /* Exported Define  ----------------------------------------------------------*/
-#define FANC_NTC_MEASURING_DELAY_TIME               600000U // 10 min. (x60 sec x 1000 ms)      
+#define USE_THERMOSTAT                              1       // switch kompajlera z akod termostata
 #define FANC_FAN_MIN_ON_TIME                        560U    // 0,5s between two or on/off fan speed switching
-#define FANC_VALVE_MIN_ON_TIME                      5678U	// cooling valve state swith 5,5s min. time	
-#define FANC_NTC_UPDATE_TIME                        2345U   // 2.3 second fancoil ntc temperature update rate
-#define THSTAT_POWER_ON_DELAY_TIME                  3456U   // 2,5 sec. power on startup time
-
-#define THST_SP_MIN                                 5
-#define THST_SP_MAX                                 40
+#define THST_SP_MIN                                 5       // granicna minimalna vrijednost setpointa temperature
+#define THST_SP_MAX                                 40      // granicna maksimalna vrijednost setpointa temperature
 /* Exported Variable   -------------------------------------------------------*/
 extern uint8_t termfl;
 /* Exported Macro ------------------------------------------------------------*/

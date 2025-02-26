@@ -26,52 +26,52 @@ extern QSPI_HandleTypeDef hqspi;
 extern DMA2D_HandleTypeDef hdma2d;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
-void NMI_Handler(void){	
+void NMI_Handler(void) {
 }
 
-void HardFault_Handler(void){
-	SYSRestart();
+void HardFault_Handler(void) {
+    SYSRestart();
 }
 
-void MemManage_Handler(void){
-	SYSRestart();
+void MemManage_Handler(void) {
+    SYSRestart();
 }
 
-void BusFault_Handler(void){
-	SYSRestart();
+void BusFault_Handler(void) {
+    SYSRestart();
 }
 
-void UsageFault_Handler(void){
-	SYSRestart();
-}	
-
-void DebugMon_Handler(void){	
+void UsageFault_Handler(void) {
+    SYSRestart();
 }
 
-void SysTick_Handler(void){
-	HAL_IncTick();
-	OS_TimeMS++;
+void DebugMon_Handler(void) {
+}
+
+void SysTick_Handler(void) {
+    HAL_IncTick();
+    OS_TimeMS++;
     RS485_Tick();
 }
 
-void DMA2D_IRQHandler(void){
-	HAL_DMA2D_IRQHandler(&hdma2d);
-	DMA2D->IFCR = (U32)DMA2D_IFSR_CTCIF;
+void DMA2D_IRQHandler(void) {
+    HAL_DMA2D_IRQHandler(&hdma2d);
+    DMA2D->IFCR = (U32)DMA2D_IFSR_CTCIF;
 }
 
-void USART1_IRQHandler(void){
-	HAL_UART_IRQHandler(&huart1);
+void USART1_IRQHandler(void) {
+    HAL_UART_IRQHandler(&huart1);
 }
 
-void USART2_IRQHandler(void){
-	HAL_UART_IRQHandler(&huart2);
+void USART2_IRQHandler(void) {
+    HAL_UART_IRQHandler(&huart2);
 }
 
-void LTDC_IRQHandler(void){
-	HAL_LTDC_IRQHandler(&hltdc);
+void LTDC_IRQHandler(void) {
+    HAL_LTDC_IRQHandler(&hltdc);
 }
 
-void QUADSPI_IRQHandler(void){
-	HAL_QSPI_IRQHandler(&hqspi);
+void QUADSPI_IRQHandler(void) {
+    HAL_QSPI_IRQHandler(&hqspi);
 }
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/

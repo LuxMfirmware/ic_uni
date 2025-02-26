@@ -71,7 +71,7 @@
             <nStopU2X>0</nStopU2X>
           </BeforeCompile>
           <BeforeMake>
-            <RunUserProg1>1</RunUserProg1>
+            <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
             <UserProg1Name>Run\fwbuild.bat</UserProg1Name>
             <UserProg2Name></UserProg2Name>
@@ -81,8 +81,8 @@
             <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>1</RunUserProg1>
-            <RunUserProg2>1</RunUserProg2>
+            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg2>0</RunUserProg2>
             <UserProg1Name>C:\Keil\ARM\ARMCC\bin\fromelf.exe --bin --output=Out Exe\ic.axf</UserProg1Name>
             <UserProg2Name>Run\ic.bat</UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
@@ -336,7 +336,7 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls>-Iscatter_file_path </MiscControls>
+              <MiscControls>-Iscatter_file_path</MiscControls>
               <Define>USE_HAL_DRIVER, STM32F746xx, ROOM_THERMOSTAT, APPLICATION, USE_DEBUGGER</Define>
               <Undefine></Undefine>
               <IncludePath>..\Inc;..\..\Common;..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc;..\..\Drivers\STM32F7xx\BSP\STM32F746;..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include;..\..\Drivers\STM32F7xx\BSP\Components;..\..\Middlewares\STemWin\inc;..\..\Middlewares\STemWin\png;..\..\Middlewares\TinyFrame;..\..\Middlewares\LuxNET</IncludePath>
@@ -984,9 +984,9 @@
               <FilePath>../Src/main.c</FilePath>
             </File>
             <File>
-              <FileName>ventilator.c</FileName>
+              <FileName>lights.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Src\ventilator.c</FilePath>
+              <FilePath>..\Src\lights.c</FilePath>
             </File>
             <File>
               <FileName>curtain.c</FileName>
@@ -994,14 +994,14 @@
               <FilePath>..\Src\curtain.c</FilePath>
             </File>
             <File>
-              <FileName>lights.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\lights.c</FilePath>
-            </File>
-            <File>
               <FileName>defroster.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\defroster.c</FilePath>
+            </File>
+            <File>
+              <FileName>ventilator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\ventilator.c</FilePath>
             </File>
           </Files>
         </Group>

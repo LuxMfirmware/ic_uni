@@ -29,7 +29,7 @@ extern uint8_t curtains_send;
 extern Curtain curtains[CURTAINS_SIZE];
 
 
-
+void Curtain_Update_External(Curtain* cur, uint8_t val);
 uint8_t Curtains_getCount(void);
 void Curtains_Init(void);
 void Curtains_Save(void);

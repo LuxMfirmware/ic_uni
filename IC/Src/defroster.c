@@ -21,7 +21,7 @@ void Defroster_Init(void)
 {
     defroster.cycleTime_TimerStart = 0;
     defroster.activeTime_TimerStart = 0;
-    
+
     EE_ReadBuffer(&defroster.cycleTime,       EE_DEFROSTER,            1);
     EE_ReadBuffer(&defroster.activeTime,      EE_DEFROSTER + 1,        1);
     EE_ReadBuffer(&defroster.pin,             EE_DEFROSTER + 2,        1);
@@ -50,7 +50,7 @@ void Defroster_Save(void)
 void Defroster_SetCycleTime(uint8_t time)
 {
     defroster.cycleTime = time;
-    
+
     if(defroster.activeTime > time)
     {
         defroster.activeTime = time;
@@ -189,7 +189,7 @@ void Defroster_Service(void)
     if(Defroster_isActive())
     {
         const uint32_t tick = HAL_GetTick();
-        
+
         if(Defroster_isCycleTimerOn() && Defroster_hasCycleTimerExpired(tick))
         {
             Defroster_CycleTimerStart();
