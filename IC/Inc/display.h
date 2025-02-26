@@ -23,6 +23,7 @@
 /* Exported types ------------------------------------------------------------*/
 
 typedef enum{
+    SCREEN_RESET_MENU_SWITCHES = 0,
     SCREEN_MAIN = 1,
     SCREEN_CONTROL_SELECT,
     SCREEN_LIGHT_DIMMER,
@@ -43,8 +44,7 @@ typedef enum{
     SCREEN_SELECT_SCREEN_2,
     SCREEN_QR_CODE,
     SCREEN_LIGHT_SETTINGS,
-    SCREEN_SETTINGS_8,
-    SCREEN_RESET_MENU_SWITCHES = 0 // ALWAYS AT THE BOTTOM OF ENUM
+    SCREEN_SETTINGS_8
 }eScreen;
 
 typedef enum{
