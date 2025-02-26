@@ -468,10 +468,14 @@ void Curtains_SetDefault(void)
 
 void Curtain_Update_External(Curtain* cur, uint8_t val)
 {
-    Curtain_RestartTimer(cur);
     cur->upDown_old = val;
     cur->upDown = val;
+    Curtain_RestartTimer(cur);
 }
+
+
+
+
 
 void Curtain_Service(void)
 {

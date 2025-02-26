@@ -134,7 +134,7 @@ TF_Result JALOUSIE_SET_Listener(TinyFrame *tf, TF_Msg *msg)
     uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1];  // sastavi adresu iz upita
     uint8_t dir = msg->data[2]; // smejr šaluzine
     // provjeri sve strukture za žaluzina
-    for(int i = 0; i < CURTAINS_SIZE; i++)
+    for(int i = 0; i < Curtains_getCount(); i++)
     {
         if (adr && (curtains[i].relayUp != 0) && (curtains[i].relayDown != 0))
         {

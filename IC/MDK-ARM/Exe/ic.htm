@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Wed Feb 26 15:10:29 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6140002: Last Updated: Wed Feb 26 17:03:17 2025
 <BR><P>
 <H3>Maximum Stack Usage =       2196 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1396,6 +1396,7 @@ Global Symbols
 <LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtains_MoveSignal
 <LI><a href="#[1f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_areAllSelected
 <LI><a href="#[1e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_ResetSelection
+<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;JALOUSIE_SET_Listener
 </UL>
 
 <P><STRONG><a name="[43]"></a>DebugMon_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f7xx_it.o(.text.DebugMon_Handler))
@@ -1447,7 +1448,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[c4]"></a>DIMMER_SET_Listener</STRONG> (Thumb, 150 bytes, Stack size 24 bytes, rs485.o(.text.DIMMER_SET_Listener))
-<BR><BR>[Stack]<UL><LI>Max Depth = 492<LI>Call Chain = DIMMER_SET_Listener &rArr; Light_Modbus_Brightness_Update_External &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
+<BR><BR>[Stack]<UL><LI>Max Depth = 500<LI>Call Chain = DIMMER_SET_Listener &rArr; Light_Modbus_Brightness_Update_External &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_Brightness_Update_External
 </UL>
@@ -3111,10 +3112,11 @@ Global Symbols
 <LI><a href="#[207]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISPDateTime
 </UL>
 
-<P><STRONG><a name="[c5]"></a>JALOUSIE_SET_Listener</STRONG> (Thumb, 236 bytes, Stack size 24 bytes, rs485.o(.text.JALOUSIE_SET_Listener))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = JALOUSIE_SET_Listener &rArr; Curtain_Update_External &rArr; Curtain_RestartTimer
+<P><STRONG><a name="[c5]"></a>JALOUSIE_SET_Listener</STRONG> (Thumb, 244 bytes, Stack size 32 bytes, rs485.o(.text.JALOUSIE_SET_Listener))
+<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = JALOUSIE_SET_Listener &rArr; Curtain_Update_External &rArr; Curtain_RestartTimer
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_Update_External
+<BR>[Calls]<UL><LI><a href="#[1e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtains_getCount
+<LI><a href="#[1f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_Update_External
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> rs485.o(.text.RS485_Init)
 </UL>
@@ -3202,10 +3204,11 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f746xx.o(RESET)
 </UL>
-<P><STRONG><a name="[206]"></a>Light_Modbus_Brightness_Update_External</STRONG> (Thumb, 96 bytes, Stack size 16 bytes, lights.o(.text.Light_Modbus_Brightness_Update_External))
-<BR><BR>[Stack]<UL><LI>Max Depth = 468<LI>Call Chain = Light_Modbus_Brightness_Update_External &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
+<P><STRONG><a name="[206]"></a>Light_Modbus_Brightness_Update_External</STRONG> (Thumb, 108 bytes, Stack size 24 bytes, lights.o(.text.Light_Modbus_Brightness_Update_External))
+<BR><BR>[Stack]<UL><LI>Max Depth = 476<LI>Call Chain = Light_Modbus_Brightness_Update_External &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[256]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_isBrightnessRemembered
+<LI><a href="#[1c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_Update_External
 <LI><a href="#[359]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_Save
 <LI><a href="#[358]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_ResetBrightness
 </UL>
@@ -3365,7 +3368,7 @@ Global Symbols
 <LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_Brightness_Update_External
 </UL>
 
-<P><STRONG><a name="[35f]"></a>Light_Modbus_Service</STRONG> (Thumb, 1626 bytes, Stack size 88 bytes, lights.o(.text.Light_Modbus_Service))
+<P><STRONG><a name="[35f]"></a>Light_Modbus_Service</STRONG> (Thumb, 1634 bytes, Stack size 88 bytes, lights.o(.text.Light_Modbus_Service))
 <BR><BR>[Stack]<UL><LI>Max Depth = 612<LI>Call Chain = Light_Modbus_Service &rArr; Light_Modbus_Flip &rArr; Light_Modbus_On &rArr; Light_Modbus_StatusSet &rArr; Light_Modbus_SetBrightness &rArr; Light_Modbus_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; HAL_I2C_Mem_Write &rArr; I2C_RequestMemoryWrite &rArr; I2C_WaitOnTXISFlagUntilTimeout &rArr; I2C_IsAcknowledgeFailed &rArr; I2C_Flush_TXDR
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
@@ -3484,7 +3487,8 @@ Global Symbols
 <P><STRONG><a name="[1c8]"></a>Light_Modbus_Update_External</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, lights.o(.text.Light_Modbus_Update_External))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Light_Modbus_Update_External
 </UL>
-<BR>[Called By]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BINARY_SET_Listener
+<BR>[Called By]<UL><LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Light_Modbus_Brightness_Update_External
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BINARY_SET_Listener
 </UL>
 
 <P><STRONG><a name="[36b]"></a>Light_Modbus_hasBrightnessChanged</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, lights.o(.text.Light_Modbus_hasBrightnessChanged))

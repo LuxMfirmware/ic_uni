@@ -484,6 +484,8 @@ void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li)
 
 void Light_Modbus_Brightness_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value)
 {
+    Light_Modbus_Update_External(li, value);
+    
     if(value > 100)
     {
         li->brightness = 100;
@@ -720,7 +722,7 @@ void Light_Modbus_Service(void)
 
 
 
-    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
+    for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
     {
         if(Light_Modbus_hasStatusChanged(lights_modbus + i))
         {
