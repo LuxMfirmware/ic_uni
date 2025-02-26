@@ -2577,7 +2577,7 @@ static void DSP_InitSet2Scrn(void)
     GUI_SelectLayer(0);
     GUI_Clear();
     GUI_SelectLayer(1);
-    GUI_SetBkColor(GUI_TRANSPARENT);
+    GUI_SetBkColor(GUI_TRANSPARENT); i
     GUI_Clear();
     GUI_MULTIBUF_BeginEx(1);
 
