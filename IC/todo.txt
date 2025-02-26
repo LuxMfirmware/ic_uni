@@ -1,40 +1,19 @@
 
 
 
-- rs485
-odkomentarisati vec pozvane instance funckije DodajKomandu i proslijediti im odgovarajuci queue
-
-
 -lights
 brightness should be remembered after external update
 
 
-
-iz nekog razloga se popale sve ikone sijalica kad uđeš u meni LIGHTS, nisam upratio razlog
-ali desi se samo i kad je meni aktivan vidio sam jednom bez dodira samo se svih pet 
-pocrveniše, a samo su dva vezana za glavni prekidač svjetla pa nije zbog toga
-
-ne možeš pin od senzora temperature samo jednostavno proglasit ulaznim, neće senzor radit
-samo ako je termostat slave možeš reincijalizovat ovaj pin i ako se vrati na master ponovo 
-treba reinicijalizovat ADC, ostavi ovu konverziju ja cu dodat kod koristićemo standardni
-filter u automatici eksponencijalno klizno srednje za konverziju da se ne mjenja brzo ali
-ni da je trom ko da mjeri kamen i ovo sa fiksnim vremenom je dobro al ima filter za to,
-prvi pin je pin od senzora ovaj GPIO_PIN_1 u adc init njega ne diraj ako radi termostat  
-ostale možeš šta hoćeš
-
-nemoj da nam ostane vila al hamli na termostatu da ne zaboravimo promjenit bolje da je crn
-
-
-bool getState(command type 16bit address, buffer)
-
-
-
-(opzional) ako su za zaluzine razliciti releji onda se koristi binary listener
-
-
-
+(optional) ako su za zaluzine razliciti releji onda se koristi binary listener
 
 
 kontroler samo sa roletnama (optinoal)
 kontroler bez termostata
 kontroler bez roletni
+
+
+menij sa svjetlima - kada se pritisne svjetlo na brzinu se promjeni stanje i onda opet vrati u pocetno (potencijalno uzrok - kada se dize prst sa ekrana PID_Hook() se pozove 2 ili vise puta, pTS->Pressed je 0)
+
+kada se brzo pritisce dim svjetlo pocnu treperiti ostala dim svjetla, kada se sporo pritisce, nema tih problema (mozda je povezano sa problemom napisanim iznad)
+
