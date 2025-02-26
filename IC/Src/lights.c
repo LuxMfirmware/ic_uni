@@ -401,7 +401,7 @@ void Light_Modbus_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li)
 
 bool Light_Modbus_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return (li->on_hour < 24) && (li->on_minute < 60);
+    return (li->on_hour) && (li->on_hour < 24) && (li->on_minute) && (li->on_minute < 60);
 }
 
 bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li)
@@ -743,6 +743,7 @@ void Light_Modbus_Service(void)
                 sendDataBuffDimm[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
                 sendDataBuffDimm[2] = Light_Modbus_isNewValueOn(lights_modbus + i) ? Light_Modbus_GetBrightness(lights_modbus + i) : 0;
                 DodajKomandu(&dimmerQueue, DIMMER_SET, sendDataBuffDimm, 3);
+                Light_Modbus_ResetBrightness(lights_modbus + i);
             }
 
             Light_Modbus_ResetStatus(lights_modbus + i);
