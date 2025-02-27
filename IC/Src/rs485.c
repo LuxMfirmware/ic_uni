@@ -309,6 +309,8 @@ TF_Result THERMOSTAT_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
             msg->len = 16; // vrati šesnaest bajta
             TF_Respond(tf, msg);
         }
+        
+        if(screen == SCREEN_THERMOSTAT) menu_thst = 0;
     }
     return TF_STAY;
 }
