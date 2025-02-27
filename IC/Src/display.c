@@ -1365,6 +1365,7 @@ void DISP_Service(void)
 
                 if((HAL_GetTick() - thermostatOnOffTouch_timer) > (2 * 1000))
                 {
+                    thst.hasInfoChanged = true; // obavjesti ostale
                     thermostatOnOffTouch_timer = 0;
                     menu_thst = 0;
 
@@ -1377,7 +1378,7 @@ void DISP_Service(void)
                     {
                         TempRegHeating();
                     }
-
+                    
                     SaveThermostatController(&thst, EE_THST1);
                 }
             }
