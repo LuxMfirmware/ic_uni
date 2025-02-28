@@ -734,6 +734,17 @@ void Light_Modbus_Service(void)
                 sendDataBuffBin[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
                 sendDataBuffBin[2] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
                 DodajKomandu(&binaryQueue, BINARY_SET, sendDataBuffBin, 3);
+                
+                if(Light_Modbus_isRGB(lights_modbus + i))
+                {
+                    uint8_t sendDataBuffDimm[3] = {0};
+
+                    sendDataBuffDimm[0] = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+                    sendDataBuffDimm[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
+                    sendDataBuffDimm[2] = Light_Modbus_isNewValueOn(lights_modbus + i) ? Light_Modbus_GetBrightness(lights_modbus + i) : 0;
+                    DodajKomandu(&dimmerQueue, DIMMER_SET, sendDataBuffDimm, 3);
+                    Light_Modbus_ResetBrightness(lights_modbus + i);
+                }
             }
             else
             {
