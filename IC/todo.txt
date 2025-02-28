@@ -22,3 +22,11 @@ menij sa svjetlima - kada se pritisne svjetlo na brzinu se promjeni stanje i ond
 
 kada se brzo pritisce dim svjetlo pocnu treperiti ostala dim svjetla, kada se sporo pritisce, nema tih problema (mozda je povezano sa problemom napisanim iznad)
 
+
+
+add back arrow to light settings screen
+
+restart timers on brightness and color change
+
+fix arduino
+
