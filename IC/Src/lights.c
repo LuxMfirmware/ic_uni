@@ -417,6 +417,7 @@ bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li)
 
 void Light_Modbus_SetColor(LIGHT_Modbus_CmdTypeDef* const li, GUI_COLOR color)
 {
+    Light_Modbus_Update_External(li, 1);
     li->color = color;
 }
 
@@ -441,6 +442,8 @@ void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li)
 
 void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brightness)
 {
+    Light_Modbus_Update_External(li, brightness);
+    
     if(brightness > 100) li->brightness = 100;
     else if(brightness < 0) li->brightness = 0;
     else li->brightness = brightness;
