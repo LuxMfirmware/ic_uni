@@ -240,6 +240,8 @@ void Light_Modbus_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8
 {
     li->old_value = val;
     li->value = val;
+    
+    if(screen == SCREEN_RESET_MENU_SWITCHES) screen = SCREEN_MAIN;
 }
 
 bool Light_Modbus_isActive(const LIGHT_Modbus_CmdTypeDef* const li)
