@@ -28,5 +28,3 @@ add back arrow to light settings screen
 
 restart timers on brightness and color change
 
-fix arduino
-
