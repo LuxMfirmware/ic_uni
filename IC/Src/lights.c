@@ -162,6 +162,8 @@ uint8_t Light_Modbus_Get_byIndex(const uint8_t light_index)
 
 void Light_Modbus_StatusSet(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value)
 {
+    uint8_t sendDataBuff[3] = {0};
+    
     if(value)
     {
         li->value = 1;
@@ -190,6 +192,45 @@ void Light_Modbus_StatusSet(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val
 
         Light_Modbus_OffTimeTimerDeactivate(li);
     }
+    
+    
+    
+    
+    if(Light_Modbus_isBinary(li) || Light_Modbus_isRGB(li))
+    {
+        uint8_t sendDataBuff[3] = {0};
+
+        sendDataBuff[0] = (Light_Modbus_GetRelay(li) >> 8) & 0xFF;
+        sendDataBuff[1] = Light_Modbus_GetRelay(li) & 0xFF;
+        sendDataBuff[2] = Light_Modbus_isNewValueOn(li) ? 0x01 : 0x02;
+        DodajKomandu(&binaryQueue, BINARY_SET, sendDataBuff, 3);
+        
+        if(Light_Modbus_isRGB(li))
+        {
+            uint8_t sendDataBuff[3] = {0};
+
+            sendDataBuff[0] = (Light_Modbus_GetRelay(li) >> 8) & 0xFF;
+            sendDataBuff[1] = Light_Modbus_GetRelay(li) & 0xFF;
+            sendDataBuff[2] = Light_Modbus_isNewValueOn(li) ? Light_Modbus_GetBrightness(li) : 0;
+            DodajKomandu(&dimmerQueue, DIMMER_SET, sendDataBuff, 3);
+            Light_Modbus_ResetBrightness(li);
+        }
+    }
+    else
+    {
+        uint8_t sendDataBuff[3] = {0};
+
+        sendDataBuff[0] = (Light_Modbus_GetRelay(li) >> 8) & 0xFF;
+        sendDataBuff[1] = Light_Modbus_GetRelay(li) & 0xFF;
+        sendDataBuff[2] = Light_Modbus_isNewValueOn(li) ? Light_Modbus_GetBrightness(li) : 0;
+        DodajKomandu(&dimmerQueue, DIMMER_SET, sendDataBuff, 3);
+        Light_Modbus_ResetBrightness(li);
+    }
+
+    Light_Modbus_ResetStatus(li);
+
+    if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
+    else if(!screen) screen = SCREEN_MAIN;
 }
 
 
@@ -417,8 +458,25 @@ bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li)
 
 void Light_Modbus_SetColor(LIGHT_Modbus_CmdTypeDef* const li, GUI_COLOR color)
 {
-    Light_Modbus_Update_External(li, 1);
+    uint8_t sendDataBuffRGB[5] = {0};
+    
+    if(!Light_Modbus_isNewValueOn(li))
+    {
+        Light_Modbus_On(li);
+    }
+    
+    
     li->color = color;
+    
+    
+    //if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_COLOR_SET;
+    sendDataBuffRGB[0] = (Light_Modbus_GetRelay(li) >> 8) & 0xFF;
+    sendDataBuffRGB[1] = Light_Modbus_GetRelay(li) & 0xFF;
+    sendDataBuffRGB[2] = Light_Modbus_GetColor(li) & 0xFF;             // blue
+    sendDataBuffRGB[3] = (Light_Modbus_GetColor(li) >> 8) & 0xFF;      // green
+    sendDataBuffRGB[4] = (Light_Modbus_GetColor(li) >> 16) & 0xFF;     // red
+    DodajKomandu(&rgbwQueue, RGB_SET, sendDataBuffRGB, 5);
+    Light_Modbus_ResetColor(li);
 }
 
 GUI_COLOR Light_Modbus_GetColor(const LIGHT_Modbus_CmdTypeDef* const li)
@@ -442,15 +500,28 @@ void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li)
 
 void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brightness)
 {
-    Light_Modbus_Update_External(li, brightness);
-    
     if(brightness > 100) li->brightness = 100;
     else if(brightness < 0) li->brightness = 0;
     else li->brightness = brightness;
-
-    if(Light_Modbus_isBrightnessRemembered(li))
+    
+    if((!Light_Modbus_isNewValueOn(li)) && (!Light_Modbus_hasStatusChanged(li)))
     {
-        Light_Modbus_Save(li, EE_LIGHTS_MODBUS + ((li - lights_modbus) * 16));
+        Light_Modbus_On(li);
+    }
+    else
+    {
+        uint8_t sendDataBuffDimm[3] = {0};
+
+        if(Light_Modbus_isBrightnessRemembered(li))
+        {
+            Light_Modbus_Save(li, EE_LIGHTS_MODBUS + ((li - lights_modbus) * 16));
+        }
+        
+        sendDataBuffDimm[0] = (Light_Modbus_GetRelay(li) >> 8) & 0xFF;
+        sendDataBuffDimm[1] = Light_Modbus_GetRelay(li) & 0xFF;
+        sendDataBuffDimm[2] = Light_Modbus_GetBrightness(li);
+        DodajKomandu(&dimmerQueue, DIMMER_SET, sendDataBuffDimm, 3);
+        Light_Modbus_ResetBrightness(li);
     }
 }
 
@@ -727,7 +798,7 @@ void Light_Modbus_Service(void)
 
 
 
-    for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
+    /*for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
     {
         if(Light_Modbus_hasStatusChanged(lights_modbus + i))
         {
@@ -790,7 +861,7 @@ void Light_Modbus_Service(void)
             DodajKomandu(&rgbwQueue, RGB_SET, sendDataBuffRGB, 5);
             Light_Modbus_ResetColor(lights_modbus + i);
         }
-    }
+    }*/
 
     // ovo je samo za konstrukta upita, na ovaj nacin, sa ovim upitom traži šta hoceš, kad hoceš, gdje hoceš
     // samo obezbjedi lokalni bafer dovoljno velik za odgovor, na njega nema provjere pa pazi da ne prelije
