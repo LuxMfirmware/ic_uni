@@ -166,7 +166,7 @@ void Light_Modbus_StatusSet(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val
     
     if(value)
     {
-        li->value = 1;
+        li->value = 1; // moving status to bottom might break SetBrightness()
 
         if((!Light_Modbus_isBinary(li) && (!Light_Modbus_isBrightnessRemembered(li))))
         {
@@ -198,8 +198,6 @@ void Light_Modbus_StatusSet(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val
     
     if(Light_Modbus_isBinary(li) || Light_Modbus_isRGB(li))
     {
-        uint8_t sendDataBuff[3] = {0};
-
         sendDataBuff[0] = (Light_Modbus_GetRelay(li) >> 8) & 0xFF;
         sendDataBuff[1] = Light_Modbus_GetRelay(li) & 0xFF;
         sendDataBuff[2] = Light_Modbus_isNewValueOn(li) ? 0x01 : 0x02;
@@ -218,8 +216,6 @@ void Light_Modbus_StatusSet(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val
     }
     else
     {
-        uint8_t sendDataBuff[3] = {0};
-
         sendDataBuff[0] = (Light_Modbus_GetRelay(li) >> 8) & 0xFF;
         sendDataBuff[1] = Light_Modbus_GetRelay(li) & 0xFF;
         sendDataBuff[2] = Light_Modbus_isNewValueOn(li) ? Light_Modbus_GetBrightness(li) : 0;
@@ -511,7 +507,7 @@ void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brigh
     else
     {
         uint8_t sendDataBuffDimm[3] = {0};
-
+        
         if(Light_Modbus_isBrightnessRemembered(li))
         {
             Light_Modbus_Save(li, EE_LIGHTS_MODBUS + ((li - lights_modbus) * 16));
