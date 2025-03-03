@@ -205,7 +205,7 @@ void Light_Modbus_StatusSet(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val
         
         if(Light_Modbus_isRGB(li))
         {
-            uint8_t sendDataBuff[3] = {0};
+            ZEROFILL(sendDataBuff, COUNTOF(sendDataBuff));
 
             sendDataBuff[0] = (Light_Modbus_GetRelay(li) >> 8) & 0xFF;
             sendDataBuff[1] = Light_Modbus_GetRelay(li) & 0xFF;
