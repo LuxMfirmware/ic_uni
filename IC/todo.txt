@@ -15,8 +15,6 @@ kontroler bez roletni
 
 thermostat screen elements refresh is unsynchronised
 
-binary and dimm listener conflict in Light_Modbus_Service
-
 
 menij sa svjetlima - kada se pritisne svjetlo na brzinu se promjeni stanje i onda opet vrati u pocetno (potencijalno uzrok - kada se dize prst sa ekrana PID_Hook() se pozove 2 ili vise puta, pTS->Pressed je 0)
 
@@ -24,7 +22,7 @@ kada se brzo pritisce dim svjetlo pocnu treperiti ostala dim svjetla, kada se sp
 
 
 
-add back arrow to light settings screen
-
 restart timers on brightness and color change
+
+
 
