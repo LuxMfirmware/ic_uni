@@ -1,8 +1,6 @@
 
 
 
--lights
-brightness should be remembered after external update
 
 
 (optional) ako su za zaluzine razliciti releji onda se koristi binary listener
