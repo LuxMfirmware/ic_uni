@@ -14,8 +14,6 @@ kontroler bez roletni
 thermostat screen elements refresh is unsynchronised
 
 
-menij sa svjetlima - kada se pritisne svjetlo na brzinu se promjeni stanje i onda opet vrati u pocetno (potencijalno uzrok - kada se dize prst sa ekrana PID_Hook() se pozove 2 ili vise puta, pTS->Pressed je 0)
-
 kada se brzo pritisce dim svjetlo pocnu treperiti ostala dim svjetla, kada se sporo pritisce, nema tih problema (mozda je povezano sa problemom napisanim iznad)
 
 
