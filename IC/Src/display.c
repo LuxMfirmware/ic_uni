@@ -3616,9 +3616,13 @@ void DISPSetPoint(void)
   */
 void PID_Hook(GUI_PID_STATE * pTS)
 {
+    static uint8_t release = 0;
     uint8_t click = 0;
-    if (pTS->Pressed  == 1U) {
+    
+    if (pTS->Pressed  == 1U)
+    {
         pTS->Layer = 1U;
+        release = 1;
         
 
         if ((pTS->x > 400) && (pTS->y < 60) && ((screen <= SCREEN_CONTROL_SELECT) || (screen == SCREEN_THERMOSTAT) || ((screen > SCREEN_SETTINGS_6) && (screen != SCREEN_SETTINGS_7)))) {
@@ -4001,89 +4005,94 @@ void PID_Hook(GUI_PID_STATE * pTS)
     }
     else
     {
-        if(screen == SCREEN_MAIN) screen = SCREEN_RESET_MENU_SWITCHES;
-        else if(screen == SCREEN_LIGHTS)
+        if(release)
         {
-            if(Light_Modbus_isBinary(lights_modbus + light_selectedIndex) || ((!Light_Modbus_isBinary(lights_modbus + light_selectedIndex)) && light_settingsTimerStart))
+            release = 0;
+            
+            if(screen == SCREEN_MAIN) screen = SCREEN_RESET_MENU_SWITCHES;
+            else if(screen == SCREEN_LIGHTS)
             {
-                light_settingsTimerStart = 0;
-                Light_Modbus_Flip(lights_modbus + light_selectedIndex);
+                if(Light_Modbus_isBinary(lights_modbus + light_selectedIndex) || ((!Light_Modbus_isBinary(lights_modbus + light_selectedIndex)) && light_settingsTimerStart))
+                {
+                    light_settingsTimerStart = 0;
+                    Light_Modbus_Flip(lights_modbus + light_selectedIndex);
+                }
+
             }
-
-        }
-        else if(screen == SCREEN_RESET_MENU_SWITCHES)
-        {
-            if((pTS->x > 100) && (pTS->y > 100) && (pTS->x < 400) && (pTS->y < 272) && ((light_selectedIndex == (LIGHTS_MODBUS_SIZE + 1)) || ((light_selectedIndex == LIGHTS_MODBUS_SIZE) && light_settingsTimerStart)))
+            else if(screen == SCREEN_RESET_MENU_SWITCHES)
             {
-                uint8_t isAnyLightActive = 0;
-
-                click = 1;
-                screen = SCREEN_MAIN;
-
-                light_settingsTimerStart = 0;
-
-                for(uint8_t i = 0; i < Lights_Modbus_getCount(); ++i)
+                if((pTS->x > 100) && (pTS->y > 100) && (pTS->x < 400) && (pTS->y < 272) && ((light_selectedIndex == (LIGHTS_MODBUS_SIZE + 1)) || ((light_selectedIndex == LIGHTS_MODBUS_SIZE) && light_settingsTimerStart)))
                 {
-                    if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && Light_Modbus_isActive(lights_modbus + i))
-                    {
-                        isAnyLightActive = 1;
-                        break;
-                    }
-                }
+                    uint8_t isAnyLightActive = 0;
 
+                    click = 1;
+                    screen = SCREEN_MAIN;
 
-                if((isAnyLightActive)
-                        && LightNightTimer_isEnabled
-                        && (!LightNightTimer_StartTime)
-                        && (!((Bcd2Dec(rtctm.Hours) > 6) && (Bcd2Dec(rtctm.Hours) < 20))))
-                {
-                    LightNightTimer_StartTime = HAL_GetTick();
-                    if(!LightNightTimer_StartTime) LightNightTimer_StartTime = 1;
-                }
-                else
-                {
-                    LightNightTimer_StartTime = 0;
+                    light_settingsTimerStart = 0;
 
                     for(uint8_t i = 0; i < Lights_Modbus_getCount(); ++i)
                     {
-                        if(Light_Modbus_isTiedToMainLight(lights_modbus + i))
+                        if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && Light_Modbus_isActive(lights_modbus + i))
                         {
-                            if(isAnyLightActive)
+                            isAnyLightActive = 1;
+                            break;
+                        }
+                    }
+
+
+                    if((isAnyLightActive)
+                            && LightNightTimer_isEnabled
+                            && (!LightNightTimer_StartTime)
+                            && (!((Bcd2Dec(rtctm.Hours) > 6) && (Bcd2Dec(rtctm.Hours) < 20))))
+                    {
+                        LightNightTimer_StartTime = HAL_GetTick();
+                        if(!LightNightTimer_StartTime) LightNightTimer_StartTime = 1;
+                    }
+                    else
+                    {
+                        LightNightTimer_StartTime = 0;
+
+                        for(uint8_t i = 0; i < Lights_Modbus_getCount(); ++i)
+                        {
+                            if(Light_Modbus_isTiedToMainLight(lights_modbus + i))
                             {
-                                Light_Modbus_Off(lights_modbus + i);
-                            }
-                            else
-                            {
-                                /*if(Light_Modbus_isOffTimeEnabled(lights_modbus + i))
+                                if(isAnyLightActive)
                                 {
-                                    uint32_t currentTickTime = HAL_GetTick();
-                                    if(!currentTickTime) currentTickTime = 1;
-                                    Ventilator_SetOnDelayTimer(currentTickTime);
-                                }*/
+                                    Light_Modbus_Off(lights_modbus + i);
+                                }
+                                else
+                                {
+                                    /*if(Light_Modbus_isOffTimeEnabled(lights_modbus + i))
+                                    {
+                                        uint32_t currentTickTime = HAL_GetTick();
+                                        if(!currentTickTime) currentTickTime = 1;
+                                        Ventilator_SetOnDelayTimer(currentTickTime);
+                                    }*/
 
-                                Light_Modbus_On(lights_modbus + i);
+                                    Light_Modbus_On(lights_modbus + i);
+                                }
                             }
-                        }
 
 
 
 
-                        /*if(Light_Modbus_isTiedToMainLight(lights_modbus + i))
-                        {
-                            if(Light_Modbus_isActive(lights_modbus + i))
+                            /*if(Light_Modbus_isTiedToMainLight(lights_modbus + i))
                             {
-                                isActive = 1;
-                                Light_Modbus_Off(lights_modbus + i);
+                                if(Light_Modbus_isActive(lights_modbus + i))
+                                {
+                                    isActive = 1;
+                                    Light_Modbus_Off(lights_modbus + i);
+                                }
                             }
-                        }
 
-                        if((i == (LIGHTS_MODBUS_SIZE - 1)) && (!isActive))
-                        {
-                            for(uint8_t j = 0; j < LIGHTS_MODBUS_SIZE; j++)
+                            if((i == (LIGHTS_MODBUS_SIZE - 1)) && (!isActive))
                             {
-                                if(Light_Modbus_isTiedToMainLight(lights_modbus + j)) Light_Modbus_On(lights_modbus + j);
-                            }
-                        }*/
+                                for(uint8_t j = 0; j < LIGHTS_MODBUS_SIZE; j++)
+                                {
+                                    if(Light_Modbus_isTiedToMainLight(lights_modbus + j)) Light_Modbus_On(lights_modbus + j);
+                                }
+                            }*/
+                        }
                     }
                 }
             }
