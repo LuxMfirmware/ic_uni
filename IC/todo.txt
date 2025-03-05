@@ -14,7 +14,7 @@ kontroler bez roletni
 thermostat screen elements refresh is unsynchronised
 
 
-kada se brzo pritisce dim svjetlo pocnu treperiti ostala dim svjetla, kada se sporo pritisce, nema tih problema (mozda je povezano sa problemom napisanim iznad)
+kada se brzo pritisce dim svjetlo pocnu treperiti ostala dim svjetla, kada se sporo pritisce, nema tih problema
 
 
 
