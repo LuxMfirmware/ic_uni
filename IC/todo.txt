@@ -17,8 +17,9 @@ thermostat screen elements refresh is unsynchronised
 kada se brzo pritisce dim svjetlo pocnu treperiti ostala dim svjetla, kada se sporo pritisce, nema tih problema
 
 
-
 restart timers on brightness and color change
 
+
+color white goes to red on miboxer
 
 
