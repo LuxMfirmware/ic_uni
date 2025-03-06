@@ -4096,14 +4096,15 @@ void PID_Hook(GUI_PID_STATE * pTS)
                     }
                 }
             }
+        
+            btnset = 0;
+            btndec = 0U;
+            btninc = 0U;
+            ctrl1 = 0;
+            ctrl2 = 0;
+            ctrl3 = 0;
+            thermostatOnOffTouch_timer = 0;
         }
-        btnset = 0;
-        btndec = 0U;
-        btninc = 0U;
-        ctrl1 = 0;
-        ctrl2 = 0;
-        ctrl3 = 0;
-        thermostatOnOffTouch_timer = 0;
     }
     DISPResetScrnsvr();
 }
