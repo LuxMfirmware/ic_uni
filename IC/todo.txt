@@ -22,4 +22,6 @@ restart timers on brightness and color change
 
 color white goes to red on miboxer
 
+set widget min-max values
+
 
