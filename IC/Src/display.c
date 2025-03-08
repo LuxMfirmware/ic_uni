@@ -3088,11 +3088,11 @@ static void DSP_InitSet6Scrn(void)
         SPINBOX_SetEdge(lightsWidgets[i].controllerID_on_delay, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].controllerID_on_delay, lights_modbus[i].controllerID_on_delay);
 
-        lightsWidgets[i].on_hour = SPINBOX_CreateEx(x, y + 172, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 4, 0, 512);
+        lightsWidgets[i].on_hour = SPINBOX_CreateEx(x, y + 172, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 4, 0, 23);
         SPINBOX_SetEdge(lightsWidgets[i].on_hour, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].on_hour, lights_modbus[i].on_hour);
 
-        lightsWidgets[i].on_minute = SPINBOX_CreateEx(x, y + 215, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 5, 0, 512);
+        lightsWidgets[i].on_minute = SPINBOX_CreateEx(x, y + 215, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 5, 0, 59);
         SPINBOX_SetEdge(lightsWidgets[i].on_minute, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].on_minute, lights_modbus[i].on_minute);
 
@@ -3139,7 +3139,7 @@ static void DSP_InitSet6Scrn(void)
         x = 200;
         y = 5;
 
-        lightsWidgets[i].offTime = SPINBOX_CreateEx(x, y, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 6, 0, 512);
+        lightsWidgets[i].offTime = SPINBOX_CreateEx(x, y, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 6, 0, 254);
         SPINBOX_SetEdge(lightsWidgets[i].offTime, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].offTime, Light_Modbus_GetOffTime(lights_modbus + i));
 
@@ -3147,15 +3147,15 @@ static void DSP_InitSet6Scrn(void)
         SPINBOX_SetEdge(lightsWidgets[i].communication_type, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].communication_type, lights_modbus[i].communication_type);
 
-        lightsWidgets[i].local_pin = SPINBOX_CreateEx(x, y + 86, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 8, 0, 512);
+        lightsWidgets[i].local_pin = SPINBOX_CreateEx(x, y + 86, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 8, 0, 6);
         SPINBOX_SetEdge(lightsWidgets[i].local_pin, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].local_pin, lights_modbus[i].local_pin);
 
-        lightsWidgets[i].sleep_time = SPINBOX_CreateEx(x, y + 129, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 9, 0, 512);
+        lightsWidgets[i].sleep_time = SPINBOX_CreateEx(x, y + 129, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 9, 0, 254);
         SPINBOX_SetEdge(lightsWidgets[i].sleep_time, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].sleep_time, lights_modbus[i].sleep_time);
 
-        lightsWidgets[i].button_external = SPINBOX_CreateEx(x, y + 172, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 10, 0, 512);
+        lightsWidgets[i].button_external = SPINBOX_CreateEx(x, y + 172, 100, 40, 0, WM_CF_SHOW, (ID_LightsModbusRelay * i) + 10, 0, 4);
         SPINBOX_SetEdge(lightsWidgets[i].button_external, SPINBOX_EDGE_CENTER);
         SPINBOX_SetValue(lightsWidgets[i].button_external, lights_modbus[i].button_external);
 
