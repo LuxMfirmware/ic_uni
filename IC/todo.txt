@@ -19,7 +19,7 @@ kada se brzo pritisce dim svjetlo pocnu treperiti ostala dim svjetla, kada se sp
 
 restart timers on brightness and color change
 
-save brightness to eeprom after leaving screensaver
+there can be miboxer with only dim, so you have to send status and not just brightness value
 
 miboxer lights wont turn on when status changed
 
