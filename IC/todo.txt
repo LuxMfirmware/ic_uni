@@ -19,6 +19,6 @@ kada se brzo pritisce dim svjetlo pocnu treperiti ostala dim svjetla, kada se sp
 
 restart timers on brightness and color change
 
-set widget min-max values
+save brightness to eeprom after leaving screensaver
 
 
