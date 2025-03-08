@@ -98,11 +98,11 @@ TF_Result BINARY_SET_Listener(TinyFrame *tf, TF_Msg *msg)
         {
             Light_Modbus_Update_External(lights_modbus + i, (msg->data[2] == 1) ? 1 : 0); // podesi novo stanje bez akcije
         }
-        else if(adr == lights_modbus[i].controllerID_on)
+        /*else if(adr == lights_modbus[i].controllerID_on)
         {
             if(msg->data[2] == 1) Light_Modbus_On_External(lights_modbus + i);
             else Light_Modbus_Off_External(lights_modbus + i);
-        }
+        }*/
     }
     
     return TF_STAY;
