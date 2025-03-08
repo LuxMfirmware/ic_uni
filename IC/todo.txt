@@ -21,4 +21,8 @@ restart timers on brightness and color change
 
 save brightness to eeprom after leaving screensaver
 
+miboxer lights wont turn on when status changed
+
+when miboxer light is turned off from web it cant be turned on from controller (might be relate to the problem above)
+
 
