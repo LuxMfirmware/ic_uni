@@ -695,6 +695,7 @@ void Light_Modbus_SetDefault(LIGHT_Modbus_CmdTypeDef* const li)
     li->on_minute = 0;
     li->sleep_time = 0;
     li->tiedToMainLight = false;
+    li->rememberBrightness = false;
 }
 
 
