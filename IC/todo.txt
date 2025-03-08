@@ -19,9 +19,6 @@ kada se brzo pritisce dim svjetlo pocnu treperiti ostala dim svjetla, kada se sp
 
 restart timers on brightness and color change
 
-
-color white goes to red on miboxer
-
 set widget min-max values
 
 
