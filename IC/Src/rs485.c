@@ -92,13 +92,19 @@ TF_Result BINARY_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
     uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
 
-    for(int i = 0; i < LIGHTS_MODBUS_SIZE; i++) // provjeri sve strukture za svjetla
+    for(int i = 0; i < Lights_Modbus_getCount(); i++) // provjeri sve strukture za svjetla
     {
-        if(adr && lights_modbus[i].index && (adr == lights_modbus[i].index)) // uradi sve provjere na nule i adrese
+        if(adr && Light_Modbus_GetRelay(lights_modbus + i) && (adr == Light_Modbus_GetRelay(lights_modbus + i))) // uradi sve provjere na nule i adrese
         {
-            Light_Modbus_Update_External(&lights_modbus[i], msg->data[2] == 1 ? 1:0); // podesi novo stanje bez akcije
+            Light_Modbus_Update_External(lights_modbus + i, (msg->data[2] == 1) ? 1 : 0); // podesi novo stanje bez akcije
+        }
+        else if(adr == lights_modbus[i].controllerID_on)
+        {
+            if(msg->data[2] == 1) Light_Modbus_On_External(lights_modbus + i);
+            else Light_Modbus_Off_External(lights_modbus + i);
         }
     }
+    
     return TF_STAY;
 }
 /**
@@ -112,13 +118,17 @@ TF_Result DIMMER_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
     uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
 
-    for(int i = 0; i < LIGHTS_MODBUS_SIZE; i++) // provjeri sve strukture za svjetla
+    if((msg->data[2] >= 0) && (msg->data[2] <= 100))
     {
-        if(adr && lights_modbus[i].index && (adr == lights_modbus[i].index)) // uradi sve provjere na nule i adrese
+        for(int i = 0; i < Lights_Modbus_getCount(); i++) // provjeri sve strukture za svjetla
         {
-            Light_Modbus_Brightness_Update_External(&lights_modbus[i], msg->data[2]); // podesi novu vrijednost dimera
+            if(adr && Light_Modbus_GetRelay(lights_modbus + i) && (adr == Light_Modbus_GetRelay(lights_modbus + i))) // uradi sve provjere na nule i adrese
+            {
+                Light_Modbus_Brightness_Update_External(&lights_modbus[i], msg->data[2]); // podesi novu vrijednost dimera
+            }
         }
     }
+    
     return TF_STAY;
 }
 /**
@@ -130,7 +140,6 @@ TF_Result DIMMER_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 */
 TF_Result JALOUSIE_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-
     uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1];  // sastavi adresu iz upita
     uint8_t dir = msg->data[2]; // smejr šaluzine
     // provjeri sve strukture za aluzina
