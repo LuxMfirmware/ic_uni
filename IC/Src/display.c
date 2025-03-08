@@ -2403,7 +2403,10 @@ void DISP_Service(void)
 
 
     if (!IsScrnsvrActiv()) {
-        if ((HAL_GetTick() - scrnsvr_tmr) >= (uint32_t)(scrnsvr_tout*1000)) {
+        if ((HAL_GetTick() - scrnsvr_tmr) >= (uint32_t)(scrnsvr_tout*1000))
+        {
+            uint8_t saveBrightness = 0;
+            
             if      (screen == SCREEN_SETTINGS_1) DSP_KillSet1Scrn();
             else if (screen == SCREEN_SETTINGS_2) DSP_KillSet2Scrn();
             else if (screen == SCREEN_SETTINGS_3)DSP_KillSet3Scrn();
@@ -2412,6 +2415,22 @@ void DISP_Service(void)
             else if (screen == SCREEN_SETTINGS_6)DSP_KillSet6Scrn();
             else if (screen == SCREEN_SETTINGS_7)DSP_KillSet7Scrn();
             else if (screen == SCREEN_SETTINGS_8)DSP_KillSet8Scrn();
+            
+            for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
+            {
+                if(lights_modbus[i].saveBrightness)
+                {
+                    lights_modbus[i].saveBrightness = 0;
+                    saveBrightness = 1;
+                }
+            }
+            
+            if(saveBrightness)
+            {
+                saveBrightness = 0;
+                Lights_Modbus_Save();
+            }
+            
             DISPSetBrightnes(low_bcklght);
             ScrnsvrInitReset();
             ScrnsvrSet();

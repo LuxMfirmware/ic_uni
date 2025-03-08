@@ -67,6 +67,7 @@ void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
     li->value = 0;
     li->old_value = 0;
     li->color = 0;
+    li->saveBrightness = 0;
 
     EE_ReadBuffer((uint8_t*)&li->index,                addr,           2);
     EE_ReadBuffer(&li->tiedToMainLight,                addr + 2,       1);
@@ -510,7 +511,7 @@ void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brigh
         
         if(Light_Modbus_isBrightnessRemembered(li))
         {
-            Light_Modbus_Save(li, EE_LIGHTS_MODBUS + ((li - lights_modbus) * 16));
+            li->saveBrightness = 1;
         }
         
         sendDataBuffDimm[0] = (Light_Modbus_GetRelay(li) >> 8) & 0xFF;
@@ -567,14 +568,14 @@ void Light_Modbus_Brightness_Update_External(LIGHT_Modbus_CmdTypeDef* const li, 
         li->brightness = value;
     }
 
-    Light_Modbus_ResetBrightness(li);
-
 
 
     if(Light_Modbus_isBrightnessRemembered(li))
     {
-        Light_Modbus_Save(li, EE_LIGHTS_MODBUS + ((li - lights_modbus) * 16));
+        li->saveBrightness = 1;
     }
+    
+    Light_Modbus_ResetBrightness(li);
 }
 
 
