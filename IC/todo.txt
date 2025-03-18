@@ -21,8 +21,8 @@ restart timers on brightness and color change
 
 there can be miboxer with only dim, so you have to send status and not just brightness value
 
-miboxer lights wont turn on when status changed
+Light_Modbus_isNewValueOn() keeps getting called after statusSet()
 
-when miboxer light is turned off from web it cant be turned on from controller (might be relate to the problem above)
+za rgb svjetlo, ako se u funkciji DIMMER_SET_Listener() komentarise Light_Modbus_Brightness_Update_External() onda ce svjetlo raditi normalno zato sto esp vraca brightness kao 0, query se vise puta posalje sa kontrolera
 
 
