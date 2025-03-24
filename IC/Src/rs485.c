@@ -90,21 +90,24 @@ static inline void delay_us(uint32_t us) {
 */
 TF_Result BINARY_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
-    
-    if(adr)
+    if(msg->data[BIN_ACK_POZICIJA] == ACK)
     {
-        for(int i = 0; i < Lights_Modbus_getCount(); i++) // provjeri sve strukture za svjetla
+        uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
+        
+        if(adr)
         {
-            if(adr == Light_Modbus_GetRelay(lights_modbus + i)) // uradi sve provjere na nule i adrese
+            for(int i = 0; i < Lights_Modbus_getCount(); i++) // provjeri sve strukture za svjetla
             {
-                Light_Modbus_Update_External(lights_modbus + i, (msg->data[2] == 1) ? 1 : 0); // podesi novo stanje bez akcije
+                if(adr == Light_Modbus_GetRelay(lights_modbus + i)) // uradi sve provjere na nule i adrese
+                {
+                    Light_Modbus_Update_External(lights_modbus + i, (msg->data[2] == 1) ? 1 : 0); // podesi novo stanje bez akcije
+                }
+                /*else if(adr == lights_modbus[i].controllerID_on)
+                {
+                    if(msg->data[2] == 1) Light_Modbus_On_External(lights_modbus + i);
+                    else Light_Modbus_Off_External(lights_modbus + i);
+                }*/
             }
-            /*else if(adr == lights_modbus[i].controllerID_on)
-            {
-                if(msg->data[2] == 1) Light_Modbus_On_External(lights_modbus + i);
-                else Light_Modbus_Off_External(lights_modbus + i);
-            }*/
         }
     }
     
@@ -119,15 +122,18 @@ TF_Result BINARY_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 */
 TF_Result DIMMER_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
-
-    if(adr && (msg->data[2] >= 0) && (msg->data[2] <= 100))
+    if(msg->data[DIM_ACK_POZICIJA] == ACK)
     {
-        for(int i = 0; i < Lights_Modbus_getCount(); i++) // provjeri sve strukture za svjetla
+        uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
+
+        if(adr && (msg->data[2] >= 0) && (msg->data[2] <= 100))
         {
-            if(adr == Light_Modbus_GetRelay(lights_modbus + i)) // uradi sve provjere na nule i adrese
+            for(int i = 0; i < Lights_Modbus_getCount(); i++) // provjeri sve strukture za svjetla
             {
-                Light_Modbus_Brightness_Update_External(&lights_modbus[i], msg->data[2]); // podesi novu vrijednost dimera
+                if(adr == Light_Modbus_GetRelay(lights_modbus + i)) // uradi sve provjere na nule i adrese
+                {
+                    Light_Modbus_Brightness_Update_External(&lights_modbus[i], msg->data[2]); // podesi novu vrijednost dimera
+                }
             }
         }
     }
