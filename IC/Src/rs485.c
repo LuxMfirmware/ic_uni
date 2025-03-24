@@ -37,7 +37,7 @@ static TinyFrame tfapp;
 #define JAL_ACK_POZICIJA		3   // pozicija ACK bajta u odgovoru na komande žaluzinama
 #define THE_ACK_POZICIJA		18  // pozicija ACK bajta u odgovoru na komande termostatu
 #define RGB_ACK_POZICIJA		5   // pozicija ACK bajta u odgovoru na komande rgbw
-#define MAX_RETRIES 5           // Maksimalan broj pokušaja
+#define MAX_RETRIES 4           // Maksimalan broj pokušaja
 #define TIMEOUT_MS 10           // Timeout u ms za cekanje odgovora
 #define TH_INFO_DELAY 100       // Kašnjenje termostat info poruke maste->slave nakon što master dobije set paket
 #define RESPONSE_TIME   200  // ms
