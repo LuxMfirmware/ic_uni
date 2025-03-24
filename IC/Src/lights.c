@@ -498,8 +498,13 @@ void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li)
 void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brightness)
 {
     if(brightness > 100) li->brightness = 100;
-    else if(brightness < 0) li->brightness = 0;
+    else if(brightness < 20) li->brightness = 20;
     else li->brightness = brightness;
+    
+    if(Light_Modbus_isBrightnessRemembered(li) && Light_Modbus_hasBrightnessChanged(li))
+    {
+        li->saveBrightness = 1;
+    }
     
     if((!Light_Modbus_isNewValueOn(li)) && (!Light_Modbus_hasStatusChanged(li)))
     {
@@ -508,11 +513,6 @@ void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brigh
     else
     {
         uint8_t sendDataBuffDimm[3] = {0};
-        
-        if(Light_Modbus_isBrightnessRemembered(li))
-        {
-            li->saveBrightness = 1;
-        }
         
         sendDataBuffDimm[0] = (Light_Modbus_GetRelay(li) >> 8) & 0xFF;
         sendDataBuffDimm[1] = Light_Modbus_GetRelay(li) & 0xFF;
@@ -557,20 +557,24 @@ void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li)
 
 void Light_Modbus_Brightness_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value)
 {
-    Light_Modbus_Update_External(li, value);
-    
     if(value > 100)
     {
         li->brightness = 100;
+        Light_Modbus_Update_External(li, 1);
+    }
+    else if(value >= 20)
+    {
+        li->brightness = value;
+        Light_Modbus_Update_External(li, 1);
     }
     else
     {
-        li->brightness = value;
+        Light_Modbus_Update_External(li, 0);
     }
 
 
 
-    if(Light_Modbus_isBrightnessRemembered(li))
+    if(Light_Modbus_isBrightnessRemembered(li) && Light_Modbus_hasBrightnessChanged(li))
     {
         li->saveBrightness = 1;
     }
