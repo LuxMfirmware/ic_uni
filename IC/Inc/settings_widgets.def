@@ -1,0 +1,64 @@
+// =======================================================================
+// === GLAVNA LISTA WIDGETA ZA PODEŠAVANJA (X-MACRO DEFINICIJA) ===
+//
+// ULOGA: Ovo je "Jedinstveni Izvor Istine". Svaka izmjena (dodavanje,
+// brisanje, izmjena ID-ja) se radi ISKLJUČIVO U OVOM FAJLU.
+// Format je: WIDGET(NAZIV_ID, VRIJEDNOST, "KOMENTAR")
+// =======================================================================
+
+// --- Zajednički dugmići ---
+WIDGET( ID_Ok,                          0x803, "ID dugmeta 'OK' ili 'SAVE'" )
+WIDGET( ID_Next,                        0x805, "ID dugmeta 'NEXT'" )
+
+// --- Ekran 1: Termostat ---
+WIDGET( ID_MaxSetpoint,                 0x831, "ID za Spinbox maksimalne zadane temperature" )
+WIDGET( ID_MinSetpoint,                 0x832, "ID za Spinbox minimalne zadane temperature" )
+WIDGET( ID_ThstControl,                 0x860, "ID za Radio dugme kontrole termostata" )
+WIDGET( ID_FanControl,                  0x861, "ID za Radio dugme kontrole ventilatora" )
+WIDGET( ID_SelectControl_4,             0x862, "ID za Radio dugme kontrole termostata" )
+WIDGET( ID_FanDiff,                     0x864, "ID za Spinbox diferencijala ventilatora" )
+WIDGET( ID_FanLowBand,                  0x865, "ID za Spinbox opsega niske brzine ventilatora" )
+WIDGET( ID_FanHiBand,                   0x866, "ID za Spinbox opsega visoke brzine ventilatora" )
+WIDGET( ID_THST_GROUP,                  0x979, "ID za Spinbox grupe termostata" )
+WIDGET( ID_THST_MASTER,                 0x97A, "ID za Checkbox master moda termostata" )
+
+// --- Ekran 2: Vrijeme, Ekran ---
+WIDGET( ID_DisplayHighBrightness,       0x833, "ID za Spinbox visoke svjetline ekrana" )
+WIDGET( ID_DisplayLowBrightness,        0x834, "ID za Spinbox niske svjetline ekrana" )
+WIDGET( ID_ScrnsvrTimeout,              0x835, "ID za Spinbox screensaver timeouta" )
+WIDGET( ID_ScrnsvrEnableHour,           0x836, "ID za Spinbox sata aktivacije screensavera" )
+WIDGET( ID_ScrnsvrDisableHour,          0x837, "ID za Spinbox sata deaktivacije screensavera" )
+WIDGET( ID_ScrnsvrClkColour,            0x838, "ID za Spinbox boje sata na screensaveru" )
+WIDGET( ID_Hour,                        0x83A, "ID za Spinbox sata" )
+WIDGET( ID_Minute,                      0x83B, "ID za Spinbox minute" )
+WIDGET( ID_Day,                         0x83C, "ID za Spinbox dana" )
+WIDGET( ID_Month,                       0x83D, "ID za Spinbox mjeseca" )
+WIDGET( ID_Year,                        0x83E, "ID za Spinbox godine" )
+WIDGET( ID_WeekDay,                     0x83F, "ID za Dropdown dan u sedmici" )
+WIDGET( ID_ScrnsvrClock,                0x851, "ID za Checkbox screensaver sata" )
+
+// --- Ekran 3: Ventilator ---
+WIDGET( ID_VentilatorRelay,             0x88F, "ID za Spinbox releja ventilatora" )
+WIDGET( ID_VentilatorDelayOn,           0x890, "ID za Spinbox odgode paljenja ventilatora" )
+WIDGET( ID_VentilatorDelayOff,          0x891, "ID za Spinbox odgode gašenja ventilatora" )
+WIDGET( ID_VentilatorTriggerSource1,    0x892, "ID za Spinbox izbor prvog lokalnog okidača ventilatora " )
+WIDGET( ID_VentilatorTriggerSource2,    0x893, "ID za Spinbox izbor drugog lokalnog okidača ventilatora " )
+WIDGET( ID_VentilatorLocalPin,          0x894, "ID za Spinbox izbor lokalnog pina ventilatora " )
+
+// --- Ekran 4: Zavjese (statički dio) ---
+WIDGET( ID_CurtainsMoveTime,            0x8B2, "ID za Spinbox vremena kretanja zavjesa" )
+
+// --- Ekran 6: Opšte ---
+WIDGET( ID_DEV_ID,                      0x870, "ID za Spinbox ID-a uređaja" )
+WIDGET( ID_LEAVE_SCRNSVR_AFTER_TOUCH,   0x977, "ID za Checkbox ponašanja screensavera" )
+WIDGET( ID_LIGHT_NIGHT_TIMER,           0x978, "ID za Checkbox noćnog tajmera za svjetla" )
+WIDGET( ID_SET_DEFAULTS,                0x97E, "ID dugmeta za postavljanje podrazumijevanih vrednosti" )
+WIDGET( ID_SYSRESTART,                  0x976, "ID dugmeta za restart sistema" )
+
+// --- Ekran 7: Odmrzivač ---
+WIDGET( ID_DEFROSTER_CYCLE_TIME,        0x97B, "ID za Spinbox vremena ciklusa odmrzivača" )
+WIDGET( ID_DEFROSTER_ACTIVE_TIME,       0x97C, "ID za Spinbox aktivnog vremena odmrzivača" )
+WIDGET( ID_DEFROSTER_PIN,               0x97D, "ID za Spinbox GPIO pina odmrzivača" )
+
+// NAPOMENA: Dinamički ID-jevi kao što su ID_LightsModbusRelay i ID_CurtainsRelay
+// se ne stavljaju ovdje jer nisu statični.

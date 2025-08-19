@@ -25,6 +25,9 @@
 #include "common.h"
 #include "Resource.h"
 #include "LuxNET.h"
+#include "stm32746g_eeprom.h" // Mapa ide nakon svih definicija
+#include "stm32746g.h"
+#include "stm32746g_ts.h"
 /* Exported types ------------------------------------------------------------*/
 #define BUZZER_CLICK_TIME                   20U     // single 50 ms tone when button pressed
 typedef struct{
@@ -39,6 +42,7 @@ typedef struct{
 	uint32_t unix;       	/*!< Seconds from 01.01.1970 00:00:00 */	
 } RTC_t;
 /* Exported constants --------------------------------------------------------*/
+
 /** ==========================================================================*/
 /**    	 P C A 9 6 8 5    	R E G I S T E R  		A D D R E S S E	  		  */
 /** ==========================================================================*/
@@ -255,10 +259,13 @@ typedef struct{
 #define I2CPWM1_RDADD       0x93
 #define I2CPWM_TOUT         15
 /* Exported variable  --------------------------------------------------------*/
+
+
+// Globalni fleg koji aktivira mod visoke preciznosti
+extern bool g_high_precision_mode;
 extern uint8_t sysfl, initfl;
 extern uint32_t thstfl_memo;
 extern uint8_t dispfl_memo;
-extern uint8_t pwm[32];
 extern bool LSE_Failed; // flag oznacava LSE oscilator rtc modula false = 32.768 Hz kristal / true = interni oscilator
 /* Exported macros  --------------------------------------------------------*/
 #define SYS_NewLogSet()             (sysfl |=  (0x1U<<0))
@@ -285,28 +292,66 @@ extern bool LSE_Failed; // flag oznacava LSE oscilator rtc modula false = 32.768
 #define SYS_FwRqSet()               (sysfl |=  (0x1U<<7))
 #define SYS_FwRqReset()             (sysfl &=(~(0x1U<<7)))
 #define IsSYS_FwRqSet()             (sysfl &   (0x1U<<7))
-#define BuzzerOn()                  (0 /*DoNothing() HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET)*/)
-#define BuzzerOff()                 (0 /*DoNothing() HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET)*/)
-#define IsBuzzerActiv()             (false /*HAL_GPIO_ReadPin (GPIOD, GPIO_PIN_4) == GPIO_PIN_SET*/)
+//#define BuzzerOn()                  (0 /*DoNothing() HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET)*/)
+//#define BuzzerOff()                 (0 /*DoNothing() HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET)*/)
+//#define IsBuzzerActiv()             (false /*HAL_GPIO_ReadPin (GPIOD, GPIO_PIN_4) == GPIO_PIN_SET*/)
+//#define Light1On()                  (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, GPIO_PIN_SET))
+//#define Light1Off()                 (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, GPIO_PIN_RESET))
+//#define IsLight1Active()            (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_12) == GPIO_PIN_SET)
+//#define Light2On()                  (HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET))
+//#define Light2Off()                 (HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET))
+//#define IsLight2Active()            (HAL_GPIO_ReadPin (GPIOD, GPIO_PIN_2) == GPIO_PIN_SET) 
+//#define Light3On()                  (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET))
+//#define Light3Off()                 (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET))
+//#define IsLight3Active()            (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_8) == GPIO_PIN_SET)
+//#define Light4On()                  (HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET))
+//#define Light4Off()                 (HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET))
+//#define IsLight4Active()            (HAL_GPIO_ReadPin (GPIOD, GPIO_PIN_4) == GPIO_PIN_SET)
+//#define Light5On()                  (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_SET))
+//#define Light5Off()                 (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_RESET))
+//#define IsLight5Active()            (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_11) == GPIO_PIN_SET)
+//#define Light6On()                  (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_SET))
+//#define Light6Off()                 (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_RESET))
+//#define IsLight6Active()            (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_10) == GPIO_PIN_SET)
+#define IsButtonActive()             (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_3) == GPIO_PIN_RESET)
+/*============================================================================*/
+/* MAKROI ZA KONTROLU LOKALNIH GPIO IZLAZA                                    */
+/*============================================================================*/
+
+// --- Kontrola Svjetala ---
 #define Light1On()                  (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, GPIO_PIN_SET))
 #define Light1Off()                 (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, GPIO_PIN_RESET))
 #define IsLight1Active()            (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_12) == GPIO_PIN_SET)
+
 #define Light2On()                  (HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET))
 #define Light2Off()                 (HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET))
 #define IsLight2Active()            (HAL_GPIO_ReadPin (GPIOD, GPIO_PIN_2) == GPIO_PIN_SET) 
+
 #define Light3On()                  (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET))
 #define Light3Off()                 (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET))
 #define IsLight3Active()            (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_8) == GPIO_PIN_SET)
+
 #define Light4On()                  (HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET))
 #define Light4Off()                 (HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET))
 #define IsLight4Active()            (HAL_GPIO_ReadPin (GPIOD, GPIO_PIN_4) == GPIO_PIN_SET)
+
 #define Light5On()                  (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_SET))
 #define Light5Off()                 (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_RESET))
 #define IsLight5Active()            (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_11) == GPIO_PIN_SET)
+
 #define Light6On()                  (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_SET))
 #define Light6Off()                 (HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_RESET))
 #define IsLight6Active()            (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_10) == GPIO_PIN_SET)
-#define IsButtonActive()             (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_3) == GPIO_PIN_RESET)
+
+// --- Kontrola Zujalice (Buzzer) ---
+#define BuzzerOn()                  (HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_SET))
+#define BuzzerOff()                 (HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, GPIO_PIN_RESET))
+#define IsBuzzerActiv()             (HAL_GPIO_ReadPin (GPIOD, GPIO_PIN_4) == GPIO_PIN_SET)
+
+// --- Provjera Eksternog Tastera ---
+#define IsButtonActive()            (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_3) == GPIO_PIN_RESET)
+
+
 /* Exported hal handler --------------------------------------------------------*/
 extern RTC_t date_time; 
 extern RTC_TimeTypeDef rtctm;
@@ -324,6 +369,7 @@ extern UART_HandleTypeDef huart2;
 extern DMA2D_HandleTypeDef hdma2d;
 /* Exported function --------------------------------------------------------*/
 void SYSRestart(void);
+void SetPin(uint8_t pin, uint8_t pinVal);
 void RTC_GetDateTime(RTC_t* data, uint32_t format);
 void ErrorHandler(uint8_t function, uint8_t driver);
 void PCA9685_Init(void);

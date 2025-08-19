@@ -7,15 +7,13 @@
   ..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_def.h \
   ..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h \
   ..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h \
-  C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\core_cm7.h \
+  C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h \
   C:\Keil\ARM\ARMCLANG\Bin\..\include\stdint.h \
-  C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cmsis_version.h \
-  C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cmsis_compiler.h \
-  C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cmsis_armclang.h \
-  C:\Keil\ARM\ARMCLANG\Bin\..\include\arm_compat.h \
-  C:\Keil\ARM\ARMCLANG\Bin\..\include\arm_acle.h \
-  C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\mpu_armv7.h \
-  C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cachel1_armv7.h \
+  C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_version.h \
+  C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h \
+  C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armclang.h \
+  C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\mpu_armv7.h \
+  C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cachel1_armv7.h \
   ..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\system_stm32f7xx.h \
   ..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\Legacy\stm32_hal_legacy.h \
   C:\Keil\ARM\ARMCLANG\Bin\..\include\stdio.h \

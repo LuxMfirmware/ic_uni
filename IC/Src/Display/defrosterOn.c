@@ -268,7 +268,7 @@ static GUI_CONST_STORAGE unsigned short _acdefrosterOn[] = {
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
 };
 
-GUI_CONST_STORAGE GUI_BITMAP bmdefrosterOn = {
+GUI_CONST_STORAGE GUI_BITMAP bmdefrostericoOn = {
     80, // xSize
     80, // ySize
     160, // BytesPerLine

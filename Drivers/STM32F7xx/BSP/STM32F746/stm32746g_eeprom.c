@@ -97,6 +97,8 @@ EndDependencies */
     #error "eeprom driver header version mismatch"
 #endif
 
+#define EE_OK                               0x0
+#define EE_MAX_TRIALS                       3000
 /* Imported Types  -----------------------------------------------------------*/
 /* Imported Variables --------------------------------------------------------*/
 /* Imported Functions    -----------------------------------------------------*/

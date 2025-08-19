@@ -10,15 +10,15 @@
       <TargetName>IC</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pArmCC>6140000::V6.14::ARMCLANG</pArmCC>
-      <pCCUsed>6140000::V6.14::ARMCLANG</pCCUsed>
+      <pArmCC>6190000::V6.19::ARMCLANG</pArmCC>
+      <pCCUsed>6190000::V6.19::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F746ZGTx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F7xx_DFP.2.14.0</PackID>
-          <PackURL>http://www.keil.com/pack/</PackURL>
+          <PackID>Keil.STM32F7xx_DFP.3.0.0</PackID>
+          <PackURL>https://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20010000,0x40000) IRAM2(0x20000000,0x10000) IROM(0x08000000,0x100000) IROM2(0x00200000,0x100000) CPUTYPE("Cortex-M7") FPU3(SFPU) CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -71,7 +71,7 @@
             <nStopU2X>0</nStopU2X>
           </BeforeCompile>
           <BeforeMake>
-            <RunUserProg1>1</RunUserProg1>
+            <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
             <UserProg1Name>Run\fwbuild.bat</UserProg1Name>
             <UserProg2Name></UserProg2Name>
@@ -81,8 +81,8 @@
             <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>1</RunUserProg1>
-            <RunUserProg2>1</RunUserProg2>
+            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg2>0</RunUserProg2>
             <UserProg1Name>C:\Keil\ARM\ARMCC\bin\fromelf.exe --bin --output=Out Exe\ic.axf</UserProg1Name>
             <UserProg2Name>Run\ic.bat</UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
@@ -186,6 +186,8 @@
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
             <RvdsMve>0</RvdsMve>
+            <RvdsCdeCp>0</RvdsCdeCp>
+            <nBranchProt>0</nBranchProt>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>1</hadIROM2>
             <StupSel>8</StupSel>
@@ -352,7 +354,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <uClangAs>0</uClangAs>
+            <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -389,11 +391,6 @@
               <FilePath>..\Src\Display\Home.c</FilePath>
             </File>
             <File>
-              <FileName>Sijalica.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\Sijalica.c</FilePath>
-            </File>
-            <File>
               <FileName>SijalicaOff.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\SijalicaOff.c</FilePath>
@@ -402,21 +399,6 @@
               <FileName>SijalicaOn.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\SijalicaOn.c</FilePath>
-            </File>
-            <File>
-              <FileName>Sijalicica.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\Sijalicica.c</FilePath>
-            </File>
-            <File>
-              <FileName>SijalicicaOff.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\SijalicicaOff.c</FilePath>
-            </File>
-            <File>
-              <FileName>SijalicicaOn.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\SijalicicaOn.c</FilePath>
             </File>
             <File>
               <FileName>Termometar.c</FileName>
@@ -529,9 +511,9 @@
               <FilePath>..\Src\Display\blackWhiteGradient.c</FilePath>
             </File>
             <File>
-              <FileName>defroster.c</FileName>
+              <FileName>defrosterico.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Src\Display\defroster.c</FilePath>
+              <FilePath>..\Src\Display\defrosterico.c</FilePath>
             </File>
             <File>
               <FileName>defrosterOn.c</FileName>
@@ -994,14 +976,14 @@
               <FilePath>..\Src\curtain.c</FilePath>
             </File>
             <File>
-              <FileName>defroster.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\defroster.c</FilePath>
-            </File>
-            <File>
               <FileName>ventilator.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\ventilator.c</FilePath>
+            </File>
+            <File>
+              <FileName>defroster.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\defroster.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -16,11 +16,7 @@ Content     : Main resource header file of weather forecast demo
 #endif
 
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOn;
-extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicicaOn;
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOff;
-extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicicaOff;
-extern GUI_CONST_STORAGE GUI_BITMAP bmSijalica;
-extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicica;
 extern GUI_CONST_STORAGE GUI_BITMAP bmTermometar;
 extern GUI_CONST_STORAGE GUI_BITMAP bmHome;
 
@@ -53,8 +49,8 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmwifi;
 extern GUI_CONST_STORAGE GUI_BITMAP bmmobilePhone;
 extern GUI_CONST_STORAGE GUI_BITMAP bmcolorSpectrum;
 extern GUI_CONST_STORAGE GUI_BITMAP bmblackWhiteGradient;
-extern GUI_CONST_STORAGE GUI_BITMAP bmdefroster;
-extern GUI_CONST_STORAGE GUI_BITMAP bmdefrosterOn;
+extern GUI_CONST_STORAGE GUI_BITMAP bmdefrosterico;
+extern GUI_CONST_STORAGE GUI_BITMAP bmdefrostericoOn;
 
 extern const unsigned long thstat_size;
 extern const unsigned char thstat[];

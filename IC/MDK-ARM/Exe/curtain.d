@@ -1,15 +1,13 @@
-./exe/curtain.o: ..\Src\curtain.c ..\Inc\curtain.h ..\Inc\main.h \
+./exe/curtain.o: ..\Src\curtain.c ..\Inc\main.h \
   ..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h \
   ..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h \
-  C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\core_cm7.h \
+  C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h \
   C:\Keil\ARM\ARMCLANG\Bin\..\include\stdint.h \
-  C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cmsis_version.h \
-  C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cmsis_compiler.h \
-  C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cmsis_armclang.h \
-  C:\Keil\ARM\ARMCLANG\Bin\..\include\arm_compat.h \
-  C:\Keil\ARM\ARMCLANG\Bin\..\include\arm_acle.h \
-  C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\mpu_armv7.h \
-  C:\Users\Nermin\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cachel1_armv7.h \
+  C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_version.h \
+  C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h \
+  C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armclang.h \
+  C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\mpu_armv7.h \
+  C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cachel1_armv7.h \
   ..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\system_stm32f7xx.h \
   ..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal.h \
   ..\Inc\stm32f7xx_hal_conf.h \
@@ -61,7 +59,6 @@
   ..\..\Middlewares\STemWin\inc\DIALOG.h \
   ..\..\Middlewares\STemWin\inc\WM.h \
   ..\..\Middlewares\STemWin\inc\WM_GUI.h \
-  ..\..\Middlewares\STemWin\inc\GUI.h \
   ..\..\Middlewares\STemWin\inc\BUTTON.h \
   ..\..\Middlewares\STemWin\inc\DIALOG_Intern.h \
   ..\..\Middlewares\STemWin\inc\WIDGET.h \
@@ -88,7 +85,6 @@
   ..\..\Middlewares\STemWin\inc\MENU.h \
   ..\..\Middlewares\STemWin\inc\MULTIEDIT.h \
   ..\..\Middlewares\STemWin\inc\MULTIPAGE.h \
-  ..\..\Middlewares\STemWin\inc\DIALOG.h \
   ..\..\Middlewares\STemWin\inc\PROGBAR.h \
   ..\..\Middlewares\STemWin\inc\RADIO.h \
   ..\..\Middlewares\STemWin\inc\SLIDER.h \
@@ -97,9 +93,16 @@
   ..\..\Middlewares\STemWin\inc\TEXT.h \
   ..\..\Middlewares\STemWin\inc\TREEVIEW.h \
   ..\..\Middlewares\STemWin\inc\KNOB.h ..\..\Common\common.h \
-  ..\Inc\Resource.h ..\..\Middlewares\LuxNET\LuxNET.h ..\Inc\rs485.h \
-  ..\..\Middlewares\TinyFrame\TinyFrame.h ..\Inc\main.h \
-  ..\..\Middlewares\TinyFrame\TF_Config.h ..\Inc\display.h \
-  ..\Inc\thermostat.h ..\Inc\lights.h \
+  ..\Inc\Resource.h ..\..\Middlewares\LuxNET\LuxNET.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h \
-  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h
+  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h ..\Inc\display.h \
+  ..\Inc\settings_widgets.def ..\Inc\thermostat.h ..\Inc\ventilator.h \
+  ..\Inc\rs485.h ..\..\Middlewares\TinyFrame\TinyFrame.h \
+  ..\..\Middlewares\TinyFrame\TF_Config.h ..\Inc\curtain.h \
+  ..\Inc\lights.h ..\Inc\defroster.h \
+  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_ts.h \
+  ..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\ft5336\ft5336.h \
+  ..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\ft5336\..\Common\ts.h \
+  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_qspi.h \
+  ..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\n25q128a\n25q128a.h \
+  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h

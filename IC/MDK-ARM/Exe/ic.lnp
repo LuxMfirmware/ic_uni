@@ -1,11 +1,7 @@
 --cpu Cortex-M7.fp.sp
 ".\exe\home.o"
-".\exe\sijalica.o"
 ".\exe\sijalicaoff.o"
 ".\exe\sijalicaon.o"
-".\exe\sijalicica.o"
-".\exe\sijalicicaoff.o"
-".\exe\sijalicicaon.o"
 ".\exe\termometar.o"
 ".\exe\clear_sky.o"
 ".\exe\few_clouds.o"
@@ -28,7 +24,7 @@
 ".\exe\mobilephone.o"
 ".\exe\colorspectrum.o"
 ".\exe\blackwhitegradient.o"
-".\exe\defroster.o"
+".\exe\defrosterico.o"
 ".\exe\defrosteron.o"
 ".\exe\system_stm32f7xx.o"
 ".\exe\ft5336.o"
@@ -113,8 +109,8 @@
 ".\exe\main.o"
 ".\exe\lights.o"
 ".\exe\curtain.o"
-".\exe\defroster_1.o"
 ".\exe\ventilator.o"
+".\exe\defroster.o"
 --library_type=microlib --strict --scatter ".\Run\db.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

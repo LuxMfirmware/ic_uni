@@ -1,785 +1,1246 @@
-#include "lights.h"
+/**
+ ******************************************************************************
+ * Project          : KuceDzevadova
+ ******************************************************************************
+ *
+ *
+ ******************************************************************************
+ */
+#include "main.h"
 #include "rs485.h"
+#include "logger.h"
 #include "display.h"
+#include "thermostat.h"
+#include "ventilator.h"
+#include "curtain.h"
+#include "lights.h"
+#include "defroster.h"
+#include "stm32746g.h"
+#include "stm32746g_ts.h"
+#include "stm32746g_qspi.h"
 #include "stm32746g_sdram.h"
 #include "stm32746g_eeprom.h"
+/* Private Variables ---------------------------------------------------------*/
+/**
+ * @brief Brojac stvarno konfigurisanih svjetala.
+ * @namjena Cuva ukupan broj svjetala koja imaju validnu konfiguraciju (npr. 3 od mogucih 6).
+ * @kako_se_koristi Funkcija `LIGHTS_Count()` postavlja vrijednost ove varijable. Ostale funkcije,
+ * posebno u `display.c`, je koriste da bi petlje išle samo do broja stvarno
+ * korištenih svjetala, što cini program bržim.
+ * @scope `static` - Vidljiva samo unutar fajla `lights.c`.
+ */
+static uint8_t lights_count = 0;
 
+/**
+ * @brief Broj redova potrebnih za prikaz ikonica svjetala.
+ * @namjena Cuva izracunatu vrijednost koliko redova na ekranu zauzimaju ikonice svjetala.
+ * @kako_se_koristi Izracunava se u `LIGHTS_Rows_Count()`. Funkcija `Service_LightsScreen` u `display.c`
+ * koristi ovu vrijednost da zna kako da iscrta raspored ikonica.
+ * @scope `static` - Vidljiva samo unutar fajla `lights.c`.
+ */
+static uint8_t lights_modbus_rows = 0;
 
-
-
-
-
-uint8_t isButtonActive_old = 0;
-uint8_t lights_count = 0, lights_modbus_rows = 0;
+/**
+ * @brief Glavni prekidac (ON/OFF) za funkciju "Nocnog tajmera".
+ * @namjena Omogucava korisniku da u postavkama ukljuci ili iskljuci automatsko gašenje
+ * svjetala nocu.
+ * @kako_se_koristi Vrijednost se cita i piše u EEPROM. Logika u `display.c` provjerava
+ * ovaj fleg prije nego što pokrene `LightNightTimer_StartTime`.
+ * @scope Globalna - Pristupa joj `display.c` da bi upravljao tajmerom.
+ */
 uint8_t LightNightTimer_isEnabled = 0;
+
+/**
+ * @brief Timestamp (`HAL_GetTick()`) kada je "Nocni tajmer" pokrenut.
+ * @namjena Služi kao pocetna tacka za odbrojavanje. Vrijednost `0` znaci da tajmer nije aktivan.
+ * @kako_se_koristi Postavlja se u `display.c` kada se svjetlo upali nocu. Funkcija `HandleLightNightTimer()`
+ * u `lights.c` je poredi sa trenutnim vremenom da vidi da li je isteklo
+ * vrijeme za gašenje svjetala.
+ * @scope Globalna - `display.c` je pokrece, `lights.c` je provjerava.
+ */
 uint32_t LightNightTimer_StartTime = 0;
+
+/**
+ * @brief Centralna baza podataka za SVA svjetla u sistemu.
+ * @namjena Ovo je niz struktura gdje svaki element niza predstavlja jedno svjetlo.
+ * @kako_se_koristi Svaki element (`lights_modbus[i]`) cuva kompletnu konfiguraciju i TRENUTNO STANJE
+ * jednog svjetla: njegovu Modbus adresu, da li je upaljeno (`value`), jacinu (`brightness`),
+ * boju, podešene tajmere, koju ikonicu koristi, itd.. Sve funkcije
+ * u `lights.c` i `display.c` manipulišu ovim nizom.
+ * @scope Globalna - Srce cijelog modula za svjetla.
+ */
 LIGHT_Modbus_CmdTypeDef lights_modbus[LIGHTS_MODBUS_SIZE];
+
+/**
+ * @brief Tabela za mapiranje stanja svjetla u slicicu (ikonu).
+ * @namjena Niz pokazivaca na bitmape.
+ * @kako_se_koristi Funkcija `LIGHT_GetIcon()` koristi `iconID` i `value` (stanje ON/OFF)
+ * svjetla da izracuna indeks u ovom nizu i vrati odgovarajucu slicicu
+ * (npr. upaljenu ili ugašenu sijalicu).
+ * @scope Globalna unutar fajla - Koristi je `display.c` za iscrtavanje.
+ */
 GUI_CONST_STORAGE GUI_BITMAP* light_modbus_images[] = {&bmSijalicaOff, &bmSijalicaOn, &bmVENTILATOR_OFF, &bmVENTILATOR_ON};
 
+/**
+ * @brief Timestamp (`HAL_GetTick()`) za odloženo snimanje u EEPROM.
+ * @namjena Služi kao tajmer za zaštitu EEPROM memorije od prevelikog broja upisa.
+ * @kako_se_koristi Kada stigne eksterna komanda (npr. sa RS485) za promjenu svjetline, kod ne snima
+ * odmah, vec samo pokrene ovaj tajmer. Funkcija `HandleDelayedSave()`
+ * provjerava da li je prošlo dovoljno vremena (npr. 5 sekundi) i tek onda
+ * izvršava snimanje.
+ * @scope `static` - Mehanizam je u potpunosti enkapsuliran unutar `lights.c`.
+ */
+static uint32_t save_brightness_timer_start = 0;
+/* Private Function Prototypes -----------------------------------------------*/
+static void HandleExternalButtonActivity(void);
+static void HandleOnDelayTimers(void);
+static void HandleOffTimeTimers(void);
+static void HandleLightNightTimer(void);
+static void HandleLightStatusChanges(void);
 
-
-
-
-
-
-
-
-void Lights_Modbus_Count(void)
+/* Public Functions ----------------------------------------------------------*/
+// =======================================================================
+// === 1. ISPRAVLJENA VERZIJA FUNKCIJE LIGHT_On ===
+//
+// ISPRAVKA: Funkcija sada uvijek postavlja `value = 1` da bi se stanje
+// ispravno registrovalo. Takode, inteligentno upravlja sa `brightness`.
+//
+void LIGHT_On(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    lights_count = 0;
-    
-    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
-    {
-        if(Light_Modbus_GetRelay(lights_modbus + i)) ++lights_count;
-        else break;
+    // UVIJEK postavi logicko stanje na ON.
+    li->value = 1;
+
+    // Ako je svjetlo dimabilno/RGB i njegova svjetlina je 0 (bilo je potpuno ugašeno),
+    // postavi mu zadanu svjetlinu na 100%. Ako je vec imalo neku vrijednost
+    // (zbog `rememberBrightness`), ta vrijednost ce biti zadržana.
+    if((LIGHT_isDimmer(li) || LIGHT_isRGB(li)) && (li->config.brightness == 0)) {
+        li->config.brightness = 100;
+    }
+
+    // Upravljanje fizickim izlazom
+    if(li->config.local_pin < 5) {
+        SetPin(li->config.local_pin, 1);
+    } else {
+        // Koristi `brightness` za postavljanje intenziteta PWM-a
+        uint8_t pwm_value = (uint8_t)(li->config.brightness * 2.55f);
+        PCA9685_SetOutput(li->config.local_pin, pwm_value);
+    }
+
+    // Upravljanje tajmerom za automatsko gašenje (logika ostaje ista)
+    if(LIGHT_isOffTimeEnabled(li)) {
+        uint32_t time = HAL_GetTick();
+        if(!time) time = 1;
+        LIGHT_SetOffTimeTimer(li, time);
     }
 }
 
-uint8_t Lights_Modbus_getCount(void)
+
+// =======================================================================
+// === 2. ISPRAVLJENA VERZIJA FUNKCIJE LIGHT_Off ===
+//
+// ISPRAVKA: Funkcija sada provjerava `rememberBrightness` fleg. Ako je
+// ukljucen, funkcija NECE resetovati `brightness` na 0, cime se cuva
+// zadnja podešena vrijednost.
+//
+void LIGHT_Off(LIGHT_Modbus_CmdTypeDef* const li)
+{
+    // UVIJEK postavi logicko stanje na OFF.
+    li->value = 0;
+
+    // Ako NE pamtimo svjetlinu, resetuj je na 0.
+    // Ako pamtimo, NE DIRAMO `brightness`, vec samo gasimo svjetlo logicki.
+    if (!LIGHT_isBrightnessRemembered(li))
+    {
+        if(LIGHT_isDimmer(li) || LIGHT_isRGB(li)) {
+            li->config.brightness = 0;
+        }
+    }
+
+    // Upravljanje fizickim izlazom (logika ostaje ista)
+    if(li->config.local_pin < 5) SetPin(li->config.local_pin, 0);
+    else PCA9685_SetOutput(li->config.local_pin, 0);
+
+    // Deaktivacija tajmera (logika ostaje ista)
+    LIGHT_OffTimeTimerDeactivate(li);
+}
+
+
+// =======================================================================
+// === 3. ISPRAVLJENA VERZIJA FUNKCIJE LIGHTS_isAnyLightOn ===
+//
+// ISPRAVKA: Funkcija se sada oslanja ISKLJUCIVO na `value` fleg kao
+// jedini "izvor istine" o tome da li je svjetlo upaljeno. Ovo je
+// neophodno jer `brightness` može biti > 0 cak i kada je svjetlo ugašeno.
+//
+bool LIGHTS_isAnyLightOn(void)
+{
+    for(uint8_t i = 0; i < LIGHTS_getCount(); ++i)
+    {
+        // Posmatraj samo svjetla vezana za glavni prekidac
+        if(LIGHT_isTiedToMainLight(lights_modbus + i))
+        {
+            // JEDINA ISPRAVNA PROVJERA: Da li je `value` fleg postavljen na 1?
+            // Ovo sada radi ispravno za SVE tipove svjetala.
+            if (LIGHT_isNewValueOn(lights_modbus + i))
+            {
+                return true; // Cim nademo jedno upaljeno, vracamo true.
+            }
+        }
+    }
+
+    // Ako nismo našli nijedno upaljeno svjetlo.
+    return false;
+}
+/**
+ * @brief Counts the number of active Modbus lights.
+ */
+void LIGHTS_Count(void)
+{
+    lights_count = 0;
+    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
+    {
+        if(LIGHT_GetRelay(lights_modbus + i)) ++lights_count;
+        else break; // Assuming lights are contiguous in the array
+    }
+}
+
+/**
+ * @brief Gets the count of active Modbus lights.
+ * @return Number of active Modbus lights.
+ */
+uint8_t LIGHTS_getCount(void)
 {
     return lights_count;
 }
 
-
-
-
-void Lights_Modbus_Rows_Count(void)
+/**
+ * @brief Calculates the number of rows needed for Modbus lights display.
+ */
+void LIGHTS_Rows_Count(void)
 {
-    lights_modbus_rows = (Lights_Modbus_getCount() / 4) + 1;
+    lights_modbus_rows = (LIGHTS_getCount() / 4) + 1;
 }
 
-uint8_t Lights_Modbus_Rows_getCount(void)
+/**
+ * @brief Gets the number of rows needed for Modbus lights display.
+ * @return Number of display rows.
+ */
+uint8_t LIGHTS_Rows_getCount(void)
 {
     return lights_modbus_rows;
 }
 
-
-
-void Lights_Modbus_Calculate(void)
+/**
+ * @brief Recalculates light count and display rows.
+ */
+void LIGHTS_Calculate(void)
 {
-    Lights_Modbus_Count();
-    Lights_Modbus_Rows_Count();
+    LIGHTS_Count();
+    LIGHTS_Rows_Count();
 }
-
-
-void Light_Modbus_Init(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
+/**
+ * @brief Saves a single Modbus light structure to EEPROM.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param addr EEPROM address to write to.
+ */
+void LIGHT_Save(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
 {
-    li->value = 0;
-    li->old_value = 0;
+    // 1. Uvijek postavi "magicni broj" da znamo da su podaci naši.
+    li->config.magic_number = EEPROM_MAGIC_NUMBER;
+
+    // 2. Privremeno postavi CRC polje na 0 radi ispravnog izracuna.
+    li->config.crc = 0;
+
+    // 3. Izracunaj CRC nad cijelom strukturom.
+    li->config.crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&li->config, sizeof(LIGHT_EepromConfig_t));
+
+    // 4. Snimi kompletnu, ispravno pripremljenu strukturu u EEPROM.
+    EE_WriteBuffer((uint8_t*)&li->config, addr, sizeof(LIGHT_EepromConfig_t));
+}
+/**
+ * @brief Initializes a single Modbus light structure from EEPROM.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param addr EEPROM address to read from.
+ */
+void LIGHT_Init(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
+{
+    // 1. Procitaj cijeli blok podataka iz EEPROM-a
+    EE_ReadBuffer((uint8_t*)&li->config, addr, sizeof(LIGHT_EepromConfig_t));
+
+    // 2. PRVA PROVJERA: Da li je "magicni broj" ispravan?
+    // Ovo hvata i prazan EEPROM (vrijednost 0xFFFF) i teško oštecene podatke.
+    if (li->config.magic_number != EEPROM_MAGIC_NUMBER) {
+        // Ako nije, podaci su sigurno nevažeci. Ucitaj fabricke vrijednosti.
+        LIGHT_SetDefault(li);
+        // I odmah ih snimi u EEPROM da se inicijalizuje za sljedeci put.
+        LIGHT_Save(li, addr);
+    } else {
+        // Ako je magicni broj OK, idemo na DRUGU PROVJERU: CRC.
+        uint16_t received_crc = li->config.crc;
+        li->config.crc = 0; // Privremeno nuliranje za ispravan izracun
+        uint16_t calculated_crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&li->config, sizeof(LIGHT_EepromConfig_t));
+        
+        if (received_crc != calculated_crc) {
+            // Ako se CRC ne poklapa, podaci su djelimicno ošteceni.
+            // Opet, ucitaj sigurne fabricke vrijednosti.
+            LIGHT_SetDefault(li);
+            LIGHT_Save(li, addr);
+        }
+    }
+    
+    // 3. Inicijalizacija runtime varijabli (uvijek se radi sa ispravnim podacima)
+    if (li->config.brightness > 0 && LIGHT_isBrightnessRemembered(li)) {
+        li->value = 1;
+    } else {
+        li->value = 0;
+    }
+    li->old_value = li->value;
+    li->brightness_old = li->config.brightness;
     li->color = 0;
-    
-    EE_ReadBuffer((uint8_t*)&li->index,                addr,           2);
-    EE_ReadBuffer(&li->tiedToMainLight,                addr + 2,       1);
-    EE_ReadBuffer(&li->off_time,                       addr + 3,       1);
-    EE_ReadBuffer(&li->iconID,                         addr + 4,       1);
-    EE_ReadBuffer((uint8_t*)(&li->controllerID_on),    addr + 5,       2);
-    EE_ReadBuffer(&li->controllerID_on_delay,          addr + 7,       1);
-    EE_ReadBuffer(&li->on_hour,                        addr + 8,       1);
-    EE_ReadBuffer(&li->on_minute,                      addr + 9,       1);
-    EE_ReadBuffer(&li->communication_type,             addr + 10,       1);
-    EE_ReadBuffer(&li->local_pin,                      addr + 11,       1);
-    EE_ReadBuffer(&li->sleep_time,                     addr + 12,       1);
-    EE_ReadBuffer(&li->button_external,                addr + 13,       1);
-    EE_ReadBuffer(&li->rememberBrightness,             addr + 14,       1);
-    EE_ReadBuffer(&li->brightness,                     addr + 15,       1);
-    
-    li->brightness_old = li->brightness;
+    li->off_timer_start = 0;
+    li->on_delay_timer_start = 0;
+    li->is_dirty_for_saving = false;
 }
-
-
-void Light_Modbus_Save(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t addr)
+/**
+ * @brief Initializes all Modbus lights from EEPROM.
+ */
+// =======================================================================
+// === ISPRAVLJENA `LIGHTS_Init` FUNKCIJA (sa ispravnim korakom) ===
+//
+void LIGHTS_Init(void)
 {
-    EE_WriteBuffer((uint8_t*)&li->index,                addr,           2);
-    EE_WriteBuffer(&li->tiedToMainLight,                addr + 2,       1);
-    EE_WriteBuffer(&li->off_time,                       addr + 3,       1);
-    EE_WriteBuffer(&li->iconID,                         addr + 4,       1);
-    EE_WriteBuffer((uint8_t*)(&li->controllerID_on),    addr + 5,       2);
-    EE_WriteBuffer(&li->controllerID_on_delay,          addr + 7,       1);
-    EE_WriteBuffer(&li->on_hour,                        addr + 8,       1);
-    EE_WriteBuffer(&li->on_minute,                      addr + 9,       1);
-    EE_WriteBuffer(&li->communication_type,             addr + 10,       1);
-    EE_WriteBuffer(&li->local_pin,                      addr + 11,       1);
-    EE_WriteBuffer(&li->sleep_time,                     addr + 12,       1);
-    EE_WriteBuffer(&li->button_external,                addr + 13,       1);
-    EE_WriteBuffer(&li->rememberBrightness,             addr + 14,       1);
-    EE_WriteBuffer(&li->brightness,                     addr + 15,       1);
-}
-
-void Lights_Modbus_Init(void)
-{
+    // Prolazimo kroz sve slotove za svjetla
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
-        Light_Modbus_Init(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 16));
+        // ISPRAVKA: Koristimo `sizeof(LIGHT_EepromConfig_t)` umjesto fiksne vrijednosti 16.
+        // Ovo osigurava da svako svjetlo dobije tacno onoliko prostora koliko mu treba.
+        LIGHT_Init(lights_modbus + i, EE_LIGHTS_MODBUS + (i * sizeof(LIGHT_EepromConfig_t)));
     }
-    
+
     EE_ReadBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
-    
-    Lights_Modbus_Calculate();
+    LIGHTS_Calculate();
 }
-
-void Lights_Modbus_Save(void)
+/**
+ * @brief Saves all Modbus lights to EEPROM.
+ */
+// =======================================================================
+// === ISPRAVLJENA `LIGHTS_Save` FUNKCIJA (sa ispravnim korakom) ===
+//
+void LIGHTS_Save(void)
 {
+    // Prolazimo kroz sve slotove za svjetla
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
-        Light_Modbus_Save(lights_modbus + i, EE_LIGHTS_MODBUS + (i * 16));
+        // ISPRAVKA: Koristimo `sizeof(LIGHT_EepromConfig_t)` umjesto fiksne vrijednosti 16.
+        LIGHT_Save(lights_modbus + i, EE_LIGHTS_MODBUS + (i * sizeof(LIGHT_EepromConfig_t)));
     }
-    
+
     EE_WriteBuffer(&LightNightTimer_isEnabled, EE_LIGHT_NIGHT_TIMER, 1);
-    
-    Lights_Modbus_Calculate();
+    // ULOGA: Odmah nakon snimanja, pozivamo funkciju koja ce ponovo
+    // izbrojati aktivna svjetla (`lights_count`) i redove (`lights_modbus_rows`).
+    // Ovo osigurava da ostatak sistema odmah radi sa ažuriranim brojem svjetala.
+    LIGHTS_Calculate();
+}
+/**
+ * @brief Checks if a light index is within the valid range.
+ * @param light_index The index to check.
+ * @return True if the index is valid, false otherwise.
+ */
+bool LIGHT_isIndexInRange(const uint8_t light_index)
+{
+    return (light_index < LIGHTS_MODBUS_SIZE); // Index can be 0, so >= 0 is always true for uint8_t
 }
 
-
-
-bool Light_Modbus_isIndexInRange(const uint8_t light_index)
+/**
+ * @brief Sets the status of a light by its index.
+ * @param light_index The index of the light.
+ * @param val The value to set (0 for off, non-zero for on).
+ * @return The new status of the light (0 for off, non-zero for on), or LIGHT_MODBUS_QUERY_RESPONSE_INDEX_OUT_OF_RANGE if index is invalid.
+ */
+uint8_t LIGHT_Set_byIndex(const uint8_t light_index, const uint8_t val)
 {
-    return (light_index >= 0) && (light_index < LIGHTS_MODBUS_SIZE);
-}
-
-
-uint8_t Light_Modbus_Set_byIndex(const uint8_t light_index, const uint8_t val)
-{
-    if(Light_Modbus_isIndexInRange(light_index))
+    if(LIGHT_isIndexInRange(light_index))
     {
-        if(val) Light_Modbus_On(lights_modbus + light_index);
-        else Light_Modbus_Off(lights_modbus + light_index);
+        if(val) LIGHT_On(lights_modbus + light_index);
+        else LIGHT_Off(lights_modbus + light_index);
+        return LIGHT_isNewValueOn(lights_modbus + light_index);
     }
-    
-    return Light_Modbus_isNewValueOn(lights_modbus + light_index);
-}
-
-uint8_t Light_Modbus_Get_byIndex(const uint8_t light_index)
-{
-    if(Light_Modbus_isIndexInRange(light_index))
-    {
-        return Light_Modbus_isNewValueOn(lights_modbus + light_index);
-    }
-    
     return LIGHT_MODBUS_QUERY_RESPONSE_INDEX_OUT_OF_RANGE;
 }
 
+/**
+ * @brief Gets the status of a light by its index.
+ * @param light_index The index of the light.
+ * @return The current status of the light (0 for off, non-zero for on), or LIGHT_MODBUS_QUERY_RESPONSE_INDEX_OUT_OF_RANGE if index is invalid.
+ */
+uint8_t LIGHT_Get_byIndex(const uint8_t light_index)
+{
+    if(LIGHT_isIndexInRange(light_index))
+    {
+        return LIGHT_isNewValueOn(lights_modbus + light_index);
+    }
+    return LIGHT_MODBUS_QUERY_RESPONSE_INDEX_OUT_OF_RANGE;
+}
 
-
-void Light_Modbus_StatusSet(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value)
+/**
+ * @brief Sets the internal status of a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param value The status to set (0 for off, non-zero for on).
+ */
+void LIGHT_StatusSet(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value)
 {
     if(value)
     {
         li->value = 1;
-        
-        if((!Light_Modbus_isBinary(li) && (!Light_Modbus_isBrightnessRemembered(li))))
+
+        if((!LIGHT_isBinary(li) && (!LIGHT_isBrightnessRemembered(li))))
         {
-            Light_Modbus_SetBrightness(li, 100);
+            LIGHT_SetBrightness(li, 100); // Set to 100% brightness if not binary and not remembering brightness
         }
-        
-        if(li->local_pin < 5) SetPin(li->local_pin, 1);
-        else PCA9685_SetOutput(li->local_pin, 255);
-        
-        if(Light_Modbus_isOffTimeEnabled(li))
+
+        if(li->config.local_pin < 5) SetPin(li->config.local_pin, 1);
+        else PCA9685_SetOutput(li->config.local_pin, 255); // Assuming PCA9685_SetOutput exists for PWM control
+
+        if(LIGHT_isOffTimeEnabled(li))
         {
             uint32_t time = HAL_GetTick();
-            if(!time) time = 1;
-            Light_Modbus_SetOffTimeTimer(li, time);
+            if(!time) time = 1; // Ensure timer start is non-zero
+            LIGHT_SetOffTimeTimer(li, time);
         }
     }
     else
     {
         li->value = 0;
-        
-        if(li->local_pin < 5) SetPin(li->local_pin, 0);
-        else PCA9685_SetOutput(li->local_pin, 0);
-        
-        Light_Modbus_OffTimeTimerDeactivate(li);
+
+        if(li->config.local_pin < 5) SetPin(li->config.local_pin, 0);
+        else PCA9685_SetOutput(li->config.local_pin, 0);
+
+        LIGHT_OffTimeTimerDeactivate(li);
     }
 }
-
-
-void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Turns a Modbus light on, considering an external delay.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ */
+void LIGHT_On_External(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    Light_Modbus_StatusSet(li, 1);
-}
-
-void Light_Modbus_On_External(LIGHT_Modbus_CmdTypeDef* const li)
-{
-    if(li->controllerID_on_delay)
+    if(li->config.controllerID_on_delay)
     {
         li->on_delay_timer_start = HAL_GetTick();
-        if(!li->on_delay_timer_start) --li->on_delay_timer_start;
+        if(!li->on_delay_timer_start) --li->on_delay_timer_start; // Ensure non-zero
     }
     else
     {
-        Light_Modbus_On(li);
+        LIGHT_On(li);
     }
 }
-
-void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Turns a Modbus light off, considering an external delay.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ */
+void LIGHT_Off_External(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    Light_Modbus_StatusSet(li, 0);
-}
-
-void Light_Modbus_Off_External(LIGHT_Modbus_CmdTypeDef* const li)
-{
-    if(li->controllerID_on_delay)
+    if(li->config.controllerID_on_delay) // If there's an on-delay, turning off externally cancels it
     {
         li->on_delay_timer_start = 0;
     }
     else
     {
-        Light_Modbus_Off(li);
+        LIGHT_Off(li);
     }
 }
 
-
-
-void Light_Modbus_Flip(LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Flips the on/off state of a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ */
+void LIGHT_Flip(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    if(Light_Modbus_isActive(li)) Light_Modbus_Off(li);
-    else Light_Modbus_On(li);
+    if(LIGHT_isActive(li)) LIGHT_Off(li);
+    else LIGHT_On(li);
 }
 
-void Light_Modbus_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val)
+/**
+ * @brief Updates the external status of a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param val The value to update with.
+ */
+void LIGHT_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val)
 {
     li->old_value = val;
     li->value = val;
 }
 
-bool Light_Modbus_isActive(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if a Modbus light is currently active (on).
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if active, false otherwise.
+ */
+bool LIGHT_isActive(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return li->old_value;
 }
 
-bool Light_Modbus_isNewValueOn(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if the new desired value for the light is on.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if the new value is on, false otherwise.
+ */
+bool LIGHT_isNewValueOn(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return li->value;
 }
 
-bool Light_Modbus_isOldValueOn(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if the old value of the light was on.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if the old value was on, false otherwise.
+ */
+bool LIGHT_isOldValueOn(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return li->old_value;
 }
 
-
-
-
-
-bool Light_Modbus_hasStatusChanged(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if the on/off status of a light has changed.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if status has changed, false otherwise.
+ */
+bool LIGHT_hasStatusChanged(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return Light_Modbus_isOldValueOn(li) != Light_Modbus_isNewValueOn(li);
+    return LIGHT_isOldValueOn(li) != LIGHT_isNewValueOn(li);
 }
 
-void Light_Modbus_ResetStatus(LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Resets the status change flag for a light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ */
+void LIGHT_ResetStatus(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->old_value = li->value;
 }
 
-
-
-
-
-
-
-uint16_t Light_Modbus_GetRelay(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Gets the relay index of a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return The relay index.
+ */
+uint16_t LIGHT_GetRelay(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->index;
+    return li->config.index;
 }
 
-void Light_Modbus_SetRelay(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t val)
+/**
+ * @brief Sets the relay index of a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param val The relay index to set.
+ */
+void LIGHT_SetRelay(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t val)
 {
-    li->index = val;
+    li->config.index = val;
 }
 
-
-
-void Light_Modbus_TieToMainLight(LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Ties a Modbus light to the main light group.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ */
+void LIGHT_TieToMainLight(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    li->tiedToMainLight = 1;
+    li->config.tiedToMainLight = 1;
 }
 
-void Light_Modbus_UntieFromMainLight(LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Unties a Modbus light from the main light group.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ */
+void LIGHT_UntieFromMainLight(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    li->tiedToMainLight = 0;
+    li->config.tiedToMainLight = 0;
 }
 
-bool Light_Modbus_isTiedToMainLight(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if a Modbus light is tied to the main light group.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if tied, false otherwise.
+ */
+bool LIGHT_isTiedToMainLight(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->tiedToMainLight;
+    return li->config.tiedToMainLight;
 }
 
-
-
-
-
-uint8_t Light_Modbus_GetOnDelayTime(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Gets the on-delay time for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return The on-delay time in minutes.
+ */
+uint8_t LIGHT_GetOnDelayTime(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->controllerID_on_delay;
+    return li->config.controllerID_on_delay;
 }
 
-void Light_Modbus_SetOnDelayTime(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val)
+/**
+ * @brief Sets the on-delay time for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param val The on-delay time in minutes to set.
+ */
+void LIGHT_SetOnDelayTime(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val)
 {
-    li->controllerID_on_delay = val;
+    li->config.controllerID_on_delay = val;
 }
 
-bool Light_Modbus_isOnDelayTimeEnabled(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if on-delay time is enabled for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if enabled, false otherwise.
+ */
+bool LIGHT_isOnDelayTimeEnabled(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return Light_Modbus_GetOnDelayTime(li);
+    return LIGHT_GetOnDelayTime(li);
 }
 
-
-
-uint32_t Light_Modbus_GetOnDelayTimeTimer(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Gets the start time of the on-delay timer for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return The timer start tick value.
+ */
+uint32_t LIGHT_GetOnDelayTimeTimer(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return li->on_delay_timer_start;
 }
 
-void Light_Modbus_SetOnDelayTimeTimer(LIGHT_Modbus_CmdTypeDef* const li, const uint32_t val)
+/**
+ * @brief Sets the start time of the on-delay timer for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param val The timer start tick value to set.
+ */
+void LIGHT_SetOnDelayTimeTimer(LIGHT_Modbus_CmdTypeDef* const li, const uint32_t val)
 {
     li->on_delay_timer_start = val;
 }
 
-bool Light_Modbus_isOnDelayTimeTimerActive(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if the on-delay timer for a Modbus light is active.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if active, false otherwise.
+ */
+bool LIGHT_isOnDelayTimeTimerActive(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return Light_Modbus_GetOnDelayTimeTimer(li);
+    return LIGHT_GetOnDelayTimeTimer(li);
 }
 
-bool Light_Modbus_hasOnDelayTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if the on-delay timer for a Modbus light has expired.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if expired, false otherwise.
+ */
+bool LIGHT_hasOnDelayTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return (HAL_GetTick() - li->on_delay_timer_start) >= (Light_Modbus_GetOnDelayTime(li) * 60 * 1000);
+    return (HAL_GetTick() - li->on_delay_timer_start) >= (LIGHT_GetOnDelayTime(li) * 60 * 1000);
 }
 
-void Light_Modbus_OnDelayTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Deactivates the on-delay timer for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ */
+void LIGHT_OnDelayTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->on_delay_timer_start = 0;
 }
 
-
-
-
-
-uint8_t Light_Modbus_GetOffTime(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Gets the off-time for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return The off-time in minutes.
+ */
+uint8_t LIGHT_GetOffTime(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->off_time;
+    return li->config.off_time;
 }
 
-void Light_Modbus_SetOffTime(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val)
+/**
+ * @brief Sets the off-time for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param val The off-time in minutes to set.
+ */
+void LIGHT_SetOffTime(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val)
 {
-    li->off_time = val;
+    li->config.off_time = val;
 }
 
-bool Light_Modbus_isOffTimeEnabled(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if off-time is enabled for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if enabled, false otherwise.
+ */
+bool LIGHT_isOffTimeEnabled(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return Light_Modbus_GetOffTime(li);
+    return LIGHT_GetOffTime(li);
 }
 
-
-
-uint32_t Light_Modbus_GetOffTimeTimer(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Gets the start time of the off-time timer for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return The timer start tick value.
+ */
+uint32_t LIGHT_GetOffTimeTimer(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return li->off_timer_start;
 }
 
-void Light_Modbus_SetOffTimeTimer(LIGHT_Modbus_CmdTypeDef* const li, const uint32_t val)
+/**
+ * @brief Sets the start time of the off-time timer for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param val The timer start tick value to set.
+ */
+void LIGHT_SetOffTimeTimer(LIGHT_Modbus_CmdTypeDef* const li, const uint32_t val)
 {
     li->off_timer_start = val;
 }
 
-bool Light_Modbus_isOffTimeTimerActive(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if the off-time timer for a Modbus light is active.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if active, false otherwise.
+ */
+bool LIGHT_isOffTimeTimerActive(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return Light_Modbus_GetOffTimeTimer(li);
+    return LIGHT_GetOffTimeTimer(li);
 }
 
-bool Light_Modbus_hasOffTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if the off-time timer for a Modbus light has expired.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if expired, false otherwise.
+ */
+bool LIGHT_hasOffTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return (HAL_GetTick() - li->off_timer_start) >= (Light_Modbus_GetOffTime(li) * 60 * 1000);
+    return (HAL_GetTick() - li->off_timer_start) >= (LIGHT_GetOffTime(li) * 60 * 1000);
 }
 
-void Light_Modbus_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Deactivates the off-time timer for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ */
+void LIGHT_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->off_timer_start = 0;
 }
 
-
-
-
-bool Light_Modbus_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if time-based turn-on is enabled for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if enabled, false otherwise.
+ */
+bool LIGHT_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return (li->on_hour < 24) && (li->on_minute < 60);
+    return (li->config.on_hour >= 0);     // Novi kod (radi za 0-23)
 }
 
-bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if it's time to turn on a Modbus light based on configured hour and minute.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if it's time to turn on, false otherwise.
+ */
+bool LIGHT_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return (li->on_hour == Bcd2Dec(rtctm.Hours)) && (li->on_minute == Bcd2Dec(rtctm.Minutes));
+    // Assuming rtctm.Hours and rtctm.Minutes are globally accessible and updated RTC time.
+    // This is a dependency on display.c's RTC handling.
+    return (li->config.on_hour == Bcd2Dec(rtctm.Hours)) && (li->config.on_minute == Bcd2Dec(rtctm.Minutes));
 }
 
-
-
-
-
-void Light_Modbus_SetColor(LIGHT_Modbus_CmdTypeDef* const li, GUI_COLOR color)
+/**
+ * @brief Sets the color of a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param color The GUI_COLOR value to set.
+ */
+void LIGHT_SetColor(LIGHT_Modbus_CmdTypeDef* const li, GUI_COLOR color)
 {
     li->color = color;
+    // Takode oznacimo svjetlo kao "prljavo" kada se boja promijeni.
+    if (LIGHT_isBrightnessRemembered(li)) // Pretpostavljamo da se i boja pamti pod istim flegom
+    {
+        li->is_dirty_for_saving = true;
+    }
 }
 
-GUI_COLOR Light_Modbus_GetColor(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Gets the color of a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return The GUI_COLOR value.
+ */
+GUI_COLOR LIGHT_GetColor(const LIGHT_Modbus_CmdTypeDef* const li)
 {
     return li->color;
 }
 
-bool Light_Modbus_hasColorChanged(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if the color of a Modbus light has changed.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if color has changed (i.e., is non-zero), false otherwise.
+ */
+bool LIGHT_hasColorChanged(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return Light_Modbus_GetColor(li);
+    return LIGHT_GetColor(li);
 }
 
-void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Resets the color change flag for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ */
+void LIGHT_ResetColor(LIGHT_Modbus_CmdTypeDef* const li)
 {
     li->color = 0;
 }
 
-
-
-
-
-void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brightness)
+/**
+ * @brief Sets the brightness of a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param brightness The brightness level (0-100).
+ */
+void LIGHT_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brightness)
 {
-    if(brightness > 100) li->brightness = 100;
-    else if(brightness < 0) li->brightness = 0;
-    else li->brightness = brightness;
+    // 1. Ogranicavamo vrijednost svjetline na opseg od 0 do 100.
+    if (brightness > 100) {
+        li->config.brightness = 100;
+    } else {
+        // Provjera `brightness < 0` nije potrebna jer je `uint8_t` uvijek pozitivan.
+        li->config.brightness = brightness;
+    }
+
+    // 2. KLJUCNA ISPRAVKA: Sinhronizacija `value` flega sa `brightness` vrijednošcu.
+    // Ovo osigurava da ostatak sistema (npr. iscrtavanje ikonice) ispravno
+    // prepozna da li je svjetlo upaljeno ili ugašeno.
+    if (li->config.brightness > 0) {
+        // Ako je svjetlina veca od 0, svjetlo je logicki UPALJENO.
+        li->value = 1;
+    } else {
+        // Ako je svjetlina 0, svjetlo je logicki UGAŠENO.
+        li->value = 0;
+    }
     
-    if(Light_Modbus_isBrightnessRemembered(li))
+    // 3. Postavljamo "dirty" fleg ako je opcija za pamcenje ukljucena.
+    // Ovo govori sistemu da ovu novu vrijednost treba snimiti u EEPROM
+    // kada za to dode vrijeme (npr. pri aktivaciji screensaver-a).
+    if (LIGHT_isBrightnessRemembered(li))
     {
-        Light_Modbus_Save(li, EE_LIGHTS_MODBUS + ((li - lights_modbus) * 16));
+        li->is_dirty_for_saving = true;
     }
 }
-
-uint8_t Light_Modbus_GetBrightness(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Gets the brightness of a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return The brightness level (0-100).
+ */
+uint8_t LIGHT_GetBrightness(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->brightness;
+    return li->config.brightness;
 }
 
-bool Light_Modbus_hasBrightnessChanged(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if the brightness of a Modbus light has changed.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if brightness has changed, false otherwise.
+ */
+bool LIGHT_hasBrightnessChanged(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return Light_Modbus_GetBrightness(li) != li->brightness_old;
+    return LIGHT_GetBrightness(li) != li->brightness_old;
 }
 
-
-
-
-void Light_Modbus_RememberBrightnessSet(LIGHT_Modbus_CmdTypeDef* const li, const bool remember)
+/**
+ * @brief Sets whether a Modbus light should remember its brightness.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param remember True to remember, false otherwise.
+ */
+void LIGHT_RememberBrightnessSet(LIGHT_Modbus_CmdTypeDef* const li, const bool remember)
 {
-    li->rememberBrightness = remember;
+    li->config.rememberBrightness = remember;
 }
 
-
-bool Light_Modbus_isBrightnessRemembered(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if a Modbus light is configured to remember its brightness.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if remembering brightness, false otherwise.
+ */
+bool LIGHT_isBrightnessRemembered(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->rememberBrightness;
+    return li->config.rememberBrightness;
 }
 
-
-
-void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Resets the brightness change flag for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ */
+void LIGHT_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    li->brightness_old = li->brightness;
+    li->brightness_old = li->config.brightness;
 }
 
-
-
-void Light_Modbus_Brightness_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value)
+/**
+ * @brief Updates the brightness of a Modbus light from an external source.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param value The brightness value to set.
+ */
+void LIGHT_Brightness_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value)
 {
     if(value > 100)
     {
-        li->brightness = 100;
-    }
-    if(value < 0)
-    {
-        li->brightness = 0;
+        li->config.brightness = 100;
     }
     else
     {
-        li->brightness = value;
+        li->config.brightness = value;
     }
-    
-    Light_Modbus_ResetBrightness(li);
-    
-    
-    
-    if(Light_Modbus_isBrightnessRemembered(li))
-    {
-        Light_Modbus_Save(li, EE_LIGHTS_MODBUS + ((li - lights_modbus) * 16));
+
+    LIGHT_ResetBrightness(li);
+
+    // --- IZMJENA OVDJE ---
+    // Ne snimamo odmah, vec pokrecemo tajmer za odloženo snimanje.
+    if (LIGHT_isBrightnessRemembered(li)) {
+        li->is_dirty_for_saving = true;
+        save_brightness_timer_start = HAL_GetTick(); // Pokreni tajmer
     }
 }
 
-
-
-
-bool Light_Modbus_isBinary(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if a Modbus light is binary (on/off).
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if binary, false otherwise.
+ */
+bool LIGHT_isBinary(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->communication_type == LIGHT_COM_BIN;
+    return li->config.communication_type == LIGHT_COM_BIN;
 }
 
-bool Light_Modbus_isDimmer(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if a Modbus light is a dimmer.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if dimmer, false otherwise.
+ */
+bool LIGHT_isDimmer(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->communication_type == LIGHT_COM_DIM;
+    return li->config.communication_type == LIGHT_COM_DIM;
 }
 
-bool Light_Modbus_isRGB(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if a Modbus light is RGB.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if RGB, false otherwise.
+ */
+bool LIGHT_isRGB(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->communication_type == LIGHT_COM_COLOR;
+    return li->config.communication_type == LIGHT_COM_COLOR;
 }
 
-
-
-
-
-bool Light_Modbus_hasChanged(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Checks if any property of a Modbus light has changed.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return True if any property has changed, false otherwise.
+ */
+bool LIGHT_hasChanged(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return Light_Modbus_hasStatusChanged(li) || Light_Modbus_hasBrightnessChanged(li) || Light_Modbus_hasColorChanged(li);
+    return LIGHT_hasStatusChanged(li) || LIGHT_hasBrightnessChanged(li) || LIGHT_hasColorChanged(li);
 }
 
-void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Resets all change flags for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ */
+void LIGHT_ResetChange(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    Light_Modbus_ResetStatus(li);
-    Light_Modbus_ResetBrightness(li);
-    Light_Modbus_ResetColor(li);
+    LIGHT_ResetStatus(li);
+    LIGHT_ResetBrightness(li);
+    LIGHT_ResetColor(li);
 }
 
-
-
-
-
-GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Gets the appropriate icon for a Modbus light based on its state.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return Pointer to the GUI_BITMAP icon.
+ */
+GUI_CONST_STORAGE GUI_BITMAP* LIGHT_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return light_modbus_images[(li->iconID * 2) + Light_Modbus_isNewValueOn(li)];
+    return light_modbus_images[(li->config.iconID * 2) + LIGHT_isNewValueOn(li)];
 }
 
-
-uint8_t Light_Modbus_GetIconID(const LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Gets the icon ID for a Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @return The icon ID.
+ */
+uint8_t LIGHT_GetIconID(const LIGHT_Modbus_CmdTypeDef* const li)
 {
-    return li->iconID;
+    return li->config.iconID;
 }
 
-
-void Light_Modbus_SetIcon(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t id)
+/**
+ * @brief Sets the icon ID for a Modbus light, with bounds checking.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ * @param id The icon ID to set.
+ */
+void LIGHT_SetIcon(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t id)
 {
-    if(id < 0)
+    // Note: uint8_t is unsigned, so 'id < 0' is always false.
+    // Assuming LIGHT_ICON_ID_BULB and LIGHT_ICON_ID_VENTILATOR are defined elsewhere.
+    if(id >= LIGHT_ICON_COUNT) // Check upper bound
     {
-        li->iconID = LIGHT_ICON_ID_BULB;
-    }
-    else if(id >= LIGHT_ICON_COUNT)
-    {
-        li->iconID = LIGHT_ICON_ID_VENTILATOR;
+        li->config.iconID = LIGHT_ICON_ID_VENTILATOR; // Default to ventilator if out of bounds
     }
     else
     {
-        li->iconID = id;
+        li->config.iconID = id;
     }
 }
 
-
-
-
-
-
-void Lights_Modbus_StatusSet(const bool state)
+/**
+ * @brief Sets the status (on/off) for all active Modbus lights.
+ * @param state True for on, false for off.
+ */
+void LIGHTS_StatusSet(const bool state)
 {
-    for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
+    for(uint8_t i = 0; i < LIGHTS_getCount(); i++)
     {
-        Light_Modbus_StatusSet(lights_modbus + i, state);
+        LIGHT_StatusSet(lights_modbus + i, state);
     }
 }
 
-
-void Lights_Modbus_On(void)
+/**
+ * @brief Turns all active Modbus lights on.
+ */
+void LIGHTS_On(void)
 {
-    Lights_Modbus_StatusSet(1);
+    LIGHTS_StatusSet(1);
 }
 
-
-void Lights_Modbus_Off(void)
+/**
+ * @brief Turns all active Modbus lights off.
+ */
+void LIGHTS_Off(void)
 {
-    Lights_Modbus_StatusSet(0);
+    LIGHTS_StatusSet(0);
 }
 
-
-
-
-
-
-void Light_Modbus_SetDefault(LIGHT_Modbus_CmdTypeDef* const li)
+/**
+ * @brief Sets default values for a single Modbus light.
+ * @param li Pointer to the LIGHT_Modbus_CmdTypeDef structure.
+ */
+void LIGHT_SetDefault(LIGHT_Modbus_CmdTypeDef* const li)
 {
-    li->index = 0;
-    li->old_index = 0;
-    li->value = 0;
-    li->old_value = 0;
-    li->brightness = 0;
-    li->brightness_old = 0;
-    li->color = 0;
-    li->iconID = 0;
-    li->local_pin = 0;
-    li->communication_type = LIGHT_COM_BIN;
-    li->button_external = 0;
-    li->controllerID_on = 0;
-    li->controllerID_on_delay = 0;
-    li->off_time = 0;
-    li->off_timer_start = 0;
-    li->on_delay_timer_start = 0;
-    li->on_hour = 0;
-    li->on_minute = 0;
-    li->sleep_time = 0;
-    li->tiedToMainLight = false;
+    // KORAK 1: Brzo i sigurno postavi SVE bajtove cijele strukture na 0.
+    // Ovo pokriva sve trenutne i buduce clanove.
+    memset(li, 0, sizeof(LIGHT_Modbus_CmdTypeDef));
+
+    // KORAK 2: Postavi samo one vrijednosti koje NISU 0 ili imaju
+    // specificnu pocetnu vrijednost.
+    
+    // Tajmer je iskljucen po default-u.
+    li->config.on_hour = -1;
+    
+    // Tip komunikacije je po default-u binarni (vrijednost 1).
+    li->config.communication_type = LIGHT_COM_BIN;
 }
-
-
-void Lights_Modbus_SetDefault(void)
+/**
+ * @brief Sets default values for all Modbus lights.
+ */
+void LIGHTS_SetDefault(void)
 {
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
-        Light_Modbus_SetDefault(lights_modbus + i);
+        LIGHT_SetDefault(lights_modbus + i);
     }
 }
 
+/* Private Helper Functions for LIGHT_Service -------------------------*/
 
-
-
-
-
-
-
-
-void Light_Modbus_Service(void)
+/**
+ * @brief Handles external button activity for lights.
+ */
+static void HandleExternalButtonActivity(void)
 {
-    if((isButtonActive_old != IsButtonActive()) && (!isButtonActive_old))
+    static uint8_t isButtonActive_old_local = 0; // Made static local
+
+    if((isButtonActive_old_local != IsButtonActive()) && (!isButtonActive_old_local))
     {
-        for(uint8_t i = 0; i < Lights_Modbus_getCount(); i++)
+        for(uint8_t i = 0; i < LIGHTS_getCount(); i++)
         {
             LIGHT_Modbus_CmdTypeDef* const light = lights_modbus + i;
-            
-            if(!light->button_external)
+
+            // Original code had `if(!light->button_external)` which seems to contradict the following `if/else if`.
+            // Assuming the intent was to check if `button_external` is configured for specific actions.
+            // Reinterpreting to apply logic if `button_external` is non-zero.
+            if(light->config.button_external)
             {
-                if(light->button_external == 1)
+                if(light->config.button_external == 1) // Button active -> Light On
                 {
-                    Light_Modbus_On(light);
+                    LIGHT_On(light);
                 }
-                else if(light->button_external == 2)
+                else if(light->config.button_external == 2) // Button active -> Light Off
                 {
-                    Light_Modbus_Off(light);
+                    LIGHT_Off(light);
                 }
-                else if(light->button_external == 3)
+                else if(light->config.button_external == 3) // Button active -> Light Flip
                 {
-                    Light_Modbus_Flip(light);
+                    LIGHT_Flip(light);
                 }
+                // If button_external is 4 (external toggle), it's handled differently or not here.
             }
         }
-        
-        isButtonActive_old = IsButtonActive();
+        isButtonActive_old_local = IsButtonActive();
     }
-    
-    
-    
-    
-    
+}
+
+/**
+ * @brief Handles on-delay timers for lights.
+ */
+static void HandleOnDelayTimers(void)
+{
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
     {
-        if(Light_Modbus_isOnDelayTimeTimerActive(lights_modbus + i) && Light_Modbus_hasOnDelayTimeTimerExpired(lights_modbus + i))
+        if(LIGHT_isOnDelayTimeTimerActive(lights_modbus + i) && LIGHT_hasOnDelayTimeTimerExpired(lights_modbus + i))
         {
-            Light_Modbus_OnDelayTimeTimerDeactivate(lights_modbus + i);
-            Light_Modbus_On(lights_modbus + i);
+            LIGHT_OnDelayTimeTimerDeactivate(lights_modbus + i);
+            LIGHT_On(lights_modbus + i);
+            // Request redraw if light state changes
+            if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
         }
-        
-        if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
     }
-    
-    
-    
-    
-    
+}
+
+/**
+ * @brief Handles off-time timers for lights.
+ */
+static void HandleOffTimeTimers(void)
+{
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
     {
-        if(Light_Modbus_isOffTimeTimerActive(lights_modbus + i) && Light_Modbus_hasOffTimeTimerExpired(lights_modbus + i))
+        if(LIGHT_isOffTimeTimerActive(lights_modbus + i) && LIGHT_hasOffTimeTimerExpired(lights_modbus + i))
         {
-            Light_Modbus_OffTimeTimerDeactivate(lights_modbus + i);
-            Light_Modbus_Off(lights_modbus + i);
+            LIGHT_OffTimeTimerDeactivate(lights_modbus + i);
+            LIGHT_Off(lights_modbus + i);
+            // Request redraw if light state changes
+            if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
         }
-        
-        if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
     }
-    
-    
-    
-    
+}
+
+/**
+ * @brief Handles the global Light Night Timer logic.
+ */
+static void HandleLightNightTimer(void)
+{
+    // LightNightTimer_StartTime is global static, as it's used across display.c and lights.c
     if(LightNightTimer_StartTime && ((HAL_GetTick() - LightNightTimer_StartTime) >= (LIGHT_NIGHT_TIMER_DURATION * 1000)))
     {
         LightNightTimer_StartTime = 0;
-        
+
         for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i)
         {
-            if(Light_Modbus_isTiedToMainLight(lights_modbus + i) && Light_Modbus_isActive(lights_modbus + i))
+            if(LIGHT_isTiedToMainLight(lights_modbus + i) && LIGHT_isActive(lights_modbus + i))
             {
-                Light_Modbus_Off(lights_modbus + i);
+                LIGHT_Off(lights_modbus + i);
+            }
+        }
+
+        // Check screen and request redraw/transition if needed
+        if(screen == SCREEN_RESET_MENU_SWITCHES) screen = SCREEN_MAIN; // Transition from reset screen to main
+        shouldDrawScreen = 1;
+    }
+}
+
+/**
+ * @brief Handles status, brightness, and color changes for lights and sends Modbus commands.
+ */
+static void HandleLightStatusChanges(void)
+{
+    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
+    {
+        if(LIGHT_hasStatusChanged(lights_modbus + i))
+        {
+            if(LIGHT_isBinary(lights_modbus + i) || LIGHT_isRGB(lights_modbus + i))
+{
+    uint8_t sendDataBuffBin[3] = {0};
+    sendDataBuffBin[0] = (LIGHT_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+    sendDataBuffBin[1] = LIGHT_GetRelay(lights_modbus + i) & 0xFF;
+    sendDataBuffBin[2] = LIGHT_isNewValueOn(lights_modbus + i) ? BINARY_ON : BINARY_OFF; // Koristi konstante
+    AddCommand(&binaryQueue, BINARY_SET, sendDataBuffBin, 3);
+}
+            else // Assumed to be Dimmer if not Binary or RGB
+            {
+                uint8_t sendDataBuffDimm[3] = {0};
+                sendDataBuffDimm[0] = (LIGHT_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+                sendDataBuffDimm[1] = LIGHT_GetRelay(lights_modbus + i) & 0xFF;
+                sendDataBuffDimm[2] = LIGHT_isNewValueOn(lights_modbus + i) ? LIGHT_GetBrightness(lights_modbus + i) : 0;
+                AddCommand(&dimmerQueue, DIMMER_SET, sendDataBuffDimm, 3);
+            }
+            LIGHT_ResetStatus(lights_modbus + i);
+
+            // Request redraw if light state changes
+            if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
+            else if(screen == SCREEN_MAIN) shouldDrawScreen = 1; // Main screen icon might need update
+        }
+        else if(LIGHT_hasBrightnessChanged(lights_modbus + i))
+        {
+            uint8_t sendDataBuffDimm[3] = {0};
+            sendDataBuffDimm[0] = (LIGHT_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            sendDataBuffDimm[1] = LIGHT_GetRelay(lights_modbus + i) & 0xFF;
+            sendDataBuffDimm[2] = LIGHT_GetBrightness(lights_modbus + i);
+            AddCommand(&dimmerQueue, DIMMER_SET, sendDataBuffDimm, 3);
+            LIGHT_ResetBrightness(lights_modbus + i);
+        }
+        else if(LIGHT_hasColorChanged(lights_modbus + i))
+        {
+            uint8_t sendDataBuffRGB[5] = {0};
+            sendDataBuffRGB[0] = (LIGHT_GetRelay(lights_modbus + i) >> 8) & 0xFF;
+            sendDataBuffRGB[1] = LIGHT_GetRelay(lights_modbus + i) & 0xFF;
+            sendDataBuffRGB[2] = LIGHT_GetColor(lights_modbus + i) & 0xFF;             // blue
+            sendDataBuffRGB[3] = (LIGHT_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
+            sendDataBuffRGB[4] = (LIGHT_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
+            AddCommand(&rgbwQueue, RGB_SET, sendDataBuffRGB, 5);
+            LIGHT_ResetColor(lights_modbus + i);
+        }
+    }
+}
+// =======================================================================
+// === NOVA POMOCNA FUNKCIJA ZA ODLOŽENO SNIMANJE (SCENARIO B) ===
+//
+static void HandleDelayedSave(void)
+{
+    // Provjeravamo da li je tajmer za snimanje aktivan i da li je isteklo vrijeme
+    if (save_brightness_timer_start != 0 && (HAL_GetTick() - save_brightness_timer_start) >= BRIGHTNESS_SAVE_DELAY_MS)
+    {
+        save_brightness_timer_start = 0; // Zaustavi tajmer
+        
+        bool needs_saving = false;
+        for(uint8_t i = 0; i < LIGHTS_getCount(); i++) {
+            if (lights_modbus[i].is_dirty_for_saving) {
+                needs_saving = true;
+                lights_modbus[i].is_dirty_for_saving = false; // Resetuj fleg
             }
         }
         
-        if(screen == SCREEN_RESET_MENU_SWITCHES) screen = 1;
-        shouldDrawScreen = 1;
-    }
-    
-    
-    
-    
-    for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
-    {
-        if(Light_Modbus_hasStatusChanged(lights_modbus + i))
-        {
-            if(Light_Modbus_isBinary(lights_modbus + i) || Light_Modbus_isRGB(lights_modbus + i))
-            {
-                uint8_t sendDataBuffBin[3] = {0};
-                
-                sendDataBuffBin[0] = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-                sendDataBuffBin[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-                sendDataBuffBin[2] = Light_Modbus_isNewValueOn(lights_modbus + i) ? 0x01 : 0x02;
-                DodajKomandu(&binaryQueue, BINARY_SET, sendDataBuffBin, 3);
-            }
-            else
-            {
-                uint8_t sendDataBuffDimm[3] = {0};
-                
-                sendDataBuffDimm[0] = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-                sendDataBuffDimm[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-                sendDataBuffDimm[2] = Light_Modbus_isNewValueOn(lights_modbus + i) ? Light_Modbus_GetBrightness(lights_modbus + i) : 0;
-                DodajKomandu(&dimmerQueue, DIMMER_SET, sendDataBuffDimm, 3);
-            }
-            
-            Light_Modbus_ResetStatus(lights_modbus + i);
-            
-            if(screen == SCREEN_LIGHTS) shouldDrawScreen = 1;
-            else if(!screen) screen = SCREEN_MAIN;
-        }
-        else if(Light_Modbus_hasBrightnessChanged(lights_modbus + i))
-        {
-            uint8_t sendDataBuffDimm[3] = {0};
-            
-            sendDataBuffDimm[0] = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-            sendDataBuffDimm[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-            sendDataBuffDimm[2] = Light_Modbus_GetBrightness(lights_modbus + i);
-            DodajKomandu(&dimmerQueue, DIMMER_SET, sendDataBuffDimm, 3);
-            Light_Modbus_ResetBrightness(lights_modbus + i);
-        }
-        else if(Light_Modbus_hasColorChanged(lights_modbus + i))
-        {
-            uint8_t sendDataBuffRGB[5] = {0};
-            
-            //if(isSendDataBufferEmpty()) sendDataBuff[sendDataCount++] = LIGHT_SEND_COLOR_SET;
-            sendDataBuffRGB[0] = (Light_Modbus_GetRelay(lights_modbus + i) >> 8) & 0xFF;
-            sendDataBuffRGB[1] = Light_Modbus_GetRelay(lights_modbus + i) & 0xFF;
-            sendDataBuffRGB[2] = Light_Modbus_GetColor(lights_modbus + i) & 0xFF;             // blue
-            sendDataBuffRGB[3] = (Light_Modbus_GetColor(lights_modbus + i) >> 8) & 0xFF;      // green
-            sendDataBuffRGB[4] = (Light_Modbus_GetColor(lights_modbus + i) >> 16) & 0xFF;     // red
-            DodajKomandu(&rgbwQueue, RGB_SET, sendDataBuffRGB, 5);
-            Light_Modbus_ResetColor(lights_modbus + i);
+        if (needs_saving) {
+            LIGHTS_Save(); // Pozovi snimanje za SVA svjetla
         }
     }
-    
-    // ovo je samo za konstrukta upita, na ovaj nacin, sa ovim upitom traži šta hoceš, kad hoceš, gdje hoceš
-    // samo obezbjedi lokalni bafer dovoljno velik za odgovor, na njega nema provjere pa pazi da ne prelije
-    /**
+}
+
+/* Public Service Function ---------------------------------------------------*/
+
+/**
+ * @brief Main service function for Modbus lights, handling timers and status updates.
+ * @note This function should be called periodically in the main loop.
+ */
+void LIGHT_Service(void)
+{
+    HandleExternalButtonActivity();
+    HandleOnDelayTimers();
+    HandleOffTimeTimers();
+    HandleLightNightTimer();
+    HandleDelayedSave(); // <-- DODAJEMO POZIV NOVE FUNKCIJE
+    HandleLightStatusChanges();
+
+    // The commented out Modbus query example is not part of the core light service logic
+    // but rather a demonstration of how to use the Modbus communication.
+    /*
     uint16_t address = 0x0001;
     uint8_t response[16];
     if (GetState(BINARY_GET, address, response)) {
@@ -789,8 +1250,3 @@ void Light_Modbus_Service(void)
     }
     */
 }
-
-
-
-
-

@@ -16,9 +16,9 @@
 /*  time and buld number are result of executing batch files and vb script	is compiled	    */
 /* 	                                                                                        */
 /**/
-#define FW_DATE                                	0x00252802
-#define FW_TIME                        			0x00173218 
-#define FW_BUILD_NUMBER                          12402
+#define FW_DATE                                	0x00250806
+#define FW_TIME                        			0x00162841 
+#define FW_BUILD_NUMBER                          12439
 
 /* select application if preprocessor symbol no defined -----------------*/
 //#define HOTEL_CONTROLLER
@@ -591,7 +591,6 @@ typedef enum
 #define LOG_DSIZE                       16U
 #define FILUPD_LIST_BSIZE               32U
 #define JRNL_BSIZE                      128U
-#define COLOR_BSIZE                     28U
 #define QRC_BSIZE                       128U
 #define QRC_DSIZE                       124U
 #define DISP_XSIZE                      480U
@@ -884,17 +883,11 @@ typedef enum
 #define BUZZER_MIDDLE                   3U
 #define BUZZER_LONG                     4U
 
-
-
 #define LIGHT_MODBUS_QUERY_RESPONSE_INDEX_OUT_OF_RANGE       254U
 #define CURTAIN_MODBUS_QUERY_RESPONSE_INDEX_OUT_OF_RANGE     254U
 
 
-#define QR_CODE_APP_ID                  1U
-#define QR_CODE_WIFI_ID                 2U
 #define QR_CODE_QUERY_RESPONSE_DATA_TOO_LONG   254U
-
-
 
 #define	BLDR_CMD_RUN                    ('W') // command to run bootloader
 #define	BLDR_UPD_ERR                    ('O') // firmware update fail

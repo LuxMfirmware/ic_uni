@@ -1,0 +1,128 @@
+
+Naziv: controllerID_on_delay sugeriše odgodu za paljenje drugog "kontrolera" ili uređaja.
+Čest scenario: Najčešći primjer za ovakvu logiku u automatizaciji je upravo kupatilo: upali se svjetlo, i tek nakon par minuta (ako je svjetlo i dalje upaljeno) automatski se pali ventilator.
+Čini se da je originalni programer imao tačno tu namjeru.
+Međutim, kada se pogleda trenutni kod, ta veza nije u potpunosti implementirana. Funkcije za odloženo paljenje u lights.c (HandleOnDelayTimers) su vezane za paljenje samog svjetla, a ne za slanje komande nekom drugom uređaju kao što je ventilator. Takođe, sam ventilator modul, kao što smo ranije utvrdili, nije aktivan.
+Dakle, Vaša analiza je najvjerovatnije tačna – taj mehanizam je zamišljen da služi za povezivanje sa ventilatorom, ali ta logička veza u kodu trenutno nedostaje ili je nedovršena.
+
+
+Logički konflikt
+Problem nastaje kada su Tajmer 1 (on_hour) i Tajmer 3 (on_delay) podešeni za ISTO svjetlo.
+Analiza: Problem nije tehničke prirode (program se neće srušiti), već logičke. Jedno svjetlo ne može istovremeno imati dva potpuno različita i nezavisna pravila za paljenje:
+Jedno pravilo je apsolutno: "Upali se svakog dana tačno u 20:00."
+Drugo pravilo je relativno: "Upali se 2 minute nakon nekog eksternog događaja."
+Šta bi sistem trebao uraditi? Koje pravilo ima prioritet? Trenutni kod nema definisan prioritet, što znači da bi se svjetlo palilo i u jednom i u drugom slučaju, što je zbunjujuće i vjerovatno nepoželjno.
+Prijedlog rješenja: Ograničenje na nivou interfejsa
+Najbolje i najčistije rješenje je da se ovaj logički konflikt spriječi na nivou korisničkog interfejsa u meniju za podešavanja (Service_SettingsScreen_5 u display.c).
+Koncept:
+Logika bi bila jednostavna: korisnik može odabrati ili automatsko paljenje u određeno vrijeme (Tajmer 1) ILI odloženo paljenje (Tajmer 3), ali ne oba istovremeno.
+Implementacija: U Service_SettingsScreen_5 bismo dodali logiku:
+Ako korisnik unese vrijednost različitu od "-1" za on_hour (aktivira Tajmer 1), spinbox za controllerID_on_delay bi trebao postati onemogućen (siv) i njegova vrijednost bi se trebala postaviti na 0.
+I obrnuto, ako korisnik unese vrijednost veću od nule za controllerID_on_delay (aktivira Tajmer 3), spinbox za on_hour bi trebao postati onemogućen i njegova vrijednost bi se trebala postaviti na -1.
+Ovim pristupom:
+Sprečavamo zbunjujuće konfiguracije: Korisnik ne može napraviti logičku grešku.
+Ne komplikujemo kod: Ne moramo pisati kompleksnu logiku u LIGHT_Service koja pokušava da "pogodi" šta da radi kada su oba tajmera aktivna.
+Zadržavamo sve korisne kombinacije: I dalje možete imati "vanjska svjetla" (on_hour + off_time) i "ventilator" (on_delay + off_time).
+
+Veza između UI elemenata i članova LIGHT_Modbus_CmdTypeDef strukture
+Sve ove vrijednosti se čuvaju unutar ugniježdene strukture config, kojoj pristupate sa lights_modbus[i].config.clan_strukture.
+
+Lijeva kolona:
+LIGHT 1 RELAY
+
+Struktura: uint16_t index;
+Namjena: Glavna Modbus adresa ovog svjetla (releja ili dimera).
+LIGHT 1 ICON
+Struktura: uint8_t iconID;
+Namjea: Određuje koja će se sličica (npr. sijalica ili ventilator) prikazivati na ekranu sa svjetlima.
+LIGHT 1 ON ID
+Struktura: uint16_t controllerID_on;
+Namjena: Modbus adresa nekog drugog uređaja koji će se automatski upaliti zajedno sa ovim svjetlom.
+LIGHT 1 ON ID DELAY
+Struktura: uint8_t controllerID_on_delay;
+Namjena: Vrijeme u minutama koje treba sačekati prije nego što se upali onaj drugi uređaj definisan sa controllerID_on.
+LIGHT 1 HOUR ON
+Struktura: int8_t on_hour;
+Namjena: Sat u kojem se svjetlo automatski pali. Vrijednost -1 (koja se vidi na slici) označava da je tajmer isključen.
+LIGHT 1 MINUTE ON
+Struktura: uint8_t on_minute;
+Namjena: Minuta u kojoj se svjetlo automatski pali. Na slici je ispravno onemogućen jer je sat postavljen na -1.
+Desna kolona:
+LIGHT 1 DELAY OFF
+Struktura: uint8_t off_time;
+Namjena: Vrijeme u minutama nakon kojeg će se svjetlo automatski ugasiti (ako je vrijednost veća od 0).
+LIGHT 1 COMM. TYPE
+Struktura: uint8_t communication_type;
+Namjena: Tip svjetla. 1=Binarno, 2=Dimer, 3=RGB.
+LIGHT 1 LOCAL PIN
+Struktura: uint8_t local_pin;
+Namjena: ID lokalnog hardverskog izlaza (GPIO ili PWM) na ovom uređaju koji će se direktno kontrolisati.
+LIGHT 1 SLEEP TIME
+Struktura: uint8_t sleep_time;
+Namjena: Trenutno nema funkciju u kodu; ostatak nedovršene logike.
+LIGHT 1 BUTTON EXT.
+Strukura: uint8_t button_external;
+Namjena: Definiše ponašanje na pritisak eksternog tastera (1=ON, 2=OFF, 3=FLIP).
+TIED TO MAIN LIGHT (Checkbox)
+Struktura: uint8_t tiedToMainLight;
+Namjena: Ako je štiklirano, ovo svjetlo se pali i gasi zajedno sa glavnim prekidačem na početnom ekranu.
+REMEMBER BRIGHTNESS (Checkbox)
+Struktura: uint8_t rememberBrightness;
+Namjena: Ako je štiklirano, dimer će pamtiti posljednju podešenu svjetlinu i neće je resetovati na 0 pri gašenju.
+
+/**
+ * @brief Defragmentira niz svjetala u RAM-u.
+ *
+ * Traži prazne slotove (gdje je `config.index` postavljen na 0) i premješta
+ * sve sljedeće konfigurirane slotove prema početku niza kako bi popunio praznine.
+ * Ova se funkcija ne odnosi izravno na EEPROM; samo manipulira podacima u RAM-u.
+ */
+static void defragmentLights(void) {
+    uint8_t write_index = 0; // Pokazivač na mjesto gdje treba pisati
+    uint8_t read_index = 0;  // Pokazivač na mjesto odakle treba čitati
+
+    while (read_index < LIGHTS_MODBUS_SIZE) {
+        // Pronađi prvi konfigurirani slot za čitanje
+        if (lights_modbus[read_index].config.index != 0) {
+            // Ako je read_index ispred write_index, premjesti podatke
+            if (read_index > write_index) {
+                // Kopiraj podatke s trenutne pozicije (read_index)
+                // na prvu slobodnu poziciju (write_index).
+                memcpy(&lights_modbus[write_index], &lights_modbus[read_index], sizeof(LIGHT_Modbus_CmdTypeDef));
+                
+                // Obriši originalni slot
+                memset(&lights_modbus[read_index], 0, sizeof(LIGHT_Modbus_CmdTypeDef));
+            }
+            // Povećaj pokazivač za pisanje, jer je trenutni slot popunjen
+            write_index++;
+        }
+        // Uvijek povećaj pokazivač za čitanje
+        read_index++;
+    }
+}
+
+
+
+
+
+// display.c, unutar Service_SettingsScreen_5()
+// ...
+uint8_t i = lightsModbusSettingsMenu * LIGHTS_MODBUS_PER_SETTINGS;
+LIGHT_Modbus_CmdTypeDef* current_light = &lights_modbus[i];
+int new_relay_value = SPINBOX_GetValue(lightsWidgets[i].relay);
+
+// Provjera promjene na releju, što je okidač za brisanje/ažuriranje
+if (LIGHT_GetRelay(current_light) != new_relay_value) {
+    // Ažurirajmo relej u RAM-u
+    LIGHT_SetRelay(current_light, new_relay_value);
+    settingsChanged = 1; // Obavezno postavi da je došlo do promjene
+    
+    // Ako je nova vrijednost 0, označi slot za defragmentaciju
+    if (new_relay_value == 0) {
+        current_light->is_dirty_for_defrag = true;
+    } else {
+        current_light->is_dirty_for_defrag = false;
+    }
+}
+// Ostatak provjera ostaje nepromijenjen, oni samo postavljaju `settingsChanged = 1`
+// ...

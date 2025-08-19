@@ -1,121 +1,266 @@
+/**
+ ******************************************************************************
+ * @file    lights.h
+ * @author  Edin & Gemini
+ * @version V2.0.0
+ * @date    15-08-2025
+ * @brief   Javni API za potpuno enkapsulirani modul za kontrolu svjetala.
+ *
+ * @note
+ * Ovaj modul koristi "Opaque Pointer" tehniku za potpunu enkapsulaciju
+ * runtime podataka. Stvarna 'runtime' struktura (LIGHT_Modbus_CmdTypeDef)
+ * i globalni niz svjetala su sakriveni unutar `lights.c`.
+ *
+ * Da biste radili sa nekim svjetlom, morate prvo dobiti "handle" (pointer)
+ * na njega pozivanjem funkcije `LIGHTS_GetInstance(index)`. Taj handle se
+ * zatim prosljeduje svim ostalim API funkcijama (getterima i setterima).
+ *
+ * Definicija `LIGHT_EepromConfig_t` strukture je ostala javna kako bi
+ * drugi moduli (poput EEPROM mape) mogli da koriste `sizeof()` na njoj.
+ *
+ ******************************************************************************
+ * @attention
+ *
+ * (C) COPYRIGHT 2025 JUBERA d.o.o. Sarajevo
+ *
+ * Sva prava zadržana.
+ *
+ ******************************************************************************
+ */
+
 #ifndef __LIGHTS_H__
 #define __LIGHTS_H__                             FW_BUILD // version
 
 
+// UKLJUCEN SAMO NEOPHODAN HEADER
 #include "main.h"
 
+/*============================================================================*/
+/* DEFINICIJE I KONSTANTE                                                     */
+/*============================================================================*/
+/**
+ * @brief Ukupan broj svjetala koje sistem može konfigurisati.
+ */
+#define LIGHTS_MODBUS_SIZE                  6
 
+/**
+ * @brief Trajanje tajmera (u sekundama) za automatsko gašenje nocnog svjetla.
+ */
+#define LIGHT_NIGHT_TIMER_DURATION          15
+/*============================================================================*/
+/* STRUKTURE PODATAKA                                                         */
+/*============================================================================*/
+// === NOVO: STRUKTURA SAMO ZA EEPROM PODATKE SA GARANTOVANIM PAKOVANJEM ===
+// ULOGA: Ova struktura sadrži iskljucivo podatke koji se trajno cuvaju.
+// `#pragma pack` osigurava da nema "rupa" u memoriji, cineci snimanje
+// i citanje 100% pouzdanim.
+/*============================================================================*/
 
-#define LIGHT_COM_BIN                        1
-#define LIGHT_COM_DIM                        2
-#define LIGHT_COM_COLOR                      3
-
-#define LIGHT_ICON_COUNT                     2
-#define LIGHT_ICON_ID_BULB                   0   // IDs must go from 0 to LIGHT_ICON_COUNT - 1
-#define LIGHT_ICON_ID_VENTILATOR             1
-
-#define LIGHTS_MODBUS_SIZE                   6
-
-#define LIGHT_NIGHT_TIMER_DURATION           15
-
-
-
-
-
+#pragma pack(push, 1) // Pocni memorijsko pakovanje
+/**
+ * @brief Struktura koja sadrži iskljucivo podatke koji se trajno cuvaju u EEPROM.
+ * @note  Zahvaljujuci `#pragma pack`, ova struktura je kompaktna i njen raspored u
+ * memoriji je garantovano isti, što je kljucno za pouzdan rad sa EEPROM-om.
+ */
 typedef struct
 {
-    GUI_COLOR color;
-    uint32_t off_timer_start, on_delay_timer_start;
-    uint16_t index, old_index, controllerID_on;
-    uint8_t value, old_value, iconID, tiedToMainLight, rememberBrightness, off_time, controllerID_on_delay, on_hour, on_minute, communication_type, local_pin, sleep_time, button_external, brightness, brightness_old, saveBrightness;
-} LIGHT_Modbus_CmdTypeDef;
+    /**
+     * @brief "Magicni broj" koji služi kao potpis firmvera.
+     * Koristi se u `LIGHT_Init` da bi se provjerilo da li su podaci u EEPROM-u validni
+     * i da li poticu od ove verzije softvera. Glavna zaštita od praznog ili oštecenog EEPROM-a.
+     */
+    uint16_t magic_number;
+
+    /**
+     * @brief Modbus adresa releja ili dimera koji kontroliše ovo svjetlo.
+     * Ovo je kljucna informacija za slanje komandi preko RS485 bus-a.
+     * Koristi se u `HandleLightStatusChanges`.
+     */
+    uint16_t index;
+
+    /**
+     * @brief Fleg (0 ili 1) koji oznacava da li je svjetlo povezano sa glavnim prekidacem.
+     * Koristi se u `LIGHTS_isAnyLightOn` i `HandleRelease_MainScreenLogic` da bi se
+     * znalo koja svjetla treba upaliti/ugasiti pritiskom na glavni prekidac na ekranu.
+     */
+    uint8_t  tiedToMainLight;
+
+    /**
+     * @brief Vrijeme u minutama nakon kojeg ce se svjetlo automatski ugasiti.
+     * Ako je 0, funkcija je iskljucena. Koristi se u `HandleOffTimeTimers`.
+     */
+    uint8_t  off_time;
+
+    /**
+     * @brief ID ikonice koja ce se prikazivati na GUI-ju.
+     * Koristi se kao indeks u `light_modbus_images` nizu da bi se odabrala
+     * odgovarajuca slicica (npr. sijalica ili ventilator).
+     */
+    uint8_t  iconID;
+
+    /**
+     * @brief Modbus adresa DRUGOG uredaja (npr. ventilatora) koji ce se aktivirati
+     * zajedno sa ovim svjetlom. Logika za ovo trenutno nije u potpunosti implementirana.
+     */
+    uint16_t controllerID_on;
+
+    /**
+     * @brief Vrijeme odgode u minutama za "delayed-on" tajmer.
+     * Koristi se u `HandleOnDelayTimers` da odloži paljenje svjetla nakon
+     * što je primljena eksterna komanda.
+     */
+    uint8_t  controllerID_on_delay;
+
+    /**
+     * @brief Sat (0-23) kada se svjetlo treba automatski upaliti.
+     * Vrijednost -1 oznacava da je tajmer iskljucen.
+     * Koristi se u `Handle_PeriodicEvents` za dnevni raspored paljenja.
+     */
+    int8_t   on_hour;
+
+    /**
+     * @brief Minuta (0-59) kada se svjetlo treba automatski upaliti.
+     * Koristi se zajedno sa `on_hour`.
+     */
+    uint8_t  on_minute;
+
+    /**
+     * @brief Tip svjetla (1=BIN, 2=DIM, 3=COLOR).
+     * Kljucna varijabla u `HandleLightStatusChanges` koja odlucuje kakav tip
+     * Modbus komande treba poslati (binarnu, dimersku ili RGB).
+     */
+    uint8_t  communication_type;
+
+    /**
+     * @brief ID lokalnog pina (GPIO ili PWM) na ovom uredaju.
+     * Ako je vrijednost razlicita od nule, `SetPin` ili `PCA9685_SetOutput`
+     * ce biti pozvani da direktno kontrolišu hardverski izlaz.
+     */
+    uint8_t  local_pin;
+
+    /**
+     * @brief Vrijeme mirovanja.
+     * Trenutno se može podesiti u meniju, ali se nigdje u kodu ne koristi.
+     * Ostatak nedovršene funkcionalnosti.
+     */
+    uint8_t  sleep_time;
+
+    /**
+     * @brief Definiše ponašanje svjetla na pritisak eksternog tastera (1=ON, 2=OFF, 3=FLIP).
+     * Koristi se u `HandleExternalButtonActivity`.
+     */
+    uint8_t  button_external;
+
+    /**
+     * @brief Fleg (0 ili 1) koji odreduje da li dimer pamti posljednju svjetlinu.
+     * Koristi se u `LIGHT_Off` da odluci da li da resetuje `brightness` na 0
+     * i u `LIGHT_SetBrightness` da li da oznaci promjenu za snimanje.
+     */
+    uint8_t  rememberBrightness;
+
+    /**
+     * @brief Vrijednost svjetline od 0 do 100.
+     * Ovo je glavna vrijednost koja se cuva i šalje dimeru.
+     */
+    uint8_t  brightness;
+
+    /**
+     * @brief CRC (Cyclic Redundancy Check) "digitalni otisak prsta".
+     * Izracunava se i snima u `LIGHT_Save`. Provjerava se u `LIGHT_Init`
+     * da bi se potvrdio integritet svih ostalih podataka u ovoj strukturi.
+     */
+    uint16_t crc;
+
+} LIGHT_EepromConfig_t;
+#pragma pack(pop) // Završi memorijsko pakovanje
 
 
+/*============================================================================*/
+/* OPAQUE (SAKRIVENI) TIP PODATAKA                                            */
+/*============================================================================*/
 
+/**
+ * @brief  "Opaque" (sakriveni) tip za jedno svjetlo.
+ * @note   Stvarna definicija ove strukture je sakrivena unutar lights.c
+ * i nije dostupna ostatku programa. Pristup je moguc samo preko pointera (handle-a).
+ */
+typedef struct LIGHT_s LIGHT_Handle;
 
+/*============================================================================*/
+/* PROTOTIPOVI FUNKCIJA - NOVI JAVNI API                                      */
+/*============================================================================*/
 
-extern uint8_t lights_count, lights_modbus_rows;
-extern uint8_t LightNightTimer_isEnabled;
-extern uint32_t LightNightTimer_StartTime;
-extern LIGHT_Modbus_CmdTypeDef lights_modbus[LIGHTS_MODBUS_SIZE];
+// --- Grupa 1: Inicijalizacija, Servis i Upravljanje Instancama ---
+void LIGHTS_Init(void);
+void LIGHT_Service(void);
 
+/**
+ * @brief  Vraca pointer (handle) na instancu svjetla na osnovu indeksa.
+ * @param  index Logicki indeks svjetla (0 do LIGHTS_MODBUS_SIZE - 1).
+ * @retval LIGHT_Handle* Pointer na instancu, ili NULL ako je indeks neispravan.
+ */
+LIGHT_Handle* LIGHTS_GetInstance(uint8_t index);
 
+uint8_t LIGHTS_getCount(void);
+uint8_t LIGHTS_Rows_getCount(void);
 
+// --- Grupa 2: Konfiguracija i Cuvanje ---
+void LIGHTS_Save(void);
+void LIGHTS_SetDefault(void);
 
+// --- Grupa 3: Getteri i Setteri za Konfiguraciju ---
+uint16_t  LIGHT_GetRelay(const LIGHT_Handle* const handle);
+void      LIGHT_SetRelay(LIGHT_Handle* const handle, const uint16_t val);
+bool      LIGHT_isTiedToMainLight(const LIGHT_Handle* const handle);
+void      LIGHT_SetTiedToMainLight(LIGHT_Handle* const handle, bool isTied);
+uint8_t   LIGHT_GetOffTime(const LIGHT_Handle* const handle);
+void      LIGHT_SetOffTime(LIGHT_Handle* const handle, const uint8_t val);
+uint8_t   LIGHT_GetIconID(const LIGHT_Handle* const handle);
+void      LIGHT_SetIconID(LIGHT_Handle* const handle, const uint8_t id);
+uint16_t  LIGHT_GetControllerID(const LIGHT_Handle* const handle);
+void      LIGHT_SetControllerID(LIGHT_Handle* const handle, uint16_t val);
+uint8_t   LIGHT_GetOnDelayTime(const LIGHT_Handle* const handle);
+void      LIGHT_SetOnDelayTime(LIGHT_Handle* const handle, uint8_t val);
+int8_t    LIGHT_GetOnHour(const LIGHT_Handle* const handle);
+void      LIGHT_SetOnHour(LIGHT_Handle* const handle, int8_t hour);
+uint8_t   LIGHT_GetOnMinute(const LIGHT_Handle* const handle);
+void      LIGHT_SetOnMinute(LIGHT_Handle* const handle, uint8_t minute);
+uint8_t   LIGHT_GetCommunicationType(const LIGHT_Handle* const handle);
+void      LIGHT_SetCommunicationType(LIGHT_Handle* const handle, uint8_t type);
+uint8_t   LIGHT_GetLocalPin(const LIGHT_Handle* const handle);
+void      LIGHT_SetLocalPin(LIGHT_Handle* const handle, uint8_t pin);
+uint8_t   LIGHT_GetSleepTime(const LIGHT_Handle* const handle);
+void      LIGHT_SetSleepTime(LIGHT_Handle* const handle, uint8_t time);
+uint8_t   LIGHT_GetButtonExternal(const LIGHT_Handle* const handle);
+void      LIGHT_SetButtonExternal(LIGHT_Handle* const handle, uint8_t mode);
+bool      LIGHT_isBrightnessRemembered(const LIGHT_Handle* const handle);
+void      LIGHT_SetRememberBrightness(LIGHT_Handle* const handle, const bool remember);
+uint8_t   LIGHT_GetBrightness(const LIGHT_Handle* const handle);
+void      LIGHT_SetBrightness(LIGHT_Handle* const handle, uint8_t brightness);
+uint32_t  LIGHT_GetColor(const LIGHT_Handle* const handle);
+void      LIGHT_SetColor(LIGHT_Handle* const handle, uint32_t color);
 
-uint8_t Lights_Modbus_getCount(void);
-uint8_t Lights_Modbus_Rows_getCount(void);
-void Lights_Modbus_Init(void);
-void Lights_Modbus_Save(void);
-uint16_t Light_Modbus_GetRelay(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_SetRelay(LIGHT_Modbus_CmdTypeDef* const li, const uint16_t val);
-void Light_Modbus_TieToMainLight(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_UntieFromMainLight(LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isTiedToMainLight(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isActive(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_Flip(LIGHT_Modbus_CmdTypeDef* const li);
-GUI_CONST_STORAGE GUI_BITMAP* Light_Modbus_GetIcon(const LIGHT_Modbus_CmdTypeDef* const li);
-uint8_t Light_Modbus_GetIconID(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_SetIcon(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t id);
-void Light_Modbus_SetColor(LIGHT_Modbus_CmdTypeDef* const li, GUI_COLOR color);
-void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_SetBrightness(LIGHT_Modbus_CmdTypeDef* const li, uint8_t brightness);
-void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li);
-uint8_t Lights_Modbus_getCount(void);
-void Light_Modbus_On(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_Off(LIGHT_Modbus_CmdTypeDef* const li);
-uint8_t Light_Modbus_Set_byIndex(const uint8_t light_index, const uint8_t val);
-uint8_t Light_Modbus_Get_byIndex(const uint8_t light_index);
-uint16_t Light_Modbus_GetRelay(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isIndexInRange(const uint8_t light_index);
-void Light_Modbus_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val);
-bool Light_Modbus_isNewValueOn(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isOldValueOn(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_hasStatusChanged(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_ResetStatus(LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_hasChanged(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_ResetChange(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_On_External(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_Off_External(LIGHT_Modbus_CmdTypeDef* const li);
-uint8_t Light_Modbus_GetBrightness(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_hasBrightnessChanged(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_RememberBrightnessSet(LIGHT_Modbus_CmdTypeDef* const li, const bool remember);
-bool Light_Modbus_isBrightnessRemembered(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_ResetBrightness(LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_Brightness_Update_External(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t value);
-GUI_COLOR Light_Modbus_GetColor(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_hasColorChanged(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_ResetColor(LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isBinary(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isDimmer(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isRGB(const LIGHT_Modbus_CmdTypeDef* const li);
-uint8_t Light_Modbus_GetOnDelayTime(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_SetOnDelayTime(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val);
-bool Light_Modbus_isOnDelayTimeEnabled(const LIGHT_Modbus_CmdTypeDef* const li);
-uint32_t Light_Modbus_GetOnDelayTimeTimer(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_SetOnDelayTimeTimer(LIGHT_Modbus_CmdTypeDef* const li, const uint32_t val);
-bool Light_Modbus_isOnDelayTimeTimerActive(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_hasOnDelayTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_OnDelayTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li);
-uint8_t Light_Modbus_GetOffTime(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_SetOffTime(LIGHT_Modbus_CmdTypeDef* const li, const uint8_t val);
-bool Light_Modbus_isOffTimeEnabled(const LIGHT_Modbus_CmdTypeDef* const li);
-uint32_t Light_Modbus_GetOffTimeTimer(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_SetOffTimeTimer(LIGHT_Modbus_CmdTypeDef* const li, const uint32_t val);
-bool Light_Modbus_isOffTimeTimerActive(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_hasOffTimeTimerExpired(const LIGHT_Modbus_CmdTypeDef* const li);
-void Light_Modbus_OffTimeTimerDeactivate(LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isTimeOnEnabled(const LIGHT_Modbus_CmdTypeDef* const li);
-bool Light_Modbus_isTimeToTurnOn(const LIGHT_Modbus_CmdTypeDef* const li);
-void Lights_Modbus_StatusSet(const bool state);
-void Lights_Modbus_On(void);
-void Lights_Modbus_Off(void);
-void Light_Modbus_SetDefault(LIGHT_Modbus_CmdTypeDef* const li);
-void Lights_Modbus_SetDefault(void);
-void Light_Modbus_Service(void);
+// --- Grupa 4: Kontrola Stanja ---
+void LIGHT_Flip(LIGHT_Handle* const handle);
+void LIGHT_SetState(LIGHT_Handle* const handle, const bool state);
+bool LIGHT_isActive(const LIGHT_Handle* const handle);
 
+// --- Grupa 5: Provjera Tipova ---
+bool LIGHT_isBinary(const LIGHT_Handle* const handle);
+bool LIGHT_isDimmer(const LIGHT_Handle* const handle);
+bool LIGHT_isRGB(const LIGHT_Handle* const handle);
 
+// --- Grupa 6: Funkcije koje ne zavise od instance ---
+bool LIGHTS_isAnyLightOn(void);
 
-#endif
+// --- Grupa 7: Funkcije za RS485 i eksterne module ---
+void LIGHTS_UpdateExternalState(uint16_t relay_address, uint8_t state);
+void LIGHTS_UpdateExternalBrightness(uint16_t relay_address, uint8_t brightness);
+
+// --- Grupa 8: API za Nocni Tajmer ---
+void    LIGHTS_StartNightTimer(void);
+void    LIGHTS_StopNightTimer(void);
+bool    LIGHTS_IsNightTimerActive(void);
+uint8_t LIGHTS_GetNightTimerCountdown(void);
+
+#endif // __LIGHTS_H__

@@ -15,6 +15,8 @@
 #include "TinyFrame.h"
 /* Exported Define  ----------------------------------------------------------*/
 #define COMMAND_QUEUE_SIZE (32)   // Maksimalan broj komandi u redu
+#define BINARY_ON          0x01   // Novo stanje za binarni izlaz: UKLJUCENO 
+#define BINARY_OFF         0x02   // Novo stanje za binarni izlaz: ISKLJUCENO
 /* Exported Type  ------------------------------------------------------------*/
 // Definicija komande
 typedef struct {
@@ -61,6 +63,6 @@ void RS485_RxCpltCallback(void);
 void RS485_TxCpltCallback(void);
 void RS485_ErrorCallback(void);
 bool GetState(uint8_t commandType, uint16_t address, uint8_t *response);
-bool DodajKomandu(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8_t length);
+bool AddCommand(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8_t length);
 #endif
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/

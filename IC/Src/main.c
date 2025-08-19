@@ -19,21 +19,19 @@
 #error "application not selected for application type in common.h"
 #endif
 /* Includes ------------------------------------------------------------------*/
-#include "png.h"
-#include "main.h"
-#include "rs485.h"
-#include "logger.h"
-#include "display.h"
+/*============================================================================*/
+/* UKLJUCENI FAJLOVI (INCLUDES)                                               */
+/*============================================================================*/
+#include "main.h" // Uvijek prvi
 #include "thermostat.h"
 #include "ventilator.h"
+#include "defroster.h"
 #include "curtain.h"
 #include "lights.h"
-#include "defroster.h"
-#include "stm32746g.h"
-#include "stm32746g_ts.h"
-#include "stm32746g_qspi.h"
-#include "stm32746g_sdram.h"
-#include "stm32746g_eeprom.h"
+#include "display.h"
+#include "rs485.h"
+
+
 /* Constants -----------------------------------------------------------------*/
 /* Imported Type  ------------------------------------------------------------*/
 /* Imported Variable  --------------------------------------------------------*/
@@ -74,8 +72,10 @@ uint32_t rstsrc = 0;
 static volatile float adc_refcor = 1.0f;
 bool LSE_Failed = false;  // Flag koji pokazuje da je LSE trajno otkazan
 bool pwminit = true;
-uint8_t pwm[32] = {0};
+static uint8_t pwm[32] = {0};
 uint8_t pca9685_register[PCA9685_REGISTER_SIZE] = {0};
+// Definišemo globalni fleg i postavljamo ga na `false` kao pocetno stanje.
+bool g_high_precision_mode = false;
 /* Private Macro -------------------------------------------------------------*/
 #define VREFIN_CAL_ADDRESS          ((uint16_t*) (0x1FF0F44A))
 #define TEMPSENSOR_CAL1_ADDR        ((uint16_t*) (0x1FF0F44C))
@@ -114,6 +114,8 @@ static float ROOM_GetTemperature(uint16_t adc_value);
   * @retval
   */
 int main(void) {
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
+    
     SaveResetSrc();
     MPU_Config();
     CACHE_Config();
@@ -135,15 +137,15 @@ int main(void) {
     RAM_Init();
     MX_UART_Init();
     RS485_Init();
-    Lights_Modbus_Init();
+    LIGHTS_Init();
     Curtains_Init();
     Defroster_Init();
     DISP_Init();
-    THSTAT_Init();
+    THSTAT_Init(pThst);
     PCA9685_Reset();
     PCA9685_Init();
     if(pwminit) PCA9685_SetOutputFrequency(PWM_0_15_FREQUENCY_DEFAULT);
-//    Ventilator_Init(&ventilator, EE_VENTILATOR);
+    Ventilator_Init();
 #ifdef	USE_WATCHDOG
     HAL_IWDG_Refresh(&hiwdg);
 #endif
@@ -151,11 +153,11 @@ int main(void) {
         ADC3_Read();
         TS_Service();
         DISP_Service();
-        Light_Modbus_Service();
+        LIGHT_Service();
         Curtain_Service();
         Defroster_Service();
-        THSTAT_Service();
-//        Ventilator_Service();
+        THSTAT_Service(pThst);
+        Ventilator_Service();
 #ifdef	USE_WATCHDOG
         HAL_IWDG_Refresh(&hiwdg);
 #endif
@@ -298,11 +300,16 @@ void MX_IWDG_Init(void) {
   * @retval
   */
 static void TS_Service(void) {
+// Definicije za dinamicki treshold osjetljivosti na dodir
+#define NORMAL_TOUCH_THRESHOLD      30U // Standardna osjetljivost (manje precizno)
+#define HIGH_PRECISION_THRESHOLD    2U  // Visoka osjetljivost (precizno za slajdere)
+
     uint16_t xDiff, yDiff;
     __IO TS_StateTypeDef  ts;
     static GUI_PID_STATE TS_State = {0};
     static uint32_t ts_update_tmr = 0U;
-    if (IsDISPCleaningActiv()) return; // don't update touch event till room cleaning activ,
+
+    if (IsDISPCleaningActiv()) return;
     else if ((HAL_GetTick() - ts_update_tmr)  >= TS_UPDATE_TIME) {
         ts_update_tmr = HAL_GetTick();
         BSP_TS_GetState((TS_StateTypeDef *)&ts);
@@ -314,7 +321,23 @@ static void TS_Service(void) {
         }
         xDiff = (TS_State.x > ts.touchX[0]) ? (TS_State.x - ts.touchX[0]) : (ts.touchX[0] - TS_State.x);
         yDiff = (TS_State.y > ts.touchY[0]) ? (TS_State.y - ts.touchY[0]) : (ts.touchY[0] - TS_State.y);
-        if((TS_State.Pressed != ts.touchDetected) || (xDiff > 30U) || (yDiff > 30U)) {
+
+        // =======================================================================
+        // === ZAMIJENITE `IF` USLOV OVOM LOGIKOM ===
+
+        // 1. Definišemo lokalnu varijablu za treshold.
+        uint8_t threshold;
+
+        // 2. Provjeravamo globalni fleg i biramo vrijednost.
+        if (g_high_precision_mode) {
+            threshold = HIGH_PRECISION_THRESHOLD; // Koristi visoku preciznost
+        } else {
+            threshold = NORMAL_TOUCH_THRESHOLD;   // Koristi normalnu preciznost
+        }
+
+        // 3. Koristimo odabranu vrijednost u `if` uslovu.
+        if((TS_State.Pressed != ts.touchDetected) || (xDiff > threshold) || (yDiff > threshold)) {
+            // =======================================================================
             TS_State.Pressed = ts.touchDetected;
             TS_State.Layer = TS_LAYER;
             if(ts.touchDetected) {
@@ -331,104 +354,25 @@ static void TS_Service(void) {
     }
 }
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief  Inicijalizuje globalne sistemske varijable iz EEPROM-a.
+  * @note   Ova funkcija ucitava samo kljucne sistemske parametre koji nisu
+  * dio specificnih modula, kao što su sistemski flegovi (dijeljeni sa
+  * bootloaderom) i adresa uredaja na RS485 busu.
+  * @param  None
+  * @retval None
   */
 static void RAM_Init(void) {
-//    int x;
-    uint8_t ebuf[EE_INIT_ADDR+2];
-    EE_ReadBuffer(ebuf, EE_TERMFL, EE_INIT_ADDR+2);
-//    if (ebuf[EE_INIT_ADDR] != EE_MARKER){
-//        ZEROFILL(ebuf, COUNTOF(ebuf));
+    // Ucitaj sistemski fleg koji dijeli bootloader i aplikacija.
+    // OVO SE CITA DIREKTNO I NEMA CRC ZAŠTITU NAMJERNO.
+    EE_ReadBuffer(&sysfl, EE_SYS_STATE, 1);
 
-//        ebuf[EE_DISP_LOW_BCKLGHT]  =  5;
-//        ebuf[EE_DISP_HIGH_BCKLGHT] = 70;
-//        ebuf[EE_SCRNSVR_TOUT] = SCRNSVR_TOUT;
-//        ebuf[EE_SCRNSVR_ENABLE_HOUR] = 22;
-//        ebuf[EE_SCRNSVR_DISABLE_HOUR]= 6;
-//        ebuf[EE_SCRNSVR_CLK_COLOR] = 15;
-//        x = HAL_GetUIDw0();
-//        while (x>255) x /= 10;
-//        while ((x == DEF_TFBRA)||(x == DEF_TFGRA)||(x == DEF_TFGWA)){
-//            if (++x > 255) x = 0;
-//        }
-//        ebuf[EE_TFIFA]  = x & 0xFF;
-//        ebuf[EE_TFGRA]  = DEF_TFGRA;
-//        ebuf[EE_TFBRA]  = DEF_TFBRA;
-//        ebuf[EE_TFGWA]  = DEF_TFGWA;
-//        ebuf[EE_TFBPS]  =((DEF_TFBPS>>24)&0xFF);
-//        ebuf[EE_TFBPS+1]=((DEF_TFBPS>>16)&0xFF);
-//        ebuf[EE_TFBPS+2]=((DEF_TFBPS>> 8)&0xFF);
-//        ebuf[EE_TFBPS+3]= (DEF_TFBPS&0xFF);
-//        ebuf[EE_SYSID]  =((DEF_SYSID>> 8)&0xFF);
-//        ebuf[EE_SYSID+1]= (DEF_SYSID&0xFF);
+    // Ucitaj RS485 adresu (TinyFrame Interface Address).
+    EE_ReadBuffer(&tfifa, EE_TFIFA, 1);
 
-//
-//        ebuf[EE_CTRL1]   = 1;
-//        ebuf[EE_CTRL1+1] = 2;
-//        ebuf[EE_CTRL1+2] = 3;
-//        ebuf[EE_CTRL1+3] = 4;
-//        ebuf[EE_CTRL1+4] = 5;
-//        ebuf[EE_CTRL1+5] = 6;
-//        ebuf[EE_CTRL1+6] = 7;
-//        ebuf[EE_CTRL1+7] = 8;
-//
-//        ebuf[EE_CTRL2]   = 1;
-//        ebuf[EE_CTRL2+1] = 2;
-//        ebuf[EE_CTRL2+2] = 3;
-//        ebuf[EE_CTRL2+3] = 4;
-//        ebuf[EE_CTRL2+4] = 5;
-//        ebuf[EE_CTRL2+5] = 6;
-//        ebuf[EE_CTRL2+6] = 7;
-//        ebuf[EE_CTRL2+7] = 8;
-//
-//        ebuf[EE_THST1]  = 2;
-//        ebuf[EE_THST1+1]  = 0;
-//        ebuf[EE_THST1+2]  = 0;
-//        ebuf[EE_THST1+3]  = 0;
-//        ebuf[EE_THST1+4]  = 0;
-//        ebuf[EE_THST1+5]  = AMBIENT_NTC_RREF >> 8;
-//        ebuf[EE_THST1+6]  = AMBIENT_NTC_RREF & 0xff;
-//        ebuf[EE_THST1+7]  = AMBIENT_NTC_B_VALUE >> 8;
-//        ebuf[EE_THST1+8]  = AMBIENT_NTC_B_VALUE & 0xff;
-//        ebuf[EE_THST1+9]  = 24;
-//        ebuf[EE_THST1+10]  = 2;
-//        ebuf[EE_THST1+11]  = 32;
-//        ebuf[EE_THST1+12]  = 16;
-//        ebuf[EE_THST1+13]  = 1;
-//        ebuf[EE_THST1+14]  = 0;
-//        ebuf[EE_THST1+15]  = 5;
-//        ebuf[EE_THST1+16]  = 10;
-//        ebuf[EE_THST1+17]  = 15;
-//        ebuf[EE_THST1+18]  = 23;
-//        ebuf[EE_THST1+19]  = 23;
-//        ebuf[EE_THST1+20]  = 1;
-//
-//        ebuf[EE_INIT_ADDR] = EE_MARKER;
-//        EE_WriteBuffer(ebuf, EE_TERMFL, EE_INIT_ADDR+2);
-//        ZEROFILL(ebuf, COUNTOF(ebuf));
-//        EE_ReadBuffer(ebuf, EE_TERMFL, EE_INIT_ADDR+2);
-//    }
-
-    low_bcklght         = ebuf[EE_DISP_LOW_BCKLGHT];        // EE_DISPLOW_BCKLGHT       0xAU
-    high_bcklght        = ebuf[EE_DISP_HIGH_BCKLGHT];       // EE_DISPHIGH_BCKLGHT      0xBU
-    scrnsvr_tout        = ebuf[EE_SCRNSVR_TOUT];            // EE_SCRNSVR_TOUT          0xCU
-    scrnsvr_ena_hour    = ebuf[EE_SCRNSVR_ENABLE_HOUR];     // EE_SCRNSVR_ENABLE_HOUR   0xDU
-    scrnsvr_dis_hour    = ebuf[EE_SCRNSVR_DISABLE_HOUR];    // EE_SCRNSVR_DISABLE_HOUR  0xEU
-    scrnsvr_clk_clr     = ebuf[EE_SCRNSVR_CLK_COLOR];       // EE_SCRNSVR_CLK_COLOR     0xFU
-    if (ebuf[EE_SCRNSVR_ON_OFF] == 1) ScrnsvrClkSet();
-    else ScrnsvrClkReset();
-    sysfl               = ebuf[EE_SYS_STATE];
-    tfifa               = ebuf[EE_TFIFA];       // EE_TFIFA                 0x1CU	// rs485 device address
-    sysid = ((ebuf[EE_SYSID]<<8)|ebuf[EE_SYSID+1]);       // EE_SYSID                 0x2AU	// system id (system unique number)
-
-    if (high_bcklght == 0) high_bcklght = 1;
-    if (low_bcklght >= high_bcklght) low_bcklght = high_bcklght;
-    if (scrnsvr_tout == 0) scrnsvr_tout = 1;
-    if (scrnsvr_ena_hour > 23) scrnsvr_ena_hour = 0;
-    if (scrnsvr_dis_hour > 23) scrnsvr_dis_hour = 0;
-    if (scrnsvr_clk_clr >= COLOR_BSIZE) scrnsvr_clk_clr = 0;
+    // Ucitaj jedinstveni ID sistema.
+    uint8_t sysid_buf[2];
+    EE_ReadBuffer(sysid_buf, EE_SYSID, 2);
+    sysid = ((sysid_buf[0] << 8) | sysid_buf[1]);
 }
 /**
   * @brief
@@ -860,72 +804,75 @@ static void MX_CRC_DeInit(void) {
     HAL_CRC_DeInit(&hcrc);
 }
 /**
-  * @brief koristi eksponencijalno klizno srednje Exponential Moving Average – EMA
-  *        za filtriranje konverzije i brzu konverziju inicijalne vrijednosti
-  * @param
-  * @retval
+  * @brief  Ocitava temperaturu sa NTC senzora i prosljeduje je termostat modulu.
+  * @note   Finalna, refaktorisana verzija. Sva originalna logika za filtriranje je
+  * sacuvana, dok je logika za odlucivanje (histereza) premještena u termostat modul.
+  * @param  None
+  * @retval None
   */
 static void ADC3_Read(void) {
+    // Dobijamo handle za termostat na pocetku.
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
+
+    // Ako ovaj uredaj nije master, ne treba ni da mjeri temperaturu.
+    if (!Thermostat_IsMaster(pThst)) return;
+
+    // Lokalne staticke varijable za filtriranje ocitanja (Vaša originalna logika).
     static uint32_t adctmr = 0U;
     static uint32_t sample_cnt = 0U;
     static uint16_t sample_value[10] = {0};
-    static bool first_run = true; // Indikator za inicijalizaciju
+    static bool first_run = true;
     static float filtered_temp = 0.0f;
-    float new_temp;
-    int16_t ntc_temp;
-    uint32_t tmp, t;
-    if(!thst.master) return; // ne gubi vrijeme ako ne treba mjerit temperaturu
-    if (first_run) {
-        // Prvo punjenje sample_value[] sa 10 pravih ocitavanja
-        for (uint8_t i = 0; i < 10; i++) {
-            HAL_ADC_Start(&hadc3);
-            HAL_ADC_PollForConversion(&hadc3, 10);
-            sample_value[i] = HAL_ADC_GetValue(&hadc3);
-        }
-
-        // Racunanje prosecne vrijednosti prije nego što pozovemo ROOM_GetTemperature
-        tmp = 0;
-        for (t = 0; t < 10; t++) tmp += sample_value[t];
-        tmp /= 10; // Srednja vrijednost 10 uzoraka
-
-        // Koristi tu vrijednost za izracunavanje pocetne temperature
-        filtered_temp = ROOM_GetTemperature(tmp);
-        first_run = false;  // Postavi flag da ovo ne radi više puta
-    }
-
-
+    
+    // Provjera da li je vrijeme za novo ocitavanje.
     if ((HAL_GetTick() - adctmr) >= ADC_READOUT_PERIOD) {
         adctmr = HAL_GetTick();
+        
+        // Inicijalizacija filtera pri prvom pokretanju (Vaša originalna logika).
+        if (first_run) {
+            first_run = false;
+            uint32_t tmp_init = 0;
+            for (uint8_t i = 0; i < 10; i++) {
+                HAL_ADC_Start(&hadc3);
+                HAL_ADC_PollForConversion(&hadc3, 10);
+                sample_value[i] = HAL_ADC_GetValue(&hadc3);
+                tmp_init += sample_value[i];
+            }
+            tmp_init /= 10;
+            filtered_temp = ROOM_GetTemperature(tmp_init);
+        }
+
+        // Uzimanje novog uzorka sa ADC-a i ažuriranje bafera za prosjek.
         HAL_ADC_Start(&hadc3);
         HAL_ADC_PollForConversion(&hadc3, 10);
-        uint16_t new_sample = HAL_ADC_GetValue(&hadc3);
-        sample_value[sample_cnt] = new_sample;
-
+        sample_value[sample_cnt] = HAL_ADC_GetValue(&hadc3);
         if (++sample_cnt > 9) sample_cnt = 0;
 
-        tmp = 0;
-        for (t = 0; t < 10; t++) tmp += sample_value[t];
-        tmp /= 10; // Srednja vrijednost 10 uzoraka
+        // Racunanje prosjeka zadnjih 10 uzoraka.
+        uint32_t tmp_avg = 0;
+        for (uint8_t t = 0; t < 10; t++) tmp_avg += sample_value[t];
+        tmp_avg /= 10;
 
-        // Sigurnosna provjera da li je NTC otpornik diskonektovan
-        if ((tmp < 100) || (tmp > 4000)) {
-            if (sample_cnt == 0) NtcDisconnected();
-            thst.mv_temp = 0;
+        // Provjera da li je NTC senzor (dis)konektovan.
+        if ((tmp_avg < 100) || (tmp_avg > 4000)) {
+            // NTC je diskonektovan. Obavijesti termostat modul o novom stanju.
+            Thermostat_SetNtcStatus(pThst, false, true);
+            // Javi termostatu da je temperatura 0. On ce interno obraditi tu informaciju.
+            Thermostat_SetMeasuredTemp(pThst, 0);
         } else {
-            if (sample_cnt == 0) NtcConnected();
-
-            // Eksponencijalno klizno srednje za stabilizaciju ocitanja
-            new_temp = ROOM_GetTemperature(tmp);
-            filtered_temp = (filtered_temp * 0.9f) + (new_temp * 0.1f); // 10% nove vrijednosti utice na rezultat
-
-            ntc_temp = filtered_temp * 10;
-
-            // Histereza: promjena se dešava samo ako razlika prede prag
-            if (abs((thst.mv_temp / 10) - (ntc_temp / 10)) > 0.2f) {
-                thst.mv_temp = ntc_temp;
-                MVUpdateSet();
-                thst.hasInfoChanged = true; // šalji promjenu temperature
-            }
+            // NTC je konektovan. Obavijesti termostat modul.
+            Thermostat_SetNtcStatus(pThst, true, false);
+            
+            // Primjena eksponencijalnog filtera za "peglanje" vrijednosti (Vaša originalna logika).
+            float new_temp = ROOM_GetTemperature(tmp_avg);
+            filtered_temp = (filtered_temp * 0.9f) + (new_temp * 0.1f);
+            
+            // Konverzija u format koji termostat koristi (int16_t, vrijednost x10).
+            int16_t ntc_temp = filtered_temp * 10;
+            
+            // JEDINI POSAO: Pozovi setter i proslijedi mu novu, filtriranu temperaturu.
+            // Termostat modul ce sam odluciti da li je promjena znacajna.
+            Thermostat_SetMeasuredTemp(pThst, ntc_temp);
         }
     }
 }
@@ -1186,7 +1133,7 @@ void PCA9685_Init(void) { //registrovana 2 PCA965 0x90 I2CPWM0_WRADD  i 0x92  I2
 
 void PCA9685_Reset(void) {
     uint8_t cmd = PCA9685_SW_RESET_COMMAND;
-    
+
     if(HAL_I2C_Master_Transmit(&hi2c4, PCA9685_GENERAL_CALL_ACK, &cmd, 1, I2CPWM_TOUT) != HAL_OK) {
         pwminit = false;
     }
@@ -1243,7 +1190,7 @@ void PCA9685_SetOutputFrequency(uint16_t frequency) {
 //	}
 }
 
-void PCA9685_OutputUpdate(void){
+void PCA9685_OutputUpdate(void) {
     uint16_t pwm_out;
     uint8_t i,j,buf[70];
     if(!pwminit) return;
@@ -1286,26 +1233,69 @@ void PCA9685_OutputUpdate(void){
 //	}
 }
 
-void PCA9685_SetOutput(const uint8_t pin, const uint8_t value){
+void PCA9685_SetOutput(const uint8_t pin, const uint8_t value) {
     if(!pwminit) return;
     pwm[pin - 1] = value;
     PCA9685_OutputUpdate();
 }
 
-
-
 void SetDefault(void) // Not all settings from the settings menu are set to default
 {
-    Thermostat_SetDefault();
-    SaveThermostatController(&thst, EE_THST1);
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
+    
+    Thermostat_SetDefault(pThst);
+    THSTAT_Save(pThst);
 
-    Lights_Modbus_SetDefault();
-    Lights_Modbus_Save();
+    LIGHTS_SetDefault();
+    LIGHTS_Save();
 
     Curtains_SetDefault();
     Curtains_Save();
 
     Defroster_SetDefault();
     Defroster_Save();
+}
+
+void SetPin(uint8_t pin, uint8_t pinVal)
+{
+    if(pin > 0 && pin < 7) { // Dodata provjera da li je pin validan
+        switch(pin)
+        {
+        case 1:
+            if(pinVal) Light1On();
+            else Light1Off();
+            break;
+
+        case 2:
+        {
+            if(pinVal) Light2On();
+            else Light2Off();
+            break;
+        }
+
+        case 3:
+            if(pinVal) Light3On();
+            else Light3Off();
+            break;
+
+        case 4:
+            if(pinVal) Light4On();
+            else Light4Off();
+            break;
+
+        case 5:
+            if(pinVal) Light5On();
+            else Light5Off();
+            break;
+
+        case 6:
+            if(pinVal) Light6On();
+            else Light6Off();
+            break;
+
+        default:
+            break;
+        }
+    }
 }
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/

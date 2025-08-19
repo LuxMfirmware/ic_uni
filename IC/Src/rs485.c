@@ -11,21 +11,20 @@
 #if (__RS485_H__ != FW_BUILD)
 #error "rs485 header version mismatch"
 #endif
-/* Includes ------------------------------------------------------------------*/
-#include "png.h"
-#include "main.h"
-#include "rs485.h"
-#include "logger.h"
-#include "display.h"
+
+/*============================================================================*/
+/* UKLJUCENI FAJLOVI (INCLUDES)                                               */
+/*============================================================================*/
+#include "main.h" // Uvijek prvi
 #include "thermostat.h"
 #include "ventilator.h"
+#include "defroster.h"
 #include "curtain.h"
 #include "lights.h"
-#include "stm32746g.h"
-#include "stm32746g_ts.h"
-#include "stm32746g_qspi.h"
-#include "stm32746g_sdram.h"
-#include "stm32746g_eeprom.h"
+#include "display.h"
+#include "stm32746g_eeprom.h" // Mapa ide nakon svih definicija
+#include "rs485.h"
+
 /* Imported Types  -----------------------------------------------------------*/
 /* Imported Variables --------------------------------------------------------*/
 /* Imported Functions    -----------------------------------------------------*/
@@ -80,65 +79,63 @@ static inline void delay_us(uint32_t us) {
     }
 }
 /**
-* @brief :  Sluša sve promjene binarnog tipa, provjerava sopstvene registrovane
-*           i mijenja prema novom stanju, ove promjene su promjene statusa i
-*           ne pokrecu update aktuatora t.j. ne reaguju kao direktna touch komanda
-*           user interfejsa nego su flagovi za grafiku i podešavanje stanja za sledecu
-*           korisnicku komandu
-* @param :
-* @retval:  TF_STAY / ne odgovaraj ne ovu poruku, ovo je iskljucivo za aktuatore
-*/
+ * @brief  Slušaoci (listener) za dolazne BINARY_SET komande sa RS485 bus-a.
+ * @note   Kada primi poruku o promjeni stanja binarnog svjetla, ova funkcija
+ * izvlaci adresu i novo stanje, te poziva javnu API funkciju
+ * `LIGHTS_UpdateExternalState` da obavijesti `lights` modul.
+ */
 TF_Result BINARY_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    if(msg->data[BIN_ACK_POZICIJA] == ACK)
+    // Provjera da li je odgovor validan (sadrži ACK)
+    if (msg->data[BIN_ACK_POZICIJA] == ACK)
     {
-        uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
+        // =======================================================================
+        // === POCETAK REFAKTORISANJA ===
         
-        if(adr)
-        {
-            for(int i = 0; i < Lights_Modbus_getCount(); i++) // provjeri sve strukture za svjetla
-            {
-                if(adr == Light_Modbus_GetRelay(lights_modbus + i)) // uradi sve provjere na nule i adrese
-                {
-                    Light_Modbus_Update_External(lights_modbus + i, (msg->data[2] == 1) ? 1 : 0); // podesi novo stanje bez akcije
-                }
-                /*else if(adr == lights_modbus[i].controllerID_on)
-                {
-                    if(msg->data[2] == 1) Light_Modbus_On_External(lights_modbus + i);
-                    else Light_Modbus_Off_External(lights_modbus + i);
-                }*/
-            }
-        }
+        // KORAK 1: Izvlacimo adresu i novo stanje iz primljene poruke.
+        uint16_t adr = (uint16_t)(msg->data[0] << 8) | msg->data[1];
+        uint8_t state = (msg->data[2] == BINARY_ON) ? 1 : 0;
+
+        // KORAK 2: Brišemo kompletnu `for` petlju.
+        // Umjesto da `rs485` modul pretražuje svjetla, on samo poziva
+        // jednu javnu funkciju i prosljeduje joj adresu i stanje.
+        LIGHTS_UpdateExternalState(adr, state);
+        
+        // === KRAJ REFAKTORISANJA ===
+        // =======================================================================
     }
-    
-    return TF_STAY;
+    return TF_STAY; // Ne odgovaramo na ovu poruku, samo je slušamo.
 }
 /**
-* @brief :  Sluša sve promjene dimmer tipa. u trenutnoj grafici sa sliderom nema
-*           pozicije slidera ali su komande dimera za 0/100% on/off tipa na ovom
-*           kanalu tako da pratimo i ovu komunikaciju
-* @param :
-* @retval:  TF_STAY / ne odgovaraj ne ovu poruku, ovo je iskljucivo za aktuatore
-*/
+ * @brief  Slušaoci (listener) za dolazne DIMMER_SET komande sa RS485 bus-a.
+ * @note   Kada primi poruku o promjeni svjetline dimera, ova funkcija
+ * izvlaci adresu i novu vrijednost, te poziva javnu API funkciju
+ * `LIGHTS_UpdateExternalBrightness`.
+ */
 TF_Result DIMMER_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    if(msg->data[DIM_ACK_POZICIJA] == ACK)
+    // Provjera da li je odgovor validan (sadrži ACK)
+    if (msg->data[DIM_ACK_POZICIJA] == ACK)
     {
-        uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
+        // =======================================================================
+        // === POCETAK REFAKTORISANJA ===
+        
+        // KORAK 1: Izvlacimo adresu i novu vrijednost svjetline iz poruke.
+        uint16_t adr = (uint16_t)(msg->data[0] << 8) | msg->data[1];
+        uint8_t brightness = msg->data[2];
 
-        if(adr && (msg->data[2] >= 0) && (msg->data[2] <= 100))
+        // KORAK 2: Validacija vrijednosti (0-100)
+        if (brightness <= 100)
         {
-            for(int i = 0; i < Lights_Modbus_getCount(); i++) // provjeri sve strukture za svjetla
-            {
-                if(adr == Light_Modbus_GetRelay(lights_modbus + i)) // uradi sve provjere na nule i adrese
-                {
-                    Light_Modbus_Brightness_Update_External(&lights_modbus[i], msg->data[2]); // podesi novu vrijednost dimera
-                }
-            }
+            // KORAK 3: Brišemo `for` petlju i pozivamo jednu javnu funkciju.
+            // `rs485` modul više ne brine o tome koje je svjetlo na kojoj adresi.
+            LIGHTS_UpdateExternalBrightness(adr, brightness);
         }
+        
+        // === KRAJ REFAKTORISANJA ===
+        // =======================================================================
     }
-    
-    return TF_STAY;
+    return TF_STAY; // Ne odgovaramo na ovu poruku.
 }
 /**
 * @brief :  Promjene i update žaluzina je malo vjerovatno da ce donijet neku bitnu korist
@@ -154,9 +151,9 @@ TF_Result JALOUSIE_SET_Listener(TinyFrame *tf, TF_Msg *msg)
     // provjeri sve strukture za žaluzina
     for(int i = 0; i < Curtains_getCount(); i++)
     {
-        if (adr && (curtains[i].relayUp != 0) && (curtains[i].relayDown != 0))
+        if (adr && (curtains[i].config.relayUp != 0) && (curtains[i].config.relayDown != 0))
         {
-            if (((adr == curtains[i].relayUp) && (dir == 1)) || ((adr == curtains[i].relayDown) && (dir == 2)))
+            if (((adr == curtains[i].config.relayUp) && (dir == 1)) || ((adr == curtains[i].config.relayDown) && (dir == 2)))
             {
                 Curtain_Update_External(&curtains[i], dir);
             }
@@ -205,25 +202,32 @@ TF_Result RGB_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
 */
 TF_Result THERMOSTAT_GET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
+    // Dobijamo handle za termostat.
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
     uint8_t resp[15] = {0};
 
-    if(thst.master && thst.group == msg->data[0])
+    // Koristimo API funkcije za provjeru uslova.
+    if(Thermostat_IsMaster(pThst) && Thermostat_GetGroup(pThst) == msg->data[0])
     {
-        resp[0] = thst.group;
-        resp[1] = thst.master;
-        resp[2] = thst.th_ctrl;
-        resp[3] = thst.th_state;
-        resp[4] = (thst.mv_temp >> 8) & 0xFF;
-        resp[5] = thst.mv_temp & 0xFF;
-        resp[6] = thst.sp_temp;
-        resp[7] = thst.sp_min;
-        resp[8] = thst.sp_max;
-        resp[9] = thst.sp_diff;
-        resp[10] = thst.fan_speed;
-        resp[11] = thst.fan_loband;
-        resp[12] = thst.fan_hiband;
-        resp[13] = thst.fan_diff;
-        resp[14] = thst.fan_ctrl;
+        // === KOMPLETNO POPUNJAVANJE ODGOVORA KORIŠTENJEM GETTERA ===
+        // Svaki direktan pristup je zamijenjen pozivom odgovarajuce API funkcije.
+        resp[0] = Thermostat_GetGroup(pThst);
+        resp[1] = Thermostat_IsMaster(pThst);
+        resp[2] = Thermostat_GetControlMode(pThst);
+        resp[3] = Thermostat_GetState(pThst);
+        resp[4] = (Thermostat_GetMeasuredTemp(pThst) >> 8) & 0xFF;
+        resp[5] = Thermostat_GetMeasuredTemp(pThst) & 0xFF;
+        resp[6] = Thermostat_GetSetpoint(pThst);
+        resp[7] = Thermostat_Get_SP_Min(pThst);
+        resp[8] = Thermostat_Get_SP_Max(pThst);
+        resp[9] = Thermostat_GetSetpointDifference(pThst);
+        resp[10] = Thermostat_GetFanSpeed(pThst);
+        resp[11] = Thermostat_GetFanLowBand(pThst);
+        resp[12] = Thermostat_GetFanHighBand(pThst);
+        resp[13] = Thermostat_GetFanDifference(pThst);
+        resp[14] = Thermostat_GetFanControlMode(pThst);
+        
+        // Ostatak logike ostaje isti.
         msg->len = 15;
         msg->data = resp;
         TF_Respond(tf, msg);
@@ -241,23 +245,23 @@ TF_Result THERMOSTAT_GET_Listener(TinyFrame *tf, TF_Msg *msg)
 */
 TF_Result THERMOSTAT_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
+    // Dobijamo handle za termostat
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
     uint8_t resp[3] = {0};
 
-    // provjeri i nule i ulogu i adresu
-    if(thst.master && thst.group && thst.group == msg->data[0])
+    // Koristimo API funkcije umjesto direktnog pristupa
+    if(Thermostat_IsMaster(pThst) && (Thermostat_GetGroup(pThst) != 0) && (Thermostat_GetGroup(pThst) == msg->data[0]))
     {
-        thst.sp_temp = msg->data[1];
+        Thermostat_SP_Temp_Set(pThst, msg->data[1]);
+        
         resp[0] = msg->data[0];
         resp[1] = msg->data[1];
         resp[2] = ACK;
         msg->data = resp;
-        msg->len = 3; // vrati tri  bajta
+        msg->len = 3;
         TF_Respond(tf, msg);
 
-        // podesi slanje info paketa sa kašnjenjem nakon ove poruke
         th_info_delay = HAL_GetTick() + TH_INFO_DELAY;
-
-        // digni flag ako treba za grafiku
     }
     return TF_STAY;
 }
@@ -272,63 +276,61 @@ TF_Result THERMOSTAT_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 */
 TF_Result THERMOSTAT_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
 {
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
     bool all_zero = true;
     uint8_t resp[16] = {0};
-    // provjeri je li slave uredaj poslao praznu strukturu
-    // što je zahtjev za sinhronizaciju
-    for (int i = 1; i <= msg->len; i++) {
+
+    // Provjera da li je poruka zahtjev za sinhronizaciju (svi bajtovi nula osim prvog)
+    for (int i = 1; i < msg->len; i++) {
         if (msg->data[i] != 0) {
             all_zero = false;
+            break;
         }
     }
-    // na koju se grupu odnosi poruka
-    if(thst.group == msg->data[0])
-    {
-        // svi cemo u grupi primit poklone ako nije zahtjev od siromaha
-        if(!all_zero) {
-            thst.th_ctrl = msg->data[2];    // nova kontrola off/heating/cooling
-            thst.th_state = msg->data[3];   // novo stanje aktivan / neaktivan
-            thst.sp_temp = msg->data[6];    // novi Set Point Temperature
 
-            // samo slave termostat ce prihvatit Measured Value Temperature koja je potpisana (ide i u minus)
-            if(!thst.master) {
-                thst.mv_temp = (int16_t) (msg->data[4] << 8) | msg->data[5];
-                MVUpdateSet(); // obavijesti grafiku
+    if(Thermostat_GetGroup(pThst) == msg->data[0])
+    {
+        if(!all_zero) {
+            Thermostat_SetControlMode(pThst, msg->data[2]);
+            
+            // Slave termostat prihvata izmjerenu temperaturu od mastera
+            if(!Thermostat_IsMaster(pThst)) {
+                int16_t new_mv_temp = (int16_t)(msg->data[4] << 8) | msg->data[5];
+                Thermostat_SetMeasuredTemp(pThst, new_mv_temp);
             }
         }
 
-        // ako je ovo je master termostat onda on ima još dodatnog posla
-        if(thst.master) {
-            // ovo je sada trenutno master termostat u grupi
-            // provjeri da li je drugi master dodjeljen grupi
-            if(msg->data[1]) {
-                thst.th_ctrl = 0; // ako jeste promjeni svoju ulogu trajno i
-                th_save = true; // setuj flag za upis u eeprom van interrupta
+        // Ako je ovaj uredaj master, on odgovara na info poruke
+        if(Thermostat_IsMaster(pThst)) {
+            // Provjera da li se drugi master pojavio na mreži
+            if(msg->data[1]) { 
+                Thermostat_SetMaster(pThst, false);
+                th_save = true; // Flag za snimanje promjene uloge
             }
-            // ako je slave imao zahtjev za sinhronizaciju mora se odavde ogovoriti radi njegovog response
-            // listenera koji ocekuje isti id poruke u odgovoru kao što je onaj u poruci koju je poslao
-            resp[0] = thst.group;
-            resp[1] = thst.master;
-            resp[2] = thst.th_ctrl;
-            resp[3] = thst.th_state;
-            resp[4] = (thst.mv_temp >> 8) & 0xFF;
-            resp[5] = thst.mv_temp & 0xFF;
-            resp[6] = thst.sp_temp;
-            resp[7] = thst.sp_min;
-            resp[8] = thst.sp_max;
-            resp[9] = thst.sp_diff;
-            resp[10] = thst.fan_speed;
-            resp[11] = thst.fan_loband;
-            resp[12] = thst.fan_hiband;
-            resp[13] = thst.fan_diff;
-            resp[14] = thst.fan_ctrl;
-            resp[15] = ACK; // ovdje sam dodao i potvrdu
-            msg->data = resp; // prikaci paket
-            msg->len = 16; // vrati šesnaest bajta
+
+            // --- KOMPLETNO POPUNJAVANJE ODGOVORA KORIŠTENJEM GETTERA ---
+            resp[0] = Thermostat_GetGroup(pThst);
+            resp[1] = Thermostat_IsMaster(pThst);
+            resp[2] = Thermostat_GetControlMode(pThst);
+            resp[3] = Thermostat_GetState(pThst); // Koristi novi getter za stanje
+            resp[4] = (Thermostat_GetMeasuredTemp(pThst) >> 8) & 0xFF;
+            resp[5] = Thermostat_GetMeasuredTemp(pThst) & 0xFF;
+            resp[6] = Thermostat_GetSetpoint(pThst);
+            resp[7] = Thermostat_Get_SP_Min(pThst);
+            resp[8] = Thermostat_Get_SP_Max(pThst);
+            resp[9] = Thermostat_GetSetpointDifference(pThst);
+            resp[10] = Thermostat_GetFanSpeed(pThst);
+            resp[11] = Thermostat_GetFanLowBand(pThst);
+            resp[12] = Thermostat_GetFanHighBand(pThst);
+            resp[13] = Thermostat_GetFanDifference(pThst);
+            resp[14] = Thermostat_GetFanControlMode(pThst);
+            resp[15] = ACK;
+            
+            msg->data = resp;
+            msg->len = 16;
             TF_Respond(tf, msg);
         }
-        
-        if(screen == SCREEN_THERMOSTAT) menu_thst = 0;
+        if(screen == SCREEN_THERMOSTAT) DISP_SetThermostatMenuState(0);
     }
     return TF_STAY;
 }
@@ -344,37 +346,43 @@ TF_Result THERMOSTAT_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
 */
 TF_Result THERMOSTAT_SETUP_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    uint8_t resp[2] = {0,NAK};
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
+    uint8_t resp[2] = {0, NAK};
 
-    // samo master ce primiti ovaj paket i odgovoriti na njega
-    if(thst.master && thst.group == msg->data[0])
+    if(Thermostat_IsMaster(pThst) && Thermostat_GetGroup(pThst) == msg->data[0])
     {
-        // da li treba provjeravati podatke
-        thst.group = msg->data[0];
-        thst.master = msg->data[1];
-        thst.th_ctrl = msg->data[2];
-        thst.th_state = msg->data[3];
-        thst.mv_temp = msg->data[4];
-        thst.sp_temp = msg->data[5];
-        thst.sp_min = msg->data[6];
-        thst.sp_max = msg->data[7];
-        thst.sp_diff = msg->data[8];
-        thst.fan_speed = msg->data[9];
-        thst.fan_loband = msg->data[10];
-        thst.fan_hiband = msg->data[11];
-        thst.fan_diff = msg->data[12];
-        thst.fan_ctrl = msg->data[13];
-        // ako je sve provjereno da je u rangu potvrdi
+        // --- KOMPLETNO POSTAVLJANJE VRIJEDNOSTI KORIŠTENJEM SETTERA ---
+        Thermostat_SetGroup(pThst, msg->data[0]);
+        Thermostat_SetMaster(pThst, msg->data[1]);
+        Thermostat_SetControlMode(pThst, msg->data[2]);
+        
+        // Objašnjenje za komentare:
+        // th_state (stanje releja) i mv_temp (izmjerena temp.) se ne postavljaju preko ove komande.
+        // - th_state je REZULTAT rada termostata, a ne postavka.
+        // - mv_temp dolazi sa fizickog senzora preko ADC-a.
+        // Zato preskacemo msg->data[3] i msg->data[4].
+        
+        Thermostat_SP_Temp_Set(pThst, msg->data[5]);
+        Thermostat_Set_SP_Min(pThst, msg->data[6]);
+        Thermostat_Set_SP_Max(pThst, msg->data[7]);
+        Thermostat_SetSetpointDifference(pThst, msg->data[8]);
+        
+        // fan_speed je takoder rezultat rada, ne postavka, preskacemo msg->data[9].
+
+        Thermostat_SetFanLowBand(pThst, msg->data[10]);
+        Thermostat_SetFanHighBand(pThst, msg->data[11]);
+        Thermostat_SetFanDifference(pThst, msg->data[12]);
+        Thermostat_SetFanControlMode(pThst, msg->data[13]);
+        
+        THSTAT_Save(pThst); // Sacuvaj sve nove promjene odjednom.
+        
         resp[0] = msg->data[0];
         resp[1] = ACK;
         msg->data = resp;
-        msg->len = 2; // vrati dva bajta
+        msg->len = 2;
         TF_Respond(tf, msg);
 
-        // podesi slanje info paketa sa kašnjenjem nakon ove poruke
         th_info_delay = HAL_GetTick() + TH_INFO_DELAY;
-
-        // digni flag ako treba za grafiku
     }
     return TF_STAY;
 }
@@ -498,7 +506,7 @@ TF_Result GET_RESPONSE_Listener(TinyFrame *tf, TF_Msg *msg) {
 * @param :
 * @retval:  ne vraca ništa samo izade ako je dug red treba proširit memoriju
 */
-bool DodajKomandu(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8_t length)
+bool AddCommand(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8_t length)
 {
     if (queue->count >= COMMAND_QUEUE_SIZE) {
         // Ako je queue pun, odluciti da:
@@ -522,7 +530,7 @@ bool DodajKomandu(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8
 * @param :
 * @retval:  ne vraca ništa samo izadje ako je prazan red
 */
-void SaljiKomandu(CommandQueue *queue)
+void SendCommand(CommandQueue *queue)
 {
     if (queue->count == 0) return; // Ako nema komandi, izlazimo
 
@@ -632,6 +640,8 @@ void RS485_Init(void)
 */
 void RS485_Service(void)
 {
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
+    
     uint32_t now = HAL_GetTick();
 
     if (IsFwUpdateActiv())
@@ -645,11 +655,11 @@ void RS485_Service(void)
         return;
     }
     // šalji komande na redu
-    SaljiKomandu(&binaryQueue);
-    SaljiKomandu(&dimmerQueue);
-    SaljiKomandu(&rgbwQueue);
-    SaljiKomandu(&curtainQueue);
-    SaljiKomandu(&thermoQueue);
+    SendCommand(&binaryQueue);
+    SendCommand(&dimmerQueue);
+    SendCommand(&rgbwQueue);
+    SendCommand(&curtainQueue);
+    SendCommand(&thermoQueue);
     // spasinovi qr kod ako je na cekanju
     if(qr_save)
     {
@@ -665,7 +675,7 @@ void RS485_Service(void)
     if(th_info_delay && (now - th_info_delay) >=0 )
     {
         th_info_delay = 0;
-        thst.hasInfoChanged = true;
+        Thermostat_SetInfoChanged(pThst, true);
     }
 
 }

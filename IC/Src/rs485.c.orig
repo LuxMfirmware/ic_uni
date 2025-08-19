@@ -37,7 +37,7 @@ static TinyFrame tfapp;
 #define JAL_ACK_POZICIJA		3   // pozicija ACK bajta u odgovoru na komande žaluzinama
 #define THE_ACK_POZICIJA		18  // pozicija ACK bajta u odgovoru na komande termostatu
 #define RGB_ACK_POZICIJA		5   // pozicija ACK bajta u odgovoru na komande rgbw
-#define MAX_RETRIES 5           // Maksimalan broj pokušaja
+#define MAX_RETRIES 3           // Maksimalan broj pokušaja
 #define TIMEOUT_MS 10           // Timeout u ms za cekanje odgovora
 #define TH_INFO_DELAY 100       // Kašnjenje termostat info poruke maste->slave nakon što master dobije set paket
 #define RESPONSE_TIME   200  // ms
@@ -90,15 +90,27 @@ static inline void delay_us(uint32_t us) {
 */
 TF_Result BINARY_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
-
-    for(int i = 0; i < LIGHTS_MODBUS_SIZE; i++) // provjeri sve strukture za svjetla
+    if(msg->data[BIN_ACK_POZICIJA] == ACK)
     {
-        if(adr && lights_modbus[i].index && (adr == lights_modbus[i].index)) // uradi sve provjere na nule i adrese
+        uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
+        
+        if(adr)
         {
-            Light_Modbus_Update_External(&lights_modbus[i], msg->data[2]); // podesi novo stanje bez akcije
+            for(int i = 0; i < LIGHTS_getCount(); i++) // provjeri sve strukture za svjetla
+            {
+                if(adr == LIGHT_GetRelay(lights_modbus + i)) // uradi sve provjere na nule i adrese
+                {
+                    LIGHT_Update_External(lights_modbus + i, (msg->data[2] == 1) ? 1 : 0); // podesi novo stanje bez akcije
+                }
+                /*else if(adr == lights_modbus[i].controllerID_on)
+                {
+                    if(msg->data[2] == 1) LIGHT_On_External(lights_modbus + i);
+                    else LIGHT_Off_External(lights_modbus + i);
+                }*/
+            }
         }
     }
+    
     return TF_STAY;
 }
 /**
@@ -110,15 +122,22 @@ TF_Result BINARY_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 */
 TF_Result DIMMER_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-    uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
-
-    for(int i = 0; i < LIGHTS_MODBUS_SIZE; i++) // provjeri sve strukture za svjetla
+    if(msg->data[DIM_ACK_POZICIJA] == ACK)
     {
-        if(adr && lights_modbus[i].index && (adr == lights_modbus[i].index)) // uradi sve provjere na nule i adrese
+        uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1]; // sastavi adresu upita
+
+        if(adr && (msg->data[2] >= 0) && (msg->data[2] <= 100))
         {
-            Light_Modbus_Brightness_Update_External(&lights_modbus[i], msg->data[2]); // podesi novu vrijednost dimera
+            for(int i = 0; i < LIGHTS_getCount(); i++) // provjeri sve strukture za svjetla
+            {
+                if(adr == LIGHT_GetRelay(lights_modbus + i)) // uradi sve provjere na nule i adrese
+                {
+                    LIGHT_Brightness_Update_External(&lights_modbus[i], msg->data[2]); // podesi novu vrijednost dimera
+                }
+            }
         }
     }
+    
     return TF_STAY;
 }
 /**
@@ -130,15 +149,14 @@ TF_Result DIMMER_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 */
 TF_Result JALOUSIE_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-
     uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1];  // sastavi adresu iz upita
     uint8_t dir = msg->data[2]; // smejr šaluzine
     // provjeri sve strukture za žaluzina
-    for(int i = 0; i < CURTAINS_SIZE; i++)
+    for(int i = 0; i < Curtains_getCount(); i++)
     {
-        if (adr && (curtains[i].relayUp != 0) && (curtains[i].relayDown != 0)) 
+        if (adr && (curtains[i].relayUp != 0) && (curtains[i].relayDown != 0))
         {
-            if (((adr == curtains[i].relayUp) && (dir == 1)) || ((adr == curtains[i].relayDown) && (dir == 2))) 
+            if (((adr == curtains[i].relayUp) && (dir == 1)) || ((adr == curtains[i].relayDown) && (dir == 2)))
             {
                 Curtain_Update_External(&curtains[i], dir);
             }
@@ -309,6 +327,8 @@ TF_Result THERMOSTAT_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
             msg->len = 16; // vrati šesnaest bajta
             TF_Respond(tf, msg);
         }
+        
+        if(screen == SCREEN_THERMOSTAT) menu_thst = 0;
     }
     return TF_STAY;
 }
@@ -478,7 +498,7 @@ TF_Result GET_RESPONSE_Listener(TinyFrame *tf, TF_Msg *msg) {
 * @param :
 * @retval:  ne vraca ništa samo izade ako je dug red treba proširit memoriju
 */
-bool DodajKomandu(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8_t length)
+bool AddCommand(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8_t length)
 {
     if (queue->count >= COMMAND_QUEUE_SIZE) {
         // Ako je queue pun, odluciti da:
@@ -502,7 +522,7 @@ bool DodajKomandu(CommandQueue *queue, uint8_t commandType, uint8_t *data, uint8
 * @param :
 * @retval:  ne vraca ništa samo izadje ako je prazan red
 */
-void SaljiKomandu(CommandQueue *queue)
+void SendCommand(CommandQueue *queue)
 {
     if (queue->count == 0) return; // Ako nema komandi, izlazimo
 
@@ -625,11 +645,11 @@ void RS485_Service(void)
         return;
     }
     // šalji komande na redu
-    SaljiKomandu(&binaryQueue);
-    SaljiKomandu(&dimmerQueue);
-    SaljiKomandu(&rgbwQueue);
-    SaljiKomandu(&curtainQueue);
-    SaljiKomandu(&thermoQueue);
+    SendCommand(&binaryQueue);
+    SendCommand(&dimmerQueue);
+    SendCommand(&rgbwQueue);
+    SendCommand(&curtainQueue);
+    SendCommand(&thermoQueue);
     // spasinovi qr kod ako je na cekanju
     if(qr_save)
     {
