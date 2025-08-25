@@ -315,19 +315,6 @@ uint32_t dispfl;
 uint8_t screen, shouldDrawScreen;
 
 /**
- * @brief Bafer za ispis debug poruka na ekran.
- * @note Globalan je kako bi se funkcija DISP_UpdateLog mogla pozivati od bilo kuda.
- */
-char logbuf[128];
-
-/**
- * @brief Stanje menija termostata i fleg za ažuriranje dinamičke ikonice.
- * @note 'thermostatMenuState' se resetuje iz rs485.c, a 'dynamicIconUpdateFlag ' se postavlja iz ventilator.c
- * i defroster.c, pa moraju biti globalni.
- */
-uint8_t thermostatMenuState, dynamicIconUpdateFlag ;
-
-/**
  * @brief Indeks trenutno odabrane zavjese.
  * @note Mora biti globalan jer ga `curtain.c` koristi da zna kojom zavjesom
  * se manipuliše preko GUI-ja.
@@ -340,35 +327,35 @@ Display_EepromSettings_t g_display_settings;
 /*============================================================================*/
 /* STATIČKE VARIJABLE NA NIVOU MODULA                                         */
 /*============================================================================*/
-static uint8_t thermostatMenuState = 0;                    // Zamjena za globalni 'menu_thst'
-static bool dynamicIconUpdateFlag = false;                 // Zamjena za globalni 'ctrl1'
-static uint32_t rtctmr;                                    // Tajmer za periodično osvježavanje vremena.
-static uint32_t thermostatOnOffTouch_timer = 0;            // Tajmer za detekciju dugog pritiska na termostatu.
-static uint32_t scrnsvr_tmr;                               // Tajmer za praćenje neaktivnosti korisnika.
-static uint32_t light_settingsTimerStart = 0;              // Tajmer za detekciju dugog pritiska za ulazak u podešavanja svjetla.
-static uint32_t everyMinuteTimerStart = 0;                 // Tajmer koji se okida svake minute.
-static uint32_t onoff_tmr = 0;                             // Tajmer za logiku on/off dodira.
-static uint32_t value_step_tmr = 0;                        // Tajmer za postepenu promjenu vrijednosti (dimovanje).
-static uint32_t refresh_tmr = 0;                           // Tajmer za periodično osvježavanje ekrana termostata.
+static uint8_t thermostatMenuState = 0;                     // Zamjena za globalni 'menu_thst'
+static bool dynamicIconUpdateFlag = false;                  // Zamjena za globalni 'ctrl1'
+static uint32_t rtctmr;                                     // Tajmer za periodično osvježavanje vremena.
+static uint32_t thermostatOnOffTouch_timer = 0;             // Tajmer za detekciju dugog pritiska na termostatu.
+static uint32_t scrnsvr_tmr;                                // Tajmer za praćenje neaktivnosti korisnika.
+static uint32_t light_settingsTimerStart = 0;               // Tajmer za detekciju dugog pritiska za ulazak u podešavanja svjetla.
+static uint32_t everyMinuteTimerStart = 0;                  // Tajmer koji se okida svake minute.
+static uint32_t onoff_tmr = 0;                              // Tajmer za logiku on/off dodira.
+static uint32_t value_step_tmr = 0;                         // Tajmer za postepenu promjenu vrijednosti (dimovanje).
+static uint32_t refresh_tmr = 0;                            // Tajmer za periodično osvježavanje ekrana termostata.
 static uint32_t clean_tmr = 0;                              // Tajmer za ekran za čišćenje.
 static bool touch_in_menu_zone = false;                     // Fleg, true ako je dodir počeo u zoni menija.
-static uint8_t menu_clean = 0;                             // Stanje menija za čišćenje.
-static uint8_t menu_lc = 0;                                // Stanje menija za odabir kontrole.
-static uint8_t curtainSettingMenu = 0;                     // Trenutna stranica u meniju za podešavanje zavjesa.
-static uint8_t lightsModbusSettingsMenu = 0;               // Trenutna stranica u meniju za podešavanje svjetala.
-static uint8_t light_selectedIndex = LIGHTS_MODBUS_SIZE + 1; // Indeks odabranog svjetla.
-static uint8_t lights_allSelected_hasRGB = 0;              // Fleg, true ako među odabranim svjetlima ima RGB.
-static uint8_t settingsChanged = 0;                        // Fleg, true ako je došlo do promjene u podešavanjima.
-static uint8_t thsta = 0;                                  // Fleg za promjene u podešavanjima termostata.
-static uint8_t lcsta = 0;                                  // Fleg za promjene u podešavanjima svjetala.
-static uint8_t btnset = 0;                                 // Fleg za detekciju dugog pritiska za ulazak u meni.
-static uint8_t btninc, _btninc;                            // Flegovi za dugme "increase".
-static uint8_t btndec, _btndec;                            // Flegovi za dugme "decrease".
-static uint8_t old_min = 60;                               // Prethodna vrijednost minuta, za detekciju promjene.
-static uint8_t old_day = 0;                         // Prethodna vrijednost dana, za detekciju promjene.
+static uint8_t menu_clean = 0;                              // Stanje menija za čišćenje.
+static uint8_t menu_lc = 0;                                 // Stanje menija za odabir kontrole.
+static uint8_t curtainSettingMenu = 0;                      // Trenutna stranica u meniju za podešavanje zavjesa.
+static uint8_t lightsModbusSettingsMenu = 0;                // Trenutna stranica u meniju za podešavanje svjetala.
+static uint8_t light_selectedIndex = LIGHTS_MODBUS_SIZE + 1;// Indeks odabranog svjetla.
+static uint8_t lights_allSelected_hasRGB = 0;               // Fleg, true ako među odabranim svjetlima ima RGB.
+static uint8_t settingsChanged = 0;                         // Fleg, true ako je došlo do promjene u podešavanjima.
+static uint8_t thsta = 0;                                   // Fleg za promjene u podešavanjima termostata.
+static uint8_t lcsta = 0;                                   // Fleg za promjene u podešavanjima svjetala.
+static uint8_t btnset = 0;                                  // Fleg za detekciju dugog pritiska za ulazak u meni.
+static uint8_t btninc, _btninc;                             // Flegovi za dugme "increase".
+static uint8_t btndec, _btndec;                             // Flegovi za dugme "decrease".
+static uint8_t old_min = 60;                                // Prethodna vrijednost minuta, za detekciju promjene.
+static uint8_t old_day = 0;                                 // Prethodna vrijednost dana, za detekciju promjene.
 static uint8_t qr_codes[QR_CODE_COUNT][QR_CODE_LENGTH] = {0}; // Bafer za čuvanje stringova QR kodova.
-static uint8_t qr_code_draw_id = 0;                        // ID QR koda koji treba iscrtati.
-static uint8_t clrtmr = 0;                                 // Fleg za odbrojavanje na ekranu za ciscenje.
+static uint8_t qr_code_draw_id = 0;                         // ID QR koda koji treba iscrtati.
+static uint8_t clrtmr = 0;                                  // Fleg za odbrojavanje na ekranu za ciscenje.
 
 /*============================================================================*/
 /*============================================================================*/
@@ -928,6 +915,42 @@ void QR_Code_Set(const uint8_t qrCodeID, const uint8_t *data)
     }
 }
 
+/**
+ * @brief Postavlja stanje menija termostata.
+ * @note Ova funkcija se koristi za postavljanje internog fleg-a
+ * koji prati status ekrana menija termostata.
+ * @param state Novo stanje menija (npr. 0 za neaktivan, 1 za aktivan).
+ * @retval None
+ */
+void DISP_SetThermostatMenuState(uint8_t state)
+{
+    thermostatMenuState = state;
+}
+
+/**
+ * @brief Dobiva trenutno stanje menija termostata.
+ * @note Ova funkcija vraća vrijednost internog fleg-a koji
+ * prati status ekrana menija termostata.
+ * @param None
+ * @retval uint8_t Trenutno stanje menija.
+ */
+uint8_t DISP_GetThermostatMenuState(void)
+{
+    return thermostatMenuState;
+}
+
+/**
+ * @brief Signalizira da je potrebno ažurirati dinamičku ikonu.
+ * @note Ova funkcija postavlja interni fleg-a `dynamicIconUpdateFlag`
+ * na 'true'. Glavna servisna funkcija će pročitati ovaj fleg i
+ * ponovo iscrtati dinamičku ikonu (za defroster/ventilator).
+ * @param None
+ * @retval None
+ */
+void DISP_SignalDynamicIconUpdate(void)
+{
+    dynamicIconUpdateFlag = true;
+}
 
 /*============================================================================*/
 /* IMPLEMENTACIJA STATIČKIH (PRIVATNIH) FUNKCIJA                              */
@@ -1158,6 +1181,9 @@ static void Service_MainScreen(void)
  */
 static void Service_SelectScreen1(void)
 {
+    Defroster_Handle* defHandle = Defroster_GetInstance();
+    Ventilator_Handle* ventHandle = Ventilator_GetInstance();
+
     // --- 1. DEFINICIJA SVIH KONSTANTI NA POČETKU FUNKCIJE ---
     // Ključne koordinate za poravnanje
     const uint16_t xSeparator = DRAWING_AREA_WIDTH;
@@ -1207,12 +1233,12 @@ static void Service_SelectScreen1(void)
     // NOVO: Logika za odabir dinamičke ikone i teksta na osnovu `selected_control_mode`
     switch(g_display_settings.selected_control_mode) {
     case MODE_DEFROSTER:
-        is_active = Defroster_isActive();
+        is_active = Defroster_isActive(defHandle);
         dynamicIcon = is_active ? iconDefrosterOn : iconDefroster;
         dynamicTextID = TXT_DEFROSTER;
         break;
     case MODE_VENTILATOR:
-        is_active = VENTILATOR_IS_ACTIVE();
+        is_active = Ventilator_isActive(ventHandle);
         dynamicIcon = is_active ? iconVentilatorOn : iconVentilator;
         dynamicTextID = TXT_VENTILATOR;
         break;
@@ -1811,6 +1837,8 @@ static void Service_SettingsScreen_2(void)
 static void Service_SettingsScreen_3(void)
 {
     static uint8_t old_selection = 0;
+    Defroster_Handle* defHandle = Defroster_GetInstance();
+    Ventilator_Handle* ventHandle = Ventilator_GetInstance();
     uint8_t current_selection = DROPDOWN_GetSel(hSelectControl_4);
 
     // Provjera da li se odabir u dropdown meniju promijenio.
@@ -1822,52 +1850,50 @@ static void Service_SettingsScreen_3(void)
     }
 
     // Provjera promjena na widgetima DEFROSTER
-    if(defroster.config.cycleTime != SPINBOX_GetValue(defroster_settingWidgets.cycleTime)) {
-        Defroster_SetCycleTime(SPINBOX_GetValue(defroster_settingWidgets.cycleTime));
+    if(Defroster_getCycleTime(defHandle) != SPINBOX_GetValue(defroster_settingWidgets.cycleTime)) {
+        Defroster_setCycleTime(defHandle, SPINBOX_GetValue(defroster_settingWidgets.cycleTime));
         settingsChanged = 1;
-    } 
-    if(defroster.config.activeTime != SPINBOX_GetValue(defroster_settingWidgets.activeTime)) {
-        Defroster_SetActiveTime(SPINBOX_GetValue(defroster_settingWidgets.activeTime));
+    }
+    if(Defroster_getActiveTime(defHandle) != SPINBOX_GetValue(defroster_settingWidgets.activeTime)) {
+        Defroster_setActiveTime(defHandle, SPINBOX_GetValue(defroster_settingWidgets.activeTime));
         settingsChanged = 1;
-    } 
-    if(defroster.config.pin != SPINBOX_GetValue(defroster_settingWidgets.pin)) {
-        defroster.config.pin = SPINBOX_GetValue(defroster_settingWidgets.pin);
+    }
+    if(Defroster_getPin(defHandle) != SPINBOX_GetValue(defroster_settingWidgets.pin)) {
+        Defroster_setPin(defHandle, SPINBOX_GetValue(defroster_settingWidgets.pin));
         settingsChanged = 1;
     }
 
     // Provjera promjena na widgetima VENTILATOR
-    if(Ventilator_getRelay(&ventilator) != SPINBOX_GetValue(hVentilatorRelay))
-    {
-        Ventilator_setRelay(&ventilator, SPINBOX_GetValue(hVentilatorRelay));
+    if(Ventilator_getRelay(ventHandle) != SPINBOX_GetValue(hVentilatorRelay)) {
+        Ventilator_setRelay(ventHandle, SPINBOX_GetValue(hVentilatorRelay));
         settingsChanged = 1;
-    }  
-    if(Ventilator_getDelayOnTime(&ventilator) != SPINBOX_GetValue(hVentilatorDelayOn)) {
-        Ventilator_setDelayOnTime(&ventilator, SPINBOX_GetValue(hVentilatorDelayOn));
+    }
+    if(Ventilator_getDelayOnTime(ventHandle) != SPINBOX_GetValue(hVentilatorDelayOn)) {
+        Ventilator_setDelayOnTime(ventHandle, SPINBOX_GetValue(hVentilatorDelayOn));
         settingsChanged = 1;
-    } 
-    if(Ventilator_getDelayOffTime(&ventilator) != SPINBOX_GetValue(hVentilatorDelayOff))
-    {
-        Ventilator_setDelayOffTime(&ventilator, SPINBOX_GetValue(hVentilatorDelayOff));
+    }
+    if(Ventilator_getDelayOffTime(ventHandle) != SPINBOX_GetValue(hVentilatorDelayOff)) {
+        Ventilator_setDelayOffTime(ventHandle, SPINBOX_GetValue(hVentilatorDelayOff));
         settingsChanged = 1;
-    } 
-    if(Ventilator_getTriggerSource1(&ventilator) != SPINBOX_GetValue(hVentilatorTriggerSource1)) {
-        Ventilator_setTriggerSource1(&ventilator, SPINBOX_GetValue(hVentilatorTriggerSource1));
+    }
+    if(Ventilator_getTriggerSource1(ventHandle) != SPINBOX_GetValue(hVentilatorTriggerSource1)) {
+        Ventilator_setTriggerSource1(ventHandle, SPINBOX_GetValue(hVentilatorTriggerSource1));
         settingsChanged = 1;
-    } 
-    if(Ventilator_getTriggerSource2(&ventilator) != SPINBOX_GetValue(hVentilatorTriggerSource2)) {
-        Ventilator_setTriggerSource2(&ventilator, SPINBOX_GetValue(hVentilatorTriggerSource2));
+    }
+    if(Ventilator_getTriggerSource2(ventHandle) != SPINBOX_GetValue(hVentilatorTriggerSource2)) {
+        Ventilator_setTriggerSource2(ventHandle, SPINBOX_GetValue(hVentilatorTriggerSource2));
         settingsChanged = 1;
-    } 
-    if(Ventilator_getLocalPin(&ventilator) != SPINBOX_GetValue(hVentilatorLocalPin)) {
-        Ventilator_setLocalPin(&ventilator, SPINBOX_GetValue(hVentilatorLocalPin));
+    }
+    if(Ventilator_getLocalPin(ventHandle) != SPINBOX_GetValue(hVentilatorLocalPin)) {
+        Ventilator_setLocalPin(ventHandle, SPINBOX_GetValue(hVentilatorLocalPin));
         settingsChanged = 1;
     }
 
     if (BUTTON_IsPressed(hBUTTON_Ok)) {
         if(settingsChanged) {
             Display_Save();
-            Defroster_Save();
-            Ventilator_Save();
+            Defroster_Save(defHandle);
+            Ventilator_Save(ventHandle);
             settingsChanged = 0;
         }
         DSP_KillSet3Scrn();
@@ -1875,8 +1901,8 @@ static void Service_SettingsScreen_3(void)
     } else if (BUTTON_IsPressed(hBUTTON_Next)) {
         if(settingsChanged) {
             Display_Save();
-            Defroster_Save();
-            Ventilator_Save();
+            Defroster_Save(defHandle);
+            Ventilator_Save(ventHandle);
             settingsChanged = 0;
         }
         DSP_KillSet3Scrn();
@@ -1894,13 +1920,19 @@ static void Service_SettingsScreen_4(void)
 {
     // Ažuriranje postavki za zavjese unutar petlje.
     for(uint8_t idx = curtainSettingMenu * 4; idx < (((CURTAINS_SIZE - (curtainSettingMenu * 4)) >= 4) ? ((curtainSettingMenu * 4) + 4) : CURTAINS_SIZE); idx++) {
-        if((Curtain_GetRelayUp(curtains + idx) != SPINBOX_GetValue(hCurtainsRelay[idx * 2])) || (Curtain_GetRelayDown(curtains + idx) != SPINBOX_GetValue(hCurtainsRelay[(idx * 2) + 1]))) {
+        
+        // << ISPRAVKA: Dobijamo handle za roletnu po fizičkom indeksu. >>
+        Curtain_Handle* handle = Curtain_GetInstanceByIndex(idx);
+        if (!handle) continue; // Ako handle nije validan, preskoči
+
+        // << ISPRAVKA: Koristimo gettere za poređenje i settere za upis. >>
+        if((Curtain_getRelayUp(handle) != SPINBOX_GetValue(hCurtainsRelay[idx * 2])) || (Curtain_getRelayDown(handle) != SPINBOX_GetValue(hCurtainsRelay[(idx * 2) + 1]))) {
             settingsChanged = 1;
-            Curtain_SetRelayUp(curtains + idx, SPINBOX_GetValue(hCurtainsRelay[idx * 2]));
-            Curtain_SetRelayDown(curtains + idx, SPINBOX_GetValue(hCurtainsRelay[(idx * 2) + 1]));
+            Curtain_setRelayUp(handle, SPINBOX_GetValue(hCurtainsRelay[idx * 2]));
+            Curtain_setRelayDown(handle, SPINBOX_GetValue(hCurtainsRelay[(idx * 2) + 1]));
         }
     }
-
+    
     if (BUTTON_IsPressed(hBUTTON_Ok)) {
         if(settingsChanged) {
             Curtains_Save(); // Spremi sve postavke zavjesa u EEPROM.
@@ -2082,15 +2114,15 @@ static void Service_SettingsScreen_6(void)
         if (tfifa != SPINBOX_GetValue(hDEV_ID)) {
             tfifa = SPINBOX_GetValue(hDEV_ID);
             settingsChanged = 1;
-        } 
+        }
         if(Curtain_GetMoveTime() != SPINBOX_GetValue(hCurtainsMoveTime)) {
             Curtain_SetMoveTime(SPINBOX_GetValue(hCurtainsMoveTime));
             settingsChanged = 1;
-        } 
+        }
         if(g_display_settings.leave_scrnsvr_on_release != CHECKBOX_GetState(hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH)) {
             g_display_settings.leave_scrnsvr_on_release = CHECKBOX_GetState(hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH);
             settingsChanged = 1;
-        } 
+        }
         if(g_display_settings.light_night_timer_enabled != CHECKBOX_GetState(hCHKBX_LIGHT_NIGHT_TIMER)) {
             g_display_settings.light_night_timer_enabled = CHECKBOX_GetState(hCHKBX_LIGHT_NIGHT_TIMER);
             settingsChanged = 1;
@@ -2223,12 +2255,15 @@ static void Service_CurtainsScreen(void)
         GUI_SetColor(GUI_WHITE);
 
         // KLJUČNA PROMJENA: Ovdje se bira pravi font
+        // << ISPRAVKA: Logika je ažurirana da koristi novi, sigurni API >>
         if(!Curtain_areAllSelected()) {
-            GUI_SetFont(GUI_FONT_D48); // Koristi font za brojeve kada je odabrana jedna roletna
+            GUI_SetFont(GUI_FONT_D48);
             uint8_t physical_index = 0;
             uint8_t count = 0;
+            // Petlja pronalazi fizički indeks (0-15) na osnovu logičkog (0-broj konfigurisanih)
             for (uint8_t i = 0; i < CURTAINS_SIZE; i++) {
-                if (Curtain_hasRelays(curtains + i)) {
+                Curtain_Handle* handle = Curtain_GetInstanceByIndex(i);
+                if (Curtain_hasRelays(handle)) {
                     if (count == curtain_selected) {
                         physical_index = i;
                         break;
@@ -2290,7 +2325,7 @@ static void Service_CurtainsScreen(void)
             isMovingUp = Curtains_isAnyCurtainMovingUp();
             isMovingDown = Curtains_isAnyCurtainMovingDown();
         } else {
-            Curtain* cur = Curtain_GetByLogicalIndex(curtain_selected);
+            Curtain_Handle* cur = Curtain_GetByLogicalIndex(curtain_selected);
             if (cur) {
                 isMovingUp = Curtain_isMovingUp(cur);
                 isMovingDown = Curtain_isMovingDown(cur);
@@ -2480,7 +2515,7 @@ static void Service_ResetMenuSwitches(void)
 {
     // =======================================================================
     // === POČETAK REFAKTORISANJA ===
-    
+
     // KORAK 1: Umjesto direktne provjere varijable, pozivamo API funkciju.
     if(LIGHTS_IsNightTimerActive()) {
         GUI_MULTIBUF_BeginEx(1);
@@ -2498,7 +2533,7 @@ static void Service_ResetMenuSwitches(void)
 
         GUI_MULTIBUF_EndEx(1);
     }
-    
+
     // === KRAJ REFAKTORISANJA ===
     // =======================================================================
 }
@@ -2520,11 +2555,11 @@ static void Handle_PeriodicEvents(void)
             ForceKillAllSettingsWidgets();
         }
     }
-    
+
     // === TAJMER ZA AUTOMATSKO PALJENJE SVJETALA (SVAKE MINUTE) ===
     if (IsRtcTimeValid() && (HAL_GetTick() - everyMinuteTimerStart) >= (60 * 1000)) {
         everyMinuteTimerStart = HAL_GetTick();
-        
+
         // ** POČETAK IZMJENE **
         // Kompletna petlja je prepravljena da koristi novi API.
 
@@ -2536,22 +2571,22 @@ static void Handle_PeriodicEvents(void)
 
         // Prolazimo kroz sva STVARNO konfigurisana svjetla.
         for (uint8_t i = 0; i < LIGHTS_getCount(); i++) {
-            
+
             // KORAK 1: Umjesto direktnog pristupa nizu, dobijamo siguran "handle".
             LIGHT_Handle* handle = LIGHTS_GetInstance(i);
-            
+
             if (handle) {
                 // KORAK 2: Logiku starih funkcija (`isTimeOnEnabled` i `isTimeToTurnOn`)
                 // sada implementiramo ovdje, koristeći isključivo javne gettere.
-                
+
                 // Provjeravamo da li je tajmer za paljenje uopšte omogućen (ako sat nije -1).
                 if (LIGHT_GetOnHour(handle) != -1) {
                     // Provjeravamo da li se vrijeme za paljenje poklapa sa trenutnim vremenom.
                     if ((LIGHT_GetOnHour(handle) == currentHour) && (LIGHT_GetOnMinute(handle) == currentMinute)) {
-                        
+
                         // KORAK 3: Palimo svjetlo isključivo preko API funkcije.
                         LIGHT_SetState(handle, true);
-                        
+
                         // Ostatak logike za ažuriranje ekrana je isti.
                         if (screen == SCREEN_LIGHTS) {
                             shouldDrawScreen = 1;
@@ -2585,7 +2620,7 @@ static void Handle_PeriodicEvents(void)
             // Ta odgovornost je sada u potpunosti enkapsulirana unutar `lights.c` modula
             // i njegove `HandleDelayedSave` funkcije, koja se poziva iz `LIGHT_Service()`.
             // `display.c` više ne mora da brine o tome.
-            
+
             // Aktivacija screensaver-a (ostaje isto)
             DISPSetBrightnes(g_display_settings.low_bcklght);
             ScrnsvrInitReset();
@@ -2620,11 +2655,11 @@ static void DISPDateTime(void)
 {
     char dbuf[32];
     static uint8_t old_day = 0;
-    
+
     // pozicije sata
     const int clockHpos = 240;  // Horizontalna pozicija za sat
     const int closckVpos = 136; // Vertikalna pozicija za sat
-     
+
     if(!IsRtcTimeValid()) return;
 
     HAL_RTC_GetTime(&hrtc, &rtctm, RTC_FORMAT_BCD);
@@ -3024,6 +3059,9 @@ static void DSP_KillSet2Scrn(void)
  */
 static void DSP_InitSet3Scrn(void)
 {
+    Defroster_Handle* defHandle = Defroster_GetInstance();
+    Ventilator_Handle* ventHandle = Ventilator_GetInstance();
+
     GUI_SelectLayer(0);
     GUI_Clear();
     GUI_SelectLayer(1);
@@ -3049,40 +3087,40 @@ static void DSP_InitSet3Scrn(void)
     // Defroster widgeti
     defroster_settingWidgets.cycleTime = SPINBOX_CreateEx(200, 20, 110, 35, 0, WM_CF_SHOW, ID_DEFROSTER_CYCLE_TIME, 0, 254);
     SPINBOX_SetEdge(defroster_settingWidgets.cycleTime, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(defroster_settingWidgets.cycleTime, defroster.config.cycleTime);
+    SPINBOX_SetValue(defroster_settingWidgets.cycleTime, Defroster_getCycleTime(defHandle));
 
     defroster_settingWidgets.activeTime = SPINBOX_CreateEx(200, 60, 110, 35, 0, WM_CF_SHOW, ID_DEFROSTER_ACTIVE_TIME, 0, 254);
     SPINBOX_SetEdge(defroster_settingWidgets.activeTime, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(defroster_settingWidgets.activeTime, defroster.config.activeTime);
+    SPINBOX_SetValue(defroster_settingWidgets.activeTime, Defroster_getActiveTime(defHandle));
 
     defroster_settingWidgets.pin = SPINBOX_CreateEx(200, 100, 110, 35, 0, WM_CF_SHOW, ID_DEFROSTER_PIN, 0, 6);
     SPINBOX_SetEdge(defroster_settingWidgets.pin, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(defroster_settingWidgets.pin, defroster.config.pin);
+    SPINBOX_SetValue(defroster_settingWidgets.pin, Defroster_getPin(defHandle));
 
     // Ventilator widgeti
     hVentilatorRelay = SPINBOX_CreateEx(10, 20, 110, 35, 0, WM_CF_SHOW, ID_VentilatorRelay, 0, 512);
     SPINBOX_SetEdge(hVentilatorRelay, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hVentilatorRelay, ventilator.config.relay);
+    SPINBOX_SetValue(hVentilatorRelay, Ventilator_getRelay(ventHandle));
 
     hVentilatorDelayOn = SPINBOX_CreateEx(10, 60, 110, 35, 0, WM_CF_SHOW, ID_VentilatorDelayOn, 0, 255);
     SPINBOX_SetEdge(hVentilatorDelayOn, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hVentilatorDelayOn, ventilator.config.delayOnTime);
+    SPINBOX_SetValue(hVentilatorDelayOn, Ventilator_getDelayOnTime(ventHandle));
 
     hVentilatorDelayOff = SPINBOX_CreateEx(10, 100, 110, 35, 0, WM_CF_SHOW, ID_VentilatorDelayOff, 0, 255);
     SPINBOX_SetEdge(hVentilatorDelayOff, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hVentilatorDelayOff, ventilator.config.delayOffTime);
+    SPINBOX_SetValue(hVentilatorDelayOff, Ventilator_getDelayOffTime(ventHandle));
 
     hVentilatorTriggerSource1 = SPINBOX_CreateEx(10, 140, 110, 35, 0, WM_CF_SHOW, ID_VentilatorTriggerSource1, 0, 6);
     SPINBOX_SetEdge(hVentilatorTriggerSource1, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hVentilatorTriggerSource1, ventilator.config.trigger_source1);
+    SPINBOX_SetValue(hVentilatorTriggerSource1, Ventilator_getTriggerSource1(ventHandle));
 
     hVentilatorTriggerSource2 = SPINBOX_CreateEx(10, 180, 110, 35, 0, WM_CF_SHOW, ID_VentilatorTriggerSource2, 0, 6);
     SPINBOX_SetEdge(hVentilatorTriggerSource2, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hVentilatorTriggerSource2, ventilator.config.trigger_source2);
+    SPINBOX_SetValue(hVentilatorTriggerSource2, Ventilator_getTriggerSource2(ventHandle));
 
     hVentilatorLocalPin = SPINBOX_CreateEx(10, 220, 110, 35, 0, WM_CF_SHOW, ID_VentilatorLocalPin, 0, 32);
     SPINBOX_SetEdge(hVentilatorLocalPin, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hVentilatorLocalPin, ventilator.config.local_pin);
+    SPINBOX_SetValue(hVentilatorLocalPin, Ventilator_getLocalPin(ventHandle));
 
     // --- ISPRAVLJENO: Dodavanje svih LABELA ---
     GUI_SetColor(GUI_WHITE);
@@ -3189,15 +3227,19 @@ static void DSP_InitSet4Scrn(void)
 
     // Petlja za kreiranje widgeta za 4 zavjese po stranici.
     for(uint8_t i = curtainSettingMenu * 4; i < (((CURTAINS_SIZE - (curtainSettingMenu * 4)) >= 4) ? ((curtainSettingMenu * 4) + 4) : CURTAINS_SIZE); i++) {
-        // Kreiranje SPINBOX-a za relej "GORE".
+        // << ISPRAVKA: Dobijamo handle za roletnu po fizičkom indeksu. >>
+        Curtain_Handle* handle = Curtain_GetInstanceByIndex(i);
+    
+   // Kreiranje SPINBOX-a za relej "GORE".
+        // << ISPRAVKA: Koristimo gettere za postavljanje početnih vrijednosti. >>
         hCurtainsRelay[i * 2] = SPINBOX_CreateEx(x, y, 110, 40, 0, WM_CF_SHOW, ID_CurtainsRelay + (i * 2), 0, 512);
         SPINBOX_SetEdge(hCurtainsRelay[i * 2], SPINBOX_EDGE_CENTER);
-        SPINBOX_SetValue(hCurtainsRelay[i * 2], Curtain_GetRelayUp(curtains + i));
+        SPINBOX_SetValue(hCurtainsRelay[i * 2], Curtain_getRelayUp(handle));
 
         // Kreiranje SPINBOX-a za relej "DOLJE".
         hCurtainsRelay[(i * 2) + 1] = SPINBOX_CreateEx(x, y + 50, 110, 40, 0, WM_CF_SHOW, ID_CurtainsRelay + (i * 2) + 1, 0, 512);
         SPINBOX_SetEdge(hCurtainsRelay[(i * 2) + 1], SPINBOX_EDGE_CENTER);
-        SPINBOX_SetValue(hCurtainsRelay[(i * 2) + 1], Curtain_GetRelayDown(curtains + i));
+        SPINBOX_SetValue(hCurtainsRelay[(i * 2) + 1], Curtain_getRelayDown(handle));
 
         // Iscrtavanje labela.
         GUI_SetColor(GUI_WHITE);
@@ -3536,7 +3578,8 @@ static void DSP_KillSet6Scrn(void)
  * @note Ova funkcija služi kao dispečer, prosljeđujući događaj pritiska
  * odgovarajućoj funkciji za specifičan ekran.
  */
-static void HandleTouchPressEvent(GUI_PID_STATE * pTS, uint8_t *click_flag) {
+static void HandleTouchPressEvent(GUI_PID_STATE * pTS, uint8_t *click_flag)
+{
     // Prosljeđivanje događaja specifičnim handlerima za svaki ekran.
     if(screen == SCREEN_MAIN) {
         *click_flag = 1; // Generisanje klika na Main ekranu
@@ -3585,7 +3628,7 @@ static void HandleTouchReleaseEvent(GUI_PID_STATE * pTS)
         //
         // KORAK 1: Provjeravamo da li je neko svjetlo bilo odabrano (pritisnuto).
         if(light_selectedIndex < LIGHTS_MODBUS_SIZE) { // Provjera bez '+1' je sigurnija
-        
+
             // KORAK 2: Dobijamo "handle" na to svjetlo.
             LIGHT_Handle* handle = LIGHTS_GetInstance(light_selectedIndex);
 
@@ -3603,7 +3646,7 @@ static void HandleTouchReleaseEvent(GUI_PID_STATE * pTS)
                 }
             }
         }
-        
+
         // KORAK 4: Resetujemo tajmer i indeks bez obzira na sve.
         light_settingsTimerStart = 0;
         light_selectedIndex = LIGHTS_MODBUS_SIZE + 1; // Vraćamo na nevalidnu vrijednost
@@ -3621,7 +3664,7 @@ static void HandleTouchReleaseEvent(GUI_PID_STATE * pTS)
     btninc = 0U;
     dynamicIconUpdateFlag  = 0;
     thermostatOnOffTouch_timer = 0;
-    
+
     // Korištenje API funkcije za zaustavljanje noćnog tajmera.
     LIGHTS_StopNightTimer();
 }
@@ -3631,7 +3674,13 @@ static void HandleTouchReleaseEvent(GUI_PID_STATE * pTS)
  * @note Ova funkcija detektuje koji je od 4 glavna ekrana (Svjetla, Termostat, Zavjese, Odmrzivač)
  * ili dugme "NEXT" pritisnuto, te postavlja odgovarajuće stanje.
  */
-static void HandlePress_SelectScreen1(GUI_PID_STATE * pTS, uint8_t *click_flag) {
+static void HandlePress_SelectScreen1(GUI_PID_STATE * pTS, uint8_t *click_flag)
+{
+
+    // Dobavljanje handle-ova za oba modula prije korištenja
+    Defroster_Handle* defHandle = Defroster_GetInstance();
+    Ventilator_Handle* ventHandle = Ventilator_GetInstance();
+
     // Definisanje zona dodira baziranih na dinamičkim vrijednostima
     const uint16_t xSeparator = DRAWING_AREA_WIDTH;
     const uint16_t xMidLine = xSeparator / 2;
@@ -3674,21 +3723,22 @@ static void HandlePress_SelectScreen1(GUI_PID_STATE * pTS, uint8_t *click_flag) 
                 // NOVO: Ispravna logika za dinamički odabir i izvršenje komande
                 switch(g_display_settings.selected_control_mode) {
                 case MODE_DEFROSTER:
-                    if(Defroster_isActive()) {
-                        Defroster_Off();
+                    if(Defroster_isActive(defHandle)) {
+                        Defroster_Off(defHandle);
                     } else {
-                        Defroster_On();
+                        Defroster_On(defHandle);
                     }
                     dynamicIconUpdateFlag  = 1; // Ažurira fleg za ponovno iscrtavanje ikone
                     *click_flag = 1;
                     break;
                 case MODE_VENTILATOR:
-                    if(VENTILATOR_IS_ACTIVE()) {
-                        Ventilator_Off();
+                    // << ISPRAVKA: Svi pozivi sada koriste 'ventHandle'
+                    if(Ventilator_isActive(ventHandle)) {
+                        Ventilator_Off(ventHandle);
                     } else {
-                        Ventilator_On(false); // Eksterni okidač, bez odgode
+                        Ventilator_On(ventHandle, false); // Eksterni okidač, bez odgode
                     }
-                    dynamicIconUpdateFlag  = 1; // Ažurira fleg za ponovno iscrtavanje ikone
+                    dynamicIconUpdateFlag  = 1;
                     *click_flag = 1;
                     break;
                 case MODE_OFF:
@@ -3710,7 +3760,8 @@ static void HandlePress_SelectScreen1(GUI_PID_STATE * pTS, uint8_t *click_flag) 
  * @brief Obrada događaja pritiska za ekran "Select Screen 2".
  * @note Odgovoran je za prelazak na ekrane za čišćenje, Wi-Fi QR kod i App QR kod.
  */
-static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag) {
+static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
+{
 
     // --- Definisanje zona dodira baziranih na dinamičkim vrijednostima ---
     const uint16_t xSeparator = 380;
@@ -3767,7 +3818,7 @@ static void HandlePress_ThermostatScreen(GUI_PID_STATE * pTS, uint8_t *click_fla
     //
     // Umjesto globalnih #define makroa, koordinate za "hitbox" svakog dugmeta
     // definišemo ovdje, unutar funkcije koja ih jedina i koristi.
-    
+
     // Zona za POVEĆANJE temperature (+)
     const int BTN_INC_X0 = 200;
     const int BTN_INC_Y0 = 90;
@@ -3779,7 +3830,7 @@ static void HandlePress_ThermostatScreen(GUI_PID_STATE * pTS, uint8_t *click_fla
     const int BTN_DEC_Y0 = 90;
     const int BTN_DEC_X1 = BTN_DEC_X0 + 120;
     const int BTN_DEC_Y1 = BTN_DEC_Y0 + 179;
-    
+
     // Zona za ON/OFF (dugi pritisak)
     const int BTN_ONOFF_X0 = 400;
     const int BTN_ONOFF_Y0 = 150;
@@ -3799,7 +3850,7 @@ static void HandlePress_ThermostatScreen(GUI_PID_STATE * pTS, uint8_t *click_fla
     // Provjera da li je dodir unutar zone za ON/OFF
     else if((pTS->x > BTN_ONOFF_X0) && (pTS->y > BTN_ONOFF_Y0) && (pTS->y < BTN_ONOFF_Y1)) {
         *click_flag = 1; // Signaliziraj "klik"
-        
+
         // Pokreni tajmer za detekciju dugog pritiska.
         // Sama logika gašenja/paljenja se nalazi u `Service_ThermostatScreen` funkciji
         // koja provjerava koliko dugo ovaj tajmer traje.
@@ -3831,7 +3882,7 @@ static void HandlePress_LightsScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
     // Logika za dinamički raspored i detekciju dodira (nepromijenjena).
     int y = (LIGHTS_Rows_getCount() > 1) ? 10 : 86;
     uint8_t lightsInRowSum = 0;
-    
+
     // Prolazimo kroz redove ikonica...
     for(uint8_t row = 0; row < LIGHTS_Rows_getCount(); ++row) {
         uint8_t lightsInRow = LIGHTS_getCount();
@@ -3848,7 +3899,7 @@ static void HandlePress_LightsScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
 
             // Provjeravamo da li koordinate dodira upadaju u "hitbox" trenutne ikonice.
             if((pTS->x > x) && (pTS->x < (x + ICON_WIDTH)) && (pTS->y > y) && (pTS->y < (y + ICON_HEIGHT))) {
-                
+
                 *click_flag = 1; // Signaliziraj "klik"
                 light_selectedIndex = lightsInRowSum + i_light; // Zabilježi koje je svjetlo pritisnuto
 
@@ -3869,10 +3920,10 @@ static void HandlePress_LightsScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
                 }
                 // === KRAJ REFAKTORISANJA ===
                 // =======================================================================
-                
+
                 // Resetujemo noćni tajmer pozivom API funkcije.
                 LIGHTS_StopNightTimer();
-                
+
                 // Prekidamo obje petlje jer smo pronašli pritisnutu ikonicu.
                 goto exit_loops;
             }
@@ -3889,7 +3940,8 @@ exit_loops:; // Labela za izlazak iz ugniježdenih petlji
  * @note Rukuje pritiskom na strelice za pomicanje zavjesa "GORE" i "DOLJE",
  * kao i dugmadima za prebacivanje između pojedinačnih zavjesa i grupe.
  */
-static void HandlePress_CurtainsScreen(GUI_PID_STATE * pTS, uint8_t *click_flag) {
+static void HandlePress_CurtainsScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
+{
     if(pTS->x < 400) {
         uint8_t local_curtainMenuCurtainLength = 120;
         uint8_t direction = CURTAIN_STOP;
@@ -3938,7 +3990,7 @@ static void HandlePress_CurtainsScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
 static void HandlePress_LightSettingsScreen(GUI_PID_STATE * pTS)
 {
     // --- KORAK 1: Definišemo sve potrebne konstante na početku funkcije ---
-    
+
     // A) Konstante za pozicioniranje (Layout)
     const int centerX = LCD_GetXSize() / 2;
     const int centerY = LCD_GetYSize() / 2;
@@ -3985,7 +4037,7 @@ static void HandlePress_LightSettingsScreen(GUI_PID_STATE * pTS)
 
     // --- KORAK 3: Detekcija dodira na GUI elemente ---
     if (is_rgb_mode && (pTS->x >= WHITE_SQUARE_X0) && (pTS->x < (WHITE_SQUARE_X0 + WHITE_SQUARE_SIZE)) &&
-        (pTS->y >= WHITE_SQUARE_Y0) && (pTS->y < (WHITE_SQUARE_Y0 + WHITE_SQUARE_SIZE))) {
+            (pTS->y >= WHITE_SQUARE_Y0) && (pTS->y < (WHITE_SQUARE_Y0 + WHITE_SQUARE_SIZE))) {
         // Dodir je na bijelom kvadratu.
         new_color = WHITE_COLOR;
     }
@@ -3993,7 +4045,7 @@ static void HandlePress_LightSettingsScreen(GUI_PID_STATE * pTS)
              (pTS->y >= sliderY0) && (pTS->y < (sliderY0 + sliderHeight))) {
         // Dodir je na slajderu za svjetlinu.
         g_high_precision_mode = true; // Aktiviraj visoku preciznost za glatko pomjeranje
-        
+
         // --- Kompletan kod za izračunavanje svjetline iz pozicije dodira ---
         int relative_touch_x = pTS->x - sliderX0;
         const int zone_zero_limit = (int)(sliderWidth * ZONE_ZERO_LIMIT_PERCENT);
@@ -4022,7 +4074,7 @@ static void HandlePress_LightSettingsScreen(GUI_PID_STATE * pTS)
 
     // --- KORAK 4: Primjena detektovanih promjena koristeći novi API ---
     if (new_brightness != NO_BRIGHTNESS_CHANGE || new_color != NO_COLOR_CHANGE) {
-        
+
         if (light_selectedIndex == LIGHTS_MODBUS_SIZE) { // Slučaj: Sva svjetla
             // Petlja kroz sva svjetla i primjenjuje promjene samo na ona koja su vezana za glavni prekidač.
             for(uint8_t i = 0; i < LIGHTS_getCount(); i++) {
@@ -4058,7 +4110,7 @@ static void HandlePress_ResetMenuSwitchesScreenArea(GUI_PID_STATE * pTS)
 {
     // Logika za screensaver ostaje ista.
     if((!g_display_settings.leave_scrnsvr_on_release) || (g_display_settings.leave_scrnsvr_on_release && (!IsScrnsvrActiv()))) {
-        
+
         // Resetujemo flegove na početku
         light_selectedIndex = LIGHTS_MODBUS_SIZE + 1; // Koristi se kao fleg da li je dimer/RGB pronađen
         lights_allSelected_hasRGB = false;
@@ -4069,13 +4121,13 @@ static void HandlePress_ResetMenuSwitchesScreenArea(GUI_PID_STATE * pTS)
         // Prolazimo kroz sva konfigurisana svjetla koristeći novi API.
         for(uint8_t i = 0; i < LIGHTS_getCount(); i++) {
             LIGHT_Handle* handle = LIGHTS_GetInstance(i);
-            
+
             // Provjeravamo da li handle postoji i da li je svjetlo vezano za glavni prekidač.
             if (handle && LIGHT_isTiedToMainLight(handle) && !LIGHT_isBinary(handle)) {
                 // Ako smo pronašli bar jedno svjetlo koje nije binarno (dimer ili RGB),
                 // postavljamo fleg i prekidamo dalju pretragu.
                 light_selectedIndex = LIGHTS_MODBUS_SIZE; // Postavljamo "SVA SVJETLA"
-                
+
                 // Dodatno provjeravamo da li je to svjetlo RGB tipa.
                 if (LIGHT_isRGB(handle)) {
                     lights_allSelected_hasRGB = true;
@@ -4111,28 +4163,28 @@ static void HandleRelease_MainScreenLogic(GUI_PID_STATE * pTS)
     // `LIGHTS_isAnyLightOn()` interno provjerava sva svjetla koja su `tiedToMainLight`
     // i vraća `true` ako je ijedno upaljeno.
     bool isAnyLightCurrentlyOn = LIGHTS_isAnyLightOn();
-    
+
     // KORAK 2: Određujemo novo, željeno stanje.
     // Ako je bilo šta bilo upaljeno, novo stanje je "ugasi sve".
     // Ako je sve bilo ugašeno, novo stanje je "upali sve".
     bool newStateIsOn = !isAnyLightCurrentlyOn;
-    
+
     // KORAK 3: Primjenjujemo novo stanje na sva glavna svjetla.
     // Prolazimo kroz sva konfigurisana svjetla...
     for(uint8_t i = 0; i < LIGHTS_getCount(); ++i) {
         // ...dobijamo njihov handle...
         LIGHT_Handle* handle = LIGHTS_GetInstance(i);
-        
+
         // ...i ako su vezana za glavni prekidač, postavljamo im novo stanje.
         if (handle && LIGHT_isTiedToMainLight(handle)) {
             LIGHT_SetState(handle, newStateIsOn);
         }
     }
-    
+
     // KORAK 4: Upravljanje noćnim tajmerom preko novog, čistog API-ja.
     // Provjeravamo da li je noćni tajmer omogućen u postavkama i da li je noć.
     if (g_display_settings.light_night_timer_enabled && !((Bcd2Dec(rtctm.Hours) > 6) && (Bcd2Dec(rtctm.Hours) < 20))) {
-        
+
         // Ako je korisnik upalio svjetla, pozivamo API da pokrene tajmer.
         if (newStateIsOn) {
             LIGHTS_StartNightTimer();
@@ -4143,7 +4195,7 @@ static void HandleRelease_MainScreenLogic(GUI_PID_STATE * pTS)
         // Ako je dan ili je tajmer onemogućen, osiguravamo da je zaustavljen.
         LIGHTS_StopNightTimer();
     }
-    
+
     // === KRAJ REFAKTORISANJA ===
     // =======================================================================
 

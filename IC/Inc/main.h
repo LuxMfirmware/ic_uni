@@ -25,9 +25,15 @@
 #include "common.h"
 #include "Resource.h"
 #include "LuxNET.h"
-#include "stm32746g_eeprom.h" // Mapa ide nakon svih definicija
+#include "stm32746g_eeprom.h" 
 #include "stm32746g.h"
 #include "stm32746g_ts.h"
+
+// << ISPRAVKA: Dodajemo headere za BSP drajvere ovdje >>
+// Na ovaj nacin, funkcije iz ovih drajvera postaju vidljive u cijelom projektu.
+#include "stm32746g_qspi.h"
+#include "stm32746g_sdram.h"
+
 /* Exported types ------------------------------------------------------------*/
 #define BUZZER_CLICK_TIME                   20U     // single 50 ms tone when button pressed
 typedef struct{

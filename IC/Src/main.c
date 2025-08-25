@@ -22,7 +22,7 @@
 /*============================================================================*/
 /* UKLJUCENI FAJLOVI (INCLUDES)                                               */
 /*============================================================================*/
-#include "main.h" // Uvijek prvi
+#include "main.h" // Uvijek prvi - sada povlaci i QSPI/SDRAM headere
 #include "thermostat.h"
 #include "ventilator.h"
 #include "defroster.h"
@@ -115,6 +115,8 @@ static float ROOM_GetTemperature(uint16_t adc_value);
   */
 int main(void) {
     THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
+    Ventilator_Handle* pVen = Ventilator_GetInstance();
+    Defroster_Handle* pDef = Defroster_GetInstance();
     
     SaveResetSrc();
     MPU_Config();
@@ -139,13 +141,13 @@ int main(void) {
     RS485_Init();
     LIGHTS_Init();
     Curtains_Init();
-    Defroster_Init();
+    Defroster_Init(pDef);
     DISP_Init();
     THSTAT_Init(pThst);
     PCA9685_Reset();
     PCA9685_Init();
     if(pwminit) PCA9685_SetOutputFrequency(PWM_0_15_FREQUENCY_DEFAULT);
-    Ventilator_Init();
+    Ventilator_Init(pVen);
 #ifdef	USE_WATCHDOG
     HAL_IWDG_Refresh(&hiwdg);
 #endif
@@ -155,9 +157,9 @@ int main(void) {
         DISP_Service();
         LIGHT_Service();
         Curtain_Service();
-        Defroster_Service();
+        Defroster_Service(pDef);
         THSTAT_Service(pThst);
-        Ventilator_Service();
+        Ventilator_Service(pVen);
 #ifdef	USE_WATCHDOG
         HAL_IWDG_Refresh(&hiwdg);
 #endif
@@ -1242,6 +1244,8 @@ void PCA9685_SetOutput(const uint8_t pin, const uint8_t value) {
 void SetDefault(void) // Not all settings from the settings menu are set to default
 {
     THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
+    Ventilator_Handle* pVen = Ventilator_GetInstance();
+    Defroster_Handle* pDef = Defroster_GetInstance();
     
     Thermostat_SetDefault(pThst);
     THSTAT_Save(pThst);
@@ -1251,9 +1255,12 @@ void SetDefault(void) // Not all settings from the settings menu are set to defa
 
     Curtains_SetDefault();
     Curtains_Save();
+    
+    Ventilator_SetDefault(pVen);
+    Ventilator_Save(pVen);
 
-    Defroster_SetDefault();
-    Defroster_Save();
+    Defroster_SetDefault(pDef);
+    Defroster_Save(pDef);
 }
 
 void SetPin(uint8_t pin, uint8_t pinVal)

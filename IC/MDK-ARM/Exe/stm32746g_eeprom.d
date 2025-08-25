@@ -101,10 +101,8 @@
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_ts.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\ft5336\ft5336.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\ft5336\..\Common\ts.h \
-  ..\Inc\settings_widgets.def ..\Inc\thermostat.h ..\Inc\ventilator.h \
-  ..\Inc\rs485.h ..\..\Middlewares\TinyFrame\TinyFrame.h \
-  ..\..\Middlewares\TinyFrame\TF_Config.h ..\Inc\curtain.h \
-  ..\Inc\lights.h ..\Inc\defroster.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_qspi.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\n25q128a\n25q128a.h \
-  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h
+  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h \
+  ..\Inc\settings_widgets.def ..\Inc\thermostat.h ..\Inc\ventilator.h \
+  ..\Inc\defroster.h ..\Inc\curtain.h ..\Inc\lights.h

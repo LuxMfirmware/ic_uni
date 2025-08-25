@@ -26,3 +26,10 @@ Light_Modbus_isNewValueOn() keeps getting called after statusSet()
 za rgb svjetlo, ako se u funkciji DIMMER_SET_Listener() komentarise Light_Modbus_Brightness_Update_External() onda ce svjetlo raditi normalno zato sto esp vraca brightness kao 0, query se vise puta posalje sa kontrolera
 
 
+Zadatak													Prioritet	Status			Bilješke				
+1. Uklanjanje "Magičnih Brojeva"						Visok		Nije započeto	Početi sa display.c i koordinatama. Zatim konstante u rs485.c.				
+2. Poboljšanje Enkapsulacije (Get/Set)					Visok		Nije započeto	Početi sa lights modulom da se dosljedno primijeni, a zatim ostali moduli.				
+3. Refaktorisanje EEPROM upravljanja (Strukture+CRC)	Visok		Završeno		Primijeniti isti princip na thermostat, ventilator, defroster, curtain.				
+4. Optimizacija EEPROM Mape								Visok		Završeno		Raditi nakon što svi moduli dobiju svoje _EepromConfig_t strukture.				
+5. Unapređenje sistema prevođenja (i18n)				Srednji		Nije započeto	Kreirati translations.h, izmjestiti podatke, dodati DROPDOWN u podešavanja.				
+6. Centralizacija Widget ID-jeva (X-Macros)				Srednji		Nije započeto	Implementirati X-Macro tehniku za settings_widgets.def radi bolje organizacije.				

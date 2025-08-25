@@ -1,263 +1,237 @@
 /**
  ******************************************************************************
- * Projekt          : KuceDzevadova
- ******************************************************************************
+ * @file    defroster.c
+ * @author  Gemini & [Vaše Ime]
+ * @brief   Implementacija kompletne logike za upravljanje odmrzivacem.
  *
- *
+ * @note
+ * Ovaj fajl sadrži privatnu, staticku `defroster` instancu, cineci je
+ * nevidljivom za ostatak programa. Sva interakcija sa podacima se vrši
+ * preko `handle`-a koji se prosljeduje funkcijama. `Defroster_Service()`
+ * periodicno poziva pomocne `Handle...` funkcije za obradu tajmera.
  ******************************************************************************
  */
+
+#if (__DEFROSTER_CTRL_H__ != FW_BUILD)
+#error "defroster header version mismatch"
+#endif
 
 /*============================================================================*/
 /* UKLJUCENI FAJLOVI (INCLUDES)                                               */
 /*============================================================================*/
-#include "main.h" // Uvijek prvi
-#include "thermostat.h"
-#include "ventilator.h"
+#include "main.h"
 #include "defroster.h"
-#include "curtain.h"
-#include "lights.h"
 #include "display.h"
-#include "stm32746g_eeprom.h" // Mapa ide nakon svih definicija
-#include "rs485.h"
+#include "stm32746g_eeprom.h"
 
+/*============================================================================*/
+/* PRIVATNA DEFINICIJA STRUKTURE                                              */
+/*============================================================================*/
 
-// Globalna instanca strukture odmrzivaca
-Defroster defroster;
-
-/* Private Function Prototypes -----------------------------------------------*/
-static void HandleDefrosterCycle(void);
-static void HandleDefrosterActiveTime(void);
-
-/* Public Functions ----------------------------------------------------------*/
 /**
- * @brief Postavlja sve parametre odmrzivaca na sigurne fabricke vrijednosti.
+ * @brief Puna definicija glavne strukture, sakrivena od ostatka programa.
+ * Ovo je konkretna implementacija `Defroster_Handle` tipa.
  */
-void Defroster_SetDefault(void)
+struct Defroster_s
 {
-    memset(&defroster, 0, sizeof(Defroster));
-    // Vrijednosti su vec 0, ali ih eksplicitno postavljamo radi citljivosti
-    defroster.config.cycleTime = 0;
-    defroster.config.activeTime = 0;
-    defroster.config.pin = 0;
+    // Konfiguracioni dio strukture koji se cuva u EEPROM
+    Defroster_EepromConfig_t config;
+
+    // Runtime varijable koje se ne cuvaju
+    uint32_t cycleTime_TimerStart;
+    uint32_t activeTime_TimerStart;
+};
+
+/*============================================================================*/
+/* PRIVATNA (STATICKA) INSTANCA                                               */
+/*============================================================================*/
+
+/**
+ * @brief Jedina instanca odmrzivaca u cijelom sistemu (Singleton pattern).
+ * @note  Kljucna rijec 'static' je cini vidljivom samo unutar ovog .c fajla.
+ */
+static struct Defroster_s defroster;
+
+
+/*============================================================================*/
+/* PROTOTIPOVI PRIVATNIH POMOCNIH FUNKCIJA                                    */
+/*============================================================================*/
+static void HandleDefrosterCycle(Defroster_Handle* const handle);
+static void HandleDefrosterActiveTime(Defroster_Handle* const handle);
+
+/*============================================================================*/
+/* IMPLEMENTACIJA JAVNOG API-JA                                               */
+/*============================================================================*/
+
+Defroster_Handle* Defroster_GetInstance(void)
+{
+    return &defroster;
 }
-/**
- * @brief Inicijalizuje konfiguraciju odmrzivaca iz EEPROM-a.
- */
-void Defroster_Init(void)
-{
-    EE_ReadBuffer((uint8_t*)&defroster.config, EE_DEFROSTER, sizeof(Defroster_EepromConfig_t));
 
-    if (defroster.config.magic_number != EEPROM_MAGIC_NUMBER) {
-        Defroster_SetDefault();
-        Defroster_Save();
+void Defroster_Init(Defroster_Handle* const handle)
+{
+    EE_ReadBuffer((uint8_t*)&handle->config, EE_DEFROSTER, sizeof(Defroster_EepromConfig_t));
+
+    if (handle->config.magic_number != EEPROM_MAGIC_NUMBER) {
+        Defroster_SetDefault(handle);
+        Defroster_Save(handle);
     } else {
-        uint16_t received_crc = defroster.config.crc;
-        defroster.config.crc = 0;
-        uint16_t calculated_crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&defroster.config, sizeof(Defroster_EepromConfig_t));
+        uint16_t received_crc = handle->config.crc;
+        handle->config.crc = 0;
+        uint16_t calculated_crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&handle->config, sizeof(Defroster_EepromConfig_t));
         if (received_crc != calculated_crc) {
-            Defroster_SetDefault();
-            Defroster_Save();
+            Defroster_SetDefault(handle);
+            Defroster_Save(handle);
         }
     }
     // Runtime varijable se uvijek resetuju na pocetku
-    defroster.cycleTime_TimerStart = 0;
-    defroster.activeTime_TimerStart = 0;
+    handle->cycleTime_TimerStart = 0;
+    handle->activeTime_TimerStart = 0;
 }
 
-
-/**
- * @brief Cuva konfiguraciju odmrzivaca u EEPROM.
- */
-void Defroster_Save(void)
+void Defroster_Save(Defroster_Handle* const handle)
 {
-    defroster.config.magic_number = EEPROM_MAGIC_NUMBER;
-    defroster.config.crc = 0;
-    defroster.config.crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&defroster.config, sizeof(Defroster_EepromConfig_t));
-    EE_WriteBuffer((uint8_t*)&defroster.config, EE_DEFROSTER, sizeof(Defroster_EepromConfig_t));
+    handle->config.magic_number = EEPROM_MAGIC_NUMBER;
+    handle->config.crc = 0;
+    handle->config.crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&handle->config, sizeof(Defroster_EepromConfig_t));
+    EE_WriteBuffer((uint8_t*)&handle->config, EE_DEFROSTER, sizeof(Defroster_EepromConfig_t));
 }
 
-/**
- * @brief Postavlja vreme ciklusa odmrzivaca.
- * @param time Vreme ciklusa u minutama.
- */
-void Defroster_SetCycleTime(uint8_t time)
+void Defroster_SetDefault(Defroster_Handle* const handle)
 {
-    defroster.config.cycleTime = time;
+    // Sigurnosno nuliranje cijele strukture
+    memset(handle, 0, sizeof(struct Defroster_s));
+    // Vrijednosti su vec 0, ali ih eksplicitno postavljamo radi citljivosti
+    handle->config.cycleTime = 0;
+    handle->config.activeTime = 0;
+    handle->config.pin = 0;
+}
 
-    // Osigurava da aktivno vreme ne bude vece od vremena ciklusa
-    if(defroster.config.activeTime > time)
+void Defroster_Service(Defroster_Handle* const handle)
+{
+    // Servis radi samo ako je u postavkama displeja odabran mod za odmrzivac
+    if (g_display_settings.selected_control_mode != MODE_DEFROSTER) {
+        return;
+    }
+
+    // I samo ako je odmrzivac globalno aktivan (ima pokrenut ciklicni tajmer)
+    if(Defroster_isActive(handle))
     {
-        defroster.config.activeTime = time;
+        HandleDefrosterCycle(handle);
+        HandleDefrosterActiveTime(handle);
     }
 }
 
-/**
- * @brief Postavlja aktivno vreme odmrzivaca.
- * @param time Aktivno vreme u minutama.
- */
-void Defroster_SetActiveTime(uint8_t time)
+bool Defroster_isActive(const Defroster_Handle* const handle)
 {
-    // Osigurava da aktivno vreme ne bude vece od vremena ciklusa
-    if(time > defroster.config.cycleTime)
+    // Odmrzivac se smatra aktivnim ako mu je pokrenut ciklicni tajmer.
+    return (handle->cycleTime_TimerStart != 0);
+}
+
+void Defroster_On(Defroster_Handle* const handle)
+{
+    if (handle->config.pin == 0) return; // Ne radi ništa ako pin nije konfigurisan
+
+    uint32_t tick = HAL_GetTick();
+    handle->cycleTime_TimerStart = tick ? tick : 1;
+    handle->activeTime_TimerStart = tick ? tick : 1;
+    SetPin(handle->config.pin, 1); // Postavlja pin na HIGH
+}
+
+void Defroster_Off(Defroster_Handle* const handle)
+{
+    if (handle->config.pin == 0) return;
+
+    handle->cycleTime_TimerStart = 0;
+    handle->activeTime_TimerStart = 0;
+    SetPin(handle->config.pin, 0); // Postavlja pin na LOW
+}
+
+void Defroster_setCycleTime(Defroster_Handle* const handle, uint8_t time)
+{
+    handle->config.cycleTime = time;
+    // Osigurava da aktivno vrijeme ne bude vece od vremena ciklusa
+    if(handle->config.activeTime > time)
     {
-        defroster.config.activeTime = defroster.config.cycleTime;
+        handle->config.activeTime = time;
+    }
+}
+
+uint8_t Defroster_getCycleTime(const Defroster_Handle* const handle)
+{
+    return handle->config.cycleTime;
+}
+
+void Defroster_setActiveTime(Defroster_Handle* const handle, uint8_t time)
+{
+    // Osigurava da aktivno vrijeme ne bude vece od vremena ciklusa
+    if(time > handle->config.cycleTime)
+    {
+        handle->config.activeTime = handle->config.cycleTime;
     }
     else
     {
-        defroster.config.activeTime = time;
+        handle->config.activeTime = time;
     }
 }
 
-/**
- * @brief Pokrece tajmer za aktivno vreme odmrzivaca.
- */
-void Defroster_ActiveTimeTimerStart(void)
+uint8_t Defroster_getActiveTime(const Defroster_Handle* const handle)
 {
-    uint32_t tick = HAL_GetTick();
-    defroster.activeTime_TimerStart = tick ? (tick - 1) : 1; // Osigurava da tajmer ne pocne od nule
+    return handle->config.activeTime;
 }
 
-/**
- * @brief Proverava da li je tajmer za aktivno vreme ukljucen.
- * @return True ako je tajmer ukljucen, false inace.
- */
-bool Defroster_isActiveTimeTimerOn(void)
+void Defroster_setPin(Defroster_Handle* const handle, uint8_t pin)
 {
-    return defroster.activeTime_TimerStart;
+    handle->config.pin = pin;
 }
 
-/**
- * @brief Proverava da li je tajmer za aktivno vreme istekao.
- * @param tick Trenutni sistemski tick.
- * @return True ako je tajmer istekao, false inace.
- */
-bool Defroster_hasActiveTimeTimerExpired(const uint32_t tick)
+uint8_t Defroster_getPin(const Defroster_Handle* const handle)
 {
-    return (tick - defroster.activeTime_TimerStart) >= (defroster.config.activeTime * 1000 * 60); // Konvertuje minute u milisekunde
+    return handle->config.pin;
 }
 
-/**
- * @brief Zaustavlja tajmer za aktivno vreme odmrzivaca.
- */
-void Defroster_ActiveTimeTimerStop(void)
-{
-    defroster.activeTime_TimerStart = 0;
-}
-
-/**
- * @brief Pokrece ciklicni tajmer odmrzivaca.
- */
-void Defroster_CycleTimerStart(void)
-{
-    uint32_t tick = HAL_GetTick();
-    defroster.cycleTime_TimerStart = tick ? (tick - 1) : 1; // Osigurava da tajmer ne pocne od nule
-}
-
-/**
- * @brief Proverava da li je ciklicni tajmer ukljucen.
- * @return True ako je tajmer ukljucen, false inace.
- */
-bool Defroster_isCycleTimerOn(void)
-{
-    return defroster.cycleTime_TimerStart;
-}
-
-/**
- * @brief Proverava da li je ciklicni tajmer istekao.
- * @param tick Trenutni sistemski tick.
- * @return True ako je tajmer istekao, false inace.
- */
-bool Defroster_hasCycleTimerExpired(const uint32_t tick)
-{
-    return (tick - defroster.cycleTime_TimerStart) >= (defroster.config.cycleTime * 1000 * 60); // Konvertuje minute u milisekunde
-}
-
-/**
- * @brief Zaustavlja ciklicni tajmer odmrzivaca.
- */
-void Defroster_CycleTimerStop(void)
-{
-    defroster.cycleTime_TimerStart = 0;
-}
-
-/**
- * @brief Proverava da li je odmrzivac aktivan (tj. da li mu je ciklicni tajmer pokrenut).
- * @return True ako je aktivan, false inace.
- */
-bool Defroster_isActive(void)
-{
-    return Defroster_isCycleTimerOn();
-}
-
-/**
- * @brief Ukljucuje odmrzivac i pokrece oba tajmera.
- */
-void Defroster_On(void)
-{
-    Defroster_CycleTimerStart();
-    Defroster_ActiveTimeTimerStart();
-    SetPin(defroster.config.pin, 1); // Postavlja pin na HIGH
-}
-
-/**
- * @brief Iskljucuje odmrzivac i zaustavlja oba tajmera.
- */
-void Defroster_Off(void)
-{
-    Defroster_CycleTimerStop();
-    Defroster_ActiveTimeTimerStop();
-    SetPin(defroster.config.pin, 0); // Postavlja pin na LOW
-}
-
-/* Private Helper Functions for Defroster_Service ----------------------------*/
+/*============================================================================*/
+/* IMPLEMENTACIJA PRIVATNIH POMOCNIH FUNKCIJA                                 */
+/*============================================================================*/
 
 /**
  * @brief Upravlja ciklusom rada odmrzivaca.
- * Ako je ciklicni tajmer istekao, ponovo ga pokrece i ukljucuje pin.
+ * @note  Ako je ciklicni tajmer istekao, ponovo ga pokrece, pokrece i tajmer
+ * aktivnog vremena i ukljucuje grijac (podiže pin na HIGH).
+ * @param handle Pointer na instancu modula.
  */
-static void HandleDefrosterCycle(void)
+static void HandleDefrosterCycle(Defroster_Handle* const handle)
 {
-    const uint32_t tick = HAL_GetTick(); // Dobija trenutni tick jednom
+    // Ako ciklus nije podešen (vrijednost 0), ne radi ništa.
+    if (handle->config.cycleTime == 0) return;
 
-    if(Defroster_isCycleTimerOn() && Defroster_hasCycleTimerExpired(tick))
+    const uint32_t tick = HAL_GetTick();
+    if((tick - handle->cycleTime_TimerStart) >= (handle->config.cycleTime * 60000UL)) // Minute u ms
     {
-        Defroster_CycleTimerStart();      // Ponovo pokreni ciklicni tajmer
-        Defroster_ActiveTimeTimerStart(); // Pokreni tajmer za aktivno vreme
-        SetPin(defroster.config.pin, 1);         // Ukljuci pin odmrzivaca
+        handle->cycleTime_TimerStart = tick ? tick : 1;
+        handle->activeTime_TimerStart = tick ? tick : 1;
+        SetPin(handle->config.pin, 1);
     }
 }
 
 /**
  * @brief Upravlja aktivnim vremenom odmrzivaca.
- * Ako je tajmer za aktivno vreme istekao, zaustavlja ga i iskljucuje pin.
+ * @note  Ako je tajmer za aktivno vrijeme istekao, zaustavlja tajmer i
+ * iskljucuje grijac (spušta pin na LOW).
+ * @param handle Pointer na instancu modula.
  */
-static void HandleDefrosterActiveTime(void)
+static void HandleDefrosterActiveTime(Defroster_Handle* const handle)
 {
-    const uint32_t tick = HAL_GetTick(); // Dobija trenutni tick jednom
+    // Ako aktivno vrijeme nije podešeno (vrijednost 0), ne radi ništa.
+    if (handle->config.activeTime == 0) return;
+    
+    // Ako tajmer nije ni pokrenut, ne radi ništa.
+    if (handle->activeTime_TimerStart == 0) return;
 
-    if(Defroster_isActiveTimeTimerOn() && Defroster_hasActiveTimeTimerExpired(tick))
+    const uint32_t tick = HAL_GetTick();
+    if((tick - handle->activeTime_TimerStart) >= (handle->config.activeTime * 60000UL)) // Minute u ms
     {
-        Defroster_ActiveTimeTimerStop(); // Zaustavi tajmer za aktivno vreme
-        SetPin(defroster.config.pin, 0);        // Iskljuci pin odmrzivaca
-    }
-}
-
-/* Public Service Function ---------------------------------------------------*/
-
-/**
- * @brief Glavna servisna funkcija za odmrzivac, upravlja ciklusima i stanjem.
- * @note Ova funkcija treba da se poziva periodicno u glavnoj petlji.
- */
-void Defroster_Service(void)
-{
-    // PROMJENA: Dodata provjera da li je Defroster odabran u meniju.
-    if (g_display_settings.selected_control_mode != MODE_DEFROSTER) {
-        return;
-    }
-
-    if(Defroster_isActive()) // Samo ako je odmrzivac globalno aktivan
-    {
-        HandleDefrosterCycle();      // Upravljaj ciklusom
-        HandleDefrosterActiveTime(); // Upravljaj aktivnim vremenom
+        handle->activeTime_TimerStart = 0; // Zaustavi tajmer
+        SetPin(handle->config.pin, 0);
     }
 }

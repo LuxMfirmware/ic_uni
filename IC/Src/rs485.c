@@ -148,18 +148,11 @@ TF_Result JALOUSIE_SET_Listener(TinyFrame *tf, TF_Msg *msg)
 {
     uint16_t adr = (uint16_t)(msg->data[0]<<8) | msg->data[1];  // sastavi adresu iz upita
     uint8_t dir = msg->data[2]; // smejr šaluzine
-    // provjeri sve strukture za žaluzina
-    for(int i = 0; i < Curtains_getCount(); i++)
-    {
-        if (adr && (curtains[i].config.relayUp != 0) && (curtains[i].config.relayDown != 0))
-        {
-            if (((adr == curtains[i].config.relayUp) && (dir == 1)) || ((adr == curtains[i].config.relayDown) && (dir == 2)))
-            {
-                Curtain_Update_External(&curtains[i], dir);
-            }
-        }
-
-    }
+    // Pozivamo novu Curtain_Update_External funkciju koja ce sama pronaci
+    // odgovarajucu roletnu i ažurirati njeno stanje.
+    // Više ne moramo da prolazimo kroz petlju ovdje.
+    Curtain_Update_External(adr, dir);
+    
     return TF_STAY;
 }
 /**
