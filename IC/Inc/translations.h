@@ -57,7 +57,7 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_MONTH_OCT */         { "Oktobar", "October", "Oktober", "Octobre", "Ottobre", "Octubre", "Октябрь", "Жовтень", "Październik", "Říjen", "Október" },
     /* TXT_MONTH_NOV */         { "Novembar", "November", "November", "Novembre", "Novembre", "Noviembre", "Ноябрь", "Листопад", "Listopad", "Listopad", "November" },
     /* TXT_MONTH_DEC */         { "Decembar", "December", "Dezember", "Décembre", "Dicembre", "Diciembre", "Декабрь", "Грудень", "Grudzień", "Prosinec", "December" },
-    /* TXT_LANGUAGE_NAME */     { "Bosanski", "English", "Deutsch", "Français", "Italiano", "Español", "Русский", "Українська", "Polski", "Čeština", "Slovenčina" },
+    /* TXT_LANGUAGE_NAME */     { "Bos/Cro/Srb/Mon", "English", "German", "French", "Italian", "Spanish", "Russian", "Ukrainian", "Polish", "Czech", "Slovak" },
     /* TXT_CURTAINS */          { "ZAVJESE", "CURTAINS", "VORHÄNGE", "RIDEAUX", "TENDE", "CORTINAS", "ШТОРЫ", "ШТОРИ", "ZASŁONY", "ZÁVĚSY", "ZÁVESY" },
     /* TXT_TV */                { "TV", "TV", "FERNSEHER", "TÉLÉ", "TV", "TELEVISIÓN", "ТВ", "ТБ", "TELEWIZOR", "TELEVIZE", "TELEVÍZOR" },
     /* TXT_HOURS */             { "Sati", "Hours", "Stunden", "Heures", "Ore", "Horas", "Часы", "Години", "Godziny", "Hodiny", "Hodiny" },

@@ -65,6 +65,18 @@ DMA2D_HandleTypeDef hdma2d;
 #define SYSTEM_STARTUP_TIME                 8765U   // 8s application startup time
 #define LSE_RESTART_ATTEMPTS                10      // Broj pokušaja prije nego što predemo na LSI
 #define LSE_TIMEOUT                         2345    // Timeout za proveru stanja oscilatora (u milisekundama)
+#define PCA9685_GENERAL_CALL_ACK			0x00U		// pca9685 general call address with ACK response
+#define PCA9685_LED_0_ON_L_REG_ADDRESS      0x06U
+#define PCA9685_PRE_SCALE_REG_ADDRESS       0xfeU
+#define PCA9685_SW_RESET_COMMAND			0x06U		// i2c pwm controller reset command
+#define PCA9685_PRE_SCALE_REGISTER          (pca9685_register[254])
+#define I2CPWM0_WRADD                       0x90
+#define I2CPWM_TOUT                         15
+#define PWM_UPDATE_TIMEOUT					12U			// 20 ms pwm data transfer timeout
+#define PWM_0_15_FREQUENCY_DEFAULT			1000U		// i2c pwm controller 1 default frequency in Hertz 
+#define PWM_16_31_FREQUENCY_DEFAULT			1000U		// i2c pwm controller 2 default frequency in Hertz 
+#define PCA9685_REGISTER_SIZE				256U        // nuber of pca9685 registers
+
 /* Private Variable ----------------------------------------------------------*/
 uint8_t sysfl   = 0, initfl = 0;
 uint16_t sysid;
@@ -86,7 +98,7 @@ static void RAM_Init(void);
 static void ADC3_Read(void);
 static void MPU_Config(void);
 static void TS_Service(void);
-void MX_IWDG_Init(void);
+static void MX_IWDG_Init(void);
 static void MX_RTC_Init(void);
 static void MX_CRC_Init(void);
 static void SaveResetSrc(void);
@@ -107,6 +119,10 @@ static void CheckRTC_Clock(void);
 static void SystemClock_Config(void);
 static uint32_t RTC_GetUnixTimeStamp(RTC_t* data);
 static float ROOM_GetTemperature(uint16_t adc_value);
+static void PCA9685_Init(void);
+static void PCA9685_Reset(void);
+static void PCA9685_OutputUpdate(void);
+static void PCA9685_SetOutputFrequency(uint16_t frequency);
 /* Program Code  -------------------------------------------------------------*/
 /**
   * @brief
@@ -123,9 +139,7 @@ int main(void) {
     CACHE_Config();
     HAL_Init();
     SystemClock_Config();
-#ifdef	USE_WATCHDOG
     MX_IWDG_Init();
-#endif
     MX_CRC_Init();
     MX_RTC_Init();
     MX_ADC3_Init();
@@ -287,7 +301,8 @@ void HAL_RTC_MspDeInit(RTC_HandleTypeDef *hrtc) {
   * @param
   * @retval
   */
-void MX_IWDG_Init(void) {
+static void MX_IWDG_Init(void) {
+#ifdef	USE_WATCHDOG
     hiwdg.Instance = IWDG;
     hiwdg.Init.Prescaler = IWDG_PRESCALER_64; //(1/(32000/32))*4095 = 4,095s
     hiwdg.Init.Window = 4095;
@@ -295,6 +310,7 @@ void MX_IWDG_Init(void) {
     if (HAL_IWDG_Init(&hiwdg) != HAL_OK) {
         SYSRestart();
     }
+#endif
 }
 /**
   * @brief
@@ -1114,7 +1130,12 @@ static uint32_t RTC_GetUnixTimeStamp(RTC_t* data) {
     return seconds;
 }
 
-void PCA9685_Init(void) { //registrovana 2 PCA965 0x90 I2CPWM0_WRADD  i 0x92  I2CPWM1_WRADD
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+static void PCA9685_Init(void) { //registrovana 2 PCA965 0x90 I2CPWM0_WRADD  i 0x92  I2CPWM1_WRADD
     uint8_t buf[2];
     if(!pwminit) return;
     buf[0] = 0x00U;
@@ -1131,9 +1152,12 @@ void PCA9685_Init(void) { //registrovana 2 PCA965 0x90 I2CPWM0_WRADD  i 0x92  I2
     ZEROFILL(pwm, 32);
     ZEROFILL(pca9685_register, PCA9685_REGISTER_SIZE);
 }
-
-
-void PCA9685_Reset(void) {
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+static void PCA9685_Reset(void) {
     uint8_t cmd = PCA9685_SW_RESET_COMMAND;
 
     if(HAL_I2C_Master_Transmit(&hi2c4, PCA9685_GENERAL_CALL_ACK, &cmd, 1, I2CPWM_TOUT) != HAL_OK) {
@@ -1142,7 +1166,12 @@ void PCA9685_Reset(void) {
 }
 
 
-void PCA9685_SetOutputFrequency(uint16_t frequency) {
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+static void PCA9685_SetOutputFrequency(uint16_t frequency){
     uint8_t buf[2];
     buf[0] = 0x00U;
     buf[1]= 0x10U;
@@ -1192,7 +1221,13 @@ void PCA9685_SetOutputFrequency(uint16_t frequency) {
 //	}
 }
 
-void PCA9685_OutputUpdate(void) {
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+static void PCA9685_OutputUpdate(void) {
+    
     uint16_t pwm_out;
     uint8_t i,j,buf[70];
     if(!pwminit) return;
@@ -1235,12 +1270,22 @@ void PCA9685_OutputUpdate(void) {
 //	}
 }
 
+/**
+  * @brief
+  * @param
+  * @retval
+  */
 void PCA9685_SetOutput(const uint8_t pin, const uint8_t value) {
     if(!pwminit) return;
     pwm[pin - 1] = value;
     PCA9685_OutputUpdate();
 }
 
+/**
+  * @brief
+  * @param
+  * @retval
+  */
 void SetDefault(void) // Not all settings from the settings menu are set to default
 {
     THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
@@ -1263,8 +1308,12 @@ void SetDefault(void) // Not all settings from the settings menu are set to defa
     Defroster_Save(pDef);
 }
 
-void SetPin(uint8_t pin, uint8_t pinVal)
-{
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+void SetPin(uint8_t pin, uint8_t pinVal){
     if(pin > 0 && pin < 7) { // Dodata provjera da li je pin validan
         switch(pin)
         {

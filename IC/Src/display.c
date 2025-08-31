@@ -282,13 +282,13 @@ static const struct
     int16_t y_mid_line_pos;         /**< Y pozicija centralne horizontalne linije. */
     int16_t vert_line_y_padding;    /**< Vertikalni razmak (padding) za linije. */
     int16_t horiz_line_x_padding;   /**< Horizontalni razmak (padding) za linije. */
-    
+
     // Pozicije centara kvadranta
     int16_t x_center_left;          /**< X koordinata centra lijeve polovine ekrana. */
     int16_t x_center_right;         /**< X koordinata centra desne polovine ekrana. */
     int16_t y_center_top;           /**< Y koordinata centra gornje polovine ekrana. */
     int16_t y_center_bottom;        /**< Y koordinata centra donje polovine ekrana. */
-    
+
     // Ofseti za elemente
     int16_t icon_vertical_offset;   /**< Vertikalni pomak za ikonice. */
     int16_t text_vertical_offset;   /**< Vertikalni pomak za tekst ispod ikonica. */
@@ -303,12 +303,12 @@ select_screen1_drawing_layout =
     .y_mid_line_pos         = 136,
     .vert_line_y_padding    = 10,
     .horiz_line_x_padding   = 30,
-    
+
     .x_center_left          = (DRAWING_AREA_WIDTH / 2) / 2,
     .x_center_right         = (DRAWING_AREA_WIDTH / 2) + (DRAWING_AREA_WIDTH / 2) / 2,
     .y_center_top           = 136 / 2,
     .y_center_bottom        = 136 + (272 - 136) / 2,
-    
+
     .icon_vertical_offset   = -10,
     .text_vertical_offset   = 10,
 
@@ -357,7 +357,7 @@ select_screen2_drawing_layout =
     .x_center_col1          = (DRAWING_AREA_WIDTH / 3) / 2,
     .x_center_col2          = (DRAWING_AREA_WIDTH / 3) + ((DRAWING_AREA_WIDTH / 3) / 2),
     .x_center_col3          = ((DRAWING_AREA_WIDTH / 3) * 2) + ((DRAWING_AREA_WIDTH / 3) / 2),
-    
+
     .y_icon_center          = 116,
     .y_text_pos             = 176,
     .y_next_button_center   = 192,
@@ -424,7 +424,9 @@ settings_screen_1_layout =
 };
 
 /** @brief Pomoćna struktura za definisanje horizontalne linije. */
-typedef struct { int16_t y, x0, x1; } HLine_t;
+typedef struct {
+    int16_t y, x0, x1;
+} HLine_t;
 
 /**
  * @brief Struktura koja sadrži konstante za ISCRTAVANJE elemenata
@@ -467,7 +469,7 @@ static const struct
     GUI_POINT label_day;                    /**< @brief Pozicija za labelu "DAY". */
     GUI_POINT label_month;                  /**< @brief Pozicija za labelu "MONTH". */
     GUI_POINT label_year;                   /**< @brief Pozicija za labelu "YEAR". */
-    
+
     HLine_t   line1, line2, line3, line4, line5; /**< @brief Definicije za sve dekorativne linije. */
 }
 settings_screen_2_layout =
@@ -566,7 +568,7 @@ static const struct
     GUI_POINT label_ventilator_title;           /**< @brief Pozicija za naslov "VENTILATOR CONTROL". */
     GUI_POINT label_defroster_title;            /**< @brief Pozicija za naslov "DEFROSTER CONTROL". */
     GUI_POINT label_select_control_title;       /**< @brief Pozicija za naslov "SELECT CONTROL 4". */
-    
+
     GUI_POINT label_ventilator_relay[2];        /**< @brief Pozicije za dvorednu labelu za relej ventilatora. */
     GUI_POINT label_ventilator_delay_on[2];     /**< @brief Pozicije za dvorednu labelu za odgodu paljenja. */
     GUI_POINT label_ventilator_delay_off[2];    /**< @brief Pozicije za dvorednu labelu za odgodu gašenja. */
@@ -721,7 +723,7 @@ static const struct
 
     GUI_POINT    device_id_label_pos[2];        /**< @brief Pozicije za dvorednu labelu za ID uređaja. */
     GUI_POINT    curtain_move_time_label_pos[2];/**< @brief Pozicije za dvorednu labelu za vrijeme kretanja roletni. */
-    
+
     WidgetRect_t language_dropdown_pos;         /**< @brief Pozicija i dimenzije za DROPDOWN odabir jezika. */
     GUI_POINT    language_label_pos;            /**< @brief Pozicija za labelu "LANGUAGE". */
 }
@@ -738,9 +740,9 @@ settings_screen_6_layout =
 
     .device_id_label_pos        = { {130, 20}, {130, 32} },
     .curtain_move_time_label_pos= { {130, 70}, {130, 82} },
-    
-    .language_dropdown_pos      = { 220, 10, 150, 120 },
-    .language_label_pos         = { 380, 25 } // 220 (x) + 150 (w) + 10 (padding)
+
+    .language_dropdown_pos      = { 220, 10, 110, 180 },
+    .language_label_pos         = { 340, 22 } // 220 (x) + 150 (w) + 10 (padding)
 };
 
 /** @brief Niz sa pokazivačima na bitmape za ikonice svjetala. Premješteno iz `lights.c`. */
@@ -1304,8 +1306,8 @@ void PID_Hook(GUI_PID_STATE * pTS)
 
         // << IZMJENA: Provjera zone hamburger menija sada koristi `global_layout` strukturu >>
         if ((pTS->x >= global_layout.hamburger_menu_zone.x0) && (pTS->x < global_layout.hamburger_menu_zone.x1) &&
-            (pTS->y >= global_layout.hamburger_menu_zone.y0) && (pTS->y < global_layout.hamburger_menu_zone.y1) &&
-            (screen < SCREEN_SETTINGS_1))
+                (pTS->y >= global_layout.hamburger_menu_zone.y0) && (pTS->y < global_layout.hamburger_menu_zone.y1) &&
+                (screen < SCREEN_SETTINGS_1))
         {
             touch_in_menu_zone = true; // Postavi fleg da je dodir počeo u zoni menija
             click = 1;                 // Svaki dodir u ovoj zoni generiše zvučni signal
@@ -1721,7 +1723,7 @@ static void Service_SelectScreen1(void)
      */
     Defroster_Handle* defHandle = Defroster_GetInstance();
     Ventilator_Handle* ventHandle = Ventilator_GetInstance();
-    
+
     /**
      * @brief Pokazivači na bitmape koje se koriste za iscrtavanje ikonica.
      * @note  Definisani su kao `const` jer se njihove vrijednosti ne mijenjaju tokom izvršavanja funkcije.
@@ -1734,7 +1736,7 @@ static void Service_SelectScreen1(void)
     const GUI_BITMAP* iconNext = &bmnext;
     const GUI_BITMAP* iconDefrosterOn = &bmdefrostericoOn;
     const GUI_BITMAP* iconVentilatorOn = &bmVENTILATOR_ON;
-    
+
     /**
      * @brief Varijable za dinamičko određivanje ikonice i teksta u četvrtom kvadrantu.
      * @note  Ove varijable se popunjavaju u `switch` bloku na osnovu globalnih podešavanja (`g_display_settings`).
@@ -1763,7 +1765,7 @@ static void Service_SelectScreen1(void)
         // Ako je mod isključen, ne prikazuje se ni ikonica ni tekst.
         break;
     }
-    
+
     /**
      * @brief Glavna logika za iscrtavanje ekrana.
      * @note  Koristi statičku varijablu `menu_lc` kao "state machine" fleg da bi se
@@ -1791,14 +1793,14 @@ static void Service_SelectScreen1(void)
          * `select_screen1_drawing_layout` strukture.
          */
         DrawHamburgerMenu();
-        
-        GUI_DrawLine(select_screen1_drawing_layout.x_separator_pos, select_screen1_drawing_layout.vert_line_y_padding, 
+
+        GUI_DrawLine(select_screen1_drawing_layout.x_separator_pos, select_screen1_drawing_layout.vert_line_y_padding,
                      select_screen1_drawing_layout.x_separator_pos, 272 - select_screen1_drawing_layout.vert_line_y_padding);
 
-        GUI_DrawLine(select_screen1_drawing_layout.horiz_line_x_padding, select_screen1_drawing_layout.y_mid_line_pos, 
+        GUI_DrawLine(select_screen1_drawing_layout.horiz_line_x_padding, select_screen1_drawing_layout.y_mid_line_pos,
                      select_screen1_drawing_layout.x_separator_pos - select_screen1_drawing_layout.horiz_line_x_padding, select_screen1_drawing_layout.y_mid_line_pos);
 
-        GUI_DrawLine(select_screen1_drawing_layout.x_mid_line_pos, select_screen1_drawing_layout.vert_line_y_padding + 10, 
+        GUI_DrawLine(select_screen1_drawing_layout.x_mid_line_pos, select_screen1_drawing_layout.vert_line_y_padding + 10,
                      select_screen1_drawing_layout.x_mid_line_pos, 272 - (select_screen1_drawing_layout.vert_line_y_padding + 10));
 
         /**
@@ -1832,31 +1834,31 @@ static void Service_SelectScreen1(void)
          * @note  Y pozicija se računa kao centar kvadranta + pola visine ikonice + mali ofset,
          * čime se tekst ispravno i konzistentno pozicionira ISPOD svake ikonice.
          */
-        GUI_SetFont(&GUI_FontVerdana20); 
+        GUI_SetFont(&GUI_FontVerdana20);
         GUI_SetColor(GUI_ORANGE);
         GUI_SetTextMode(GUI_TM_TRANS);
-        
+
         GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
         GUI_DispStringAt(lng(TXT_LIGHTS),     select_screen1_drawing_layout.x_center_left,  select_screen1_drawing_layout.y_center_top    + (iconLights->YSize / 2) + select_screen1_drawing_layout.text_vertical_offset);
-        
+
         GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
         GUI_DispStringAt(lng(TXT_THERMOSTAT), select_screen1_drawing_layout.x_center_right, select_screen1_drawing_layout.y_center_top    + (iconThermostat->YSize / 2) + select_screen1_drawing_layout.text_vertical_offset);
-        
+
         GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
         GUI_DispStringAt(lng(TXT_BLINDS),     select_screen1_drawing_layout.x_center_left,  select_screen1_drawing_layout.y_center_bottom + (iconCurtains->YSize / 2) + select_screen1_drawing_layout.text_vertical_offset);
-        
+
         if(dynamicTextID != TXT_DUMMY) {
             GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
             GUI_DispStringAt(lng(dynamicTextID), select_screen1_drawing_layout.x_center_right, select_screen1_drawing_layout.y_center_bottom + (dynamicIcon->YSize / 2) + select_screen1_drawing_layout.text_vertical_offset);
         }
-        
+
         /**
          * @brief Završetak operacije iscrtavanja.
          * @note  Prikazuje promjene na ekranu i resetuje `thermostatMenuState`.
          */
         GUI_MULTIBUF_EndEx(1);
         thermostatMenuState = 0;
-        
+
     } else if (menu_lc == 1) {
         /**
          * @brief Ažuriranje dinamičke ikone.
@@ -1868,7 +1870,7 @@ static void Service_SelectScreen1(void)
             dynamicIconUpdateFlag = 0;
             const uint16_t xDynamic = select_screen1_drawing_layout.x_center_right - (dynamicIcon ? dynamicIcon->XSize / 2 : iconDefroster->XSize / 2);
             const uint16_t yDynamic = select_screen1_drawing_layout.y_center_bottom - (dynamicIcon ? dynamicIcon->YSize / 2 : iconDefroster->YSize / 2) + select_screen1_drawing_layout.icon_vertical_offset;
-            
+
             GUI_MULTIBUF_BeginEx(1);
             GUI_ClearRect(xDynamic, yDynamic, xDynamic + (dynamicIcon ? dynamicIcon->XSize : iconDefroster->XSize), yDynamic + (dynamicIcon ? dynamicIcon->YSize : iconDefroster->YSize));
             if(dynamicIcon) {
@@ -1917,7 +1919,7 @@ static void Service_SelectScreen2(void)
         const GUI_BITMAP* iconClean = &bmCLEAN;
         const GUI_BITMAP* iconWifi = &bmwifi;
         const GUI_BITMAP* iconApp = &bmmobilePhone;
-        
+
         /**
          * @brief Iscrtavanje "NEXT" dugmeta.
          */
@@ -1934,7 +1936,7 @@ static void Service_SelectScreen2(void)
         /**
          * @brief Podešavanje fonta i ispisivanje tekstualnih labela ispod ikonica.
          */
-        GUI_SetFont(&GUI_FontVerdana20); 
+        GUI_SetFont(&GUI_FontVerdana20);
         GUI_SetColor(GUI_ORANGE);
         GUI_SetTextMode(GUI_TM_TRANS);
 
@@ -2352,14 +2354,14 @@ static void Service_SettingsScreen_2(void)
      */
     if (g_display_settings.scrnsvr_clk_clr != SPINBOX_GetValue(hSPNBX_ScrnsvrClockColour)) {
         g_display_settings.scrnsvr_clk_clr = SPINBOX_GetValue(hSPNBX_ScrnsvrClockColour);
-        
+
         // Prvo postavimo novu boju
         GUI_SetColor(clk_clrs[g_display_settings.scrnsvr_clk_clr]);
         // Zatim iscrtamo pravougaonik tom bojom
-        GUI_FillRect(settings_screen_2_layout.scrnsvr_color_preview_rect.x0, settings_screen_2_layout.scrnsvr_color_preview_rect.y0, 
+        GUI_FillRect(settings_screen_2_layout.scrnsvr_color_preview_rect.x0, settings_screen_2_layout.scrnsvr_color_preview_rect.y0,
                      settings_screen_2_layout.scrnsvr_color_preview_rect.x1, settings_screen_2_layout.scrnsvr_color_preview_rect.y1);
     }
-    
+
     /** @brief Ažuriranje statusa screensaver-a na osnovu checkbox-a. */
     if (CHECKBOX_GetState(hCHKBX_ScrnsvrClock) == 1) {
         ScrnsvrClkSet();
@@ -2394,8 +2396,14 @@ static void Service_SettingsScreen_2(void)
         // Snimi sve promjene prije prelaska na sljedeći ekran
         Display_Save();
         EE_WriteBuffer(&tfifa, EE_TFIFA, 1);
-        if (thsta) { THSTAT_Save(pThst); thsta = 0; }
-        if (lcsta) { LIGHTS_Save(); lcsta = 0; }
+        if (thsta) {
+            THSTAT_Save(pThst);
+            thsta = 0;
+        }
+        if (lcsta) {
+            LIGHTS_Save();
+            lcsta = 0;
+        }
 
         DSP_KillSet2Scrn();
         DSP_InitSet3Scrn();
@@ -2678,6 +2686,22 @@ static void Service_SettingsScreen_5(void)
  */
 static void Service_SettingsScreen_6(void)
 {
+    /** * @brief << ISPRAVKA: Varijabla je sada lokalna za funkciju. >>
+     * @note  Inicijalizovaće se na 0 samo pri prvom pozivu funkcije,
+     * a nakon toga će čuvati svoju vrijednost između poziva.
+     */
+    static uint8_t old_language_selection = 0;
+    uint8_t current_language_selection = DROPDOWN_GetSel(hDRPDN_Language);
+    if (current_language_selection != old_language_selection) {
+        old_language_selection = current_language_selection;
+        g_display_settings.language = current_language_selection;
+        settingsChanged = 1;
+
+        DSP_KillSet6Scrn();
+        DSP_InitSet6Scrn();
+        return;
+    }
+
     if(BUTTON_IsPressed(hBUTTON_SET_DEFAULTS)) {
         SetDefault();
     } else if(BUTTON_IsPressed(hBUTTON_SYSRESTART)) {
@@ -2698,11 +2722,6 @@ static void Service_SettingsScreen_6(void)
         }
         if(g_display_settings.light_night_timer_enabled != CHECKBOX_GetState(hCHKBX_LIGHT_NIGHT_TIMER)) {
             g_display_settings.light_night_timer_enabled = CHECKBOX_GetState(hCHKBX_LIGHT_NIGHT_TIMER);
-            settingsChanged = 1;
-        }
-        /** @brief << NOVO: Provjera promjene u DROPDOWN-u za jezik >> */
-        if (g_display_settings.language != DROPDOWN_GetSel(hDRPDN_Language)) {
-            g_display_settings.language = DROPDOWN_GetSel(hDRPDN_Language);
             settingsChanged = 1;
         }
     }
@@ -3386,7 +3405,7 @@ static void DSP_InitSet1Scrn(void)
     hThstMaxSetPoint = SPINBOX_CreateEx(settings_screen_1_layout.thst_max_sp_pos.x, settings_screen_1_layout.thst_max_sp_pos.y, settings_screen_1_layout.thst_max_sp_pos.w, settings_screen_1_layout.thst_max_sp_pos.h, 0, WM_CF_SHOW, ID_MaxSetpoint, THST_SP_MIN, THST_SP_MAX);
     SPINBOX_SetEdge(hThstMaxSetPoint, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hThstMaxSetPoint, Thermostat_Get_SP_Max(pThst));
-    
+
     hThstMinSetPoint = SPINBOX_CreateEx(settings_screen_1_layout.thst_min_sp_pos.x, settings_screen_1_layout.thst_min_sp_pos.y, settings_screen_1_layout.thst_min_sp_pos.w, settings_screen_1_layout.thst_min_sp_pos.h, 0, WM_CF_SHOW, ID_MinSetpoint, THST_SP_MIN, THST_SP_MAX);
     SPINBOX_SetEdge(hThstMinSetPoint, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hThstMinSetPoint, Thermostat_Get_SP_Min(pThst));
@@ -3399,7 +3418,7 @@ static void DSP_InitSet1Scrn(void)
     RADIO_SetText(hFanControl, "ON / OFF", 0);
     RADIO_SetText(hFanControl, "3 SPEED", 1);
     RADIO_SetValue(hFanControl, Thermostat_GetFanControlMode(pThst));
-    
+
     hFanDiff = SPINBOX_CreateEx(settings_screen_1_layout.fan_diff_pos.x, settings_screen_1_layout.fan_diff_pos.y, settings_screen_1_layout.fan_diff_pos.w, settings_screen_1_layout.fan_diff_pos.h, 0, WM_CF_SHOW, ID_FanDiff, 0, 10);
     SPINBOX_SetEdge(hFanDiff, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hFanDiff, Thermostat_GetFanDifference(pThst));
@@ -3407,7 +3426,7 @@ static void DSP_InitSet1Scrn(void)
     hFanLowBand = SPINBOX_CreateEx(settings_screen_1_layout.fan_low_band_pos.x, settings_screen_1_layout.fan_low_band_pos.y, settings_screen_1_layout.fan_low_band_pos.w, settings_screen_1_layout.fan_low_band_pos.h, 0, WM_CF_SHOW, ID_FanLowBand, 0, 50);
     SPINBOX_SetEdge(hFanLowBand, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hFanLowBand, Thermostat_GetFanLowBand(pThst));
-    
+
     hFanHiBand = SPINBOX_CreateEx(settings_screen_1_layout.fan_hi_band_pos.x, settings_screen_1_layout.fan_hi_band_pos.y, settings_screen_1_layout.fan_hi_band_pos.w, settings_screen_1_layout.fan_hi_band_pos.h, 0, WM_CF_SHOW, ID_FanHiBand, 0, 100);
     SPINBOX_SetEdge(hFanHiBand, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hFanHiBand, Thermostat_GetFanHighBand(pThst));
@@ -3418,7 +3437,7 @@ static void DSP_InitSet1Scrn(void)
     hThstGroup = SPINBOX_CreateEx(settings_screen_1_layout.thst_group_pos.x, settings_screen_1_layout.thst_group_pos.y, settings_screen_1_layout.thst_group_pos.w, settings_screen_1_layout.thst_group_pos.h, 0, WM_CF_SHOW, ID_THST_GROUP, 0, 254);
     SPINBOX_SetEdge(hThstGroup, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hThstGroup, Thermostat_GetGroup(pThst));
-    
+
     // << ISPRAVKA: Dodat je 7. argument (ExFlags) sa vrijednošću 0. >>
     hThstMaster = CHECKBOX_CreateEx(settings_screen_1_layout.thst_master_pos.x, settings_screen_1_layout.thst_master_pos.y, settings_screen_1_layout.thst_master_pos.w, settings_screen_1_layout.thst_master_pos.h, 0, WM_CF_SHOW, 0, ID_THST_MASTER);
     CHECKBOX_SetTextColor(hThstMaster, GUI_GREEN);
@@ -3440,41 +3459,41 @@ static void DSP_InitSet1Scrn(void)
     GUI_SetColor(GUI_WHITE);
     GUI_SetFont(GUI_FONT_13_1);
     GUI_SetTextAlign(GUI_TA_LEFT|GUI_TA_VCENTER);
-    
+
     GUI_GotoXY(settings_screen_1_layout.label_thst_max_sp[0].x, settings_screen_1_layout.label_thst_max_sp[0].y);
     GUI_DispString("MAX. USER SETPOINT");
     GUI_GotoXY(settings_screen_1_layout.label_thst_max_sp[1].x, settings_screen_1_layout.label_thst_max_sp[1].y);
     GUI_DispString("TEMP. x1*C");
-    
+
     GUI_GotoXY(settings_screen_1_layout.label_thst_min_sp[0].x, settings_screen_1_layout.label_thst_min_sp[0].y);
     GUI_DispString("MIN. USER SETPOINT");
     GUI_GotoXY(settings_screen_1_layout.label_thst_min_sp[1].x, settings_screen_1_layout.label_thst_min_sp[1].y);
     GUI_DispString("TEMP. x1*C");
-    
+
     GUI_GotoXY(settings_screen_1_layout.label_fan_diff[0].x, settings_screen_1_layout.label_fan_diff[0].y);
     GUI_DispString("FAN SPEED DIFFERENCE");
     GUI_GotoXY(settings_screen_1_layout.label_fan_diff[1].x, settings_screen_1_layout.label_fan_diff[1].y);
     GUI_DispString("TEMP. x0.1*C");
-    
+
     GUI_GotoXY(settings_screen_1_layout.label_fan_low[0].x, settings_screen_1_layout.label_fan_low[0].y);
     GUI_DispString("FAN LOW SPEED BAND");
     GUI_GotoXY(settings_screen_1_layout.label_fan_low[1].x, settings_screen_1_layout.label_fan_low[1].y);
     GUI_DispString("SETPOINT +/- x0.1*C");
-    
+
     GUI_GotoXY(settings_screen_1_layout.label_fan_hi[0].x, settings_screen_1_layout.label_fan_hi[0].y);
     GUI_DispString("FAN HI SPEED BAND");
     GUI_GotoXY(settings_screen_1_layout.label_fan_hi[1].x, settings_screen_1_layout.label_fan_hi[1].y);
     GUI_DispString("SETPOINT +/- x0.1*C");
-    
+
     GUI_GotoXY(settings_screen_1_layout.label_thst_ctrl_title.x, settings_screen_1_layout.label_thst_ctrl_title.y);
     GUI_DispString("THERMOSTAT CONTROL MODE");
-    
+
     GUI_GotoXY(settings_screen_1_layout.label_fan_ctrl_title.x, settings_screen_1_layout.label_fan_ctrl_title.y);
     GUI_DispString("FAN SPEED CONTROL MODE");
-    
+
     GUI_GotoXY(settings_screen_1_layout.label_thst_group.x, settings_screen_1_layout.label_thst_group.y);
     GUI_DispString("GROUP");
-    
+
     GUI_DrawHLine(12, 5, 320);
     GUI_DrawHLine(130, 5, 320);
 
@@ -3525,7 +3544,7 @@ static void DSP_InitSet2Scrn(void)
     hSPNBX_DisplayHighBrightness = SPINBOX_CreateEx(settings_screen_2_layout.high_brightness_pos.x, settings_screen_2_layout.high_brightness_pos.y, settings_screen_2_layout.high_brightness_pos.w, settings_screen_2_layout.high_brightness_pos.h, 0, WM_CF_SHOW, ID_DisplayHighBrightness, 1, 90);
     SPINBOX_SetEdge(hSPNBX_DisplayHighBrightness, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hSPNBX_DisplayHighBrightness, g_display_settings.high_bcklght);
-    
+
     hSPNBX_DisplayLowBrightness = SPINBOX_CreateEx(settings_screen_2_layout.low_brightness_pos.x, settings_screen_2_layout.low_brightness_pos.y, settings_screen_2_layout.low_brightness_pos.w, settings_screen_2_layout.low_brightness_pos.h, 0, WM_CF_SHOW, ID_DisplayLowBrightness, 1, 90);
     SPINBOX_SetEdge(hSPNBX_DisplayLowBrightness, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hSPNBX_DisplayLowBrightness, g_display_settings.low_bcklght);
@@ -3537,7 +3556,7 @@ static void DSP_InitSet2Scrn(void)
     hSPNBX_ScrnsvrEnableHour = SPINBOX_CreateEx(settings_screen_2_layout.scrnsvr_enable_hour_pos.x, settings_screen_2_layout.scrnsvr_enable_hour_pos.y, settings_screen_2_layout.scrnsvr_enable_hour_pos.w, settings_screen_2_layout.scrnsvr_enable_hour_pos.h, 0, WM_CF_SHOW, ID_ScrnsvrEnableHour, 0, 23);
     SPINBOX_SetEdge(hSPNBX_ScrnsvrEnableHour, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hSPNBX_ScrnsvrEnableHour, g_display_settings.scrnsvr_ena_hour);
-    
+
     hSPNBX_ScrnsvrDisableHour = SPINBOX_CreateEx(settings_screen_2_layout.scrnsvr_disable_hour_pos.x, settings_screen_2_layout.scrnsvr_disable_hour_pos.y, settings_screen_2_layout.scrnsvr_disable_hour_pos.w, settings_screen_2_layout.scrnsvr_disable_hour_pos.h, 0, WM_CF_SHOW, ID_ScrnsvrDisableHour, 0, 23);
     SPINBOX_SetEdge(hSPNBX_ScrnsvrDisableHour, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hSPNBX_ScrnsvrDisableHour, g_display_settings.scrnsvr_dis_hour);
@@ -3549,7 +3568,7 @@ static void DSP_InitSet2Scrn(void)
     hSPNBX_Minute = SPINBOX_CreateEx(settings_screen_2_layout.minute_pos.x, settings_screen_2_layout.minute_pos.y, settings_screen_2_layout.minute_pos.w, settings_screen_2_layout.minute_pos.h, 0, WM_CF_SHOW, ID_Minute, 0, 59);
     SPINBOX_SetEdge(hSPNBX_Minute, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hSPNBX_Minute, Bcd2Dec(rtctm.Minutes));
-    
+
     hSPNBX_Day = SPINBOX_CreateEx(settings_screen_2_layout.day_pos.x, settings_screen_2_layout.day_pos.y, settings_screen_2_layout.day_pos.w, settings_screen_2_layout.day_pos.h, 0, WM_CF_SHOW, ID_Day, 1, 31);
     SPINBOX_SetEdge(hSPNBX_Day, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hSPNBX_Day, Bcd2Dec(rtcdt.Date));
@@ -3557,7 +3576,7 @@ static void DSP_InitSet2Scrn(void)
     hSPNBX_Month = SPINBOX_CreateEx(settings_screen_2_layout.month_pos.x, settings_screen_2_layout.month_pos.y, settings_screen_2_layout.month_pos.w, settings_screen_2_layout.month_pos.h, 0, WM_CF_SHOW, ID_Month, 1, 12);
     SPINBOX_SetEdge(hSPNBX_Month, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hSPNBX_Month, Bcd2Dec(rtcdt.Month));
-    
+
     hSPNBX_Year = SPINBOX_CreateEx(settings_screen_2_layout.year_pos.x, settings_screen_2_layout.year_pos.y, settings_screen_2_layout.year_pos.w, settings_screen_2_layout.year_pos.h, 0, WM_CF_SHOW, ID_Year, 2000, 2099);
     SPINBOX_SetEdge(hSPNBX_Year, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hSPNBX_Year, (Bcd2Dec(rtcdt.Year) + 2000));
@@ -3565,12 +3584,12 @@ static void DSP_InitSet2Scrn(void)
     hSPNBX_ScrnsvrClockColour = SPINBOX_CreateEx(settings_screen_2_layout.scrnsvr_color_pos.x, settings_screen_2_layout.scrnsvr_color_pos.y, settings_screen_2_layout.scrnsvr_color_pos.w, settings_screen_2_layout.scrnsvr_color_pos.h, 0, WM_CF_SHOW, ID_ScrnsvrClkColour, 1, COLOR_BSIZE);
     SPINBOX_SetEdge(hSPNBX_ScrnsvrClockColour, SPINBOX_EDGE_CENTER);
     SPINBOX_SetValue(hSPNBX_ScrnsvrClockColour, g_display_settings.scrnsvr_clk_clr);
-    
+
     hCHKBX_ScrnsvrClock = CHECKBOX_CreateEx(settings_screen_2_layout.scrnsvr_checkbox_pos.x, settings_screen_2_layout.scrnsvr_checkbox_pos.y, settings_screen_2_layout.scrnsvr_checkbox_pos.w, settings_screen_2_layout.scrnsvr_checkbox_pos.h, 0, WM_CF_SHOW, 0, ID_ScrnsvrClock);
     CHECKBOX_SetTextColor(hCHKBX_ScrnsvrClock, GUI_GREEN);
     CHECKBOX_SetText(hCHKBX_ScrnsvrClock, "SCREENSAVER");
     CHECKBOX_SetState(hCHKBX_ScrnsvrClock, IsScrnsvrClkActiv() ? 1 : 0);
-    
+
     hDRPDN_WeekDay = DROPDOWN_CreateEx(settings_screen_2_layout.weekday_dropdown_pos.x, settings_screen_2_layout.weekday_dropdown_pos.y, settings_screen_2_layout.weekday_dropdown_pos.w, settings_screen_2_layout.weekday_dropdown_pos.h, 0, WM_CF_SHOW, DROPDOWN_CF_AUTOSCROLLBAR, ID_WeekDay);
     /** * @brief << ISPRAVKA: Logika za popunjavanje dropdown menija za dane u sedmici. >>
      * @note  Petlja sada ispravno iterira 7 puta (za 7 dana) i dodaje stringove
@@ -3588,9 +3607,9 @@ static void DSP_InitSet2Scrn(void)
 
     /** @brief Iscrtavanje labela, linija i pregleda boje, koristeći pozicije iz layout strukture. */
     GUI_SetColor(clk_clrs[g_display_settings.scrnsvr_clk_clr]);
-    GUI_FillRect(settings_screen_2_layout.scrnsvr_color_preview_rect.x0, settings_screen_2_layout.scrnsvr_color_preview_rect.y0, 
+    GUI_FillRect(settings_screen_2_layout.scrnsvr_color_preview_rect.x0, settings_screen_2_layout.scrnsvr_color_preview_rect.y0,
                  settings_screen_2_layout.scrnsvr_color_preview_rect.x1, settings_screen_2_layout.scrnsvr_color_preview_rect.y1);
-                 
+
     GUI_SetColor(GUI_WHITE);
     GUI_SetFont(GUI_FONT_13_1);
     GUI_SetTextAlign(GUI_TA_LEFT|GUI_TA_VCENTER);
@@ -3602,7 +3621,7 @@ static void DSP_InitSet2Scrn(void)
     GUI_DispString("HIGH");
     GUI_GotoXY(settings_screen_2_layout.label_low_brightness.x, settings_screen_2_layout.label_low_brightness.y);
     GUI_DispString("LOW");
-    
+
     GUI_DrawHLine(settings_screen_2_layout.line2.y, settings_screen_2_layout.line2.x0, settings_screen_2_layout.line2.x1);
     GUI_GotoXY(settings_screen_2_layout.label_time_title.x, settings_screen_2_layout.label_time_title.y);
     GUI_DispString("SET TIME");
@@ -3671,7 +3690,7 @@ static void DSP_KillSet2Scrn(void)
 /**
  * @brief Inicijalizuje treći ekran podešavanja (ventilator i odmrzivač).
  * @note Kreira widgete za postavke releja, odgode paljenja i gašenja
- * ventilatora i odmrzivača. Sav raspored elemenata je definisan u 
+ * ventilatora i odmrzivača. Sav raspored elemenata je definisan u
  * `settings_screen_3_layout` strukturi.
  */
 static void DSP_InitSet3Scrn(void)
@@ -3745,31 +3764,52 @@ static void DSP_InitSet3Scrn(void)
     GUI_SetTextAlign(GUI_TA_LEFT|GUI_TA_VCENTER);
 
     // Labele za VENTILATOR
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_relay[0].x, settings_screen_3_layout.label_ventilator_relay[0].y); GUI_DispString("VENTILATOR");
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_relay[1].x, settings_screen_3_layout.label_ventilator_relay[1].y); GUI_DispString("BUS RELAY");
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_delay_on[0].x, settings_screen_3_layout.label_ventilator_delay_on[0].y); GUI_DispString("VENTILATOR");
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_delay_on[1].x, settings_screen_3_layout.label_ventilator_delay_on[1].y); GUI_DispString("DELAY ON");
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_delay_off[0].x, settings_screen_3_layout.label_ventilator_delay_off[0].y); GUI_DispString("VENTILATOR");
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_delay_off[1].x, settings_screen_3_layout.label_ventilator_delay_off[1].y); GUI_DispString("DELAY OFF");
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_trigger1[0].x, settings_screen_3_layout.label_ventilator_trigger1[0].y); GUI_DispString("VENTILATOR");
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_trigger1[1].x, settings_screen_3_layout.label_ventilator_trigger1[1].y); GUI_DispString("TRIGGER 1");
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_trigger2[0].x, settings_screen_3_layout.label_ventilator_trigger2[0].y); GUI_DispString("VENTILATOR");
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_trigger2[1].x, settings_screen_3_layout.label_ventilator_trigger2[1].y); GUI_DispString("TRIGGER 2");
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_local_pin[0].x, settings_screen_3_layout.label_ventilator_local_pin[0].y); GUI_DispString("VENTILATOR");
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_local_pin[1].x, settings_screen_3_layout.label_ventilator_local_pin[1].y); GUI_DispString("LOCAL PIN");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_relay[0].x, settings_screen_3_layout.label_ventilator_relay[0].y);
+    GUI_DispString("VENTILATOR");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_relay[1].x, settings_screen_3_layout.label_ventilator_relay[1].y);
+    GUI_DispString("BUS RELAY");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_delay_on[0].x, settings_screen_3_layout.label_ventilator_delay_on[0].y);
+    GUI_DispString("VENTILATOR");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_delay_on[1].x, settings_screen_3_layout.label_ventilator_delay_on[1].y);
+    GUI_DispString("DELAY ON");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_delay_off[0].x, settings_screen_3_layout.label_ventilator_delay_off[0].y);
+    GUI_DispString("VENTILATOR");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_delay_off[1].x, settings_screen_3_layout.label_ventilator_delay_off[1].y);
+    GUI_DispString("DELAY OFF");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_trigger1[0].x, settings_screen_3_layout.label_ventilator_trigger1[0].y);
+    GUI_DispString("VENTILATOR");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_trigger1[1].x, settings_screen_3_layout.label_ventilator_trigger1[1].y);
+    GUI_DispString("TRIGGER 1");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_trigger2[0].x, settings_screen_3_layout.label_ventilator_trigger2[0].y);
+    GUI_DispString("VENTILATOR");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_trigger2[1].x, settings_screen_3_layout.label_ventilator_trigger2[1].y);
+    GUI_DispString("TRIGGER 2");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_local_pin[0].x, settings_screen_3_layout.label_ventilator_local_pin[0].y);
+    GUI_DispString("VENTILATOR");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_local_pin[1].x, settings_screen_3_layout.label_ventilator_local_pin[1].y);
+    GUI_DispString("LOCAL PIN");
 
     // Labele za DEFROSTER
-    GUI_GotoXY(settings_screen_3_layout.label_defroster_cycle_time[0].x, settings_screen_3_layout.label_defroster_cycle_time[0].y); GUI_DispString("DEFROSTER");
-    GUI_GotoXY(settings_screen_3_layout.label_defroster_cycle_time[1].x, settings_screen_3_layout.label_defroster_cycle_time[1].y); GUI_DispString("CYCLE TIME");
-    GUI_GotoXY(settings_screen_3_layout.label_defroster_active_time[0].x, settings_screen_3_layout.label_defroster_active_time[0].y); GUI_DispString("DEFROSTER");
-    GUI_GotoXY(settings_screen_3_layout.label_defroster_active_time[1].x, settings_screen_3_layout.label_defroster_active_time[1].y); GUI_DispString("ACTIVE TIME");
-    GUI_GotoXY(settings_screen_3_layout.label_defroster_pin[0].x, settings_screen_3_layout.label_defroster_pin[0].y); GUI_DispString("DEFROSTER");
-    GUI_GotoXY(settings_screen_3_layout.label_defroster_pin[1].x, settings_screen_3_layout.label_defroster_pin[1].y); GUI_DispString("PIN");
+    GUI_GotoXY(settings_screen_3_layout.label_defroster_cycle_time[0].x, settings_screen_3_layout.label_defroster_cycle_time[0].y);
+    GUI_DispString("DEFROSTER");
+    GUI_GotoXY(settings_screen_3_layout.label_defroster_cycle_time[1].x, settings_screen_3_layout.label_defroster_cycle_time[1].y);
+    GUI_DispString("CYCLE TIME");
+    GUI_GotoXY(settings_screen_3_layout.label_defroster_active_time[0].x, settings_screen_3_layout.label_defroster_active_time[0].y);
+    GUI_DispString("DEFROSTER");
+    GUI_GotoXY(settings_screen_3_layout.label_defroster_active_time[1].x, settings_screen_3_layout.label_defroster_active_time[1].y);
+    GUI_DispString("ACTIVE TIME");
+    GUI_GotoXY(settings_screen_3_layout.label_defroster_pin[0].x, settings_screen_3_layout.label_defroster_pin[0].y);
+    GUI_DispString("DEFROSTER");
+    GUI_GotoXY(settings_screen_3_layout.label_defroster_pin[1].x, settings_screen_3_layout.label_defroster_pin[1].y);
+    GUI_DispString("PIN");
 
     // Labele za naslove i odabir kontrole
-    GUI_GotoXY(settings_screen_3_layout.label_ventilator_title.x, settings_screen_3_layout.label_ventilator_title.y); GUI_DispString("VENTILATOR CONTROL");
-    GUI_GotoXY(settings_screen_3_layout.label_defroster_title.x, settings_screen_3_layout.label_defroster_title.y); GUI_DispString("DEFROSTER CONTROL");
-    GUI_GotoXY(settings_screen_3_layout.label_select_control_title.x, settings_screen_3_layout.label_select_control_title.y); GUI_DispString("SELECT CONTROL 4");
+    GUI_GotoXY(settings_screen_3_layout.label_ventilator_title.x, settings_screen_3_layout.label_ventilator_title.y);
+    GUI_DispString("VENTILATOR CONTROL");
+    GUI_GotoXY(settings_screen_3_layout.label_defroster_title.x, settings_screen_3_layout.label_defroster_title.y);
+    GUI_DispString("DEFROSTER CONTROL");
+    GUI_GotoXY(settings_screen_3_layout.label_select_control_title.x, settings_screen_3_layout.label_select_control_title.y);
+    GUI_DispString("SELECT CONTROL 4");
 
     // Linije
     GUI_DrawHLine(settings_screen_3_layout.line_ventilator_title.y, settings_screen_3_layout.line_ventilator_title.x0, settings_screen_3_layout.line_ventilator_title.x1);
@@ -3822,10 +3862,10 @@ static void DSP_InitSet4Scrn(void)
      * (`curtainSettingMenu`).
      */
     for(uint8_t i = curtainSettingMenu * 4; i < (((CURTAINS_SIZE - (curtainSettingMenu * 4)) >= 4) ? ((curtainSettingMenu * 4) + 4) : CURTAINS_SIZE); i++) {
-        
+
         /** @brief Dobijamo handle za roletnu po njenom fizičkom indeksu u nizu. */
         Curtain_Handle* handle = Curtain_GetInstanceByIndex(i);
-        
+
         /**
          * @brief Dinamičko izračunavanje pozicija za trenutnu roletnu u mreži.
          * @note  Ova logika postavlja widgete u dvije kolone i dva reda.
@@ -3834,7 +3874,7 @@ static void DSP_InitSet4Scrn(void)
         int row = (i % 4) % 2;          // 0 za prvi red, 1 za drugi
         int x = settings_screen_4_layout.grid_start_pos.x + (col * settings_screen_4_layout.x_col_spacing);
         int y = settings_screen_4_layout.grid_start_pos.y + (row * settings_screen_4_layout.y_group_spacing);
-        
+
         /**
          * @brief Kreiranje SPINBOX-a za relej "GORE".
          * @note  Poziv `SPINBOX_CreateEx` ima 9 argumenata.
@@ -3858,14 +3898,14 @@ static void DSP_InitSet4Scrn(void)
         GUI_SetColor(GUI_WHITE);
         GUI_SetFont(GUI_FONT_13_1);
         GUI_SetTextAlign(GUI_TA_LEFT|GUI_TA_VCENTER);
-        
+
         // Labela za "GORE"
         GUI_GotoXY(x + settings_screen_4_layout.label_line1_offset.x, y + settings_screen_4_layout.label_line1_offset.y);
         GUI_DispString("CURTAIN ");
         GUI_DispDec(i + 1, 2);
         GUI_GotoXY(x + settings_screen_4_layout.label_line1_offset.x, y + settings_screen_4_layout.label_line1_offset.y + settings_screen_4_layout.label_line2_offset_y);
         GUI_DispString("RELAY UP");
-        
+
         // Labela za "DOLE"
         GUI_GotoXY(x + settings_screen_4_layout.label_line1_offset.x, y + settings_screen_4_layout.y_row_spacing + settings_screen_4_layout.label_line1_offset.y);
         GUI_DispString("CURTAIN ");
@@ -3949,13 +3989,13 @@ static void DSP_InitSet5Scrn(void)
 
     /** @brief Kreiranje widgeta u drugoj koloni. */
     x = settings_screen_5_layout.col2_x;
-    
+
     lightsWidgets[light_index].offTime                = SPINBOX_CreateEx(x, y, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 6, 0, 255);
     lightsWidgets[light_index].communication_type     = SPINBOX_CreateEx(x, y + 1 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 7, 1, 3);
     lightsWidgets[light_index].local_pin              = SPINBOX_CreateEx(x, y + 2 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 8, 0, 32);
     lightsWidgets[light_index].sleep_time             = SPINBOX_CreateEx(x, y + 3 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 9, 0, 255);
     lightsWidgets[light_index].button_external        = SPINBOX_CreateEx(x, y + 4 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 10, 0, 3);
-    
+
     const WidgetRect_t* cb1_size = &settings_screen_5_layout.checkbox1_size;
     lightsWidgets[light_index].tiedToMainLight = CHECKBOX_CreateEx(x, y + 5 * y_step, cb1_size->w, cb1_size->h, 0, WM_CF_SHOW, 0, ID_LightsModbusRelay + (light_index * 12) + 11);
 
@@ -3964,18 +4004,29 @@ static void DSP_InitSet5Scrn(void)
 
 
     /** @brief Postavljanje početnih vrijednosti za sve kreirane widgete. */
-    SPINBOX_SetEdge(lightsWidgets[light_index].relay, SPINBOX_EDGE_CENTER);                 SPINBOX_SetValue(lightsWidgets[light_index].relay, LIGHT_GetRelay(handle));
-    SPINBOX_SetEdge(lightsWidgets[light_index].iconID, SPINBOX_EDGE_CENTER);                SPINBOX_SetValue(lightsWidgets[light_index].iconID, LIGHT_GetIconID(handle));
-    SPINBOX_SetEdge(lightsWidgets[light_index].controllerID_on, SPINBOX_EDGE_CENTER);      SPINBOX_SetValue(lightsWidgets[light_index].controllerID_on, LIGHT_GetControllerID(handle));
-    SPINBOX_SetEdge(lightsWidgets[light_index].controllerID_on_delay, SPINBOX_EDGE_CENTER);SPINBOX_SetValue(lightsWidgets[light_index].controllerID_on_delay, LIGHT_GetOnDelayTime(handle));
-    SPINBOX_SetEdge(lightsWidgets[light_index].on_hour, SPINBOX_EDGE_CENTER);              SPINBOX_SetValue(lightsWidgets[light_index].on_hour, LIGHT_GetOnHour(handle));
-    SPINBOX_SetEdge(lightsWidgets[light_index].on_minute, SPINBOX_EDGE_CENTER);            SPINBOX_SetValue(lightsWidgets[light_index].on_minute, LIGHT_GetOnMinute(handle));
-    SPINBOX_SetEdge(lightsWidgets[light_index].offTime, SPINBOX_EDGE_CENTER);              SPINBOX_SetValue(lightsWidgets[light_index].offTime, LIGHT_GetOffTime(handle));
-    SPINBOX_SetEdge(lightsWidgets[light_index].communication_type, SPINBOX_EDGE_CENTER);  SPINBOX_SetValue(lightsWidgets[light_index].communication_type, LIGHT_GetCommunicationType(handle));
-    SPINBOX_SetEdge(lightsWidgets[light_index].local_pin, SPINBOX_EDGE_CENTER);            SPINBOX_SetValue(lightsWidgets[light_index].local_pin, LIGHT_GetLocalPin(handle));
-    SPINBOX_SetEdge(lightsWidgets[light_index].sleep_time, SPINBOX_EDGE_CENTER);            SPINBOX_SetValue(lightsWidgets[light_index].sleep_time, LIGHT_GetSleepTime(handle));
-    SPINBOX_SetEdge(lightsWidgets[light_index].button_external, SPINBOX_EDGE_CENTER);      SPINBOX_SetValue(lightsWidgets[light_index].button_external, LIGHT_GetButtonExternal(handle));
-    
+    SPINBOX_SetEdge(lightsWidgets[light_index].relay, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(lightsWidgets[light_index].relay, LIGHT_GetRelay(handle));
+    SPINBOX_SetEdge(lightsWidgets[light_index].iconID, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(lightsWidgets[light_index].iconID, LIGHT_GetIconID(handle));
+    SPINBOX_SetEdge(lightsWidgets[light_index].controllerID_on, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(lightsWidgets[light_index].controllerID_on, LIGHT_GetControllerID(handle));
+    SPINBOX_SetEdge(lightsWidgets[light_index].controllerID_on_delay, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(lightsWidgets[light_index].controllerID_on_delay, LIGHT_GetOnDelayTime(handle));
+    SPINBOX_SetEdge(lightsWidgets[light_index].on_hour, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(lightsWidgets[light_index].on_hour, LIGHT_GetOnHour(handle));
+    SPINBOX_SetEdge(lightsWidgets[light_index].on_minute, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(lightsWidgets[light_index].on_minute, LIGHT_GetOnMinute(handle));
+    SPINBOX_SetEdge(lightsWidgets[light_index].offTime, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(lightsWidgets[light_index].offTime, LIGHT_GetOffTime(handle));
+    SPINBOX_SetEdge(lightsWidgets[light_index].communication_type, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(lightsWidgets[light_index].communication_type, LIGHT_GetCommunicationType(handle));
+    SPINBOX_SetEdge(lightsWidgets[light_index].local_pin, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(lightsWidgets[light_index].local_pin, LIGHT_GetLocalPin(handle));
+    SPINBOX_SetEdge(lightsWidgets[light_index].sleep_time, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(lightsWidgets[light_index].sleep_time, LIGHT_GetSleepTime(handle));
+    SPINBOX_SetEdge(lightsWidgets[light_index].button_external, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(lightsWidgets[light_index].button_external, LIGHT_GetButtonExternal(handle));
+
     CHECKBOX_SetTextColor(lightsWidgets[light_index].tiedToMainLight, GUI_GREEN);
     CHECKBOX_SetText(lightsWidgets[light_index].tiedToMainLight, "TIED TO MAIN LIGHT");
     CHECKBOX_SetState(lightsWidgets[light_index].tiedToMainLight, LIGHT_isTiedToMainLight(handle));
@@ -3989,7 +4040,7 @@ static void DSP_InitSet5Scrn(void)
     BUTTON_SetText(hBUTTON_Next, "NEXT");
     hBUTTON_Ok = BUTTON_CreateEx(settings_screen_5_layout.save_button_pos.x, settings_screen_5_layout.save_button_pos.y, settings_screen_5_layout.save_button_pos.w, settings_screen_5_layout.save_button_pos.h, 0, WM_CF_SHOW, 0, ID_Ok);
     BUTTON_SetText(hBUTTON_Ok, "SAVE");
-    
+
     /** @brief Iscrtavanje labela. */
     GUI_SetColor(GUI_WHITE);
     GUI_SetFont(GUI_FONT_13_1);
@@ -4001,42 +4052,75 @@ static void DSP_InitSet5Scrn(void)
     y = settings_screen_5_layout.start_y;
 
     // Prva kolona labela
-    GUI_GotoXY(x + label_offset->x, y + label_offset->y); GUI_DispString("LIGHT "); GUI_DispDec(light_index + 1, 2);
-    GUI_GotoXY(x + label_offset->x, y + label_offset->y + label_y2_offset); GUI_DispString("RELAY");
+    GUI_GotoXY(x + label_offset->x, y + label_offset->y);
+    GUI_DispString("LIGHT ");
+    GUI_DispDec(light_index + 1, 2);
+    GUI_GotoXY(x + label_offset->x, y + label_offset->y + label_y2_offset);
+    GUI_DispString("RELAY");
 
-    GUI_GotoXY(x + label_offset->x, y + 1 * y_step + label_offset->y); GUI_DispString("LIGHT "); GUI_DispDec(light_index + 1, 2);
-    GUI_GotoXY(x + label_offset->x, y + 1 * y_step + label_offset->y + label_y2_offset); GUI_DispString("ICON");
-    
-    GUI_GotoXY(x + label_offset->x, y + 2 * y_step + label_offset->y); GUI_DispString("LIGHT "); GUI_DispDec(light_index + 1, 2);
-    GUI_GotoXY(x + label_offset->x, y + 2 * y_step + label_offset->y + label_y2_offset); GUI_DispString("ON ID");
+    GUI_GotoXY(x + label_offset->x, y + 1 * y_step + label_offset->y);
+    GUI_DispString("LIGHT ");
+    GUI_DispDec(light_index + 1, 2);
+    GUI_GotoXY(x + label_offset->x, y + 1 * y_step + label_offset->y + label_y2_offset);
+    GUI_DispString("ICON");
 
-    GUI_GotoXY(x + label_offset->x, y + 3 * y_step + label_offset->y); GUI_DispString("LIGHT "); GUI_DispDec(light_index + 1, 2);
-    GUI_GotoXY(x + label_offset->x, y + 3 * y_step + label_offset->y + label_y2_offset); GUI_DispString("ON ID DELAY");
+    GUI_GotoXY(x + label_offset->x, y + 2 * y_step + label_offset->y);
+    GUI_DispString("LIGHT ");
+    GUI_DispDec(light_index + 1, 2);
+    GUI_GotoXY(x + label_offset->x, y + 2 * y_step + label_offset->y + label_y2_offset);
+    GUI_DispString("ON ID");
 
-    GUI_GotoXY(x + label_offset->x, y + 4 * y_step + label_offset->y); GUI_DispString("LIGHT "); GUI_DispDec(light_index + 1, 2);
-    GUI_GotoXY(x + label_offset->x, y + 4 * y_step + label_offset->y + label_y2_offset); GUI_DispString("HOUR ON");
+    GUI_GotoXY(x + label_offset->x, y + 3 * y_step + label_offset->y);
+    GUI_DispString("LIGHT ");
+    GUI_DispDec(light_index + 1, 2);
+    GUI_GotoXY(x + label_offset->x, y + 3 * y_step + label_offset->y + label_y2_offset);
+    GUI_DispString("ON ID DELAY");
 
-    GUI_GotoXY(x + label_offset->x, y + 5 * y_step + label_offset->y); GUI_DispString("LIGHT "); GUI_DispDec(light_index + 1, 2);
-    GUI_GotoXY(x + label_offset->x, y + 5 * y_step + label_offset->y + label_y2_offset); GUI_DispString("MINUTE ON");
-    
+    GUI_GotoXY(x + label_offset->x, y + 4 * y_step + label_offset->y);
+    GUI_DispString("LIGHT ");
+    GUI_DispDec(light_index + 1, 2);
+    GUI_GotoXY(x + label_offset->x, y + 4 * y_step + label_offset->y + label_y2_offset);
+    GUI_DispString("HOUR ON");
+
+    GUI_GotoXY(x + label_offset->x, y + 5 * y_step + label_offset->y);
+    GUI_DispString("LIGHT ");
+    GUI_DispDec(light_index + 1, 2);
+    GUI_GotoXY(x + label_offset->x, y + 5 * y_step + label_offset->y + label_y2_offset);
+    GUI_DispString("MINUTE ON");
+
     // Druga kolona labela
     x = settings_screen_5_layout.col2_x;
-    
-    GUI_GotoXY(x + label_offset->x, y + label_offset->y); GUI_DispString("LIGHT "); GUI_DispDec(light_index + 1, 2);
-    GUI_GotoXY(x + label_offset->x, y + label_offset->y + label_y2_offset); GUI_DispString("DELAY OFF");
-    
-    GUI_GotoXY(x + label_offset->x, y + 1 * y_step + label_offset->y); GUI_DispString("LIGHT "); GUI_DispDec(light_index + 1, 2);
-    GUI_GotoXY(x + label_offset->x, y + 1 * y_step + label_offset->y + label_y2_offset); GUI_DispString("COMM. TYPE");
 
-    GUI_GotoXY(x + label_offset->x, y + 2 * y_step + label_offset->y); GUI_DispString("LIGHT "); GUI_DispDec(light_index + 1, 2);
-    GUI_GotoXY(x + label_offset->x, y + 2 * y_step + label_offset->y + label_y2_offset); GUI_DispString("LOCAL PIN");
+    GUI_GotoXY(x + label_offset->x, y + label_offset->y);
+    GUI_DispString("LIGHT ");
+    GUI_DispDec(light_index + 1, 2);
+    GUI_GotoXY(x + label_offset->x, y + label_offset->y + label_y2_offset);
+    GUI_DispString("DELAY OFF");
 
-    GUI_GotoXY(x + label_offset->x, y + 3 * y_step + label_offset->y); GUI_DispString("LIGHT "); GUI_DispDec(light_index + 1, 2);
-    GUI_GotoXY(x + label_offset->x, y + 3 * y_step + label_offset->y + label_y2_offset); GUI_DispString("SLEEP TIME");
+    GUI_GotoXY(x + label_offset->x, y + 1 * y_step + label_offset->y);
+    GUI_DispString("LIGHT ");
+    GUI_DispDec(light_index + 1, 2);
+    GUI_GotoXY(x + label_offset->x, y + 1 * y_step + label_offset->y + label_y2_offset);
+    GUI_DispString("COMM. TYPE");
 
-    GUI_GotoXY(x + label_offset->x, y + 4 * y_step + label_offset->y); GUI_DispString("LIGHT "); GUI_DispDec(light_index + 1, 2);
-    GUI_GotoXY(x + label_offset->x, y + 4 * y_step + label_offset->y + label_y2_offset); GUI_DispString("BUTTON EXT.");
-    
+    GUI_GotoXY(x + label_offset->x, y + 2 * y_step + label_offset->y);
+    GUI_DispString("LIGHT ");
+    GUI_DispDec(light_index + 1, 2);
+    GUI_GotoXY(x + label_offset->x, y + 2 * y_step + label_offset->y + label_y2_offset);
+    GUI_DispString("LOCAL PIN");
+
+    GUI_GotoXY(x + label_offset->x, y + 3 * y_step + label_offset->y);
+    GUI_DispString("LIGHT ");
+    GUI_DispDec(light_index + 1, 2);
+    GUI_GotoXY(x + label_offset->x, y + 3 * y_step + label_offset->y + label_y2_offset);
+    GUI_DispString("SLEEP TIME");
+
+    GUI_GotoXY(x + label_offset->x, y + 4 * y_step + label_offset->y);
+    GUI_DispString("LIGHT ");
+    GUI_DispDec(light_index + 1, 2);
+    GUI_GotoXY(x + label_offset->x, y + 4 * y_step + label_offset->y + label_y2_offset);
+    GUI_DispString("BUTTON EXT.");
+
     GUI_MULTIBUF_EndEx(1);
 }
 /**
@@ -4113,7 +4197,7 @@ static void DSP_InitSet6Scrn(void)
         DROPDOWN_AddString(hDRPDN_Language, language_strings[TXT_LANGUAGE_NAME][i]);
     }
     DROPDOWN_SetSel(hDRPDN_Language, g_display_settings.language);
-
+    DROPDOWN_SetFont(hDRPDN_Language, GUI_FONT_16_1);
 
     /** @brief Kreiranje dugmadi za specijalne akcije. */
     const WidgetRect_t* defaults_pos = &settings_screen_6_layout.set_defaults_button_pos;
@@ -4137,7 +4221,7 @@ static void DSP_InitSet6Scrn(void)
     GUI_SetColor(GUI_WHITE);
     GUI_SetFont(GUI_FONT_13_1);
     GUI_SetTextAlign(GUI_TA_LEFT|GUI_TA_VCENTER);
-    
+
     GUI_GotoXY(settings_screen_6_layout.device_id_label_pos[0].x, settings_screen_6_layout.device_id_label_pos[0].y);
     GUI_DispString("DEVICE");
     GUI_GotoXY(settings_screen_6_layout.device_id_label_pos[1].x, settings_screen_6_layout.device_id_label_pos[1].y);
@@ -4147,11 +4231,11 @@ static void DSP_InitSet6Scrn(void)
     GUI_DispString("CURTAINS");
     GUI_GotoXY(settings_screen_6_layout.curtain_move_time_label_pos[1].x, settings_screen_6_layout.curtain_move_time_label_pos[1].y);
     GUI_DispString("MOVE TIME");
-    
+
     /** @brief << NOVO: Iscrtavanje labele za jezik >> */
     GUI_GotoXY(settings_screen_6_layout.language_label_pos.x, settings_screen_6_layout.language_label_pos.y);
     GUI_DispString("LANGUAGE");
-    
+
     GUI_MULTIBUF_EndEx(1);
 }
 
@@ -4284,7 +4368,7 @@ static void HandlePress_SelectScreen1(GUI_PID_STATE * pTS, uint8_t *click_flag)
 
     // << IZMJENA: Logika sada koristi `select_screen1_layout` strukturu >>
     if ((pTS->x >= select_screen1_layout.lights_zone.x0) && (pTS->x < select_screen1_layout.lights_zone.x1) &&
-        (pTS->y >= select_screen1_layout.lights_zone.y0) && (pTS->y < select_screen1_layout.lights_zone.y1))
+            (pTS->y >= select_screen1_layout.lights_zone.y0) && (pTS->y < select_screen1_layout.lights_zone.y1))
     {
         // Pritisak u zoni za svjetla
         screen = SCREEN_LIGHTS;
@@ -4344,7 +4428,7 @@ static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
 
     // Provjera da li je dodir unutar zone za čišćenje
     if ((pTS->x >= select_screen2_layout.clean_zone.x0) && (pTS->x < select_screen2_layout.clean_zone.x1) &&
-        (pTS->y >= select_screen2_layout.clean_zone.y0) && (pTS->y < select_screen2_layout.clean_zone.y1))
+            (pTS->y >= select_screen2_layout.clean_zone.y0) && (pTS->y < select_screen2_layout.clean_zone.y1))
     {
         screen = SCREEN_CLEAN;
         menu_clean = 0;
@@ -4391,7 +4475,7 @@ static void HandlePress_ThermostatScreen(GUI_PID_STATE * pTS, uint8_t *click_fla
 {
     // Provjera da li je dodir unutar zone za POVEĆANJE temperature
     if ((pTS->x >= thermostat_layout.increase_zone.x0) && (pTS->x < thermostat_layout.increase_zone.x1) &&
-        (pTS->y >= thermostat_layout.increase_zone.y0) && (pTS->y < thermostat_layout.increase_zone.y1))
+            (pTS->y >= thermostat_layout.increase_zone.y0) && (pTS->y < thermostat_layout.increase_zone.y1))
     {
         *click_flag = 1; // Signaliziraj da treba generisati "klik" zvuk
         btninc = 1;      // Postavi fleg da je dugme "+" pritisnuto
@@ -4454,7 +4538,7 @@ static void HandlePress_LightsScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
             // Provjeravamo da li koordinate dodira upadaju u "hitbox" trenutne ikonice,
             // koristeći dimenzije iz `lights_screen_layout` strukture.
             if((pTS->x > x) && (pTS->x < (x + lights_screen_layout.icon_width)) &&
-               (pTS->y > y) && (pTS->y < (y + lights_screen_layout.icon_height)))
+                    (pTS->y > y) && (pTS->y < (y + lights_screen_layout.icon_height)))
             {
                 *click_flag = 1; // Signaliziraj "klik"
                 light_selectedIndex = lightsInRowSum + i_light; // Zabilježi koje je svjetlo pritisnuto
@@ -4468,7 +4552,7 @@ static void HandlePress_LightsScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
                         light_settingsTimerStart = HAL_GetTick();
                     }
                 }
-                
+
                 // Zaustavljamo noćni tajmer ako je bio aktivan.
                 LIGHTS_StopNightTimer();
 
@@ -4495,7 +4579,7 @@ static void HandlePress_CurtainsScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
 {
     // Provjera da li je dodir u zoni za pomjeranje GORE
     if ((pTS->x >= curtains_screen_layout.up_zone.x0) && (pTS->x < curtains_screen_layout.up_zone.x1) &&
-        (pTS->y >= curtains_screen_layout.up_zone.y0) && (pTS->y < curtains_screen_layout.up_zone.y1))
+            (pTS->y >= curtains_screen_layout.up_zone.y0) && (pTS->y < curtains_screen_layout.up_zone.y1))
     {
         *click_flag = 1;
         shouldDrawScreen = 1;
@@ -4565,8 +4649,8 @@ static void HandlePress_LightSettingsScreen(GUI_PID_STATE * pTS)
 
     // Provjera dodira na bijeli kvadrat (samo u RGB modu)
     if (is_rgb_mode &&
-        (pTS->x >= light_settings_screen_layout.white_square_zone.x0) && (pTS->x < light_settings_screen_layout.white_square_zone.x1) &&
-        (pTS->y >= light_settings_screen_layout.white_square_zone.y0) && (pTS->y < light_settings_screen_layout.white_square_zone.y1))
+            (pTS->x >= light_settings_screen_layout.white_square_zone.x0) && (pTS->x < light_settings_screen_layout.white_square_zone.x1) &&
+            (pTS->y >= light_settings_screen_layout.white_square_zone.y0) && (pTS->y < light_settings_screen_layout.white_square_zone.y1))
     {
         new_color = 0x00FFFFFF; // Bijela boja
     }
