@@ -15,6 +15,7 @@ Content     : Main resource header file of weather forecast demo
   #define GUI_CONST_STORAGE const
 #endif
 extern GUI_CONST_STORAGE GUI_FONT GUI_FontVerdana20;
+extern GUI_CONST_STORAGE GUI_FONT GUI_FontVerdana32;
   
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOn;
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOff;

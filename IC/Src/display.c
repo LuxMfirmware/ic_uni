@@ -2196,7 +2196,7 @@ static void Service_CleanScreen(void)
             }
 
             // --- Iscrtavanje naslova i broja na matematički određenim pozicijama ---
-            GUI_SetFont(GUI_FONT_32_1);
+            GUI_SetFont(&GUI_FontVerdana32);
             GUI_SetTextMode(GUI_TM_TRANS);
 
             GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
@@ -2871,10 +2871,10 @@ static void Service_CurtainsScreen(void)
             GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
             GUI_DispDecAt(physical_index + 1, 50, 50, ((physical_index + 1) < 10) ? 1 : 2);
         } else {
-            GUI_SetFont(GUI_FONT_32B_1); // Koristi font za tekst "SVE"
+            GUI_SetFont(&GUI_FontVerdana32); // Koristi font za tekst "SVE"
             GUI_SetTextMode(GUI_TM_TRANS);
             GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
-            GUI_DispStringAt(lng(TXT_ALL), 50, 50);
+            GUI_DispStringAt(lng(TXT_ALL), 75, 40);
         }
 
         //--------------------------------------------------------------------------------

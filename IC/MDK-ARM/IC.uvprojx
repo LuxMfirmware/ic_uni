@@ -530,6 +530,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Display\Verdana20.c</FilePath>
             </File>
+            <File>
+              <FileName>Verdana32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\Verdana32.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

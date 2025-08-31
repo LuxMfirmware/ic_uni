@@ -80,7 +80,7 @@ extern bool LSE_Failed; // flag oznacava LSE oscilator rtc modula false = 32.768
 #define SYS_FwRqSet()               (sysfl |=  (0x1U<<7))
 #define SYS_FwRqReset()             (sysfl &=(~(0x1U<<7)))
 #define IsSYS_FwRqSet()             (sysfl &   (0x1U<<7))
-#define IsButtonActive()             (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_3) == GPIO_PIN_RESET)
+#define IsButtonActive()            (HAL_GPIO_ReadPin (GPIOC, GPIO_PIN_3) == GPIO_PIN_RESET)
 /*============================================================================*/
 /* MAKROI ZA KONTROLU LOKALNIH GPIO IZLAZA                                    */
 /*============================================================================*/
