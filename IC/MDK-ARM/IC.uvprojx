@@ -383,7 +383,7 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>DisplayImage</GroupName>
+          <GroupName>Icons</GroupName>
           <Files>
             <File>
               <FileName>Home.c</FileName>
@@ -519,6 +519,16 @@
               <FileName>defrosterOn.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\defrosterOn.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Fonts</GroupName>
+          <Files>
+            <File>
+              <FileName>Verdana20.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\Verdana20.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1006,5 +1016,14 @@
     </components>
     <files/>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>IC</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>

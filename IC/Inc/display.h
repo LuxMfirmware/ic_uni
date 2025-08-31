@@ -43,33 +43,59 @@
 /*============================================================================*/
 #define TS_LAYER                        1       ///< Svrha: GUI "sloj" (layer) na kojem se obraduju dodiri. Vrijednost: 1 (sloj iznad pozadinskog).
 
-// Definiše dostupne jezike
-enum Languages {BOS = 0, ENG, LANGUAGE_COUNT};
+/**
+ * @brief Definiše sve podržane jezike u sistemu.
+ * @note BSHC je skracenica za bosanski/srpski/hrvatski/crnogorski.
+ * Redoslijed mora tacno odgovarati redoslijedu kolona u `language_strings`
+ * i `_acContent` tabelama u `translations.h`.
+ */
+enum Languages { BSHC = 0, ENG, GER, FRA, ITA, SPA, RUS, UKR, POL, CZE, SLO, LANGUAGE_COUNT };
 
-// Definiše jedinstveni ID za svaki tekstualni string u aplikaciji
+/**
+ * @brief Definiše jedinstveni ID za svaki tekstualni string u aplikaciji.
+ * @note  Redoslijed je logicki organizovan radi lakšeg održavanja i
+ * mora se 1-na-1 poklapati sa redoslijedom u `language_strings` tabeli.
+ */
 typedef enum {
     TXT_DUMMY = 0,
-    TXT_ALARM,
+    // --- Glavni meniji ---
+    TXT_LIGHTS,
     TXT_THERMOSTAT,
-    TXT_CURTAINS,
-    TXT_NEXT,
-    TXT_TV,
+    TXT_BLINDS,
+    TXT_DEFROSTER,
+    TXT_VENTILATOR,
     TXT_CLEAN,
+    TXT_WIFI,
+    TXT_APP,
+    // --- Opšti tekstovi ---
     TXT_SETTINGS,
+    TXT_NEXT,
+    TXT_SAVE,
+    TXT_ALL,
+    // --- Poruke i alarmi ---
+    TXT_ALARM,
+    TXT_ENTER_PASSWORD,
+    TXT_PASSWORD_CORRECT,
+    TXT_WRONG_PASSWORD,
+    TXT_DISPLAY_CLEAN_TIME,
+    TXT_FIRMWARE_UPDATE,
+    // --- Dani u sedmici ---
+    TXT_MONDAY, TXT_TUESDAY, TXT_WEDNESDAY, TXT_THURSDAY, TXT_FRIDAY, TXT_SATURDAY, TXT_SUNDAY,
+    // --- Mjeseci ---
+    TXT_MONTH_JAN, TXT_MONTH_FEB, TXT_MONTH_MAR, TXT_MONTH_APR, TXT_MONTH_MAY, TXT_MONTH_JUN,
+    TXT_MONTH_JUL, TXT_MONTH_AUG, TXT_MONTH_SEP, TXT_MONTH_OCT, TXT_MONTH_NOV, TXT_MONTH_DEC,
+    // --- Nazivi jezika ---
+    TXT_LANGUAGE_NAME,
+    // --- Stari/specificni tekstovi ---
+    TXT_CURTAINS,
+    TXT_TV,
     TXT_HOURS,
     TXT_MINUTES,
     TXT_RESET,
     TXT_ACTIVATE,
     TXT_ALARM_TIME,
-    TXT_DISPLAY_CLEAN_TIME,
-    TXT_ENTER_PASSWORD,
-    TXT_PASSWORD_CORRECT,
-    TXT_WRONG_PASSWORD,
-    TXT_LANGUAGE_NAME,
     TXT_MUSIC,
     TXT_LIGHT,
-    TXT_LIGHTS,      // Iscpravljena pozicija za SVJETLA
-    TXT_BLINDS,      // Ispravljena pozicija za ROLETNE
     TXT_BED,
     TXT_HALLWAY,
     TXT_WC,
@@ -98,16 +124,8 @@ typedef enum {
     TXT_MIDDLE,
     TXT_RIGHT,
     TXT_LIVING,
-    TXT_ALL,
-    TXT_WIFI,
-    TXT_APP,
-    TXT_DEFROSTER,
-    TXT_SAVE,
-    TXT_FIRMWARE_UPDATE,
-    TXT_VENTILATOR,
-    TEXT_COUNT
+    TEXT_COUNT // Uvijek na kraju!
 } TextID;
-
 
 #pragma pack(push, 1)
 /**

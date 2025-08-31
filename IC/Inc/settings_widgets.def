@@ -50,6 +50,7 @@ WIDGET( ID_CurtainsMoveTime,            0x8B2, "ID za Spinbox vremena kretanja z
 
 // --- Ekran 6: Opšte ---
 WIDGET( ID_DEV_ID,                      0x870, "ID za Spinbox ID-a uređaja" )
+WIDGET(ID_LanguageSelect,               0x900, "ID Dropdown za odabir jezika")
 WIDGET( ID_LEAVE_SCRNSVR_AFTER_TOUCH,   0x977, "ID za Checkbox ponašanja screensavera" )
 WIDGET( ID_LIGHT_NIGHT_TIMER,           0x978, "ID za Checkbox noćnog tajmera za svjetla" )
 WIDGET( ID_SET_DEFAULTS,                0x97E, "ID dugmeta za postavljanje podrazumijevanih vrednosti" )

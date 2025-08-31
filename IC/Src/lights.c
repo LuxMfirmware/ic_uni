@@ -151,8 +151,6 @@ static uint8_t lights_modbus_rows = 0;
  * @scope static - Potpuno sakrivena unutar lights.c. Upravlja se preko API funkcija.
  */
 static uint32_t LightNightTimer_StartTime = 0;
-
-
 /**
  * @brief Timestamp (`HAL_GetTick()`) za odloženo snimanje u EEPROM.
  * @namjena Služi kao tajmer za zaštitu EEPROM memorije od prevelikog broja upisa.
@@ -703,4 +701,3 @@ static void LIGHT_Calculate(void) {
 }
 
 // =======================================================================
-

@@ -27,9 +27,9 @@ za rgb svjetlo, ako se u funkciji DIMMER_SET_Listener() komentarise Light_Modbus
 
 
 Zadatak													Prioritet	Status					Bilješke
-1. Uklanjanje "Magičnih Brojeva"						Visok		Značajno Napredovao		Završili smo refaktorisanje SVIH HandlePress... funkcija. Završili smo i Service_... i DSP_Init... funkcije za glavne ekrane. Preostaje da prođemo kroz preostale DSP_InitSet... funkcije za ekrane podešavanja (Settings 3, 4, 5, 6).
+1. Uklanjanje "Magičnih Brojeva"						Visok		Završeno				Završili smo refaktorisanje SVIH HandlePress... funkcija. Završili smo i Service_... i DSP_Init... funkcije za glavne ekrane. 
 2. Poboljšanje Enkapsulacije							Visok		Završeno				Svi ključni moduli (lights, thermostat, ventilator, defroster, curtain) su sada potpuno enkapsulirani.
 3. Refaktorisanje EEPROM upravljanja					Visok		Završeno				Svi moduli koriste _EepromConfig_t strukture sa CRC i magičnim brojem.
 4. Optimizacija EEPROM Mape								Visok		Završeno				Mapa u stm32746g_eeprom.h je potpuno fleksibilna.
-5. Unapređenje sistema prevođenja						Srednji		Nije započeto			Tabela sa prevodima (language_strings) je i dalje fiksno kodirana unutar display.c. Potrebno je izmjestiti je u zaseban fajl i dodati opciju za odabir jezika u meniju.
+5. Unapređenje sistema prevođenja						Srednji		Započeto				Tabela sa prevodima (language_strings) je i dalje fiksno kodirana unutar display.c. Potrebno je izmjestiti je u zaseban fajl i dodati opciju za odabir jezika u meniju.
 6. Centralizacija Widget ID-jeva						Srednji		Završeno				Uspješno je implementirana X-Macro tehnika.
