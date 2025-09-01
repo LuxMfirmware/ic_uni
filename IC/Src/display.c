@@ -84,9 +84,17 @@
  * @note Premješteno iz lights.h, privatno za display modul.
  * @{
  */
-#define LIGHT_ICON_COUNT                2       ///< Svrha: Ukupan broj različitih tipova ikonica za svjetla. Vrijednost: 2 (sijalica i ventilator).
+#define LIGHT_ICON_COUNT                10       ///< Svrha: Ukupan broj različitih tipova ikonica za svjetla. Vrijednost: 2 (sijalica i ventilator).
 #define LIGHT_ICON_ID_BULB              0       ///< Svrha: Jedinstveni ID za ikonicu sijalice. Vrijednost: 0.
 #define LIGHT_ICON_ID_VENTILATOR        1       ///< Svrha: Jedinstveni ID za ikonicu ventilatora. Vrijednost: 1.
+#define LIGHT_ICON_ID_CEILING_LED_FIXTURE 2
+#define LIGHT_ICON_ID_CHANDELIER        3
+#define LIGHT_ICON_ID_HANGING           4
+#define LIGHT_ICON_ID_LED_STRIP         5
+#define LIGHT_ICON_ID_SPOT_CONSOLE      6
+#define LIGHT_ICON_ID_SPOT_SINGLE       7
+#define LIGHT_ICON_ID_STAIRS            8
+#define LIGHT_ICON_ID_WALL              9
 /** @} */
 
 /** @name Bazni ID-jevi za dinamičke widgete
@@ -758,7 +766,15 @@ settings_screen_6_layout =
 /** @brief Niz sa pokazivačima na bitmape za ikonice svjetala. Premješteno iz `lights.c`. */
 static GUI_CONST_STORAGE GUI_BITMAP* light_modbus_images[] = {
     &bmSijalicaOff, &bmSijalicaOn,
-    &bmVENTILATOR_OFF, &bmVENTILATOR_ON
+    &bmVENTILATOR_OFF, &bmVENTILATOR_ON,
+    &bmicons_lights_ceiling_led_fixture_off, &bmicons_lights_ceiling_led_fixture_on,
+    &bmicons_lights_chandelier_off, &bmicons_lights_chandelier_on,
+    &bmicons_lights_hanging_off,&bmicons_lights_hanging_on,
+    &bmicons_lights_led_off, &bmicons_lights_led_on,
+    &bmicons_lights_spot_console_off, &bmicons_lights_spot_console_on,
+    &bmicons_lights_spot_single_off, &bmicons_lights_spot_single_on,
+    &bmicons_lights_stairs_off, &bmicons_lights_stairs_on,
+    &bmicons_lights_wall_off, &bmicons_lights_wall_on
 };
 
 /** @brief Niz sa definisanim bojama za sat na screensaver-u. */
@@ -2641,25 +2657,58 @@ static void Service_SettingsScreen_5(void)
         LIGHT_SetRememberBrightness(handle, CHECKBOX_GetState(lightsWidgets[light_index].rememberBrightness));
     }
 
-    // KORAK 3: Ažuriranje prikaza ikonice sa strane, sada koristeći lokalnu logiku.
-    GUI_ClearRect(380, 0, 480, 100);
-    uint8_t icon_id = LIGHT_GetIconID(handle);
+    
+    
+    
+    // --- POČETAK IZMJENE ---
+    // Dohvaćamo IconID iz enkapsuliranog modula
+    IconID icon_id = (IconID)SPINBOX_GetValue(lightsWidgets[light_index].iconID);
     bool is_active = LIGHT_isActive(handle);
-    GUI_CONST_STORAGE GUI_BITMAP* icon_to_draw = light_modbus_images[(icon_id * 2) + is_active];
-    GUI_DrawBitmap(icon_to_draw, 480 - icon_to_draw->XSize, 0);
+    
+    // Dohvaćamo ikonu i tekstualne opise iz trodimenzionalne tabele
+    const GUI_BITMAP* icon_to_draw = light_modbus_images[(icon_id * 2) + is_active];
+    
+    // Pretpostavljamo da gornji i donji tekst imaju fiksne indekse 0 i 1 u trećoj dimenziji niza
+    const TextID primary_text_id = icon_strings[icon_id][0][0];
+    const TextID secondary_text_id = icon_strings[icon_id][0][1];
 
-    // KORAK 4: Refaktorisanje logike za "OK" i "NEXT" dugmad.
+    // Pozicije za crtanje - korištenjem const varijabli
+    const int16_t x_icon_pos = 480 - icon_to_draw->XSize;
+    const int16_t y_icon_pos = 20;
+    const int16_t y_primary_text_pos = 5;
+    const int16_t y_secondary_text_pos = y_icon_pos + icon_to_draw->YSize + 5;
+    const int16_t clear_rect_x_start = x_icon_pos;
+    const int16_t clear_rect_y_start = 0;
+    const int16_t clear_rect_x_end = x_icon_pos + icon_to_draw->XSize;
+    const int16_t clear_rect_y_end = y_secondary_text_pos + GUI_GetFontDistY(); // Dinamički izračun za donji tekst
+    
+    // Čišćenje i crtanje teksta i ikonice
+    GUI_ClearRect(clear_rect_x_start, clear_rect_y_start, clear_rect_x_end, clear_rect_y_end);
+    GUI_SetTextMode(GUI_TM_TRANS);
+
+    // Iscrtavanje gornjeg teksta
+    GUI_SetFont(GUI_FONT_13_1);
+    GUI_SetColor(GUI_WHITE);
+    GUI_SetTextAlign(GUI_TA_HCENTER);
+    GUI_DispStringAt(lng(primary_text_id), x_icon_pos + (icon_to_draw->XSize / 2), y_primary_text_pos);
+
+    // Iscrtavanje ikonice na spuštenoj poziciji
+    GUI_DrawBitmap(icon_to_draw, x_icon_pos, y_icon_pos);
+
+    // Iscrtavanje donjeg teksta
+    GUI_SetColor(GUI_ORANGE);
+    GUI_SetTextAlign(GUI_TA_HCENTER);
+    GUI_DispStringAt(lng(secondary_text_id), x_icon_pos + (icon_to_draw->XSize / 2), y_secondary_text_pos);
+    // --- KRAJ IZMJENE ---
+
     if (BUTTON_IsPressed(hBUTTON_Ok) || BUTTON_IsPressed(hBUTTON_Next))
     {
         if(settingsChanged)
         {
-            // Pozivamo JEDNU funkciju iz API-ja. `lights` modul je sada interno
-            // odgovoran za eventualnu defragmentaciju i snimanje u EEPROM.
             LIGHTS_Save();
             settingsChanged = 0;
         }
 
-        // Logika prelaska na sljedeći ekran ostaje uglavnom ista.
         if (BUTTON_IsPressed(hBUTTON_Ok))
         {
             DSP_KillSet5Scrn();
@@ -2668,7 +2717,6 @@ static void Service_SettingsScreen_5(void)
         }
         else if (BUTTON_IsPressed(hBUTTON_Next))
         {
-            // Provjera da li je posljednji slot
             uint8_t current_count = LIGHTS_getCount();
             if (lightsModbusSettingsMenu < current_count) {
                 DSP_KillSet5Scrn();
@@ -2682,9 +2730,6 @@ static void Service_SettingsScreen_5(void)
             }
         }
     }
-
-    // === KRAJ REFAKTORISANJA ===
-    // =======================================================================
 
     GUI_MULTIBUF_EndEx(1);
 }

@@ -59,73 +59,124 @@ enum Languages { BSHC = 0, ENG, GER, FRA, ITA, SPA, RUS, UKR, POL, CZE, SLO, LAN
 typedef enum {
     TXT_DUMMY = 0,
     // --- Glavni meniji ---
-    TXT_LIGHTS,
-    TXT_THERMOSTAT,
-    TXT_BLINDS,
-    TXT_DEFROSTER,
-    TXT_VENTILATOR,
-    TXT_CLEAN,
-    TXT_WIFI,
-    TXT_APP,
+    TXT_LIGHTS,                 // Koristi se u Service_SelectScreen1
+    TXT_THERMOSTAT,             // Koristi se u Service_SelectScreen1
+    TXT_BLINDS,                 // Koristi se u Service_SelectScreen1
+    TXT_DEFROSTER,              // Koristi se u Service_SelectScreen1
+    TXT_VENTILATOR,             // Koristi se u Service_SelectScreen1
+    TXT_CLEAN,                  // Koristi se u Service_SelectScreen2
+    TXT_WIFI,                   // Koristi se u Service_SelectScreen2
+    TXT_APP,                    // Koristi se u Service_SelectScreen2
     // --- Opšti tekstovi ---
-    TXT_SETTINGS,
-    TXT_NEXT,
-    TXT_SAVE,
-    TXT_ALL,
-    // --- Poruke i alarmi ---
-    TXT_ALARM,
-    TXT_ENTER_PASSWORD,
-    TXT_PASSWORD_CORRECT,
-    TXT_WRONG_PASSWORD,
-    TXT_DISPLAY_CLEAN_TIME,
-    TXT_FIRMWARE_UPDATE,
+    TXT_ALL,                    // Koristi se u Service_CurtainsScreen
+    // --- Poruke i dugmad ---
+    TXT_DISPLAY_CLEAN_TIME,     // Koristi se u Service_CleanScreen
+    TXT_FIRMWARE_UPDATE,        // Koristi se u Service_HandleFirmwareUpdate
     // --- Dani u sedmici ---
-    TXT_MONDAY, TXT_TUESDAY, TXT_WEDNESDAY, TXT_THURSDAY, TXT_FRIDAY, TXT_SATURDAY, TXT_SUNDAY,
+    TXT_MONDAY,                 // Koriste se u DISPDateTime
+    TXT_TUESDAY,                // Koriste se u DISPDateTime
+    TXT_WEDNESDAY,              // Koriste se u DISPDateTime
+    TXT_THURSDAY,               // Koriste se u DISPDateTime
+    TXT_FRIDAY,                 // Koriste se u DISPDateTime
+    TXT_SATURDAY,               // Koriste se u DISPDateTime
+    TXT_SUNDAY,                 // Koriste se u DISPDateTime
     // --- Mjeseci ---
-    TXT_MONTH_JAN, TXT_MONTH_FEB, TXT_MONTH_MAR, TXT_MONTH_APR, TXT_MONTH_MAY, TXT_MONTH_JUN,
-    TXT_MONTH_JUL, TXT_MONTH_AUG, TXT_MONTH_SEP, TXT_MONTH_OCT, TXT_MONTH_NOV, TXT_MONTH_DEC,
+    TXT_MONTH_JAN,              // Koriste se u DISPDateTime
+    TXT_MONTH_FEB,              // Koriste se u DISPDateTime
+    TXT_MONTH_MAR,              // Koriste se u DISPDateTime
+    TXT_MONTH_APR,              // Koriste se u DISPDateTime
+    TXT_MONTH_MAY,              // Koriste se u DISPDateTime
+    TXT_MONTH_JUN,              // Koriste se u DISPDateTime
+    TXT_MONTH_JUL,              // Koriste se u DISPDateTime
+    TXT_MONTH_AUG,              // Koriste se u DISPDateTime
+    TXT_MONTH_SEP,              // Koriste se u DISPDateTime
+    TXT_MONTH_OCT,              // Koriste se u DISPDateTime
+    TXT_MONTH_NOV,              // Koriste se u DISPDateTime
+    TXT_MONTH_DEC,              // Koriste se u DISPDateTime
     // --- Nazivi jezika ---
-    TXT_LANGUAGE_NAME,
-    // --- Stari/specificni tekstovi ---
-    TXT_CURTAINS,
-    TXT_TV,
-    TXT_HOURS,
-    TXT_MINUTES,
-    TXT_RESET,
-    TXT_ACTIVATE,
-    TXT_ALARM_TIME,
-    TXT_MUSIC,
-    TXT_LIGHT,
-    TXT_BED,
-    TXT_HALLWAY,
-    TXT_WC,
-    TXT_TERRACE,
-    TXT_KITCHEN,
-    TXT_STAIRS,
-    TXT_LIVING_R_1,
-    TXT_LIVING_R_2,
-    TXT_LIVING_R_3,
-    TXT_TERR_L,
-    TXT_TERR_R,
-    TXT_SIDE_WIN,
-    TXT_WINDOWS,
-    TXT_FACADE,
-    TXT_BEDROOM,
-    TXT_BEDROOM_1,
-    TXT_BEDROOM_2,
-    TXT_TERRACE_1,
-    TXT_TERRACE_2,
-    TXT_LIVING_ROOM_1,
-    TXT_LIVING_ROOM_2,
-    TXT_POOL_1,
-    TXT_POOL_2,
-    TXT_POOL_3,
-    TXT_LEFT,
-    TXT_MIDDLE,
-    TXT_RIGHT,
-    TXT_LIVING,
+    TXT_LANGUAGE_NAME,          // Koristi se u DSP_InitSet6Scrn
+    // --- NOVE STAVKE ZA IKONICE I OPISE ---
+    TXT_LUSTER,
+    TXT_SPOT,
+    TXT_VISILICA,
+    TXT_PLAFONJERA,
+    TXT_ZIDNA,
+    TXT_SLIKA,
+    TXT_PODNA,
+    TXT_STOLNA,
+    TXT_LED_TRAKA,
+    TXT_VENTILATOR_IKONA,
+    TXT_FASADA,
+    TXT_STAZA,
+    TXT_REFLEKTOR,
+    TXT_GLAVNI_SECONDARY,
+    TXT_AMBIJENT_SECONDARY,
+    TXT_TRPEZARIJA_SECONDARY,
+    TXT_DNEVNA_SOBA_SECONDARY,
+    TXT_LIJEVI_SECONDARY,
+    TXT_DESNI_SECONDARY,
+    TXT_CENTRALNI_SECONDARY,
+    TXT_PREDNJI_SECONDARY,
+    TXT_ZADNJI_SECONDARY,
+    TXT_HODNIK_SECONDARY,
+    TXT_KUHINJA_SECONDARY,
+    TXT_CITANJE_SECONDARY,
+    TXT_OGLEDALO_SECONDARY,
+    TXT_UGAO_SECONDARY,
+    TXT_PORED_FOTELJE_SECONDARY,
+    TXT_RADNI_STO_SECONDARY,
+    TXT_NOCNA_1_SECONDARY,
+    TXT_NOCNA_2_SECONDARY,
+    TXT_ISPOD_ELEMENTA_SECONDARY,
+    TXT_IZNAD_ELEMENTA_SECONDARY,
+    TXT_ORMAR_SECONDARY,
+    TXT_STEPENICE_SECONDARY,
+    TXT_TV_SECONDARY,
+    TXT_ULAZ_SECONDARY,
+    TXT_TERASA_SECONDARY,
+    TXT_BALKON_SECONDARY,
+    TXT_DVORISTE_SECONDARY,
+    TXT_DRVO_SECONDARY,
+    TXT_IZNAD_SANKA_SECONDARY,
+    TXT_IZNAD_STOLA_SECONDARY,
+    TXT_PORED_KREVETA_1_SECONDARY,
+    TXT_PORED_KREVETA_2_SECONDARY,
+    TXT_GLAVNA_SECONDARY,
+    TXT_SOBA_1_SECONDARY,
+    TXT_SOBA_2_SECONDARY,
+    TXT_KUPATILO_SECONDARY,
+    TXT_LIJEVA_SECONDARY,
+    TXT_DESNA_SECONDARY,
+    TXT_GORE_SECONDARY,
+    TXT_DOLE_SECONDARY,
+    TXT_ZADNJA_SECONDARY,
+    TXT_PRILAZ_SECONDARY,
     TEXT_COUNT // Uvijek na kraju!
 } TextID;
+
+
+/**
+ * @brief Definiše jedinstveni ID za ikonice svjetala.
+ * @note  Ovo je novi `enum` koji ce se koristiti za indeksiranje u trodimenzionalnom nizu.
+ */
+typedef enum {
+    ICON_DUMMY = 0,
+    ICON_CHANDELIER,
+    ICON_SPOT,
+    ICON_HANGING,
+    ICON_CEILING_LIGHT, // Plafonjera
+    ICON_WALL_LIGHT,
+    ICON_PICTURE_LIGHT,
+    ICON_FLOOR_LAMP,
+    ICON_TABLE_LAMP,
+    ICON_LED_STRIP,
+    ICON_VENTILATOR_ICON, // Ventilator sa svjetlom
+    ICON_FACADE_LIGHT,
+    ICON_PATH_LIGHT,
+    ICON_REFLECTOR,
+    ICON_COUNT // Ukupan broj ikonica
+} IconID;
+
 
 #pragma pack(push, 1)
 /**

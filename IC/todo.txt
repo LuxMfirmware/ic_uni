@@ -8,7 +8,7 @@ Zadatak											Prioritet	Status				Bilješke
 7. Refaktorisanje DISPDateTime funkcije			Srednji		Završeno			Potrebno je fiksne koordinate za ispis vremena premjestiti u odgovarajuću layout strukturu.
 8. Dovršavanje DISPDateTime funkcije			Srednji		Završeno			Potrebno je implementirati nedostajući kod za ispis kompletnog datuma na screensaver-u.
 9. Dinamički meni Select Screen 1				Visok		Nije započeto		Iscrtavanje i obrada dodira na ekranu za odabir mora postati dinamično, zavisno od konfigurisanih modula (svjetla, roletne, termostat...).
-10. Proširenje sistema ikonica za svjetla		Visok		Nije započeto		Implementirati hijerarhijski sistem sa 20-40+ ikonica gdje jedna ikona može imati više tekstualnih opisa za precizniju identifikaciju.
+10. Proširenje sistema ikonica za svjetla		Visok		U radu 				Implementirati hijerarhijski sistem sa 20-40+ ikonica gdje jedna ikona može imati više tekstualnih opisa za precizniju identifikaciju.
 11.	Nesinhronizovan ekran termostata			Srednji		Nije započeto		Elementi na ekranu termostata se ne osvježavaju sinhronizovano.							
 12.	Treperenje dim svjetala						Srednji		Nije započeto		Kada se brzo pritisne jedno	dim svjetlo, ostala počnu treperiti.								
 13.	Integracija u Home Assistant				Nizak		Nije započeto		Implementirati automatsko otkrivanje uređaja (MQTT Discovery ili ESPHome).							

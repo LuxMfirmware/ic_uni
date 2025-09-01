@@ -17,6 +17,24 @@ Content     : Main resource header file of weather forecast demo
 extern GUI_CONST_STORAGE GUI_FONT GUI_FontVerdana20;
 extern GUI_CONST_STORAGE GUI_FONT GUI_FontVerdana32;
   
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_ceiling_led_fixture_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_ceiling_led_fixture_on;  
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_chandelier_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_chandelier_on;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_hanging_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_hanging_on;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_led_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_led_on;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_spot_console_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_spot_console_on;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_spot_single_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_spot_single_on;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_stairs_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_stairs_on;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_wall_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_wall_on;
+
+  
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOn;
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOff;
 extern GUI_CONST_STORAGE GUI_BITMAP bmTermometar;
