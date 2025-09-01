@@ -262,13 +262,23 @@ static const struct
     int16_t circle_center_y;    /**< Y koordinata centra kruga. */
     int16_t circle_radius_x;    /**< Horizontalni radijus kruga. */
     int16_t circle_radius_y;    /**< Vertikalni radijus kruga. */
+
+    // NOVE KOORDINATE ZA VRIJEME I DATUM
+    GUI_POINT time_pos_standard;        // Pozicija za vrijeme na standardnom ekranu
+    GUI_POINT time_pos_scrnsvr;         // Pozicija za vrijeme na screensaver-u
+    GUI_POINT date_pos_scrnsvr;         // Pozicija za datum na screensaver-u
 }
 main_screen_layout =
 {
     .circle_center_x = 240,
     .circle_center_y = 136,
     .circle_radius_x = 50,
-    .circle_radius_y = 50
+    .circle_radius_y = 50,
+
+    // NOVE VRIJEDNOSTI
+    .time_pos_standard  = { 5, 245 },   // Bivše (5, 245)
+    .time_pos_scrnsvr   = { 240, 136 },  // Bivše (240, 136)
+    .date_pos_scrnsvr   = { 240, 220 }   // Nova pozicija za datum
 };
 /**
  * @brief Struktura koja sadrži konstante za ISCRTAVANJE elemenata
@@ -3245,31 +3255,44 @@ static void Handle_PeriodicEvents(void)
 /**
  * @brief Prikazuje datum i vrijeme na ekranu, i upravlja logikom screensavera.
  * @note Ažurira se svake sekunde i odgovorna je za aktivaciju/deaktivaciju
- * screensavera na osnovu postavljenih sati.
+ * screensavera na osnovu postavljenih sati. Ova refaktorirana verzija koristi
+ * GUI funkcije LCD_GetXSize() i LCD_GetYSize() za dinamičko određivanje
+ * dimenzija ekrana, čime se uklanjaju fiksne numeričke vrijednosti ("magični brojevi")
+ * i poboljšava prenosivost koda.
  */
 static void DISPDateTime(void)
 {
-    char dbuf[32];
+    /**
+     * @brief Konstante za dimenzioniranje područja za brisanje
+     * @note Ove konstante su sada definirane u odnosu na GUI.
+     */
+    const int16_t TIME_CLEAR_RECT_WIDTH = 100;
+    const int16_t TIME_CLEAR_RECT_HEIGHT = 50;
+    
+    // Konstante za brisanje screensaver ekrana
+    const int16_t SCREENSAVER_TIME_Y_START = 80;
+    const int16_t SCREENSAVER_TIME_Y_END = 192;
+    const int16_t SCREENSAVER_DATE_Y_START = 220;
+    const int16_t SCREENSAVER_DATE_Y_END = 270;
+
+
+    char dbuf[64];
     static uint8_t old_day = 0;
 
-    // pozicije sata
-    const int clockHpos = 240;  // Horizontalna pozicija za sat
-    const int closckVpos = 136; // Vertikalna pozicija za sat
-
-    if(!IsRtcTimeValid()) return;
+    if (!IsRtcTimeValid()) return;
 
     HAL_RTC_GetTime(&hrtc, &rtctm, RTC_FORMAT_BCD);
     HAL_RTC_GetDate(&hrtc, &rtcdt, RTC_FORMAT_BCD);
 
-    // Provjera da li treba aktivirati screensaver na osnovu sata.
-    if(g_display_settings.scrnsvr_ena_hour >= g_display_settings.scrnsvr_dis_hour) {
+    // Logika za automatsko paljenje/gašenje screensaver-a
+    if (g_display_settings.scrnsvr_ena_hour >= g_display_settings.scrnsvr_dis_hour) {
         if (Bcd2Dec(rtctm.Hours) >= g_display_settings.scrnsvr_ena_hour || Bcd2Dec(rtctm.Hours) < g_display_settings.scrnsvr_dis_hour) {
             ScrnsvrEnable();
         } else if (IsScrnsvrEnabled()) {
             ScrnsvrDisable();
             screen = SCREEN_RETURN_TO_FIRST;
         }
-    } else if(g_display_settings.scrnsvr_ena_hour < g_display_settings.scrnsvr_dis_hour) {
+    } else if (g_display_settings.scrnsvr_ena_hour < g_display_settings.scrnsvr_dis_hour) {
         if (Bcd2Dec(rtctm.Hours) >= g_display_settings.scrnsvr_ena_hour && Bcd2Dec(rtctm.Hours) < g_display_settings.scrnsvr_dis_hour) {
             ScrnsvrEnable();
         } else if (IsScrnsvrEnabled()) {
@@ -3278,9 +3301,7 @@ static void DISPDateTime(void)
         }
     }
 
-    // Prikaz vremena i datuma u zavisnosti od stanja screensavera.
     if (IsScrnsvrActiv() && IsScrnsvrEnabled() && IsScrnsvrClkActiv()) {
-        // Logika za iscrtavanje sata na screensaveru.
         if (!IsScrnsvrInitActiv() || (old_day != rtcdt.WeekDay)) {
             ScrnsvrInitSet();
             GUI_MULTIBUF_BeginEx(0);
@@ -3293,46 +3314,73 @@ static void DISPDateTime(void)
             GUI_Clear();
             old_min = 60U;
             old_day = rtcdt.WeekDay;
-            GUI_SetPenSize(9);
-            GUI_SetColor(GUI_GREEN);
             GUI_MULTIBUF_EndEx(1);
         }
-        // Formatiranje i prikaz vremena.
+
+        GUI_MULTIBUF_BeginEx(1);
+
+        // POPRAVAK: Brisanje ekrana za screensaver bez magičnih brojeva
+        GUI_ClearRect(0, SCREENSAVER_TIME_Y_START, LCD_GetXSize(), SCREENSAVER_TIME_Y_END);
+        GUI_ClearRect(0, SCREENSAVER_DATE_Y_START, TIME_CLEAR_RECT_WIDTH, SCREENSAVER_DATE_Y_END);
+
         HEX2STR(dbuf, &rtctm.Hours);
-        if(rtctm.Seconds & 1) dbuf[2] = ':';
+        if (rtctm.Seconds & 1) dbuf[2] = ':';
         else dbuf[2] = ' ';
         HEX2STR(&dbuf[3], &rtctm.Minutes);
-        GUI_GotoXY(clockHpos, closckVpos);
+
         GUI_SetColor(clk_clrs[g_display_settings.scrnsvr_clk_clr]);
         GUI_SetFont(GUI_FONT_D80);
         GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
-        GUI_MULTIBUF_BeginEx(1);
-        GUI_ClearRect(0, 80, 480, 192);
-        GUI_ClearRect(0, 220, 100, 270);
-        GUI_DispString(dbuf);
-        // Prikaz datuma.
-        // ... (logika za prikaz dana, mjeseca i godine)
+        GUI_DispStringAt(dbuf, main_screen_layout.time_pos_scrnsvr.x, main_screen_layout.time_pos_scrnsvr.y);
+
+        /**
+         * @brief Niz sa TextID-jevima za dane u sedmici.
+         * @note Koristi se za dinamičko prevođenje imena dana na screensaver-u.
+         */
+        const TextID days[] = {TXT_MONDAY, TXT_TUESDAY, TXT_WEDNESDAY, TXT_THURSDAY, TXT_FRIDAY, TXT_SATURDAY, TXT_SUNDAY};
+
+        /**
+         * @brief Niz sa TextID-jevima za mjesece u godini.
+         * @note Koristi se za dinamičko prevođenje imena mjeseci na screensaver-u.
+         */
+        const TextID months[] = {TXT_MONTH_JAN, TXT_MONTH_FEB, TXT_MONTH_MAR, TXT_MONTH_APR, TXT_MONTH_MAY, TXT_MONTH_JUN,
+                                 TXT_MONTH_JUL, TXT_MONTH_AUG, TXT_MONTH_SEP, TXT_MONTH_OCT, TXT_MONTH_NOV, TXT_MONTH_DEC};
+
+        sprintf(dbuf, "%s, %02d. %s %d",
+                lng(days[Bcd2Dec(rtcdt.WeekDay) - 1]),
+                Bcd2Dec(rtcdt.Date),
+                lng(months[Bcd2Dec(rtcdt.Month) - 1]),
+                Bcd2Dec(rtcdt.Year) + 2000);
+
+        GUI_SetFont(&GUI_FontVerdana32);
+        GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
+        GUI_DispStringAt(dbuf, main_screen_layout.date_pos_scrnsvr.x, main_screen_layout.date_pos_scrnsvr.y);
+
         GUI_MULTIBUF_EndEx(1);
+
     } else if (old_min != rtctm.Minutes) {
-        // Ažuriranje vremena na standardnom ekranu samo kada se promijeni minuta.
         old_min = rtctm.Minutes;
+
         HEX2STR(dbuf, &rtctm.Hours);
         dbuf[2] = ':';
         HEX2STR(&dbuf[3], &rtctm.Minutes);
+
         GUI_SetFont(GUI_FONT_32_1);
         GUI_SetColor(GUI_WHITE);
         GUI_SetTextMode(GUI_TM_TRANS);
         GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+
         GUI_MULTIBUF_BeginEx(1);
-        GUI_GotoXY(5, 245);
-        GUI_ClearRect(0, 220, 100, 270);
-        GUI_DispString(dbuf);
+
+        // POPRAVAK: Dinamičko brisanje područja za prikaz vremena na standardnom ekranu
+        GUI_ClearRect(0, SCREENSAVER_DATE_Y_START, TIME_CLEAR_RECT_WIDTH, SCREENSAVER_DATE_Y_END);
+
+        GUI_DispStringAt(dbuf, main_screen_layout.time_pos_standard.x, main_screen_layout.time_pos_standard.y);
         GUI_MULTIBUF_EndEx(1);
     }
 
-    // Čuvanje datuma u backup registre.
     if (old_day != rtcdt.WeekDay) {
-        old_day  = rtcdt.WeekDay;
+        old_day = rtcdt.WeekDay;
         HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR2, rtcdt.Date);
         HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR3, rtcdt.Month);
         HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR4, rtcdt.WeekDay);

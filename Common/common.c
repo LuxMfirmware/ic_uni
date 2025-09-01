@@ -31,8 +31,7 @@ const uint8_t rtc_months[2][12] ={
 const uint32_t bps[10] ={ 
     2400U, 4800U, 9600U, 19200U, 38400U, 57600U, 115200U, 230400U, 460800U, 921600U 
 };
-const char *day[] = {NULL,"Ponedjeljak","Utorak","Srijeda","Cetvrtak","Petak","Subota","Nedelja"};
-const char *month[] = {NULL,"Januar","Februar","Mart","April","Maj","Juni","Juli","August","Septembar","Oktobar","Novembar","Decembar"};
+
 
 #if (VECT_TAB_OFFSET == 0x3000)
     #define FWADD ".ARM.__at_0x0800500"

@@ -3,18 +3,17 @@ Zadatak											Prioritet	Status				Bilješke
 2. Poboljšanje Enkapsulacije					Visok		Završeno			Svi ključni moduli (lights, thermostat, ventilator, defroster, curtain) su sada potpuno enkapsulirani.
 3. Refaktorisanje EEPROM upravljanja			Visok		Završeno			Svi moduli koriste _EepromConfig_t strukture sa CRC i magičnim brojem.
 4. Optimizacija EEPROM Mape						Visok		Završeno			Mapa u stm32746g_eeprom.h je potpuno fleksibilna.
-5. Unapređenje sistema prevođenja				Srednji		Započeto			Tabela sa prevodima (language_strings) je i dalje fiksno kodirana unutar display.c. Potrebno je izmjestiti je u zaseban fajl i dodati opciju za odabir jezika u meniju.
+5. Unapređenje sistema prevođenja				Srednji		Završeno			Tabela sa prevodima (language_strings) je i dalje fiksno kodirana unutar display.c. Potrebno je izmjestiti je u zaseban fajl i dodati opciju za odabir jezika u meniju.
 6. Centralizacija Widget ID-jeva				Srednji		Završeno			Uspješno je implementirana X-Macro tehnika.
-7. Refaktorisanje DISPDateTime funkcije			Srednji		Nije započeto		Potrebno je fiksne koordinate za ispis vremena premjestiti u odgovarajuću layout strukturu.
-8. Dovršavanje DISPDateTime funkcije			Srednji		Nije započeto		Potrebno je implementirati nedostajući kod za ispis kompletnog datuma na screensaver-u.
+7. Refaktorisanje DISPDateTime funkcije			Srednji		Završeno			Potrebno je fiksne koordinate za ispis vremena premjestiti u odgovarajuću layout strukturu.
+8. Dovršavanje DISPDateTime funkcije			Srednji		Završeno			Potrebno je implementirati nedostajući kod za ispis kompletnog datuma na screensaver-u.
 9. Dinamički meni Select Screen 1				Visok		Nije započeto		Iscrtavanje i obrada dodira na ekranu za odabir mora postati dinamično, zavisno od konfigurisanih modula (svjetla, roletne, termostat...).
 10. Proširenje sistema ikonica za svjetla		Visok		Nije započeto		Implementirati hijerarhijski sistem sa 20-40+ ikonica gdje jedna ikona može imati više tekstualnih opisa za precizniju identifikaciju.
 11.	Nesinhronizovan ekran termostata			Srednji		Nije započeto		Elementi na ekranu termostata se ne osvježavaju sinhronizovano.							
-12.	Treperenje dim svjetala						Srednji		Nije započeto		Kada se brzo pritisne jedno	dim svjetlo, ostala počnu treperiti.		
-13.	Dovršavanje DISPDateTime funkcije			Srednji		Nije započeto		Potrebno je implementirati nedostajući kod za ispis kompletnog datuma na screensaver-u.							
-14.	Integracija u Home Assistant				Nizak		Nije započeto		Implementirati automatsko otkrivanje uređaja (MQTT Discovery ili ESPHome).							
-15.	OTA (bežični) Update						Nizak		Nije započeto		Zavisi od dodavanja WiFi modula.					
-16.	Update firmvera preko RS485					Visok		Nije započeto		Implementirati pouzdan mehanizam sa retransmisijom i rukovanjem greškama.		
+12.	Treperenje dim svjetala						Srednji		Nije započeto		Kada se brzo pritisne jedno	dim svjetlo, ostala počnu treperiti.								
+13.	Integracija u Home Assistant				Nizak		Nije započeto		Implementirati automatsko otkrivanje uređaja (MQTT Discovery ili ESPHome).							
+14.	OTA (bežični) Update						Nizak		Nije započeto		Zavisi od dodavanja WiFi modula.					
+15.	Update firmvera preko RS485					Visok		Nije započeto		Implementirati pouzdan mehanizam sa retransmisijom i rukovanjem greškama.		
 
 
 *-----------------------------------------------------------------------------------------------------------------------------------*
