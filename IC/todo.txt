@@ -1,45 +1,25 @@
+Zadatak											Prioritet	Status				Bilješke
+1. Uklanjanje "Magičnih Brojeva"				Visok		Završeno			Završili smo refaktorisanje SVIH HandlePress... funkcija. Završili smo i Service_... i DSP_Init... funkcije za glavne ekrane. 
+2. Poboljšanje Enkapsulacije					Visok		Završeno			Svi ključni moduli (lights, thermostat, ventilator, defroster, curtain) su sada potpuno enkapsulirani.
+3. Refaktorisanje EEPROM upravljanja			Visok		Završeno			Svi moduli koriste _EepromConfig_t strukture sa CRC i magičnim brojem.
+4. Optimizacija EEPROM Mape						Visok		Završeno			Mapa u stm32746g_eeprom.h je potpuno fleksibilna.
+5. Unapređenje sistema prevođenja				Srednji		Započeto			Tabela sa prevodima (language_strings) je i dalje fiksno kodirana unutar display.c. Potrebno je izmjestiti je u zaseban fajl i dodati opciju za odabir jezika u meniju.
+6. Centralizacija Widget ID-jeva				Srednji		Završeno			Uspješno je implementirana X-Macro tehnika.
+7. Refaktorisanje DISPDateTime funkcije			Srednji		Nije započeto		Potrebno je fiksne koordinate za ispis vremena premjestiti u odgovarajuću layout strukturu.
+8. Dovršavanje DISPDateTime funkcije			Srednji		Nije započeto		Potrebno je implementirati nedostajući kod za ispis kompletnog datuma na screensaver-u.
+9. Dinamički meni Select Screen 1				Visok		Nije započeto		Iscrtavanje i obrada dodira na ekranu za odabir mora postati dinamično, zavisno od konfigurisanih modula (svjetla, roletne, termostat...).
+10. Proširenje sistema ikonica za svjetla		Visok		Nije započeto		Implementirati hijerarhijski sistem sa 20-40+ ikonica gdje jedna ikona može imati više tekstualnih opisa za precizniju identifikaciju.
+11.	Nesinhronizovan ekran termostata			Srednji		Nije započeto		Elementi na ekranu termostata se ne osvježavaju sinhronizovano.							
+12.	Treperenje dim svjetala						Srednji		Nije započeto		Kada se brzo pritisne jedno	dim svjetlo, ostala počnu treperiti.		
+13.	Dovršavanje DISPDateTime funkcije			Srednji		Nije započeto		Potrebno je implementirati nedostajući kod za ispis kompletnog datuma na screensaver-u.							
+14.	Integracija u Home Assistant				Nizak		Nije započeto		Implementirati automatsko otkrivanje uređaja (MQTT Discovery ili ESPHome).							
+15.	OTA (bežični) Update						Nizak		Nije započeto		Zavisi od dodavanja WiFi modula.					
+16.	Update firmvera preko RS485					Visok		Nije započeto		Implementirati pouzdan mehanizam sa retransmisijom i rukovanjem greškama.		
 
 
-
-
-
-(optional) ako su za zaluzine razliciti releji onda se koristi binary listener
-
-
-kontroler samo sa roletnama (optinoal)
-kontroler bez termostata
-kontroler bez roletni
-
-
-thermostat screen elements refresh is unsynchronised
-
-
-kada se brzo pritisce dim svjetlo pocnu treperiti ostala dim svjetla, kada se sporo pritisce, nema tih problema
-
-
-restart timers on brightness and color change
-
-there can be miboxer with only dim, so you have to send status and not just brightness value
-
-Light_Modbus_isNewValueOn() keeps getting called after statusSet()
-
-za rgb svjetlo, ako se u funkciji DIMMER_SET_Listener() komentarise Light_Modbus_Brightness_Update_External() onda ce svjetlo raditi normalno zato sto esp vraca brightness kao 0, query se vise puta posalje sa kontrolera
-
-
-Zadatak											Prioritet	Status					Bilješke
-1. Uklanjanje "Magičnih Brojeva"				Visok		Završeno				Završili smo refaktorisanje SVIH HandlePress... funkcija. Završili smo i Service_... i DSP_Init... funkcije za glavne ekrane. 
-2. Poboljšanje Enkapsulacije					Visok		Završeno				Svi ključni moduli (lights, thermostat, ventilator, defroster, curtain) su sada potpuno enkapsulirani.
-3. Refaktorisanje EEPROM upravljanja			Visok		Završeno				Svi moduli koriste _EepromConfig_t strukture sa CRC i magičnim brojem.
-4. Optimizacija EEPROM Mape						Visok		Završeno				Mapa u stm32746g_eeprom.h je potpuno fleksibilna.
-5. Unapređenje sistema prevođenja				Srednji		Započeto				Tabela sa prevodima (language_strings) je i dalje fiksno kodirana unutar display.c. Potrebno je izmjestiti je u zaseban fajl i dodati opciju za odabir jezika u meniju.
-6. Centralizacija Widget ID-jeva				Srednji		Završeno				Uspješno je implementirana X-Macro tehnika.
-7. Refaktorisanje DISPDateTime funkcije			Srednji		Nije započeto			Potrebno je fiksne koordinate za ispis vremena premjestiti u odgovarajuću layout strukturu.
-8. Dovršavanje DISPDateTime funkcije			Srednji		Nije započeto			Potrebno je implementirati nedostajući kod za ispis kompletnog datuma na screensaver-u.
-9. Dinamički meni Select Screen 1				Visok		Nije započeto			Iscrtavanje i obrada dodira na ekranu za odabir mora postati dinamično, zavisno od konfigurisanih modula (svjetla, roletne, termostat...).
-10. Proširenje sistema ikonica za svjetla		Visok		Nije započeto			Implementirati hijerarhijski sistem sa 20-40+ ikonica gdje jedna ikona može imati više tekstualnih opisa za precizniju identifikaciju.
-
-
-
+*-----------------------------------------------------------------------------------------------------------------------------------*
+				PRIJEDLOG NADOGRADNJE IKONICA SVJETLA SA OPISNIM TEKSTOVIMA POZICIJE I ORJENTACIJA
+*-----------------------------------------------------------------------------------------------------------------------------------*
 Kategorija				Ikona (Koncept)			Osnovni Tekst			Prijedlozi za dodatne tekstove (opis pozicije/namjene)				
 Plafonska rasvjeta		Luster					LUSTER					GLAVNI, AMBIJENT, TRPEZARIJA, DNEVNA SOBA				
 						Ugradbeno svjetlo		SPOT					LIJEVI, DESNI, CENTRALNI, PREDNJI, ZADNJI, HODNIK, KUHINJA				
