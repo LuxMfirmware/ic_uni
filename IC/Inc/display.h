@@ -59,43 +59,43 @@ enum Languages { BSHC = 0, ENG, GER, FRA, ITA, SPA, RUS, UKR, POL, CZE, SLO, LAN
 typedef enum {
     TXT_DUMMY = 0,
     // --- Glavni meniji ---
-    TXT_LIGHTS,                 // Koristi se u Service_SelectScreen1
-    TXT_THERMOSTAT,             // Koristi se u Service_SelectScreen1
-    TXT_BLINDS,                 // Koristi se u Service_SelectScreen1
-    TXT_DEFROSTER,              // Koristi se u Service_SelectScreen1
-    TXT_VENTILATOR,             // Koristi se u Service_SelectScreen1
-    TXT_CLEAN,                  // Koristi se u Service_SelectScreen2
-    TXT_WIFI,                   // Koristi se u Service_SelectScreen2
-    TXT_APP,                    // Koristi se u Service_SelectScreen2
+    TXT_LIGHTS,
+    TXT_THERMOSTAT,
+    TXT_BLINDS,
+    TXT_DEFROSTER,
+    TXT_VENTILATOR,
+    TXT_CLEAN,
+    TXT_WIFI,
+    TXT_APP,
     // --- Opšti tekstovi ---
-    TXT_ALL,                    // Koristi se u Service_CurtainsScreen
+    TXT_ALL,
     // --- Poruke i dugmad ---
-    TXT_DISPLAY_CLEAN_TIME,     // Koristi se u Service_CleanScreen
-    TXT_FIRMWARE_UPDATE,        // Koristi se u Service_HandleFirmwareUpdate
+    TXT_DISPLAY_CLEAN_TIME,
+    TXT_FIRMWARE_UPDATE,
     // --- Dani u sedmici ---
-    TXT_MONDAY,                 // Koriste se u DISPDateTime
-    TXT_TUESDAY,                // Koriste se u DISPDateTime
-    TXT_WEDNESDAY,              // Koriste se u DISPDateTime
-    TXT_THURSDAY,               // Koriste se u DISPDateTime
-    TXT_FRIDAY,                 // Koriste se u DISPDateTime
-    TXT_SATURDAY,               // Koriste se u DISPDateTime
-    TXT_SUNDAY,                 // Koriste se u DISPDateTime
+    TXT_MONDAY,
+    TXT_TUESDAY,
+    TXT_WEDNESDAY,
+    TXT_THURSDAY,
+    TXT_FRIDAY,
+    TXT_SATURDAY,
+    TXT_SUNDAY,
     // --- Mjeseci ---
-    TXT_MONTH_JAN,              // Koriste se u DISPDateTime
-    TXT_MONTH_FEB,              // Koriste se u DISPDateTime
-    TXT_MONTH_MAR,              // Koriste se u DISPDateTime
-    TXT_MONTH_APR,              // Koriste se u DISPDateTime
-    TXT_MONTH_MAY,              // Koriste se u DISPDateTime
-    TXT_MONTH_JUN,              // Koriste se u DISPDateTime
-    TXT_MONTH_JUL,              // Koriste se u DISPDateTime
-    TXT_MONTH_AUG,              // Koriste se u DISPDateTime
-    TXT_MONTH_SEP,              // Koriste se u DISPDateTime
-    TXT_MONTH_OCT,              // Koriste se u DISPDateTime
-    TXT_MONTH_NOV,              // Koriste se u DISPDateTime
-    TXT_MONTH_DEC,              // Koriste se u DISPDateTime
+    TXT_MONTH_JAN,
+    TXT_MONTH_FEB,
+    TXT_MONTH_MAR,
+    TXT_MONTH_APR,
+    TXT_MONTH_MAY,
+    TXT_MONTH_JUN,
+    TXT_MONTH_JUL,
+    TXT_MONTH_AUG,
+    TXT_MONTH_SEP,
+    TXT_MONTH_OCT,
+    TXT_MONTH_NOV,
+    TXT_MONTH_DEC,
     // --- Nazivi jezika ---
-    TXT_LANGUAGE_NAME,          // Koristi se u DSP_InitSet6Scrn
-    // --- NOVE STAVKE ZA IKONICE I OPISE ---
+    TXT_LANGUAGE_NAME,
+    // --- Primarni tekstovi za ikonice (prema todo.txt) ---
     TXT_LUSTER,
     TXT_SPOT,
     TXT_VISILICA,
@@ -109,6 +109,7 @@ typedef enum {
     TXT_FASADA,
     TXT_STAZA,
     TXT_REFLEKTOR,
+    // --- Sekundarni tekstovi za ikonice (prema todo.txt) ---
     TXT_GLAVNI_SECONDARY,
     TXT_AMBIJENT_SECONDARY,
     TXT_TRPEZARIJA_SECONDARY,
@@ -120,6 +121,18 @@ typedef enum {
     TXT_ZADNJI_SECONDARY,
     TXT_HODNIK_SECONDARY,
     TXT_KUHINJA_SECONDARY,
+    TXT_IZNAD_SANKA_SECONDARY,
+    TXT_IZNAD_STola_SECONDARY,
+    TXT_PORED_KREVETA_1_SECONDARY,
+    TXT_PORED_KREVETA_2_SECONDARY,
+    TXT_GLAVNA_SECONDARY,
+    TXT_SOBA_1_SECONDARY,
+    TXT_SOBA_2_SECONDARY,
+    TXT_KUPATILO_SECONDARY,
+    TXT_LIJEVA_SECONDARY,
+    TXT_DESNA_SECONDARY,
+    TXT_GORE_SECONDARY,
+    TXT_DOLE_SECONDARY,
     TXT_CITANJE_SECONDARY,
     TXT_OGLEDALO_SECONDARY,
     TXT_UGAO_SECONDARY,
@@ -135,47 +148,46 @@ typedef enum {
     TXT_ULAZ_SECONDARY,
     TXT_TERASA_SECONDARY,
     TXT_BALKON_SECONDARY,
-    TXT_DVORISTE_SECONDARY,
-    TXT_DRVO_SECONDARY,
-    TXT_IZNAD_SANKA_SECONDARY,
-    TXT_IZNAD_STOLA_SECONDARY,
-    TXT_PORED_KREVETA_1_SECONDARY,
-    TXT_PORED_KREVETA_2_SECONDARY,
-    TXT_GLAVNA_SECONDARY,
-    TXT_SOBA_1_SECONDARY,
-    TXT_SOBA_2_SECONDARY,
-    TXT_KUPATILO_SECONDARY,
-    TXT_LIJEVA_SECONDARY,
-    TXT_DESNA_SECONDARY,
-    TXT_GORE_SECONDARY,
-    TXT_DOLE_SECONDARY,
     TXT_ZADNJA_SECONDARY,
     TXT_PRILAZ_SECONDARY,
+    TXT_DVORISTE_SECONDARY,
+    TXT_DRVO_SECONDARY,
     TEXT_COUNT // Uvijek na kraju!
 } TextID;
 
 
 /**
- * @brief Definiše jedinstveni ID za ikonice svjetala.
- * @note  Ovo je novi `enum` koji ce se koristiti za indeksiranje u trodimenzionalnom nizu.
+ * @brief Definiše jedinstveni ID za svaki VIZUELNI TIP ikonice.
+ * @note  Nazivi su izvedeni iz imena bitmap varijabli u Resource.h.
+ * Redoslijed u ovom enumu MORA odgovarati redoslijedu u `light_modbus_images` nizu u `display.c`.
  */
 typedef enum {
-    ICON_DUMMY = 0,
-    ICON_CHANDELIER,
-    ICON_SPOT,
-    ICON_HANGING,
-    ICON_CEILING_LIGHT, // Plafonjera
-    ICON_WALL_LIGHT,
-    ICON_PICTURE_LIGHT,
-    ICON_FLOOR_LAMP,
-    ICON_TABLE_LAMP,
-    ICON_LED_STRIP,
-    ICON_VENTILATOR_ICON, // Ventilator sa svjetlom
-    ICON_FACADE_LIGHT,
-    ICON_PATH_LIGHT,
-    ICON_REFLECTOR,
-    ICON_COUNT // Ukupan broj ikonica
+    ICON_BULB = 0,                  // Vrijednost = 0
+    ICON_VENTILATOR_ICON,           // Vrijednost = 1
+    ICON_CEILING_LED_FIXTURE,       // Vrijednost = 2
+    ICON_CHANDELIER,                // Vrijednost = 3
+    ICON_HANGING,                   // Vrijednost = 4
+    ICON_LED_STRIP,                 // Vrijednost = 5
+    ICON_SPOT_CONSOLE,              // Vrijednost = 6
+    ICON_SPOT_SINGLE,               // Vrijednost = 7
+    ICON_STAIRS,                    // Vrijednost = 8
+    ICON_WALL,                      // Vrijednost = 9
+    // Ovdje se mogu dodati i ostale ikonice iz todo.txt kada za njih budu kreirane bitmape
+    // Npr. ICON_PICTURE_LIGHT, ICON_FLOOR_LAMP, itd.
+    ICON_COUNT // Ukupan broj definisanih vizuelnih tipova ikonica
 } IconID;
+
+
+/**
+ * @brief Struktura koja mapira jedan unos iz SPINBOX-a na vizuelni prikaz.
+ * @note  Ovo je kljucna struktura za novi, fleksibilni sistem prikaza ikonica.
+ * Niz ovih struktura ce biti definisan u `translations.h`.
+ */
+typedef struct {
+    IconID visual_icon_id;      /**< Koju slicicu (bitmapu) treba iscrtati. */
+    TextID primary_text_id;     /**< ID za gornji (primarni) tekstualni opis. */
+    TextID secondary_text_id;   /**< ID za donji (sekundarni) tekstualni opis. */
+} IconMapping_t;
 
 
 #pragma pack(push, 1)

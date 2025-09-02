@@ -3,9 +3,9 @@
 <title>Static Call Graph - [.\Exe\ic.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Exe\ic.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Mon Sep  1 19:38:01 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Tue Sep  2 14:09:33 2025
 <BR><P>
-<H3>Maximum Stack Usage =       1216 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =       1208 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 main &rArr; DISP_Service &rArr; Service_SettingsScreen_5 &rArr; DSP_InitSet6Scrn &rArr; DROPDOWN_SetFont &rArr; DROPDOWN_Expand &rArr; LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 <P>
@@ -737,7 +737,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[3a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PCA9685_OutputUpdate
 <LI><a href="#[1d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AddCommand
 <LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QR_REQUEST_Listener
-<LI><a href="#[3c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
+<LI><a href="#[3c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
 <LI><a href="#[4a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ChangeCharacter
 </UL>
 
@@ -1226,13 +1226,13 @@ Global Symbols
 <LI><a href="#[201]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtains_isAnyCurtainMovingUp
 </UL>
 
-<P><STRONG><a name="[3e9]"></a>Curtain_setRelayDown</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, curtain.o(.text.Curtain_setRelayDown))
+<P><STRONG><a name="[3ea]"></a>Curtain_setRelayDown</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, curtain.o(.text.Curtain_setRelayDown))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Curtain_setRelayDown
 </UL>
 <BR>[Called By]<UL><LI><a href="#[234]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_4
 </UL>
 
-<P><STRONG><a name="[3e8]"></a>Curtain_setRelayUp</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, curtain.o(.text.Curtain_setRelayUp))
+<P><STRONG><a name="[3e9]"></a>Curtain_setRelayUp</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, curtain.o(.text.Curtain_setRelayUp))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Curtain_setRelayUp
 </UL>
 <BR>[Called By]<UL><LI><a href="#[234]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_4
@@ -1393,7 +1393,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[229]"></a>DISP_Service</STRONG> (Thumb, 284 bytes, Stack size 16 bytes, display.o(.text.DISP_Service))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1192<LI>Call Chain = DISP_Service &rArr; Service_SettingsScreen_5 &rArr; DSP_InitSet6Scrn &rArr; DROPDOWN_SetFont &rArr; DROPDOWN_Expand &rArr; LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 1184<LI>Call Chain = DISP_Service &rArr; Service_SettingsScreen_5 &rArr; DSP_InitSet6Scrn &rArr; DROPDOWN_SetFont &rArr; DROPDOWN_Expand &rArr; LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 <LI><a href="#[23e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet1Scrn
@@ -1440,7 +1440,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f746xx.o(RESET)
 </UL>
-<P><STRONG><a name="[3db]"></a>Dec2Bcd</STRONG> (Thumb, 64 bytes, Stack size 8 bytes, common.o(.text.Dec2Bcd))
+<P><STRONG><a name="[3dc]"></a>Dec2Bcd</STRONG> (Thumb, 64 bytes, Stack size 8 bytes, common.o(.text.Dec2Bcd))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Dec2Bcd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[232]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_2
@@ -1540,19 +1540,19 @@ Global Symbols
 <LI><a href="#[28c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_Service
 </UL>
 
-<P><STRONG><a name="[3df]"></a>Defroster_setActiveTime</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, defroster.o(.text.Defroster_setActiveTime))
+<P><STRONG><a name="[3e0]"></a>Defroster_setActiveTime</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, defroster.o(.text.Defroster_setActiveTime))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Defroster_setActiveTime
 </UL>
 <BR>[Called By]<UL><LI><a href="#[233]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_3
 </UL>
 
-<P><STRONG><a name="[3de]"></a>Defroster_setCycleTime</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, defroster.o(.text.Defroster_setCycleTime))
+<P><STRONG><a name="[3df]"></a>Defroster_setCycleTime</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, defroster.o(.text.Defroster_setCycleTime))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Defroster_setCycleTime
 </UL>
 <BR>[Called By]<UL><LI><a href="#[233]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_3
 </UL>
 
-<P><STRONG><a name="[3e0]"></a>Defroster_setPin</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, defroster.o(.text.Defroster_setPin))
+<P><STRONG><a name="[3e1]"></a>Defroster_setPin</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, defroster.o(.text.Defroster_setPin))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Defroster_setPin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[233]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_3
@@ -1616,11 +1616,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[236]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_6
 <LI><a href="#[232]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_2
 <LI><a href="#[291]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Display_Save
-<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
+<LI><a href="#[3db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
 <LI><a href="#[38a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_Save_Single
 <LI><a href="#[3ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RS485_Service
 <LI><a href="#[1fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtains_Save
-<LI><a href="#[3e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_Save
+<LI><a href="#[3e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_Save
 <LI><a href="#[288]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_Save
 </UL>
 
@@ -1775,7 +1775,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[291]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Display_Save
 <LI><a href="#[221]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Display_InitSettings
-<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
+<LI><a href="#[3db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
 <LI><a href="#[428]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Init
 <LI><a href="#[38a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_Save_Single
 <LI><a href="#[388]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_Init_Single
@@ -1783,7 +1783,7 @@ Global Symbols
 <LI><a href="#[286]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_Init
 <LI><a href="#[1f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtains_Init
 <LI><a href="#[1fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtains_Save
-<LI><a href="#[3e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_Save
+<LI><a href="#[3e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_Save
 <LI><a href="#[288]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_Save
 </UL>
 
@@ -3027,7 +3027,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[3cc]"></a>LIGHTS_IsNightTimerActive</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, lights.o(.text.LIGHTS_IsNightTimerActive))
+<P><STRONG><a name="[3cd]"></a>LIGHTS_IsNightTimerActive</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, lights.o(.text.LIGHTS_IsNightTimerActive))
 <BR><BR>[Called By]<UL><LI><a href="#[23c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_ResetMenuSwitches
 </UL>
 
@@ -3102,8 +3102,11 @@ Global Symbols
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 </UL>
 
-<P><STRONG><a name="[227]"></a>LIGHTS_isAnyLightOn</STRONG> (Thumb, 92 bytes, Stack size 4 bytes, lights.o(.text.LIGHTS_isAnyLightOn))
-<BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = LIGHTS_isAnyLightOn
+<P><STRONG><a name="[227]"></a>LIGHTS_isAnyLightOn</STRONG> (Thumb, 110 bytes, Stack size 16 bytes, lights.o(.text.LIGHTS_isAnyLightOn))
+<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = LIGHTS_isAnyLightOn &rArr; LIGHT_isActive
+</UL>
+<BR>[Calls]<UL><LI><a href="#[33e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_isActive
+<LI><a href="#[27a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_isTiedToMainLight
 </UL>
 <BR>[Called By]<UL><LI><a href="#[359]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleRelease_ResetMenuSwitchesScreenArea
 <LI><a href="#[357]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleRelease_MainScreenLogic
@@ -3221,7 +3224,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[348]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandlePress_LightSettingsScreen
 </UL>
 
-<P><STRONG><a name="[3f7]"></a>LIGHT_SetButtonExternal</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetButtonExternal))
+<P><STRONG><a name="[3f8]"></a>LIGHT_SetButtonExternal</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetButtonExternal))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetButtonExternal
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
@@ -3233,67 +3236,67 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[348]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandlePress_LightSettingsScreen
 </UL>
 
-<P><STRONG><a name="[3f4]"></a>LIGHT_SetCommunicationType</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetCommunicationType))
+<P><STRONG><a name="[3f5]"></a>LIGHT_SetCommunicationType</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetCommunicationType))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetCommunicationType
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 </UL>
 
-<P><STRONG><a name="[3ef]"></a>LIGHT_SetControllerID</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetControllerID))
+<P><STRONG><a name="[3f0]"></a>LIGHT_SetControllerID</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetControllerID))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetControllerID
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 </UL>
 
-<P><STRONG><a name="[3ee]"></a>LIGHT_SetIconID</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetIconID))
+<P><STRONG><a name="[3ef]"></a>LIGHT_SetIconID</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetIconID))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetIconID
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 </UL>
 
-<P><STRONG><a name="[3f5]"></a>LIGHT_SetLocalPin</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetLocalPin))
+<P><STRONG><a name="[3f6]"></a>LIGHT_SetLocalPin</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetLocalPin))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetLocalPin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 </UL>
 
-<P><STRONG><a name="[3f1]"></a>LIGHT_SetOffTime</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetOffTime))
+<P><STRONG><a name="[3f2]"></a>LIGHT_SetOffTime</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetOffTime))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetOffTime
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 </UL>
 
-<P><STRONG><a name="[3f0]"></a>LIGHT_SetOnDelayTime</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetOnDelayTime))
+<P><STRONG><a name="[3f1]"></a>LIGHT_SetOnDelayTime</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetOnDelayTime))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetOnDelayTime
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 </UL>
 
-<P><STRONG><a name="[3f2]"></a>LIGHT_SetOnHour</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetOnHour))
+<P><STRONG><a name="[3f3]"></a>LIGHT_SetOnHour</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetOnHour))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetOnHour
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 </UL>
 
-<P><STRONG><a name="[3f3]"></a>LIGHT_SetOnMinute</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetOnMinute))
+<P><STRONG><a name="[3f4]"></a>LIGHT_SetOnMinute</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetOnMinute))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetOnMinute
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 </UL>
 
-<P><STRONG><a name="[3ed]"></a>LIGHT_SetRelay</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetRelay))
+<P><STRONG><a name="[3ee]"></a>LIGHT_SetRelay</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetRelay))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetRelay
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 </UL>
 
-<P><STRONG><a name="[3f9]"></a>LIGHT_SetRememberBrightness</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetRememberBrightness))
+<P><STRONG><a name="[3fa]"></a>LIGHT_SetRememberBrightness</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetRememberBrightness))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetRememberBrightness
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 </UL>
 
-<P><STRONG><a name="[3f6]"></a>LIGHT_SetSleepTime</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetSleepTime))
+<P><STRONG><a name="[3f7]"></a>LIGHT_SetSleepTime</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetSleepTime))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetSleepTime
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
@@ -3318,7 +3321,7 @@ Global Symbols
 <LI><a href="#[33c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_Flip
 </UL>
 
-<P><STRONG><a name="[3f8]"></a>LIGHT_SetTiedToMainLight</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetTiedToMainLight))
+<P><STRONG><a name="[3f9]"></a>LIGHT_SetTiedToMainLight</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, lights.o(.text.LIGHT_SetTiedToMainLight))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LIGHT_SetTiedToMainLight
 </UL>
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
@@ -3331,6 +3334,7 @@ Global Symbols
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 <LI><a href="#[35d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleTriggerSources
 <LI><a href="#[33d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleLightNightTimer
+<LI><a href="#[227]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_isAnyLightOn
 </UL>
 
 <P><STRONG><a name="[340]"></a>LIGHT_isBinary</STRONG> (Thumb, 20 bytes, Stack size 4 bytes, lights.o(.text.LIGHT_isBinary))
@@ -3381,6 +3385,7 @@ Global Symbols
 <LI><a href="#[26d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet5Scrn
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 <LI><a href="#[33d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleLightNightTimer
+<LI><a href="#[227]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_isAnyLightOn
 </UL>
 
 <P><STRONG><a name="[9f]"></a>LTDC_IRQHandler</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, stm32f7xx_it.o(.text.LTDC_IRQHandler))
@@ -3420,7 +3425,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[33b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetState
 </UL>
 
-<P><STRONG><a name="[3c7]"></a>QR_Code_Get</STRONG> (Thumb, 68 bytes, Stack size 8 bytes, display.o(.text.QR_Code_Get))
+<P><STRONG><a name="[3c8]"></a>QR_Code_Get</STRONG> (Thumb, 68 bytes, Stack size 8 bytes, display.o(.text.QR_Code_Get))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = QR_Code_Get
 </UL>
 <BR>[Called By]<UL><LI><a href="#[23a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_QrCodeScreen
@@ -3619,7 +3624,7 @@ Global Symbols
 <P><STRONG><a name="[3fb]"></a>SetDefault</STRONG> (Thumb, 78 bytes, Stack size 24 bytes, main.o(.text.SetDefault))
 <BR><BR>[Stack]<UL><LI>Max Depth = 384<LI>Call Chain = SetDefault &rArr; LIGHTS_Save &rArr; LIGHT_Save_Single &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; I2Cx_Error &rArr; I2Cx_Init &rArr; I2Cx_MspInit &rArr; HAL_GPIO_Init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
+<BR>[Calls]<UL><LI><a href="#[3db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
 <LI><a href="#[404]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetDefault
 <LI><a href="#[1ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetInstance
 <LI><a href="#[287]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_SetDefault
@@ -3627,7 +3632,7 @@ Global Symbols
 <LI><a href="#[1fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtains_SetDefault
 <LI><a href="#[38b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_SetDefault
 <LI><a href="#[1fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtains_Save
-<LI><a href="#[3e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_Save
+<LI><a href="#[3e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_Save
 <LI><a href="#[288]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_Save
 <LI><a href="#[338]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_Save
 <LI><a href="#[25e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_GetInstance
@@ -3783,11 +3788,11 @@ Global Symbols
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetFanDifference
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetFanHighBand
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetFanLowBand
-<LI><a href="#[3d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetMaster
+<LI><a href="#[3d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetMaster
 <LI><a href="#[1cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_IsMaster
 <LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_Get_SP_Min
 <LI><a href="#[247]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_Get_SP_Max
-<LI><a href="#[3ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetControlMode
+<LI><a href="#[3cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetControlMode
 <LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetControlMode
 <LI><a href="#[21e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetSetpoint
 <LI><a href="#[1ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetInstance
@@ -3800,20 +3805,20 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 <LI><a href="#[3ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TF_Respond
-<LI><a href="#[3d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetGroup
+<LI><a href="#[3d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetGroup
 <LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetGroup
 <LI><a href="#[427]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetSetpointDifference
-<LI><a href="#[3cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanControlMode
-<LI><a href="#[3d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanDifference
-<LI><a href="#[3d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanHighBand
-<LI><a href="#[3d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanLowBand
-<LI><a href="#[3d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetMaster
+<LI><a href="#[3d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanControlMode
+<LI><a href="#[3d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanDifference
+<LI><a href="#[3d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanHighBand
+<LI><a href="#[3d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanLowBand
+<LI><a href="#[3d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetMaster
 <LI><a href="#[1cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_IsMaster
-<LI><a href="#[3d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_Set_SP_Min
-<LI><a href="#[3d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_Set_SP_Max
-<LI><a href="#[3ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetControlMode
+<LI><a href="#[3d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_Set_SP_Min
+<LI><a href="#[3d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_Set_SP_Max
+<LI><a href="#[3cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetControlMode
 <LI><a href="#[426]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SP_Temp_Set
-<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
+<LI><a href="#[3db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
 <LI><a href="#[1ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetInstance
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> rs485.o(.text.RS485_Init)
@@ -3835,13 +3840,13 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_ReadBuffer
 <LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_CRC_Calculate
-<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
+<LI><a href="#[3db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
 <LI><a href="#[404]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetDefault
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[3da]"></a>THSTAT_Save</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, thermostat.o(.text.THSTAT_Save))
+<P><STRONG><a name="[3db]"></a>THSTAT_Save</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, thermostat.o(.text.THSTAT_Save))
 <BR><BR>[Stack]<UL><LI>Max Depth = 336<LI>Call Chain = THSTAT_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; I2Cx_Error &rArr; I2Cx_Init &rArr; I2Cx_MspInit &rArr; HAL_GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_WriteBuffer
@@ -4123,7 +4128,7 @@ Global Symbols
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THERMOSTAT_SET_Listener
 </UL>
 
-<P><STRONG><a name="[3ce]"></a>Thermostat_SetControlMode</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetControlMode))
+<P><STRONG><a name="[3cf]"></a>Thermostat_SetControlMode</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetControlMode))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Thermostat_SetControlMode
 </UL>
 <BR>[Called By]<UL><LI><a href="#[231]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_1
@@ -4139,35 +4144,35 @@ Global Symbols
 <LI><a href="#[3fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetDefault
 </UL>
 
-<P><STRONG><a name="[3cf]"></a>Thermostat_SetFanControlMode</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetFanControlMode))
+<P><STRONG><a name="[3d0]"></a>Thermostat_SetFanControlMode</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetFanControlMode))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Thermostat_SetFanControlMode
 </UL>
 <BR>[Called By]<UL><LI><a href="#[231]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_1
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THERMOSTAT_SETUP_Listener
 </UL>
 
-<P><STRONG><a name="[3d3]"></a>Thermostat_SetFanDifference</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetFanDifference))
+<P><STRONG><a name="[3d4]"></a>Thermostat_SetFanDifference</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetFanDifference))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Thermostat_SetFanDifference
 </UL>
 <BR>[Called By]<UL><LI><a href="#[231]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_1
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THERMOSTAT_SETUP_Listener
 </UL>
 
-<P><STRONG><a name="[3d5]"></a>Thermostat_SetFanHighBand</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetFanHighBand))
+<P><STRONG><a name="[3d6]"></a>Thermostat_SetFanHighBand</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetFanHighBand))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Thermostat_SetFanHighBand
 </UL>
 <BR>[Called By]<UL><LI><a href="#[231]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_1
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THERMOSTAT_SETUP_Listener
 </UL>
 
-<P><STRONG><a name="[3d4]"></a>Thermostat_SetFanLowBand</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetFanLowBand))
+<P><STRONG><a name="[3d5]"></a>Thermostat_SetFanLowBand</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetFanLowBand))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Thermostat_SetFanLowBand
 </UL>
 <BR>[Called By]<UL><LI><a href="#[231]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_1
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THERMOSTAT_SETUP_Listener
 </UL>
 
-<P><STRONG><a name="[3d6]"></a>Thermostat_SetGroup</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetGroup))
+<P><STRONG><a name="[3d7]"></a>Thermostat_SetGroup</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetGroup))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Thermostat_SetGroup
 </UL>
 <BR>[Called By]<UL><LI><a href="#[231]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_1
@@ -4180,7 +4185,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[3ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RS485_Service
 </UL>
 
-<P><STRONG><a name="[3d8]"></a>Thermostat_SetMaster</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetMaster))
+<P><STRONG><a name="[3d9]"></a>Thermostat_SetMaster</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_SetMaster))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Thermostat_SetMaster
 </UL>
 <BR>[Called By]<UL><LI><a href="#[231]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_1
@@ -4209,14 +4214,14 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THERMOSTAT_SETUP_Listener
 </UL>
 
-<P><STRONG><a name="[3d1]"></a>Thermostat_Set_SP_Max</STRONG> (Thumb, 66 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_Set_SP_Max))
+<P><STRONG><a name="[3d2]"></a>Thermostat_Set_SP_Max</STRONG> (Thumb, 66 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_Set_SP_Max))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Thermostat_Set_SP_Max
 </UL>
 <BR>[Called By]<UL><LI><a href="#[231]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_1
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THERMOSTAT_SETUP_Listener
 </UL>
 
-<P><STRONG><a name="[3d2]"></a>Thermostat_Set_SP_Min</STRONG> (Thumb, 66 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_Set_SP_Min))
+<P><STRONG><a name="[3d3]"></a>Thermostat_Set_SP_Min</STRONG> (Thumb, 66 bytes, Stack size 8 bytes, thermostat.o(.text.Thermostat_Set_SP_Min))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Thermostat_Set_SP_Min
 </UL>
 <BR>[Called By]<UL><LI><a href="#[231]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_1
@@ -4307,7 +4312,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[1f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_ReadBuffer
 <LI><a href="#[1fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_CRC_Calculate
 <LI><a href="#[405]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_SetDefault
-<LI><a href="#[3e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_Save
+<LI><a href="#[3e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_Save
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -4330,7 +4335,7 @@ Global Symbols
 <LI><a href="#[35d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HandleTriggerSources
 </UL>
 
-<P><STRONG><a name="[3e7]"></a>Ventilator_Save</STRONG> (Thumb, 60 bytes, Stack size 16 bytes, ventilator.o(.text.Ventilator_Save))
+<P><STRONG><a name="[3e8]"></a>Ventilator_Save</STRONG> (Thumb, 60 bytes, Stack size 16 bytes, ventilator.o(.text.Ventilator_Save))
 <BR><BR>[Stack]<UL><LI>Max Depth = 336<LI>Call Chain = Ventilator_Save &rArr; EE_WriteBuffer &rArr; EE_WritePage &rArr; EE_WriteData &rArr; I2Cx_WriteMultiple &rArr; I2Cx_Error &rArr; I2Cx_Init &rArr; I2Cx_MspInit &rArr; HAL_GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_WriteBuffer
@@ -4415,37 +4420,37 @@ Global Symbols
 <LI><a href="#[433]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_Service
 </UL>
 
-<P><STRONG><a name="[3e3]"></a>Ventilator_setDelayOffTime</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, ventilator.o(.text.Ventilator_setDelayOffTime))
+<P><STRONG><a name="[3e4]"></a>Ventilator_setDelayOffTime</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, ventilator.o(.text.Ventilator_setDelayOffTime))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Ventilator_setDelayOffTime
 </UL>
 <BR>[Called By]<UL><LI><a href="#[233]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_3
 </UL>
 
-<P><STRONG><a name="[3e2]"></a>Ventilator_setDelayOnTime</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, ventilator.o(.text.Ventilator_setDelayOnTime))
+<P><STRONG><a name="[3e3]"></a>Ventilator_setDelayOnTime</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, ventilator.o(.text.Ventilator_setDelayOnTime))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Ventilator_setDelayOnTime
 </UL>
 <BR>[Called By]<UL><LI><a href="#[233]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_3
 </UL>
 
-<P><STRONG><a name="[3e6]"></a>Ventilator_setLocalPin</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, ventilator.o(.text.Ventilator_setLocalPin))
+<P><STRONG><a name="[3e7]"></a>Ventilator_setLocalPin</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, ventilator.o(.text.Ventilator_setLocalPin))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Ventilator_setLocalPin
 </UL>
 <BR>[Called By]<UL><LI><a href="#[233]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_3
 </UL>
 
-<P><STRONG><a name="[3e1]"></a>Ventilator_setRelay</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, ventilator.o(.text.Ventilator_setRelay))
+<P><STRONG><a name="[3e2]"></a>Ventilator_setRelay</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, ventilator.o(.text.Ventilator_setRelay))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Ventilator_setRelay
 </UL>
 <BR>[Called By]<UL><LI><a href="#[233]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_3
 </UL>
 
-<P><STRONG><a name="[3e4]"></a>Ventilator_setTriggerSource1</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, ventilator.o(.text.Ventilator_setTriggerSource1))
+<P><STRONG><a name="[3e5]"></a>Ventilator_setTriggerSource1</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, ventilator.o(.text.Ventilator_setTriggerSource1))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Ventilator_setTriggerSource1
 </UL>
 <BR>[Called By]<UL><LI><a href="#[233]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_3
 </UL>
 
-<P><STRONG><a name="[3e5]"></a>Ventilator_setTriggerSource2</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, ventilator.o(.text.Ventilator_setTriggerSource2))
+<P><STRONG><a name="[3e6]"></a>Ventilator_setTriggerSource2</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, ventilator.o(.text.Ventilator_setTriggerSource2))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Ventilator_setTriggerSource2
 </UL>
 <BR>[Called By]<UL><LI><a href="#[233]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_3
@@ -4522,6 +4527,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISPDateTime
 <LI><a href="#[239]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_CurtainsScreen
+<LI><a href="#[238]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_LightsScreen
 <LI><a href="#[237]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_CleanScreen
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 <LI><a href="#[22e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SelectScreen2
@@ -4530,7 +4536,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[a9]"></a>main</STRONG> (Thumb, 216 bytes, Stack size 24 bytes, main.o(.text.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1216<LI>Call Chain = main &rArr; DISP_Service &rArr; Service_SettingsScreen_5 &rArr; DSP_InitSet6Scrn &rArr; DROPDOWN_SetFont &rArr; DROPDOWN_Expand &rArr; LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 1208<LI>Call Chain = main &rArr; DISP_Service &rArr; Service_SettingsScreen_5 &rArr; DSP_InitSet6Scrn &rArr; DROPDOWN_SetFont &rArr; DROPDOWN_Expand &rArr; LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
 <LI><a href="#[296]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_Init
@@ -4645,7 +4651,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> button.o(.data)
 </UL>
-<P><STRONG><a name="[3d9]"></a>BUTTON_IsPressed</STRONG> (Thumb, 30 bytes, Stack size 16 bytes, button.o(i.BUTTON_IsPressed))
+<P><STRONG><a name="[3da]"></a>BUTTON_IsPressed</STRONG> (Thumb, 30 bytes, Stack size 16 bytes, button.o(i.BUTTON_IsPressed))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = BUTTON_IsPressed
 </UL>
 <BR>[Calls]<UL><LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
@@ -4752,7 +4758,7 @@ Global Symbols
 <LI><a href="#[470]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBackground
 </UL>
 
-<P><STRONG><a name="[3dd]"></a>CHECKBOX_GetState</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, checkbox.o(i.CHECKBOX_GetState))
+<P><STRONG><a name="[3de]"></a>CHECKBOX_GetState</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, checkbox.o(i.CHECKBOX_GetState))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = CHECKBOX_GetState
 </UL>
 <BR>[Calls]<UL><LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
@@ -4761,13 +4767,13 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[236]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_6
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 <LI><a href="#[232]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_2
-<LI><a href="#[3d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_IsChecked
+<LI><a href="#[3d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_IsChecked
 </UL>
 
-<P><STRONG><a name="[3d7]"></a>CHECKBOX_IsChecked</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, checkbox.o(i.CHECKBOX_IsChecked))
+<P><STRONG><a name="[3d8]"></a>CHECKBOX_IsChecked</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, checkbox.o(i.CHECKBOX_IsChecked))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = CHECKBOX_IsChecked &rArr; CHECKBOX_GetState
 </UL>
-<BR>[Calls]<UL><LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
+<BR>[Calls]<UL><LI><a href="#[3de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
 </UL>
 <BR>[Called By]<UL><LI><a href="#[231]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_1
 </UL>
@@ -4912,7 +4918,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 184<LI>Call Chain = DROPDOWN_DecSel &rArr; DROPDOWN_SetSel &rArr; WM_InvalidateWindow &rArr; WM_InvalidateRect &rArr; WM__InvalidateRectEx &rArr; WM__InvalidateRect &rArr;  WM__InvalidateRect (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[25a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_SetSel
-<LI><a href="#[3dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
+<LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
 </UL>
 <BR>[Called By]<UL><LI><a href="#[476]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_AddKey
 </UL>
@@ -4961,7 +4967,7 @@ Global Symbols
 <LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_Callback
 </UL>
 
-<P><STRONG><a name="[3dc]"></a>DROPDOWN_GetSel</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, dropdown.o(i.DROPDOWN_GetSel))
+<P><STRONG><a name="[3dd]"></a>DROPDOWN_GetSel</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, dropdown.o(i.DROPDOWN_GetSel))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = DROPDOWN_GetSel
 </UL>
 <BR>[Calls]<UL><LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
@@ -4978,7 +4984,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 184<LI>Call Chain = DROPDOWN_IncSel &rArr; DROPDOWN_SetSel &rArr; WM_InvalidateWindow &rArr; WM_InvalidateRect &rArr; WM__InvalidateRectEx &rArr; WM__InvalidateRect &rArr;  WM__InvalidateRect (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[25a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_SetSel
-<LI><a href="#[3dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
+<LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
 </UL>
 <BR>[Called By]<UL><LI><a href="#[476]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_AddKey
 </UL>
@@ -5116,7 +5122,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[455]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
+<BR>[Called By]<UL><LI><a href="#[3d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_Callback
 <LI><a href="#[5f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_OnAction
 </UL>
@@ -5606,7 +5612,7 @@ Global Symbols
 <LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[455]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
+<BR>[Called By]<UL><LI><a href="#[3c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
 <LI><a href="#[678]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Calloc
 <LI><a href="#[485]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ARRAY_Create
 <LI><a href="#[45e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_CreateWindowAsChild
@@ -5628,7 +5634,7 @@ Global Symbols
 <LI><a href="#[4e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_AddFreeMemory
 </UL>
 <BR>[Called By]<UL><LI><a href="#[27f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DeleteWindow
-<LI><a href="#[3cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Delete
+<LI><a href="#[3cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Delete
 <LI><a href="#[9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_NextPixel_End
 <LI><a href="#[4eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Realloc
 <LI><a href="#[6b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_EnlargeBlocks
@@ -5713,7 +5719,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[55a]"></a>GUI_ALLOC_Lock</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, gui_alloc.o(i.GUI_ALLOC_Lock))
-<BR><BR>[Called By]<UL><LI><a href="#[3c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
+<BR><BR>[Called By]<UL><LI><a href="#[3c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
 </UL>
 
 <P><STRONG><a name="[455]"></a>GUI_ALLOC_LockH</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, gui_alloc.o(i.GUI_ALLOC_LockH))
@@ -5736,15 +5742,15 @@ Global Symbols
 <LI><a href="#[244]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_SetValue
 <LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_SetText
 <LI><a href="#[241]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_SetTextColor
-<LI><a href="#[3ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Draw
-<LI><a href="#[3c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_GetInfo
-<LI><a href="#[3c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
-<LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
-<LI><a href="#[3dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
-<LI><a href="#[3d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
+<LI><a href="#[3cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Draw
+<LI><a href="#[3ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_GetInfo
+<LI><a href="#[3c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
+<LI><a href="#[3de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
+<LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
+<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
 <LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_SetValue
-<LI><a href="#[3d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
-<LI><a href="#[3cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_GetValue
+<LI><a href="#[3d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
+<LI><a href="#[3ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_GetValue
 <LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_HandlePID
 <LI><a href="#[6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_NextPixel_Start
 <LI><a href="#[4eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Realloc
@@ -6000,7 +6006,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[55d]"></a>GUI_ALLOC_Unlock</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, gui_alloc.o(i.GUI_ALLOC_Unlock))
-<BR><BR>[Called By]<UL><LI><a href="#[3c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
+<BR><BR>[Called By]<UL><LI><a href="#[3c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
 </UL>
 
 <P><STRONG><a name="[456]"></a>GUI_ALLOC_UnlockH</STRONG> (Thumb, 42 bytes, Stack size 0 bytes, gui_alloc.o(i.GUI_ALLOC_UnlockH))
@@ -6021,15 +6027,15 @@ Global Symbols
 <LI><a href="#[244]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_SetValue
 <LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_SetText
 <LI><a href="#[241]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_SetTextColor
-<LI><a href="#[3ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Draw
-<LI><a href="#[3c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_GetInfo
-<LI><a href="#[3c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
-<LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
-<LI><a href="#[3dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
-<LI><a href="#[3d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
+<LI><a href="#[3cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Draw
+<LI><a href="#[3ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_GetInfo
+<LI><a href="#[3c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
+<LI><a href="#[3de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
+<LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
+<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
 <LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_SetValue
-<LI><a href="#[3d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
-<LI><a href="#[3cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_GetValue
+<LI><a href="#[3d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
+<LI><a href="#[3ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_GetValue
 <LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_HandlePID
 <LI><a href="#[9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_NextPixel_End
 <LI><a href="#[4eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Realloc
@@ -6691,7 +6697,7 @@ Global Symbols
 <P><STRONG><a name="[255]"></a>GUI_DispString</STRONG> (Thumb, 258 bytes, Stack size 40 bytes, gui_dispstring.o(i.GUI_DispString))
 <BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = GUI_DispString &rArr; GUI__DispLine &rArr; WM__InitIVRSearch &rArr; WM__GetNextIVR &rArr; WM__ActivateClipRect &rArr; _SetClipRectUserIntersect &rArr; LCD_SetClipRectEx &rArr; GUI__IntersectRects
 </UL>
-<BR>[Calls]<UL><LI><a href="#[3fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
+<BR>[Calls]<UL><LI><a href="#[3c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 <LI><a href="#[50d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DispLine
 <LI><a href="#[50b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetLineNumChars
 <LI><a href="#[50c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetLineDistX
@@ -6717,6 +6723,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISPDateTime
 <LI><a href="#[239]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_CurtainsScreen
+<LI><a href="#[238]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_LightsScreen
 <LI><a href="#[237]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_CleanScreen
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 <LI><a href="#[22e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SelectScreen2
@@ -6753,7 +6760,7 @@ Global Symbols
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 <LI><a href="#[22e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SelectScreen2
 <LI><a href="#[22d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SelectScreen1
-<LI><a href="#[3ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Draw
+<LI><a href="#[3cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Draw
 <LI><a href="#[471]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_DrawBitmap
 </UL>
 
@@ -7024,8 +7031,8 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_LCD_FillRect
 </UL>
 
-<P><STRONG><a name="[3fa]"></a>GUI_GetFontDistY</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, gui_char.o(i.GUI_GetFontDistY))
-<BR><BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
+<P><STRONG><a name="[3c7]"></a>GUI_GetFontDistY</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, gui_char.o(i.GUI_GetFontDistY))
+<BR><BR>[Called By]<UL><LI><a href="#[238]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_LightsScreen
 <LI><a href="#[577]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__CalcTextRect
 <LI><a href="#[255]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispString
 <LI><a href="#[511]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DispStringInRect
@@ -7489,7 +7496,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[61d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Exec1Input
 </UL>
 
-<P><STRONG><a name="[3c8]"></a>GUI_QR_Create</STRONG> (Thumb, 408 bytes, Stack size 48 bytes, gui_qr.o(i.GUI_QR_Create))
+<P><STRONG><a name="[3c9]"></a>GUI_QR_Create</STRONG> (Thumb, 408 bytes, Stack size 48 bytes, gui_qr.o(i.GUI_QR_Create))
 <BR><BR>[Stack]<UL><LI>Max Depth = 956<LI>Call Chain = GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 </UL>
 <BR>[Calls]<UL><LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
@@ -7504,7 +7511,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[23a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_QrCodeScreen
 </UL>
 
-<P><STRONG><a name="[3cb]"></a>GUI_QR_Delete</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, gui_qr.o(i.GUI_QR_Delete))
+<P><STRONG><a name="[3cc]"></a>GUI_QR_Delete</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, gui_qr.o(i.GUI_QR_Delete))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = GUI_QR_Delete &rArr; GUI_ALLOC_Free &rArr; _AddFreeMemory &rArr; _WriteTagData
 </UL>
 <BR>[Calls]<UL><LI><a href="#[47f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Free
@@ -7512,7 +7519,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[23a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_QrCodeScreen
 </UL>
 
-<P><STRONG><a name="[3ca]"></a>GUI_QR_Draw</STRONG> (Thumb, 50 bytes, Stack size 16 bytes, gui_qr.o(i.GUI_QR_Draw))
+<P><STRONG><a name="[3cb]"></a>GUI_QR_Draw</STRONG> (Thumb, 50 bytes, Stack size 16 bytes, gui_qr.o(i.GUI_QR_Draw))
 <BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = GUI_QR_Draw &rArr; GUI_DrawBitmap &rArr; GL_DrawBitmap &rArr; LCD_DrawBitmap &rArr; LCD_FillRect
 </UL>
 <BR>[Calls]<UL><LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
@@ -7522,7 +7529,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[23a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_QrCodeScreen
 </UL>
 
-<P><STRONG><a name="[3c9]"></a>GUI_QR_GetInfo</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, gui_qr.o(i.GUI_QR_GetInfo))
+<P><STRONG><a name="[3ca]"></a>GUI_QR_GetInfo</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, gui_qr.o(i.GUI_QR_GetInfo))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = GUI_QR_GetInfo
 </UL>
 <BR>[Calls]<UL><LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
@@ -7648,6 +7655,7 @@ Global Symbols
 <LI><a href="#[23b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_LightSettingsScreen
 <LI><a href="#[23a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_QrCodeScreen
 <LI><a href="#[239]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_CurtainsScreen
+<LI><a href="#[238]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_LightsScreen
 <LI><a href="#[237]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_CleanScreen
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 <LI><a href="#[232]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_2
@@ -7707,6 +7715,7 @@ Global Symbols
 <LI><a href="#[23e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet1Scrn
 <LI><a href="#[23c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_ResetMenuSwitches
 <LI><a href="#[239]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_CurtainsScreen
+<LI><a href="#[238]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_LightsScreen
 <LI><a href="#[237]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_CleanScreen
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 <LI><a href="#[22f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_ThermostatScreen
@@ -7777,6 +7786,7 @@ Global Symbols
 <LI><a href="#[23e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet1Scrn
 <LI><a href="#[23c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_ResetMenuSwitches
 <LI><a href="#[239]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_CurtainsScreen
+<LI><a href="#[238]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_LightsScreen
 <LI><a href="#[237]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_CleanScreen
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 <LI><a href="#[22f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_ThermostatScreen
@@ -7791,6 +7801,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[206]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISPDateTime
 <LI><a href="#[23c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_ResetMenuSwitches
 <LI><a href="#[239]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_CurtainsScreen
+<LI><a href="#[238]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_LightsScreen
 <LI><a href="#[237]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_CleanScreen
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 <LI><a href="#[22f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_ThermostatScreen
@@ -8016,7 +8027,7 @@ Global Symbols
 <P><STRONG><a name="[577]"></a>GUI__CalcTextRect</STRONG> (Thumb, 158 bytes, Stack size 24 bytes, gui__private.o(i.GUI__CalcTextRect))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = GUI__CalcTextRect &rArr; GUI_GetStringDistX &rArr; GUI__GetLineDistX &rArr; GUI_UC__GetCharCodeInc
 </UL>
-<BR>[Calls]<UL><LI><a href="#[3fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
+<BR>[Calls]<UL><LI><a href="#[3c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 <LI><a href="#[4ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetStringDistX
 </UL>
 <BR>[Called By]<UL><LI><a href="#[674]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_CalcSizes
@@ -8067,7 +8078,7 @@ Global Symbols
 
 <P><STRONG><a name="[511]"></a>GUI__DispStringInRect</STRONG> (Thumb, 320 bytes, Stack size 72 bytes, gui_dispstring.o(i.GUI__DispStringInRect), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[57b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__HandleEOLine
-<LI><a href="#[3fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
+<LI><a href="#[3c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 <LI><a href="#[50d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__DispLine
 <LI><a href="#[50b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetLineNumChars
 <LI><a href="#[50c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI__GetLineDistX
@@ -9125,7 +9136,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[455]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
-<LI><a href="#[3fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
+<LI><a href="#[3c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 <LI><a href="#[217]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetTextMode
 <LI><a href="#[212]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetFont
 <LI><a href="#[20b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Clear
@@ -9485,7 +9496,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> radio.o(.data)
 </UL>
-<P><STRONG><a name="[3cd]"></a>RADIO_GetValue</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, radio.o(i.RADIO_GetValue))
+<P><STRONG><a name="[3ce]"></a>RADIO_GetValue</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, radio.o(i.RADIO_GetValue))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = RADIO_GetValue
 </UL>
 <BR>[Calls]<UL><LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
@@ -9778,7 +9789,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> spinbox.o(.data)
 </UL>
-<P><STRONG><a name="[3d0]"></a>SPINBOX_GetValue</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, spinbox.o(i.SPINBOX_GetValue))
+<P><STRONG><a name="[3d1]"></a>SPINBOX_GetValue</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, spinbox.o(i.SPINBOX_GetValue))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = SPINBOX_GetValue &rArr; EDIT_GetValue
 </UL>
 <BR>[Calls]<UL><LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
@@ -10196,7 +10207,7 @@ Global Symbols
 <LI><a href="#[4a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EDIT_CreateUser
 </UL>
 
-<P><STRONG><a name="[3eb]"></a>WM_DisableWindow</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, wm_lib.o(i.WM_DisableWindow))
+<P><STRONG><a name="[3ec]"></a>WM_DisableWindow</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, wm_lib.o(i.WM_DisableWindow))
 <BR><BR>[Stack]<UL><LI>Max Depth = 224<LI>Call Chain = WM_DisableWindow &rArr; WM_SetEnableState &rArr; WM__SendMessage &rArr; WM_DefaultProc &rArr; WM_InvalidateWindow &rArr; WM_InvalidateRect &rArr; WM__InvalidateRectEx &rArr; WM__InvalidateRect &rArr;  WM__InvalidateRect (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[5eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetEnableState
@@ -10204,7 +10215,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_5
 </UL>
 
-<P><STRONG><a name="[3ec]"></a>WM_EnableWindow</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, wm_lib.o(i.WM_EnableWindow))
+<P><STRONG><a name="[3ed]"></a>WM_EnableWindow</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, wm_lib.o(i.WM_EnableWindow))
 <BR><BR>[Stack]<UL><LI>Max Depth = 224<LI>Call Chain = WM_EnableWindow &rArr; WM_SetEnableState &rArr; WM__SendMessage &rArr; WM_DefaultProc &rArr; WM_InvalidateWindow &rArr; WM_InvalidateRect &rArr; WM__InvalidateRectEx &rArr; WM__InvalidateRect &rArr;  WM__InvalidateRect (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[5eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_SetEnableState
@@ -10625,7 +10636,7 @@ Global Symbols
 <LI><a href="#[638]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_InvalidateWindowAndDescsEx
 </UL>
 
-<P><STRONG><a name="[3ea]"></a>WM_IsEnabled</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, wm_lib.o(i.WM_IsEnabled))
+<P><STRONG><a name="[3eb]"></a>WM_IsEnabled</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, wm_lib.o(i.WM_IsEnabled))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = WM_IsEnabled &rArr; WM__IsEnabled
 </UL>
 <BR>[Calls]<UL><LI><a href="#[464]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__IsEnabled
@@ -10845,8 +10856,8 @@ Global Symbols
 <LI><a href="#[455]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
 <LI><a href="#[5b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM__SendMessage
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_EnableWindow
-<LI><a href="#[3eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DisableWindow
+<BR>[Called By]<UL><LI><a href="#[3ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_EnableWindow
+<LI><a href="#[3ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DisableWindow
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_Callback
 </UL>
 
@@ -11266,7 +11277,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[4ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_h2p
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_IsEnabled
+<BR>[Called By]<UL><LI><a href="#[3eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_IsEnabled
 <LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_HandlePID
 <LI><a href="#[18]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_DrawSkinFlex
 <LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_DrawSkinFlex
@@ -12640,11 +12651,11 @@ Local Symbols
 <LI><a href="#[210]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Hex2Str
 <LI><a href="#[400]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_IsActive
 <LI><a href="#[401]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetMeasuredTemp
-<LI><a href="#[3ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetControlMode
+<LI><a href="#[3cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetControlMode
 <LI><a href="#[403]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_TurnOff
 <LI><a href="#[3ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SP_Temp_Decrement
 <LI><a href="#[3fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SP_Temp_Increment
-<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
+<LI><a href="#[3db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
 <LI><a href="#[1ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetInstance
 <LI><a href="#[402]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispSDec
 <LI><a href="#[255]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispString
@@ -12682,36 +12693,36 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[257]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet2Scrn
 <LI><a href="#[27e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_KillSet1Scrn
-<LI><a href="#[3d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetGroup
+<LI><a href="#[3d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetGroup
 <LI><a href="#[24e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetGroup
-<LI><a href="#[3cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanControlMode
+<LI><a href="#[3d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanControlMode
 <LI><a href="#[24a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetFanControlMode
-<LI><a href="#[3d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanDifference
+<LI><a href="#[3d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanDifference
 <LI><a href="#[24b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetFanDifference
-<LI><a href="#[3d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanHighBand
+<LI><a href="#[3d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanHighBand
 <LI><a href="#[24d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetFanHighBand
-<LI><a href="#[3d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanLowBand
+<LI><a href="#[3d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetFanLowBand
 <LI><a href="#[24c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetFanLowBand
-<LI><a href="#[3d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetMaster
+<LI><a href="#[3d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetMaster
 <LI><a href="#[1cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_IsMaster
-<LI><a href="#[3d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_Set_SP_Min
+<LI><a href="#[3d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_Set_SP_Min
 <LI><a href="#[249]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_Get_SP_Min
-<LI><a href="#[3d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_Set_SP_Max
+<LI><a href="#[3d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_Set_SP_Max
 <LI><a href="#[247]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_Get_SP_Max
-<LI><a href="#[3ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetControlMode
+<LI><a href="#[3cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_SetControlMode
 <LI><a href="#[243]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetControlMode
-<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
+<LI><a href="#[3db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
 <LI><a href="#[1ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetInstance
-<LI><a href="#[3d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
-<LI><a href="#[3d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_IsChecked
+<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
+<LI><a href="#[3d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_IsChecked
 <LI><a href="#[248]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_SetValue
-<LI><a href="#[3d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
-<LI><a href="#[3cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_GetValue
+<LI><a href="#[3d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
+<LI><a href="#[3ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RADIO_GetValue
 </UL>
 <BR>[Called By]<UL><LI><a href="#[229]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[232]"></a>Service_SettingsScreen_2</STRONG> (Thumb, 1170 bytes, Stack size 48 bytes, display.o(.text.Service_SettingsScreen_2))
+<P><STRONG><a name="[232]"></a>Service_SettingsScreen_2</STRONG> (Thumb, 1238 bytes, Stack size 48 bytes, display.o(.text.Service_SettingsScreen_2))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1072<LI>Call Chain = Service_SettingsScreen_2 &rArr; DSP_InitSet3Scrn &rArr; DROPDOWN_SetFont &rArr; DROPDOWN_Expand &rArr; LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EE_WriteBuffer
@@ -12720,15 +12731,15 @@ Local Symbols
 <LI><a href="#[25c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet3Scrn
 <LI><a href="#[280]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_KillSet2Scrn
 <LI><a href="#[291]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Display_Save
-<LI><a href="#[3db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Dec2Bcd
-<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
+<LI><a href="#[3dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Dec2Bcd
+<LI><a href="#[3db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;THSTAT_Save
 <LI><a href="#[1ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Thermostat_GetInstance
 <LI><a href="#[338]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_Save
-<LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
+<LI><a href="#[3de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
 <LI><a href="#[25b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_FillRect
-<LI><a href="#[3dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
-<LI><a href="#[3d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
-<LI><a href="#[3d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
+<LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
+<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
+<LI><a href="#[3d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
 <LI><a href="#[211]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetColor
 </UL>
 <BR>[Called By]<UL><LI><a href="#[229]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
@@ -12741,29 +12752,29 @@ Local Symbols
 <LI><a href="#[281]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_KillSet3Scrn
 <LI><a href="#[25c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet3Scrn
 <LI><a href="#[291]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Display_Save
-<LI><a href="#[3e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_Save
+<LI><a href="#[3e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_Save
 <LI><a href="#[288]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_Save
-<LI><a href="#[3e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_setLocalPin
+<LI><a href="#[3e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_setLocalPin
 <LI><a href="#[268]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_getLocalPin
-<LI><a href="#[3e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_setTriggerSource2
+<LI><a href="#[3e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_setTriggerSource2
 <LI><a href="#[267]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_getTriggerSource2
-<LI><a href="#[3e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_setTriggerSource1
+<LI><a href="#[3e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_setTriggerSource1
 <LI><a href="#[266]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_getTriggerSource1
-<LI><a href="#[3e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_setDelayOffTime
+<LI><a href="#[3e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_setDelayOffTime
 <LI><a href="#[265]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_getDelayOffTime
-<LI><a href="#[3e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_setDelayOnTime
+<LI><a href="#[3e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_setDelayOnTime
 <LI><a href="#[264]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_getDelayOnTime
-<LI><a href="#[3e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_setRelay
+<LI><a href="#[3e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_setRelay
 <LI><a href="#[263]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_getRelay
-<LI><a href="#[3e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_setPin
+<LI><a href="#[3e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_setPin
 <LI><a href="#[262]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_getPin
-<LI><a href="#[3df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_setActiveTime
+<LI><a href="#[3e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_setActiveTime
 <LI><a href="#[261]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_getActiveTime
-<LI><a href="#[3de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_setCycleTime
+<LI><a href="#[3df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_setCycleTime
 <LI><a href="#[260]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_getCycleTime
-<LI><a href="#[3dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
-<LI><a href="#[3d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
-<LI><a href="#[3d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
+<LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
+<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
+<LI><a href="#[3d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
 <LI><a href="#[25e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ventilator_GetInstance
 <LI><a href="#[25d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Defroster_GetInstance
 </UL>
@@ -12771,66 +12782,65 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[234]"></a>Service_SettingsScreen_4</STRONG> (Thumb, 482 bytes, Stack size 48 bytes, display.o(.text.Service_SettingsScreen_4))
-<BR><BR>[Stack]<UL><LI>Max Depth = 728<LI>Call Chain = Service_SettingsScreen_4 &rArr; DSP_InitSet5Scrn &rArr; SPINBOX_SetEdge &rArr; _AdjustEdit &rArr; WM_SetWindowPos &rArr; WM_SetSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 736<LI>Call Chain = Service_SettingsScreen_4 &rArr; DSP_InitSet5Scrn &rArr; SPINBOX_SetEdge &rArr; _AdjustEdit &rArr; WM_SetWindowPos &rArr; WM_SetSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[26d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet5Scrn
 <LI><a href="#[282]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_KillSet4Scrn
 <LI><a href="#[269]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet4Scrn
 <LI><a href="#[1fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtains_Save
-<LI><a href="#[3e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_setRelayDown
-<LI><a href="#[3e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_setRelayUp
+<LI><a href="#[3ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_setRelayDown
+<LI><a href="#[3e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_setRelayUp
 <LI><a href="#[26c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_getRelayDown
 <LI><a href="#[26b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_getRelayUp
 <LI><a href="#[26a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_GetInstanceByIndex
-<LI><a href="#[3d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
-<LI><a href="#[3d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
+<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
+<LI><a href="#[3d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
 </UL>
 <BR>[Called By]<UL><LI><a href="#[229]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[235]"></a>Service_SettingsScreen_5</STRONG> (Thumb, 1990 bytes, Stack size 176 bytes, display.o(.text.Service_SettingsScreen_5))
-<BR><BR>[Stack]<UL><LI>Max Depth = 1176<LI>Call Chain = Service_SettingsScreen_5 &rArr; DSP_InitSet6Scrn &rArr; DROPDOWN_SetFont &rArr; DROPDOWN_Expand &rArr; LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<P><STRONG><a name="[235]"></a>Service_SettingsScreen_5</STRONG> (Thumb, 1960 bytes, Stack size 168 bytes, display.o(.text.Service_SettingsScreen_5))
+<BR><BR>[Stack]<UL><LI>Max Depth = 1168<LI>Call Chain = Service_SettingsScreen_5 &rArr; DSP_InitSet6Scrn &rArr; DROPDOWN_SetFont &rArr; DROPDOWN_Expand &rArr; LISTBOX_CreateAsChild &rArr; LISTBOX_CreateUser &rArr; LISTBOX_SetText &rArr; LISTBOX_AddString &rArr; LISTBOX_UpdateScrollers &rArr; _ManageAutoScroll &rArr; LISTBOX__SetScrollbarWidth &rArr; SCROLLBAR_SetWidth &rArr; WIDGET_SetWidth &rArr; WM_SetYSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[27c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet6Scrn
 <LI><a href="#[283]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_KillSet5Scrn
 <LI><a href="#[26d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DSP_InitSet5Scrn
 <LI><a href="#[34a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_getCount
-<LI><a href="#[3fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 <LI><a href="#[33e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_isActive
-<LI><a href="#[3f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetRememberBrightness
+<LI><a href="#[3fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetRememberBrightness
 <LI><a href="#[27b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_isBrightnessRemembered
-<LI><a href="#[3f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetTiedToMainLight
+<LI><a href="#[3f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetTiedToMainLight
 <LI><a href="#[27a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_isTiedToMainLight
-<LI><a href="#[3f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetButtonExternal
+<LI><a href="#[3f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetButtonExternal
 <LI><a href="#[279]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_GetButtonExternal
-<LI><a href="#[3f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetSleepTime
+<LI><a href="#[3f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetSleepTime
 <LI><a href="#[278]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_GetSleepTime
-<LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetLocalPin
+<LI><a href="#[3f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetLocalPin
 <LI><a href="#[277]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_GetLocalPin
-<LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetCommunicationType
+<LI><a href="#[3f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetCommunicationType
 <LI><a href="#[276]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_GetCommunicationType
-<LI><a href="#[3f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetOnMinute
+<LI><a href="#[3f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetOnMinute
 <LI><a href="#[274]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_GetOnMinute
-<LI><a href="#[3f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetOnHour
+<LI><a href="#[3f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetOnHour
 <LI><a href="#[273]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_GetOnHour
-<LI><a href="#[3f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetOffTime
+<LI><a href="#[3f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetOffTime
 <LI><a href="#[275]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_GetOffTime
-<LI><a href="#[3f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetOnDelayTime
+<LI><a href="#[3f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetOnDelayTime
 <LI><a href="#[272]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_GetOnDelayTime
-<LI><a href="#[3ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetControllerID
+<LI><a href="#[3f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetControllerID
 <LI><a href="#[271]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_GetControllerID
-<LI><a href="#[3ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetIconID
+<LI><a href="#[3ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetIconID
 <LI><a href="#[270]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_GetIconID
-<LI><a href="#[3ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetRelay
+<LI><a href="#[3ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_SetRelay
 <LI><a href="#[26f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_GetRelay
-<LI><a href="#[3ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_EnableWindow
-<LI><a href="#[3eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DisableWindow
-<LI><a href="#[3ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_IsEnabled
+<LI><a href="#[3ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_EnableWindow
+<LI><a href="#[3ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_DisableWindow
+<LI><a href="#[3eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_IsEnabled
 <LI><a href="#[26e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_GetInstance
 <LI><a href="#[338]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_Save
-<LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
-<LI><a href="#[3d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
-<LI><a href="#[3d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
+<LI><a href="#[3de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
+<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
+<LI><a href="#[3d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
 <LI><a href="#[20f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ClearRect
 <LI><a href="#[3c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DrawBitmap
 <LI><a href="#[214]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispStringAt
@@ -12858,10 +12868,10 @@ Local Symbols
 <LI><a href="#[27d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtain_GetMoveTime
 <LI><a href="#[3fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetDefault
 <LI><a href="#[1fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Curtains_Save
-<LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
-<LI><a href="#[3dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
-<LI><a href="#[3d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
-<LI><a href="#[3d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
+<LI><a href="#[3de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CHECKBOX_GetState
+<LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DROPDOWN_GetSel
+<LI><a href="#[3da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_IsPressed
+<LI><a href="#[3d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPINBOX_GetValue
 </UL>
 <BR>[Called By]<UL><LI><a href="#[229]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
@@ -12888,17 +12898,24 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[229]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DISP_Service
 </UL>
 
-<P><STRONG><a name="[238]"></a>Service_LightsScreen</STRONG> (Thumb, 410 bytes, Stack size 48 bytes, display.o(.text.Service_LightsScreen))
-<BR><BR>[Stack]<UL><LI>Max Depth = 288<LI>Call Chain = Service_LightsScreen &rArr; DrawHamburgerMenu &rArr; GUI_DrawLine &rArr; GL_DrawLine &rArr; GL_DrawLineEx &rArr; GL_DrawLine1Ex &rArr; GL_DrawPoint &rArr; GL_FillCircle
+<P><STRONG><a name="[238]"></a>Service_LightsScreen</STRONG> (Thumb, 650 bytes, Stack size 112 bytes, display.o(.text.Service_LightsScreen))
+<BR><BR>[Stack]<UL><LI>Max Depth = 352<LI>Call Chain = Service_LightsScreen &rArr; DrawHamburgerMenu &rArr; GUI_DrawLine &rArr; GL_DrawLine &rArr; GL_DrawLineEx &rArr; GL_DrawLine1Ex &rArr; GL_DrawPoint &rArr; GL_FillCircle
 </UL>
 <BR>[Calls]<UL><LI><a href="#[226]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DrawHamburgerMenu
+<LI><a href="#[3c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 <LI><a href="#[34e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_Rows_getCount
 <LI><a href="#[34a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_getCount
 <LI><a href="#[33e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_isActive
 <LI><a href="#[270]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHT_GetIconID
 <LI><a href="#[26e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_GetInstance
 <LI><a href="#[3c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DrawBitmap
+<LI><a href="#[214]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispStringAt
+<LI><a href="#[215]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lng
+<LI><a href="#[213]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetTextAlign
+<LI><a href="#[217]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetTextMode
+<LI><a href="#[212]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetFont
 <LI><a href="#[20c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_MULTIBUF_EndEx
+<LI><a href="#[211]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetColor
 <LI><a href="#[209]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_MULTIBUF_BeginEx
 <LI><a href="#[20b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_Clear
 </UL>
@@ -12940,11 +12957,11 @@ Local Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 988<LI>Call Chain = Service_QrCodeScreen &rArr; GUI_QR_Create &rArr; _EncodeString &rArr; _QR_CODE_EncodeMask &rArr; _QR_Mask &rArr; _QR_MASK_EvaluateSymbol &rArr; _QR_CalcRunLength
 </UL>
 <BR>[Calls]<UL><LI><a href="#[226]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DrawHamburgerMenu
-<LI><a href="#[3cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Delete
-<LI><a href="#[3ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Draw
-<LI><a href="#[3c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_GetInfo
-<LI><a href="#[3c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
-<LI><a href="#[3c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QR_Code_Get
+<LI><a href="#[3cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Delete
+<LI><a href="#[3cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Draw
+<LI><a href="#[3ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_GetInfo
+<LI><a href="#[3c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
+<LI><a href="#[3c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QR_Code_Get
 <LI><a href="#[25b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_FillRect
 <LI><a href="#[20c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_MULTIBUF_EndEx
 <LI><a href="#[211]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetColor
@@ -12979,7 +12996,7 @@ Local Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 256<LI>Call Chain = Service_ResetMenuSwitches &rArr; GUI_DispDecAt &rArr; GUI_DispStringAt &rArr; GUI_DispString &rArr; GUI__DispLine &rArr; WM__InitIVRSearch &rArr; WM__GetNextIVR &rArr; WM__ActivateClipRect &rArr; _SetClipRectUserIntersect &rArr; LCD_SetClipRectEx &rArr; GUI__IntersectRects
 </UL>
 <BR>[Calls]<UL><LI><a href="#[386]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_GetNightTimerCountdown
-<LI><a href="#[3cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_IsNightTimerActive
+<LI><a href="#[3cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LIGHTS_IsNightTimerActive
 <LI><a href="#[3c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispDecAt
 <LI><a href="#[20f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ClearRect
 <LI><a href="#[213]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetTextAlign
@@ -13109,7 +13126,7 @@ Local Symbols
 <LI><a href="#[231]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_1
 </UL>
 
-<P><STRONG><a name="[257]"></a>DSP_InitSet2Scrn</STRONG> (Thumb, 2216 bytes, Stack size 160 bytes, display.o(.text.DSP_InitSet2Scrn))
+<P><STRONG><a name="[257]"></a>DSP_InitSet2Scrn</STRONG> (Thumb, 2210 bytes, Stack size 160 bytes, display.o(.text.DSP_InitSet2Scrn))
 <BR><BR>[Stack]<UL><LI>Max Depth = 712<LI>Call Chain = DSP_InitSet2Scrn &rArr; DROPDOWN_CreateEx &rArr; DROPDOWN_CreateUser &rArr; DROPDOWN__AdjustHeight &rArr; WM_SetSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[207]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetDate
@@ -13234,8 +13251,8 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[234]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Service_SettingsScreen_4
 </UL>
 
-<P><STRONG><a name="[26d]"></a>DSP_InitSet5Scrn</STRONG> (Thumb, 3342 bytes, Stack size 168 bytes, display.o(.text.DSP_InitSet5Scrn))
-<BR><BR>[Stack]<UL><LI>Max Depth = 680<LI>Call Chain = DSP_InitSet5Scrn &rArr; SPINBOX_SetEdge &rArr; _AdjustEdit &rArr; WM_SetWindowPos &rArr; WM_SetSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
+<P><STRONG><a name="[26d]"></a>DSP_InitSet5Scrn</STRONG> (Thumb, 3302 bytes, Stack size 176 bytes, display.o(.text.DSP_InitSet5Scrn))
+<BR><BR>[Stack]<UL><LI>Max Depth = 688<LI>Call Chain = DSP_InitSet5Scrn &rArr; SPINBOX_SetEdge &rArr; _AdjustEdit &rArr; WM_SetWindowPos &rArr; WM_SetSize &rArr; WM_ResizeWindow &rArr; WM__UpdateChildPositions &rArr;  WM_ResizeWindow (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[21f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_DispDec
 <LI><a href="#[254]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BUTTON_SetText
@@ -14655,7 +14672,7 @@ Local Symbols
 <LI><a href="#[6b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_CODE_EncodeMask
 <LI><a href="#[66b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_Malloc
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
+<BR>[Called By]<UL><LI><a href="#[3c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
 </UL>
 
 <P><STRONG><a name="[6b4]"></a>_FRAME_FILLER_Next</STRONG> (Thumb, 146 bytes, Stack size 16 bytes, gui_qr.o(i._FRAME_FILLER_Next))
@@ -14675,7 +14692,7 @@ Local Symbols
 <LI><a href="#[47f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_Free
 <LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
+<BR>[Called By]<UL><LI><a href="#[3c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_QR_Create
 <LI><a href="#[6b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SplitStringToQRinput
 <LI><a href="#[6d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_RAW_Delete
 <LI><a href="#[6d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QR_RAW_Create
@@ -17213,7 +17230,7 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[456]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_UnlockH
 <LI><a href="#[455]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_ALLOC_LockH
-<LI><a href="#[3fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
+<LI><a href="#[3c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_GetFontDistY
 <LI><a href="#[217]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetTextMode
 <LI><a href="#[212]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_SetFont
 <LI><a href="#[473]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WM_GetClientRect

@@ -552,7 +552,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -671,7 +671,7 @@ I (..\..\Common\common.h)(0x68A31BF3)
 I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -838,7 +838,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -950,7 +950,7 @@ I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_uart.h)(0x6884
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_uart_ex.h)(0x6884D656)
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_usart.h)(0x6884D656)
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_usart_ex.h)(0x6884D656)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\main.h)(0x68B47332)
 I (C:\Keil\ARM\ARMCLANG\include\math.h)(0x637B4F2A)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
@@ -2709,7 +2709,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3213,7 +3213,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3331,7 +3331,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3450,7 +3450,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3567,7 +3567,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3580,7 +3580,7 @@ I (..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\ft5336\..\Common\ts.h)(0x
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_qspi.h)(0x6884D648)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\n25q128a\n25q128a.h)(0x6884D648)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h)(0x6884D648)
-F (..\Src\display.c)(0x68B5D9F4)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/display.o -MD)
+F (..\Src\display.c)(0x68B6D96C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/display.o -MD)
 I (..\Inc\main.h)(0x68B47332)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
@@ -3682,7 +3682,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3698,7 +3698,7 @@ I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h)(0x6884D648)
 I (..\Inc\rs485.h)(0x689CC291)
 I (..\..\Middlewares\TinyFrame\TinyFrame.h)(0x6884D65C)
 I (..\..\Middlewares\TinyFrame\TF_Config.h)(0x6884D65C)
-I (..\Inc\translations.h)(0x68B5D449)
+I (..\Inc\translations.h)(0x68B6CEBA)
 F (..\Src\rs485.c)(0x68AC72A7)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/rs485.o -MD)
 I (..\Inc\main.h)(0x68B47332)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
@@ -3801,7 +3801,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3919,7 +3919,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3935,7 +3935,7 @@ I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h)(0x6884D648)
 I (..\Inc\rs485.h)(0x689CC291)
 I (..\..\Middlewares\TinyFrame\TinyFrame.h)(0x6884D65C)
 I (..\..\Middlewares\TinyFrame\TF_Config.h)(0x6884D65C)
-F (..\Src\lights.c)(0x68B437D3)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/lights.o -MD)
+F (..\Src\lights.c)(0x68B6DDD0)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/lights.o -MD)
 I (..\Inc\main.h)(0x68B47332)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
@@ -4037,7 +4037,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -4155,7 +4155,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -4273,7 +4273,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -4391,7 +4391,7 @@ I (..\Inc\Resource.h)(0x68B5A08E)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B5D4CE)
+I (..\Inc\display.h)(0x68B6D5B6)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)

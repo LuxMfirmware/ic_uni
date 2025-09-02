@@ -763,17 +763,32 @@ settings_screen_6_layout =
     .language_label_pos         = { 340, 22 } // 220 (x) + 150 (w) + 10 (padding)
 };
 
-/** @brief Niz sa pokazivačima na bitmape za ikonice svjetala. Premješteno iz `lights.c`. */
+/**
+ * @brief Niz sa pokazivačima na bitmape za ikonice svjetala.
+ * @note  IZMIJENJENO: Redoslijed u ovom nizu sada MORA TAČNO ODGOVARATI
+ * redoslijedu u `enum IconID` definisanom u `display.h`.
+ * Svaka ikonica ima par (OFF, ON).
+ */
 static GUI_CONST_STORAGE GUI_BITMAP* light_modbus_images[] = {
+    // Indeksi 0, 1 (Odgovara ICON_BULB = 0)
     &bmSijalicaOff, &bmSijalicaOn,
+    // Indeksi 2, 3 (Odgovara ICON_VENTILATOR_ICON = 1)
     &bmVENTILATOR_OFF, &bmVENTILATOR_ON,
+    // Indeksi 4, 5 (Odgovara ICON_CEILING_LED_FIXTURE = 2)
     &bmicons_lights_ceiling_led_fixture_off, &bmicons_lights_ceiling_led_fixture_on,
+    // Indeksi 6, 7 (Odgovara ICON_CHANDELIER = 3)
     &bmicons_lights_chandelier_off, &bmicons_lights_chandelier_on,
-    &bmicons_lights_hanging_off,&bmicons_lights_hanging_on,
+    // Indeksi 8, 9 (Odgovara ICON_HANGING = 4)
+    &bmicons_lights_hanging_off, &bmicons_lights_hanging_on,
+    // Indeksi 10, 11 (Odgovara ICON_LED_STRIP = 5)
     &bmicons_lights_led_off, &bmicons_lights_led_on,
+    // Indeksi 12, 13 (Odgovara ICON_SPOT_CONSOLE = 6)
     &bmicons_lights_spot_console_off, &bmicons_lights_spot_console_on,
+    // Indeksi 14, 15 (Odgovara ICON_SPOT_SINGLE = 7)
     &bmicons_lights_spot_single_off, &bmicons_lights_spot_single_on,
+    // Indeksi 16, 17 (Odgovara ICON_STAIRS = 8)
     &bmicons_lights_stairs_off, &bmicons_lights_stairs_on,
+    // Indeksi 18, 19 (Odgovara ICON_WALL = 9)
     &bmicons_lights_wall_off, &bmicons_lights_wall_on
 };
 
@@ -2388,13 +2403,19 @@ static void Service_SettingsScreen_2(void)
                      settings_screen_2_layout.scrnsvr_color_preview_rect.x1, settings_screen_2_layout.scrnsvr_color_preview_rect.y1);
     }
 
-    /** @brief Ažuriranje statusa screensaver-a na osnovu checkbox-a. */
-    if (CHECKBOX_GetState(hCHKBX_ScrnsvrClock) == 1) {
+    // << ISPRAVKA 3: Ispravljena logika ažuriranja screensaver postavki >>
+    // Prvo ažuriramo konfiguracionu varijablu na osnovu stanja checkbox-a.
+    if (g_display_settings.scrnsvr_on_off != (bool)CHECKBOX_GetState(hCHKBX_ScrnsvrClock)) {
+        g_display_settings.scrnsvr_on_off = (bool)CHECKBOX_GetState(hCHKBX_ScrnsvrClock);
+        settingsChanged = 1; // Signaliziramo da je došlo do promjene za snimanje
+    }
+
+    // Zatim, na osnovu te konfiguracione varijable, ažuriramo runtime fleg.
+    if (g_display_settings.scrnsvr_on_off) {
         ScrnsvrClkSet();
     } else {
         ScrnsvrClkReset();
     }
-    g_display_settings.scrnsvr_on_off = IsScrnsvrClkActiv();
 
     /** @brief Ažuriranje ostalih konfiguracionih varijabli. */
     g_display_settings.high_bcklght = SPINBOX_GetValue(hSPNBX_DisplayHighBrightness);
@@ -2660,46 +2681,56 @@ static void Service_SettingsScreen_5(void)
     
     
     
-    // --- POČETAK IZMJENE ---
-    // Dohvaćamo IconID iz enkapsuliranog modula
-    IconID icon_id = (IconID)SPINBOX_GetValue(lightsWidgets[light_index].iconID);
-    bool is_active = LIGHT_isActive(handle);
+    // =======================================================================
+    // === POČETAK NOVE LOGIKE ZA ISCRTAVANJE IKONICE I TEKSTA ===
+    // =======================================================================
+
+    // 1. Dohvati vrijednost iz SPINBOX-a, što je sada INDEKS u tabeli mapiranja.
+    uint16_t selection_index = SPINBOX_GetValue(lightsWidgets[light_index].iconID);
     
-    // Dohvaćamo ikonu i tekstualne opise iz trodimenzionalne tabele
-    const GUI_BITMAP* icon_to_draw = light_modbus_images[(icon_id * 2) + is_active];
-    
-    // Pretpostavljamo da gornji i donji tekst imaju fiksne indekse 0 i 1 u trećoj dimenziji niza
-    const TextID primary_text_id = icon_strings[icon_id][0][0];
-    const TextID secondary_text_id = icon_strings[icon_id][0][1];
+    // Sigurnosna provjera da indeks ne izađe iz opsega tabele.
+    if (selection_index < (sizeof(icon_mapping_table) / sizeof(IconMapping_t)))
+    {
+        // 2. Pronađi odgovarajuće mapiranje u tabeli.
+        const IconMapping_t* mapping = &icon_mapping_table[selection_index];
 
-    // Pozicije za crtanje - korištenjem const varijabli
-    const int16_t x_icon_pos = 480 - icon_to_draw->XSize;
-    const int16_t y_icon_pos = 20;
-    const int16_t y_primary_text_pos = 5;
-    const int16_t y_secondary_text_pos = y_icon_pos + icon_to_draw->YSize + 5;
-    const int16_t clear_rect_x_start = x_icon_pos;
-    const int16_t clear_rect_y_start = 0;
-    const int16_t clear_rect_x_end = x_icon_pos + icon_to_draw->XSize;
-    const int16_t clear_rect_y_end = y_secondary_text_pos + GUI_GetFontDistY(); // Dinamički izračun za donji tekst
-    
-    // Čišćenje i crtanje teksta i ikonice
-    GUI_ClearRect(clear_rect_x_start, clear_rect_y_start, clear_rect_x_end, clear_rect_y_end);
-    GUI_SetTextMode(GUI_TM_TRANS);
+        // 3. Iz mapiranja izvuci sve potrebne informacije.
+        IconID visual_icon_to_draw = mapping->visual_icon_id;
+        TextID primary_text_id = mapping->primary_text_id;
+        TextID secondary_text_id = mapping->secondary_text_id;
+        bool is_active = LIGHT_isActive(handle);
 
-    // Iscrtavanje gornjeg teksta
-    GUI_SetFont(GUI_FONT_13_1);
-    GUI_SetColor(GUI_WHITE);
-    GUI_SetTextAlign(GUI_TA_HCENTER);
-    GUI_DispStringAt(lng(primary_text_id), x_icon_pos + (icon_to_draw->XSize / 2), y_primary_text_pos);
+        // 4. Odredi koju ON/OFF sličicu treba iscrtati na osnovu vizuelnog ID-a.
+        GUI_CONST_STORAGE GUI_BITMAP* icon_bitmap = light_modbus_images[(visual_icon_to_draw * 2) + is_active];
+        
+        // 5. Iscrtaj sličicu i tekstove
+        const int16_t x_icon_pos = 480 - icon_bitmap->XSize;
+        const int16_t y_icon_pos = 20;
+        const int16_t y_primary_text_pos = 5;
+        const int16_t y_secondary_text_pos = y_icon_pos + icon_bitmap->YSize + 5;
 
-    // Iscrtavanje ikonice na spuštenoj poziciji
-    GUI_DrawBitmap(icon_to_draw, x_icon_pos, y_icon_pos);
+        // Očisti područje prije iscrtavanja.
+        GUI_ClearRect(x_icon_pos, 0, 480, y_secondary_text_pos + 20);
+        GUI_SetTextMode(GUI_TM_TRANS);
 
-    // Iscrtavanje donjeg teksta
-    GUI_SetColor(GUI_ORANGE);
-    GUI_SetTextAlign(GUI_TA_HCENTER);
-    GUI_DispStringAt(lng(secondary_text_id), x_icon_pos + (icon_to_draw->XSize / 2), y_secondary_text_pos);
-    // --- KRAJ IZMJENE ---
+        // Iscrtavanje gornjeg (primarnog) teksta
+        GUI_SetFont(GUI_FONT_13_1);
+        GUI_SetColor(GUI_WHITE);
+        GUI_SetTextAlign(GUI_TA_HCENTER);
+        GUI_DispStringAt(lng(primary_text_id), x_icon_pos + (icon_bitmap->XSize / 2), y_primary_text_pos);
+
+        // Iscrtavanje ikonice
+        GUI_DrawBitmap(icon_bitmap, x_icon_pos, y_icon_pos);
+
+        // Iscrtavanje donjeg (sekundarnog) teksta
+        GUI_SetColor(GUI_ORANGE);
+        GUI_SetTextAlign(GUI_TA_HCENTER);
+        GUI_DispStringAt(lng(secondary_text_id), x_icon_pos + (icon_bitmap->XSize / 2), y_secondary_text_pos);
+    }
+    // =======================================================================
+    // === KRAJ NOVE LOGIKE ===
+    // =======================================================================
+
 
     if (BUTTON_IsPressed(hBUTTON_Ok) || BUTTON_IsPressed(hBUTTON_Next))
     {
@@ -2823,7 +2854,8 @@ static void Service_LightsScreen(void)
         // --- Logika za dinamički raspored ikonica na ekranu ---
         // Ova kompleksna logika računa pozicije ikonica tako da budu
         // estetski raspoređene, u zavisnosti od toga koliko ih ima.
-        int y = (LIGHTS_Rows_getCount() > 1) ? 10 : 86;
+        int y_row_start = (LIGHTS_Rows_getCount() > 1) ? 10 : 86;
+        const int y_row_height = 130; // Ukupna visina jednog reda
         uint8_t lightsInRowSum = 0;
 
         for(uint8_t row = 0; row < LIGHTS_Rows_getCount(); ++row) {
@@ -2851,29 +2883,83 @@ static void Service_LightsScreen(void)
 
                 // Uvijek je dobra praksa provjeriti da li je handle validan.
                 if (handle) {
+                    // =======================================================================
+                    // === POČETAK NOVE LOGIKE ZA ISCRTAVANJE ===
+                    // =======================================================================
 
-                    // KORAK 2: Dohvatamo sve potrebne podatke ISKLJUČIVO preko API funkcija.
-                    // `display` modul više ne zna ništa o internoj strukturi svjetla.
-                    uint8_t icon_id = LIGHT_GetIconID(handle); // Koji tip ikonice? (0=sijalica, 1=ventilator)
-                    bool is_active = LIGHT_isActive(handle);  // Da li je svjetlo upaljeno? (true/false)
+                    // KORAK 1: Dohvatamo ID izbora (indeks) iz konfiguracije svjetla.
+                    uint16_t selection_index = LIGHT_GetIconID(handle);
 
-                    // KORAK 3: Logika za odabir sličice je SADA unutar display.c.
-                    // Koristimo `icon_id` i `is_active` da izračunamo tačan indeks
-                    // u našem lokalnom `light_modbus_images` nizu.
-                    // Formula: (ID * 2) + stanje (0 za OFF, 1 za ON)
-                    GUI_CONST_STORAGE GUI_BITMAP* icon_to_draw = light_modbus_images[(icon_id * 2) + is_active];
+                    // Sigurnosna provjera da indeks ne prelazi veličinu tabele.
+                    if (selection_index < (sizeof(icon_mapping_table) / sizeof(IconMapping_t)))
+                    {
+                        // KORAK 2: Koristimo ID da pronađemo mapiranje u glavnoj tabeli.
+                        const IconMapping_t* mapping = &icon_mapping_table[selection_index];
+                        
+                        // KORAK 3: Iz mapiranja izvlačimo sve potrebne informacije.
+                        IconID visual_id = mapping->visual_icon_id;
+                        TextID primary_text_id = mapping->primary_text_id;
+                        TextID secondary_text_id = mapping->secondary_text_id;
+                        bool is_active = LIGHT_isActive(handle);
 
-                    // Logika za X poziciju ostaje ista.
-                    int x = (currentLightsMenuSpaceBetween * ((idx_in_row % lightsInRow) + 1)) + (80 * (idx_in_row % lightsInRow));
+                        // KORAK 4: Određujemo koju ON/OFF sličicu treba iscrtati.
+                        GUI_CONST_STORAGE GUI_BITMAP* icon_to_draw = light_modbus_images[(visual_id * 2) + is_active];
 
-                    // KORAK 4: Iscrtavamo sličicu koju smo upravo odabrali.
-                    GUI_DrawBitmap(icon_to_draw, x, y);
+                        // =======================================================================
+                        // === POČETAK NOVE DINAMIČKE LOGIKE ZA RASPORED ===
+                        // =======================================================================
+
+                        // KORAK 1: Dobijamo sve potrebne dinamičke dimenzije.
+                        GUI_SetFont(GUI_FONT_13_1); // Postavljamo font da bismo dobili tačnu visinu
+                        const int font_height = GUI_GetFontDistY();
+                        const int icon_height = icon_to_draw->YSize;
+                        const int icon_width = icon_to_draw->XSize;
+                        const int padding = 5; // Razmak između elemenata
+
+                        // KORAK 2: Računamo ukupnu visinu cijelog bloka (tekst + ikona + tekst).
+                        const int total_block_height = font_height + padding + icon_height + padding + font_height;
+
+                        // KORAK 3: Računamo početnu Y poziciju kako bi cijeli blok bio vertikalno centriran.
+                        const int y_slot_center = y_row_start + (y_row_height / 2);
+                        const int y_block_start = y_slot_center - (total_block_height / 2);
+
+                        // KORAK 4: Računamo finalne X i Y koordinate za svaki element.
+                        const int x_slot_start = (currentLightsMenuSpaceBetween * (idx_in_row + 1)) + (80 * idx_in_row);
+                        const int x_text_center = x_slot_start + 40; // Horizontalni centar slota od 80px
+                        
+                        const int x_icon_pos = x_text_center - (icon_width / 2); // Centriramo ikonicu horizontalno
+                        const int y_primary_text_pos = y_block_start;
+                        const int y_icon_pos = y_primary_text_pos + font_height + padding;
+                        const int y_secondary_text_pos = y_icon_pos + icon_height + padding;
+                        
+                        // KORAK 5: Iscrtavanje elemenata novim rasporedom.
+                        GUI_SetTextMode(GUI_TM_TRANS);
+                        GUI_SetTextAlign(GUI_TA_HCENTER);
+
+                        // 5.1: Primarni tekst (iznad ikonice)
+                        GUI_SetColor(GUI_WHITE);
+                        GUI_DispStringAt(lng(primary_text_id), x_text_center, y_primary_text_pos);
+
+                        // 5.2: Ikonica (u sredini)
+                        GUI_DrawBitmap(icon_to_draw, x_icon_pos, y_icon_pos);
+                        
+                        // 5.3: Sekundarni tekst (ispod ikonice)
+                        GUI_SetTextMode(GUI_TM_TRANS);
+                        GUI_SetTextAlign(GUI_TA_HCENTER);
+                        GUI_SetColor(GUI_ORANGE);
+                        GUI_DispStringAt(lng(secondary_text_id), x_text_center, y_secondary_text_pos);
+                        
+                        // =======================================================================
+                        // === KRAJ NOVE DINAMIČKE LOGIKE ZA RASPORED ===
+                        // =======================================================================
+                    }
+                     // =======================================================================
+                    // === KRAJ NOVE LOGIKE ZA ISCRTAVANJE ===
+                    // =======================================================================
                 }
-                // === KRAJ REFAKTORISANJA ===
-                // =======================================================================
             }
             lightsInRowSum += lightsInRow;
-            y += 130;
+            y_row_start += y_row_height;
         }
         GUI_MULTIBUF_EndEx(1);
     }
@@ -3681,8 +3767,9 @@ static void DSP_InitSet2Scrn(void)
     hCHKBX_ScrnsvrClock = CHECKBOX_CreateEx(settings_screen_2_layout.scrnsvr_checkbox_pos.x, settings_screen_2_layout.scrnsvr_checkbox_pos.y, settings_screen_2_layout.scrnsvr_checkbox_pos.w, settings_screen_2_layout.scrnsvr_checkbox_pos.h, 0, WM_CF_SHOW, 0, ID_ScrnsvrClock);
     CHECKBOX_SetTextColor(hCHKBX_ScrnsvrClock, GUI_GREEN);
     CHECKBOX_SetText(hCHKBX_ScrnsvrClock, "SCREENSAVER");
-    CHECKBOX_SetState(hCHKBX_ScrnsvrClock, IsScrnsvrClkActiv() ? 1 : 0);
-
+    // << ISPRAVKA 3: Inicijalizacija se sada vrši iz EEPROM strukture `g_display_settings` >>
+    CHECKBOX_SetState(hCHKBX_ScrnsvrClock, g_display_settings.scrnsvr_on_off);
+    
     hDRPDN_WeekDay = DROPDOWN_CreateEx(settings_screen_2_layout.weekday_dropdown_pos.x, settings_screen_2_layout.weekday_dropdown_pos.y, settings_screen_2_layout.weekday_dropdown_pos.w, settings_screen_2_layout.weekday_dropdown_pos.h, 0, WM_CF_SHOW, DROPDOWN_CF_AUTOSCROLLBAR, ID_WeekDay);
     /** * @brief << ISPRAVKA: Logika za popunjavanje dropdown menija za dane u sedmici. >>
      * @note  Petlja sada ispravno iterira 7 puta (za 7 dana) i dodaje stringove
@@ -4072,29 +4159,34 @@ static void DSP_InitSet5Scrn(void)
     int16_t y = settings_screen_5_layout.start_y;
     int16_t y_step = settings_screen_5_layout.y_step;
 
-    // << ISPRAVKA: Uklonjen višak argumenta iz svih SPINBOX_CreateEx poziva. Sada imaju 9 argumenata. >>
-    lightsWidgets[light_index].relay                  = SPINBOX_CreateEx(x, y, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 0, 0, 512);
-    lightsWidgets[light_index].iconID                 = SPINBOX_CreateEx(x, y + 1 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 1, 0, LIGHT_ICON_COUNT - 1);
-    lightsWidgets[light_index].controllerID_on        = SPINBOX_CreateEx(x, y + 2 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 2, 0, 512);
-    lightsWidgets[light_index].controllerID_on_delay  = SPINBOX_CreateEx(x, y + 3 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 3, 0, 255);
-    lightsWidgets[light_index].on_hour                = SPINBOX_CreateEx(x, y + 4 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 4, -1, 23);
-    lightsWidgets[light_index].on_minute              = SPINBOX_CreateEx(x, y + 5 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 5, 0, 59);
+    // << ISPRAVKA 2: Promijenjen množilac za ID-jeve sa 12 na 16 radi izbjegavanja preklapanja >>
+    const int id_step = 16; 
 
-    /** @brief Kreiranje widgeta u drugoj koloni. */
+    // << ISPRAVKA 1: Vraćena linija za kreiranje RELAY spinbox-a >>
+    lightsWidgets[light_index].relay = SPINBOX_CreateEx(x, y, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 0, 0, 512);
+
+    // << ISPRAVKA 1: Opseg za IconID je sada ispravan i nema duplirane linije >>
+    uint16_t max_icon_id = (sizeof(icon_mapping_table) / sizeof(IconMapping_t)) - 1;
+    lightsWidgets[light_index].iconID = SPINBOX_CreateEx(x, y + 1 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 1, 0, max_icon_id);
+    
+    lightsWidgets[light_index].controllerID_on = SPINBOX_CreateEx(x, y + 2 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 2, 0, 512);
+    lightsWidgets[light_index].controllerID_on_delay  = SPINBOX_CreateEx(x, y + 3 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 3, 0, 255);
+    lightsWidgets[light_index].on_hour = SPINBOX_CreateEx(x, y + 4 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 4, -1, 23);
+    lightsWidgets[light_index].on_minute = SPINBOX_CreateEx(x, y + 5 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 5, 0, 59);
+
     x = settings_screen_5_layout.col2_x;
 
-    lightsWidgets[light_index].offTime                = SPINBOX_CreateEx(x, y, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 6, 0, 255);
-    lightsWidgets[light_index].communication_type     = SPINBOX_CreateEx(x, y + 1 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 7, 1, 3);
-    lightsWidgets[light_index].local_pin              = SPINBOX_CreateEx(x, y + 2 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 8, 0, 32);
-    lightsWidgets[light_index].sleep_time             = SPINBOX_CreateEx(x, y + 3 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 9, 0, 255);
-    lightsWidgets[light_index].button_external        = SPINBOX_CreateEx(x, y + 4 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * 12) + 10, 0, 3);
+    lightsWidgets[light_index].offTime = SPINBOX_CreateEx(x, y, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 6, 0, 255);
+    lightsWidgets[light_index].communication_type = SPINBOX_CreateEx(x, y + 1 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 7, 1, 3);
+    lightsWidgets[light_index].local_pin = SPINBOX_CreateEx(x, y + 2 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 8, 0, 32);
+    lightsWidgets[light_index].sleep_time = SPINBOX_CreateEx(x, y + 3 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 9, 0, 255);
+    lightsWidgets[light_index].button_external = SPINBOX_CreateEx(x, y + 4 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 10, 0, 3);
 
     const WidgetRect_t* cb1_size = &settings_screen_5_layout.checkbox1_size;
-    lightsWidgets[light_index].tiedToMainLight = CHECKBOX_CreateEx(x, y + 5 * y_step, cb1_size->w, cb1_size->h, 0, WM_CF_SHOW, 0, ID_LightsModbusRelay + (light_index * 12) + 11);
+    lightsWidgets[light_index].tiedToMainLight = CHECKBOX_CreateEx(x, y + 5 * y_step, cb1_size->w, cb1_size->h, 0, WM_CF_SHOW, 0, ID_LightsModbusRelay + (light_index * id_step) + 11);
 
     const WidgetRect_t* cb2_size = &settings_screen_5_layout.checkbox2_size;
-    lightsWidgets[light_index].rememberBrightness = CHECKBOX_CreateEx(x, y + 5 * y_step + 23, cb2_size->w, cb2_size->h, 0, WM_CF_SHOW, 0, ID_LightsModbusRelay + (light_index * 12) + 12);
-
+    lightsWidgets[light_index].rememberBrightness = CHECKBOX_CreateEx(x, y + 5 * y_step + 23, cb2_size->w, cb2_size->h, 0, WM_CF_SHOW, 0, ID_LightsModbusRelay + (light_index * id_step) + 12);
 
     /** @brief Postavljanje početnih vrijednosti za sve kreirane widgete. */
     SPINBOX_SetEdge(lightsWidgets[light_index].relay, SPINBOX_EDGE_CENTER);

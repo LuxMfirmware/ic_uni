@@ -411,14 +411,18 @@ bool LIGHT_isRGB(const LIGHT_Handle* const handle) { return handle->config.commu
 // --- Grupa 7: Funkcije koje ne zavise od instance ---
 
 /**
- * @brief Provjerava da li je ijedno konfigurisano svjetlo upaljeno.
- * @note Koristi se za odredivanje stanja glavnog prekidaca na GUI-ju.
- * @retval bool `true` ako je bar jedno svjetlo upaljeno, inace `false`.
+ * @brief Provjerava da li je ijedno svjetlo POVEZANO SA GLAVNIM PREKIDACEM upaljeno.
+ * @note  Ažurirano da provjerava `tiedToMainLight` fleg.
+ * @retval bool `true` ako je bar jedno takvo svjetlo upaljeno, inace `false`.
  */
 bool LIGHTS_isAnyLightOn(void) {
     for(uint8_t i = 0; i < lights_count; ++i) {
-        if (lights_modbus[i].value) {
-            return true;
+        // Kreiramo handle da bismo mogli pozvati API funkciju
+        LIGHT_Handle* handle = &lights_modbus[i];
+
+        // << ISPRAVKA: Dodata provjera da li je svjetlo vezano za glavni prekidac >>
+        if (LIGHT_isActive(handle) && LIGHT_isTiedToMainLight(handle)) {
+            return true; // Vrati true samo ako je svjetlo aktivno I vezano za glavni prekidac
         }
     }
     return false;
