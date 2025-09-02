@@ -289,48 +289,53 @@ main_screen_layout =
     .date_pos_scrnsvr   = { 240, 220 }   // Nova pozicija za datum
 };
 /**
- * @brief Struktura koja sadrži konstante za ISCRTAVANJE elemenata
- * na prvom ekranu za odabir.
+ * @brief Struktura koja sadrži sve konstante za ISCRTAVANJE elemenata
+ * na prvom ekranu za odabir (Select Screen 1).
+ * @note  Ova struktura je redizajnirana da podrži dinamički "Smart Grid" raspored.
+ * Sadrži parametre za iscrtavanje rasporeda sa 1, 2, 3 ili 4 ikonice,
+ * čime se izbjegavaju "magični brojevi" unutar `Service_SelectScreen1` funkcije.
  */
 static const struct
 {
-    // Geometrija linija
-    int16_t x_separator_pos;        /**< X pozicija vertikalne linije desno. */
-    int16_t x_mid_line_pos;         /**< X pozicija centralne vertikalne linije. */
-    int16_t y_mid_line_pos;         /**< Y pozicija centralne horizontalne linije. */
-    int16_t vert_line_y_padding;    /**< Vertikalni razmak (padding) za linije. */
-    int16_t horiz_line_x_padding;   /**< Horizontalni razmak (padding) za linije. */
-
-    // Pozicije centara kvadranta
-    int16_t x_center_left;          /**< X koordinata centra lijeve polovine ekrana. */
-    int16_t x_center_right;         /**< X koordinata centra desne polovine ekrana. */
-    int16_t y_center_top;           /**< Y koordinata centra gornje polovine ekrana. */
-    int16_t y_center_bottom;        /**< Y koordinata centra donje polovine ekrana. */
-
-    // Ofseti za elemente
-    int16_t icon_vertical_offset;   /**< Vertikalni pomak za ikonice. */
-    int16_t text_vertical_offset;   /**< Vertikalni pomak za tekst ispod ikonica. */
-
-    // Pozicija "NEXT" dugmeta
-    int16_t next_button_y_center;   /**< Y koordinata centra "NEXT" dugmeta. */
+    /** @brief X pozicija krajnje desne vertikalne linije. */
+    int16_t x_separator_pos;
+    /** @brief Y koordinata centra za "NEXT" dugme. */
+    int16_t y_next_button_center;
+    /** @brief Y koordinata centra za rasporede sa jednim redom (kada su 1, 2 ili 3 ikonice aktivne). */
+    int16_t y_center_single_row;
+    /** @brief Y koordinata centra za gornji red u 2x2 rasporedu (kada su 4 ikonice aktivne). */
+    int16_t y_center_top_row;
+    /** @brief Y koordinata centra za donji red u 2x2 rasporedu (kada su 4 ikonice aktivne). */
+    int16_t y_center_bottom_row;
+    /** @brief Vertikalni razmak (u pikselima) između dna ikonice i vrha teksta ispod nje. */
+    int16_t text_vertical_offset;
+    /** @brief Početna Y koordinata (vrh) za KRATKE vertikalne separatore. */
+    int16_t short_separator_y_start;
+    /** @brief Krajnja Y koordinata (dno) za KRATKE vertikalne separatore. */
+    int16_t short_separator_y_end;
+    /** @brief Početna Y koordinata (vrh) za DUGAČKI desni separator. */
+    int16_t long_separator_y_start;
+    /** @brief Krajnja Y koordinata (dno) za DUGAČKI desni separator. */
+    int16_t long_separator_y_end;
+    /** @brief Horizontalni razmak (padding) od ivica ekrana za horizontalni separator u 2x2 rasporedu. */
+    int16_t separator_x_padding;
+    /** @brief Definiše kompletnu zonu dodira za "NEXT" dugme. */
+    TouchZone_t next_button_zone;
 }
 select_screen1_drawing_layout =
 {
     .x_separator_pos        = DRAWING_AREA_WIDTH,
-    .x_mid_line_pos         = DRAWING_AREA_WIDTH / 2,
-    .y_mid_line_pos         = 136,
-    .vert_line_y_padding    = 10,
-    .horiz_line_x_padding   = 30,
-
-    .x_center_left          = (DRAWING_AREA_WIDTH / 2) / 2,
-    .x_center_right         = (DRAWING_AREA_WIDTH / 2) + (DRAWING_AREA_WIDTH / 2) / 2,
-    .y_center_top           = 136 / 2,
-    .y_center_bottom        = 136 + (272 - 136) / 2,
-
-    .icon_vertical_offset   = -10,
+    .y_next_button_center   = 192,
+    .y_center_single_row    = 136,
+    .y_center_top_row       = 68,
+    .y_center_bottom_row    = 204,
     .text_vertical_offset   = 10,
-
-    .next_button_y_center   = 192
+    .short_separator_y_start = 60,
+    .short_separator_y_end   = 212,
+    .long_separator_y_start = 10,
+    .long_separator_y_end   = 262,
+    .separator_x_padding    = 20,
+    .next_button_zone       = { .x0 = 400, .y0 = 80, .x1 = 480, .y1 = 272 }
 };
 /**
  * @brief Struktura koja sadrži konstante za ISCRTAVANJE elemenata
@@ -1353,8 +1358,16 @@ void PID_Hook(GUI_PID_STATE * pTS)
             touch_in_menu_zone = true; // Postavi fleg da je dodir počeo u zoni menija
             click = 1;                 // Svaki dodir u ovoj zoni generiše zvučni signal
 
+            // << ISPRAVKA: Centralizovano brisanje ekrana prilikom svake navigacije >>
+            // Ovo osigurava da je ekran uvijek čist prije iscrtavanja novog sadržaja.
+            GUI_SelectLayer(0);
+            GUI_Clear();
+            GUI_SelectLayer(1);
+            GUI_Clear();
+
             switch(screen) { // Logika povratka na prethodni ekran
             case SCREEN_THERMOSTAT:
+                thermostatMenuState = 0;
             case SCREEN_LIGHTS:
             case SCREEN_CURTAINS:
             case SCREEN_SELECT_2:
@@ -1366,16 +1379,15 @@ void PID_Hook(GUI_PID_STATE * pTS)
                 break;
             case SCREEN_QR_CODE:
                 screen = SCREEN_SELECT_2;
-                shouldDrawScreen = 1;
                 break;
             case SCREEN_LIGHT_SETTINGS:
                 screen = SCREEN_LIGHTS;
-                shouldDrawScreen = 1;
                 break;
             case SCREEN_MAIN:
                 screen = SCREEN_SELECT_1;
                 break;
             }
+            shouldDrawScreen = 1; // Uvijek zatraži iscrtavanje nakon promjene ekrana
             btnset = 1; // Fleg za dugi pritisak
         } else {
             touch_in_menu_zone = false;
@@ -1752,173 +1764,179 @@ static void Service_MainScreen(void)
 }
 /**
  * @brief Servisira ekran za odabir glavnih kontrola (Svjetla, Termostat, Roletne, Dinamička ikona).
- * @note  Finalna, ispravna verzija koja koristi sinhronizovani TextID enum, tabelu prevoda,
- * uklonjene magične brojeve i prati originalnu logiku iscrtavanja sa ispravnim
- * pozicioniranjem teksta i kompletnim Doxygen komentarima.
+ * @note  Verzija 2.3.2: Potpuno refaktorisano da koristi "Pametnu Mrežu" (Smart Grid).
+ * Ekran dinamički iscrtava samo konfigurisane module i prilagođava raspored
+ * na osnovu njihovog broja (1, 2, 3 ili 4).
  */
 static void Service_SelectScreen1(void)
 {
     /**
-     * @brief Pokazivači (handle-ovi) na module čije stanje se prikazuje na ovom ekranu.
-     * @note  Dobavljaju se na početku funkcije kako bi bili dostupni za provjeru stanja.
+     * @brief Struktura za čuvanje podataka o jednom dinamičkom meniju.
      */
+    typedef struct {
+        const GUI_BITMAP* icon;
+        TextID text_id;
+        eScreen target_screen;
+        bool is_active; // Dodatni fleg za dinamičku ikonu
+    } DynamicMenuItem;
+
+    // Inicijalizacija handle-ova za module
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
     Defroster_Handle* defHandle = Defroster_GetInstance();
     Ventilator_Handle* ventHandle = Ventilator_GetInstance();
 
-    /**
-     * @brief Pokazivači na bitmape koje se koriste za iscrtavanje ikonica.
-     * @note  Definisani su kao `const` jer se njihove vrijednosti ne mijenjaju tokom izvršavanja funkcije.
-     */
-    const GUI_BITMAP* iconLights = &bmSijalicaOff;
-    const GUI_BITMAP* iconThermostat = &bmTermometar;
-    const GUI_BITMAP* iconCurtains = &bmblindMedium;
-    const GUI_BITMAP* iconDefroster = &bmdefrosterico;
-    const GUI_BITMAP* iconVentilator = &bmVENTILATOR_OFF;
-    const GUI_BITMAP* iconNext = &bmnext;
-    const GUI_BITMAP* iconDefrosterOn = &bmdefrostericoOn;
-    const GUI_BITMAP* iconVentilatorOn = &bmVENTILATOR_ON;
+    // Lista SVIH mogućih modula za ovaj ekran
+    DynamicMenuItem all_modules[] = {
+        { &bmSijalicaOff, TXT_LIGHTS, SCREEN_LIGHTS, false },
+        { &bmTermometar, TXT_THERMOSTAT, SCREEN_THERMOSTAT, false },
+        { &bmblindMedium, TXT_BLINDS, SCREEN_CURTAINS, false },
+        { NULL, TXT_DUMMY, SCREEN_SELECT_1, false } // Mjesto za dinamičku ikonu
+    };
 
-    /**
-     * @brief Varijable za dinamičko određivanje ikonice i teksta u četvrtom kvadrantu.
-     * @note  Ove varijable se popunjavaju u `switch` bloku na osnovu globalnih podešavanja (`g_display_settings`).
-     */
-    const GUI_BITMAP* dynamicIcon = NULL;
-    TextID dynamicTextID = TXT_DUMMY;
-    bool is_active = false;
+    // --- KORAK 1: Detekcija aktivnih modula ---
+    DynamicMenuItem active_modules[4];
+    uint8_t active_modules_count = 0;
 
-    /**
-     * @brief Određuje koja dinamička ikonica i tekst će biti prikazani.
-     * @note  Ova `switch` petlja provjerava `selected_control_mode` iz globalnih
-     * podešavanja i postavlja odgovarajuće vrijednosti za `dynamicIcon` i `dynamicTextID`.
-     */
-    switch(g_display_settings.selected_control_mode) {
-    case MODE_DEFROSTER:
-        is_active = Defroster_isActive(defHandle);
-        dynamicIcon = is_active ? iconDefrosterOn : iconDefroster;
-        dynamicTextID = TXT_DEFROSTER;
-        break;
-    case MODE_VENTILATOR:
-        is_active = Ventilator_isActive(ventHandle);
-        dynamicIcon = is_active ? iconVentilatorOn : iconVentilator;
-        dynamicTextID = TXT_VENTILATOR;
-        break;
-    case MODE_OFF:
-        // Ako je mod isključen, ne prikazuje se ni ikonica ni tekst.
-        break;
+    if (LIGHTS_getCount() > 0) {
+        active_modules[active_modules_count++] = all_modules[0];
+    }
+    if (Thermostat_GetGroup(pThst) > 0) {
+        active_modules[active_modules_count++] = all_modules[1];
+    }
+    if (Curtains_getCount() > 0) {
+        active_modules[active_modules_count++] = all_modules[2];
     }
 
-    /**
-     * @brief Glavna logika za iscrtavanje ekrana.
-     * @note  Koristi statičku varijablu `menu_lc` kao "state machine" fleg da bi se
-     * kompletno iscrtavanje izvršilo samo jednom (kada je `menu_lc == 0`).
-     */
-    if (menu_lc == 0) {
-        menu_lc = 1; // Postavlja fleg da je inicijalno iscrtavanje završeno.
+    // Detekcija za dinamičku ikonu
+    if (g_display_settings.selected_control_mode == MODE_DEFROSTER && Defroster_getPin(defHandle) > 0) {
+        bool is_active = Defroster_isActive(defHandle);
+        all_modules[3].icon = is_active ? &bmdefrostericoOn : &bmdefrosterico;
+        all_modules[3].text_id = TXT_DEFROSTER;
+        all_modules[3].is_active = is_active;
+        active_modules[active_modules_count++] = all_modules[3];
+    } else if (g_display_settings.selected_control_mode == MODE_VENTILATOR && (Ventilator_getRelay(ventHandle) > 0 || Ventilator_getLocalPin(ventHandle) > 0)) {
+        bool is_active = Ventilator_isActive(ventHandle);
+        all_modules[3].icon = is_active ? &bmVENTILATOR_ON : &bmVENTILATOR_OFF;
+        all_modules[3].text_id = TXT_VENTILATOR;
+        all_modules[3].is_active = is_active;
+        active_modules[active_modules_count++] = all_modules[3];
+    }
 
-        /**
-         * @brief Inicijalizacija iscrtavanja.
-         * @note  Pokreće se višestruko baferovanje i čiste se oba grafička sloja
-         * kako bi se pripremilo "platno" za nove elemente.
-         */
+    // Crtamo samo ako je potrebno
+    if (shouldDrawScreen) {
+        shouldDrawScreen = 0;
+
         GUI_MULTIBUF_BeginEx(1);
-        GUI_SelectLayer(0);
         GUI_Clear();
-        GUI_SelectLayer(1);
-        GUI_SetBkColor(GUI_TRANSPARENT);
-        GUI_Clear();
-
-        /**
-         * @brief Iscrtavanje statičkih elemenata interfejsa.
-         * @note  Ovdje se iscrtavaju elementi koji se ne mijenjaju: hamburger meni i linije
-         * koje dijele ekran na četiri kvadranta. Pozicije se uzimaju iz
-         * `select_screen1_drawing_layout` strukture.
-         */
         DrawHamburgerMenu();
 
-        GUI_DrawLine(select_screen1_drawing_layout.x_separator_pos, select_screen1_drawing_layout.vert_line_y_padding,
-                     select_screen1_drawing_layout.x_separator_pos, 272 - select_screen1_drawing_layout.vert_line_y_padding);
-
-        GUI_DrawLine(select_screen1_drawing_layout.horiz_line_x_padding, select_screen1_drawing_layout.y_mid_line_pos,
-                     select_screen1_drawing_layout.x_separator_pos - select_screen1_drawing_layout.horiz_line_x_padding, select_screen1_drawing_layout.y_mid_line_pos);
-
-        GUI_DrawLine(select_screen1_drawing_layout.x_mid_line_pos, select_screen1_drawing_layout.vert_line_y_padding + 10,
-                     select_screen1_drawing_layout.x_mid_line_pos, 272 - (select_screen1_drawing_layout.vert_line_y_padding + 10));
-
-        /**
-         * @brief Izračunavanje pozicija za ikonice.
-         * @note  Koordinate za svaku ikonicu se računaju na osnovu centra odgovarajućeg
-         * kvadranta (definisanog u layout strukturi) i dimenzija same ikonice,
-         * kako bi ikonice uvijek bile savršeno centrirane.
-         */
-        const uint16_t xLights = select_screen1_drawing_layout.x_center_left - (iconLights->XSize / 2);
-        const uint16_t yLights = select_screen1_drawing_layout.y_center_top - (iconLights->YSize / 2) + select_screen1_drawing_layout.icon_vertical_offset;
-        const uint16_t xThermostat = select_screen1_drawing_layout.x_center_right - (iconThermostat->XSize / 2);
-        const uint16_t yThermostat = select_screen1_drawing_layout.y_center_top - (iconThermostat->YSize / 2) + select_screen1_drawing_layout.icon_vertical_offset;
-        const uint16_t xCurtains = select_screen1_drawing_layout.x_center_left - (iconCurtains->XSize / 2);
-        const uint16_t yCurtains = select_screen1_drawing_layout.y_center_bottom - (iconCurtains->YSize / 2) + select_screen1_drawing_layout.icon_vertical_offset;
-        const uint16_t xDynamic = select_screen1_drawing_layout.x_center_right - (dynamicIcon ? dynamicIcon->XSize / 2 : iconDefroster->XSize / 2);
-        const uint16_t yDynamic = select_screen1_drawing_layout.y_center_bottom - (dynamicIcon ? dynamicIcon->YSize / 2 : iconDefroster->YSize / 2) + select_screen1_drawing_layout.icon_vertical_offset;
-
-        /**
-         * @brief Iscrtavanje bit mapa (ikonica) na izračunatim pozicijama.
-         */
-        GUI_DrawBitmap(iconLights, xLights, yLights);
-        GUI_DrawBitmap(iconThermostat, xThermostat, yThermostat);
-        GUI_DrawBitmap(iconCurtains, xCurtains, yCurtains);
-        if(dynamicIcon) {
-            GUI_DrawBitmap(dynamicIcon, xDynamic, yDynamic);
+        // --- NOVA LOGIKA ZA ISCRTAVANJE SEPARATORA ---
+        if (active_modules_count < 4) {
+            // Crtaj dugački desni separator za 1, 2, i 3 ikonice
+            GUI_DrawLine(DRAWING_AREA_WIDTH, select_screen1_drawing_layout.long_separator_y_start, 
+                         DRAWING_AREA_WIDTH, select_screen1_drawing_layout.long_separator_y_end);
         }
-        GUI_DrawBitmap(iconNext, select_screen1_drawing_layout.x_separator_pos + 5, select_screen1_drawing_layout.next_button_y_center - (iconNext->YSize / 2));
+        
+        // --- KORAK 2: "Pametna Mreža" - Iscrtavanje na osnovu broja aktivnih modula ---
+        switch (active_modules_count) {
+        case 1: {
+            // Jedna velika ikona na sredini
+            const DynamicMenuItem* item = &active_modules[0];
+            int x_pos = (DRAWING_AREA_WIDTH / 2) - (item->icon->XSize / 2);
+            int y_pos = (LCD_GetYSize() / 2) - (item->icon->YSize / 2) - 10;
+            GUI_DrawBitmap(item->icon, x_pos, y_pos);
 
-        /**
-         * @brief Podešavanje fonta i ispisivanje tekstualnih labela ispod ikonica.
-         * @note  Y pozicija se računa kao centar kvadranta + pola visine ikonice + mali ofset,
-         * čime se tekst ispravno i konzistentno pozicionira ISPOD svake ikonice.
-         */
-        GUI_SetFont(&GUI_FontVerdana20);
-        GUI_SetColor(GUI_ORANGE);
-        GUI_SetTextMode(GUI_TM_TRANS);
-
-        GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
-        GUI_DispStringAt(lng(TXT_LIGHTS),     select_screen1_drawing_layout.x_center_left,  select_screen1_drawing_layout.y_center_top    + (iconLights->YSize / 2) + select_screen1_drawing_layout.text_vertical_offset);
-
-        GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
-        GUI_DispStringAt(lng(TXT_THERMOSTAT), select_screen1_drawing_layout.x_center_right, select_screen1_drawing_layout.y_center_top    + (iconThermostat->YSize / 2) + select_screen1_drawing_layout.text_vertical_offset);
-
-        GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
-        GUI_DispStringAt(lng(TXT_BLINDS),     select_screen1_drawing_layout.x_center_left,  select_screen1_drawing_layout.y_center_bottom + (iconCurtains->YSize / 2) + select_screen1_drawing_layout.text_vertical_offset);
-
-        if(dynamicTextID != TXT_DUMMY) {
-            GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
-            GUI_DispStringAt(lng(dynamicTextID), select_screen1_drawing_layout.x_center_right, select_screen1_drawing_layout.y_center_bottom + (dynamicIcon->YSize / 2) + select_screen1_drawing_layout.text_vertical_offset);
+            GUI_SetFont(&GUI_FontVerdana32);
+            GUI_SetColor(GUI_ORANGE);
+            GUI_SetTextMode(GUI_TM_TRANS);
+            GUI_SetTextAlign(GUI_TA_HCENTER);
+            GUI_DispStringAt(lng(item->text_id), DRAWING_AREA_WIDTH / 2, y_pos + item->icon->YSize + 10);
+            break;
         }
+        case 2: {
+            // Dvije ikonice sa separatorom
+            // Jedan kratki separator u sredini
+            GUI_DrawLine(DRAWING_AREA_WIDTH / 2, select_screen1_drawing_layout.short_separator_y_start,
+                         DRAWING_AREA_WIDTH / 2, select_screen1_drawing_layout.short_separator_y_end);
 
-        /**
-         * @brief Završetak operacije iscrtavanja.
-         * @note  Prikazuje promjene na ekranu i resetuje `thermostatMenuState`.
-         */
-        GUI_MULTIBUF_EndEx(1);
-        thermostatMenuState = 0;
+            for (int i = 0; i < 2; i++) {
+                const DynamicMenuItem* item = &active_modules[i];
+                int x_center = (DRAWING_AREA_WIDTH / 4) * (i == 0 ? 1 : 3);
+                int x_pos = x_center - (item->icon->XSize / 2);
+                int y_pos = (LCD_GetYSize() / 2) - (item->icon->YSize / 2) - 10;
+                GUI_DrawBitmap(item->icon, x_pos, y_pos);
 
-    } else if (menu_lc == 1) {
-        /**
-         * @brief Ažuriranje dinamičke ikone.
-         * @note  Ako je `dynamicIconUpdateFlag` postavljen (npr. nakon pritiska),
-         * ovaj blok koda će samo obrisati staru i iscrtati novu dinamičku ikonicu,
-         * bez potrebe za ponovnim iscrtavanjem cijelog ekrana.
-         */
-        if (dynamicIconUpdateFlag) {
-            dynamicIconUpdateFlag = 0;
-            const uint16_t xDynamic = select_screen1_drawing_layout.x_center_right - (dynamicIcon ? dynamicIcon->XSize / 2 : iconDefroster->XSize / 2);
-            const uint16_t yDynamic = select_screen1_drawing_layout.y_center_bottom - (dynamicIcon ? dynamicIcon->YSize / 2 : iconDefroster->YSize / 2) + select_screen1_drawing_layout.icon_vertical_offset;
-
-            GUI_MULTIBUF_BeginEx(1);
-            GUI_ClearRect(xDynamic, yDynamic, xDynamic + (dynamicIcon ? dynamicIcon->XSize : iconDefroster->XSize), yDynamic + (dynamicIcon ? dynamicIcon->YSize : iconDefroster->YSize));
-            if(dynamicIcon) {
-                GUI_DrawBitmap(dynamicIcon, xDynamic, yDynamic);
+                GUI_SetFont(&GUI_FontVerdana20);
+                GUI_SetColor(GUI_ORANGE);
+                GUI_SetTextMode(GUI_TM_TRANS);
+                GUI_SetTextAlign(GUI_TA_HCENTER);
+                GUI_DispStringAt(lng(item->text_id), x_center, y_pos + item->icon->YSize + 10);
             }
-            GUI_MULTIBUF_EndEx(1);
+            break;
         }
+        case 3: {
+            // Tri ikonice sa separatorima
+            // Dva kratka separatora
+            GUI_DrawLine(DRAWING_AREA_WIDTH / 3, select_screen1_drawing_layout.short_separator_y_start,
+                         DRAWING_AREA_WIDTH / 3, select_screen1_drawing_layout.short_separator_y_end);
+            GUI_DrawLine((DRAWING_AREA_WIDTH / 3) * 2, select_screen1_drawing_layout.short_separator_y_start,
+                         (DRAWING_AREA_WIDTH / 3) * 2, select_screen1_drawing_layout.short_separator_y_end);
+            for (int i = 0; i < 3; i++) {
+                const DynamicMenuItem* item = &active_modules[i];
+                int x_center = (DRAWING_AREA_WIDTH / 6) * (1 + 2 * i);
+                int x_pos = x_center - (item->icon->XSize / 2);
+                int y_pos = (LCD_GetYSize() / 2) - (item->icon->YSize / 2) - 10;
+                GUI_DrawBitmap(item->icon, x_pos, y_pos);
+
+                GUI_SetFont(&GUI_FontVerdana20);
+                GUI_SetColor(GUI_ORANGE);
+                GUI_SetTextMode(GUI_TM_TRANS);
+                GUI_SetTextAlign(GUI_TA_HCENTER);
+                GUI_DispStringAt(lng(item->text_id), x_center, y_pos + item->icon->YSize + 10);
+            }
+            break;
+        }
+        case 4:
+        default: {
+            // Klasična 2x2 mreža
+            // Samo krstasti separator, bez dugačke desne linije
+            GUI_DrawLine(DRAWING_AREA_WIDTH / 2, select_screen1_drawing_layout.short_separator_y_start,
+                         DRAWING_AREA_WIDTH / 2, select_screen1_drawing_layout.short_separator_y_end);
+            GUI_DrawLine(select_screen1_drawing_layout.separator_x_padding, LCD_GetYSize() / 2,
+                         DRAWING_AREA_WIDTH - select_screen1_drawing_layout.separator_x_padding, LCD_GetYSize() / 2);
+            for (int i = 0; i < 4; i++) {
+                const DynamicMenuItem* item = &active_modules[i];
+                int x_center = (DRAWING_AREA_WIDTH / 4) * (i % 2 == 0 ? 1 : 3);
+                int y_center = (LCD_GetYSize() / 4) * (i < 2 ? 1 : 3);
+                int x_pos = x_center - (item->icon->XSize / 2);
+                int y_pos = y_center - (item->icon->YSize / 2) - 10;
+                GUI_DrawBitmap(item->icon, x_pos, y_pos);
+
+                GUI_SetFont(&GUI_FontVerdana20);
+                GUI_SetColor(GUI_ORANGE);
+                GUI_SetTextMode(GUI_TM_TRANS);
+                GUI_SetTextAlign(GUI_TA_HCENTER);
+                GUI_DispStringAt(lng(item->text_id), x_center, y_pos + item->icon->YSize + 10);
+            }
+            break;
+        }
+        }
+
+        // Iscrtaj "Next" dugme za prelazak na Screen 2
+        // Iscrtavanje "Next" dugmeta (logika ostaje ista)
+        if (select_screen2_layout.next_button_zone.x1 > 0) {
+            const GUI_BITMAP* iconNext = &bmnext;
+            /**
+            * @brief Iscrtavanje "NEXT" dugmeta.
+            */
+            GUI_DrawBitmap(iconNext, select_screen1_drawing_layout.x_separator_pos + 5, select_screen1_drawing_layout.y_next_button_center - (iconNext->YSize / 2));
+        }
+        GUI_MULTIBUF_EndEx(1);
+    }
+    // Ažuriranje dinamičke ikone ako se njeno stanje promijenilo
+    else if (dynamicIconUpdateFlag) {
+        dynamicIconUpdateFlag = 0;
+        shouldDrawScreen = 1; // Najlakši način je ponovno iscrtati cijeli ekran
     }
 }
 /**
@@ -2678,16 +2696,16 @@ static void Service_SettingsScreen_5(void)
         LIGHT_SetRememberBrightness(handle, CHECKBOX_GetState(lightsWidgets[light_index].rememberBrightness));
     }
 
-    
-    
-    
+
+
+
     // =======================================================================
     // === POČETAK NOVE LOGIKE ZA ISCRTAVANJE IKONICE I TEKSTA ===
     // =======================================================================
 
     // 1. Dohvati vrijednost iz SPINBOX-a, što je sada INDEKS u tabeli mapiranja.
     uint16_t selection_index = SPINBOX_GetValue(lightsWidgets[light_index].iconID);
-    
+
     // Sigurnosna provjera da indeks ne izađe iz opsega tabele.
     if (selection_index < (sizeof(icon_mapping_table) / sizeof(IconMapping_t)))
     {
@@ -2702,7 +2720,7 @@ static void Service_SettingsScreen_5(void)
 
         // 4. Odredi koju ON/OFF sličicu treba iscrtati na osnovu vizuelnog ID-a.
         GUI_CONST_STORAGE GUI_BITMAP* icon_bitmap = light_modbus_images[(visual_icon_to_draw * 2) + is_active];
-        
+
         // 5. Iscrtaj sličicu i tekstove
         const int16_t x_icon_pos = 480 - icon_bitmap->XSize;
         const int16_t y_icon_pos = 20;
@@ -2895,7 +2913,7 @@ static void Service_LightsScreen(void)
                     {
                         // KORAK 2: Koristimo ID da pronađemo mapiranje u glavnoj tabeli.
                         const IconMapping_t* mapping = &icon_mapping_table[selection_index];
-                        
+
                         // KORAK 3: Iz mapiranja izvlačimo sve potrebne informacije.
                         IconID visual_id = mapping->visual_icon_id;
                         TextID primary_text_id = mapping->primary_text_id;
@@ -2910,11 +2928,11 @@ static void Service_LightsScreen(void)
                         // =======================================================================
 
                         // KORAK 1: Dobijamo sve potrebne dinamičke dimenzije.
-                        GUI_SetFont(GUI_FONT_13_1); // Postavljamo font da bismo dobili tačnu visinu
+                        GUI_SetFont(GUI_FONT_16_1); // Postavljamo font da bismo dobili tačnu visinu
                         const int font_height = GUI_GetFontDistY();
                         const int icon_height = icon_to_draw->YSize;
                         const int icon_width = icon_to_draw->XSize;
-                        const int padding = 5; // Razmak između elemenata
+                        const int padding = 2; // Razmak između elemenata
 
                         // KORAK 2: Računamo ukupnu visinu cijelog bloka (tekst + ikona + tekst).
                         const int total_block_height = font_height + padding + icon_height + padding + font_height;
@@ -2926,12 +2944,12 @@ static void Service_LightsScreen(void)
                         // KORAK 4: Računamo finalne X i Y koordinate za svaki element.
                         const int x_slot_start = (currentLightsMenuSpaceBetween * (idx_in_row + 1)) + (80 * idx_in_row);
                         const int x_text_center = x_slot_start + 40; // Horizontalni centar slota od 80px
-                        
+
                         const int x_icon_pos = x_text_center - (icon_width / 2); // Centriramo ikonicu horizontalno
                         const int y_primary_text_pos = y_block_start;
                         const int y_icon_pos = y_primary_text_pos + font_height + padding;
                         const int y_secondary_text_pos = y_icon_pos + icon_height + padding;
-                        
+
                         // KORAK 5: Iscrtavanje elemenata novim rasporedom.
                         GUI_SetTextMode(GUI_TM_TRANS);
                         GUI_SetTextAlign(GUI_TA_HCENTER);
@@ -2942,18 +2960,18 @@ static void Service_LightsScreen(void)
 
                         // 5.2: Ikonica (u sredini)
                         GUI_DrawBitmap(icon_to_draw, x_icon_pos, y_icon_pos);
-                        
+
                         // 5.3: Sekundarni tekst (ispod ikonice)
                         GUI_SetTextMode(GUI_TM_TRANS);
                         GUI_SetTextAlign(GUI_TA_HCENTER);
                         GUI_SetColor(GUI_ORANGE);
                         GUI_DispStringAt(lng(secondary_text_id), x_text_center, y_secondary_text_pos);
-                        
+
                         // =======================================================================
                         // === KRAJ NOVE DINAMIČKE LOGIKE ZA RASPORED ===
                         // =======================================================================
                     }
-                     // =======================================================================
+                    // =======================================================================
                     // === KRAJ NOVE LOGIKE ZA ISCRTAVANJE ===
                     // =======================================================================
                 }
@@ -3399,7 +3417,7 @@ static void DISPDateTime(void)
      */
     const int16_t TIME_CLEAR_RECT_WIDTH = 100;
     const int16_t TIME_CLEAR_RECT_HEIGHT = 50;
-    
+
     // Konstante za brisanje screensaver ekrana
     const int16_t SCREENSAVER_TIME_Y_START = 80;
     const int16_t SCREENSAVER_TIME_Y_END = 192;
@@ -3475,7 +3493,8 @@ static void DISPDateTime(void)
          * @note Koristi se za dinamičko prevođenje imena mjeseci na screensaver-u.
          */
         const TextID months[] = {TXT_MONTH_JAN, TXT_MONTH_FEB, TXT_MONTH_MAR, TXT_MONTH_APR, TXT_MONTH_MAY, TXT_MONTH_JUN,
-                                 TXT_MONTH_JUL, TXT_MONTH_AUG, TXT_MONTH_SEP, TXT_MONTH_OCT, TXT_MONTH_NOV, TXT_MONTH_DEC};
+                                 TXT_MONTH_JUL, TXT_MONTH_AUG, TXT_MONTH_SEP, TXT_MONTH_OCT, TXT_MONTH_NOV, TXT_MONTH_DEC
+                                };
 
         sprintf(dbuf, "%s, %02d. %s %d",
                 lng(days[Bcd2Dec(rtcdt.WeekDay) - 1]),
@@ -3769,7 +3788,7 @@ static void DSP_InitSet2Scrn(void)
     CHECKBOX_SetText(hCHKBX_ScrnsvrClock, "SCREENSAVER");
     // << ISPRAVKA 3: Inicijalizacija se sada vrši iz EEPROM strukture `g_display_settings` >>
     CHECKBOX_SetState(hCHKBX_ScrnsvrClock, g_display_settings.scrnsvr_on_off);
-    
+
     hDRPDN_WeekDay = DROPDOWN_CreateEx(settings_screen_2_layout.weekday_dropdown_pos.x, settings_screen_2_layout.weekday_dropdown_pos.y, settings_screen_2_layout.weekday_dropdown_pos.w, settings_screen_2_layout.weekday_dropdown_pos.h, 0, WM_CF_SHOW, DROPDOWN_CF_AUTOSCROLLBAR, ID_WeekDay);
     /** * @brief << ISPRAVKA: Logika za popunjavanje dropdown menija za dane u sedmici. >>
      * @note  Petlja sada ispravno iterira 7 puta (za 7 dana) i dodaje stringove
@@ -4160,7 +4179,7 @@ static void DSP_InitSet5Scrn(void)
     int16_t y_step = settings_screen_5_layout.y_step;
 
     // << ISPRAVKA 2: Promijenjen množilac za ID-jeve sa 12 na 16 radi izbjegavanja preklapanja >>
-    const int id_step = 16; 
+    const int id_step = 16;
 
     // << ISPRAVKA 1: Vraćena linija za kreiranje RELAY spinbox-a >>
     lightsWidgets[light_index].relay = SPINBOX_CreateEx(x, y, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 0, 0, 512);
@@ -4168,7 +4187,7 @@ static void DSP_InitSet5Scrn(void)
     // << ISPRAVKA 1: Opseg za IconID je sada ispravan i nema duplirane linije >>
     uint16_t max_icon_id = (sizeof(icon_mapping_table) / sizeof(IconMapping_t)) - 1;
     lightsWidgets[light_index].iconID = SPINBOX_CreateEx(x, y + 1 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 1, 0, max_icon_id);
-    
+
     lightsWidgets[light_index].controllerID_on = SPINBOX_CreateEx(x, y + 2 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 2, 0, 512);
     lightsWidgets[light_index].controllerID_on_delay  = SPINBOX_CreateEx(x, y + 3 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 3, 0, 255);
     lightsWidgets[light_index].on_hour = SPINBOX_CreateEx(x, y + 4 * y_step, sb_size->w, sb_size->h, 0, WM_CF_SHOW, ID_LightsModbusRelay + (light_index * id_step) + 4, -1, 23);
@@ -4543,66 +4562,134 @@ static void HandleTouchReleaseEvent(GUI_PID_STATE * pTS)
 
 /**
  * @brief Obrada događaja pritiska za ekran "Control Select".
- * @note Ova funkcija detektuje koji je od 4 glavna ekrana (Svjetla, Termostat, Zavjese, Odmrzivač)
- * ili dugme "NEXT" pritisnuto, te postavlja odgovarajuće stanje.
+ * @note  Verzija 2.3.3: Ispravljena greška gdje nisu bili inicijalizovani
+ * handle-ovi za module, što je sprečavalo ispravan rad funkcije.
+ * @param pTS Pokazivač na strukturu sa stanjem dodira.
+ * @param click_flag Pokazivač na fleg koji se postavlja ako treba generisati zvučni signal.
  */
 static void HandlePress_SelectScreen1(GUI_PID_STATE * pTS, uint8_t *click_flag)
 {
+    // << ISPRAVKA: Dodata inicijalizacija handle-ova koja je nedostajala. >>
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
     Defroster_Handle* defHandle = Defroster_GetInstance();
     Ventilator_Handle* ventHandle = Ventilator_GetInstance();
 
-    // << IZMJENA: Logika sada koristi `select_screen1_layout` strukturu >>
-    if ((pTS->x >= select_screen1_layout.lights_zone.x0) && (pTS->x < select_screen1_layout.lights_zone.x1) &&
-            (pTS->y >= select_screen1_layout.lights_zone.y0) && (pTS->y < select_screen1_layout.lights_zone.y1))
-    {
-        // Pritisak u zoni za svjetla
-        screen = SCREEN_LIGHTS;
-    }
-    else if ((pTS->x >= select_screen1_layout.thermostat_zone.x0) && (pTS->x < select_screen1_layout.thermostat_zone.x1) &&
-             (pTS->y >= select_screen1_layout.thermostat_zone.y0) && (pTS->y < select_screen1_layout.thermostat_zone.y1))
-    {
-        // Pritisak u zoni za termostat
-        screen = SCREEN_THERMOSTAT;
-    }
-    else if ((pTS->x >= select_screen1_layout.curtains_zone.x0) && (pTS->x < select_screen1_layout.curtains_zone.x1) &&
-             (pTS->y >= select_screen1_layout.curtains_zone.y0) && (pTS->y < select_screen1_layout.curtains_zone.y1))
-    {
-        // Pritisak u zoni za zavjese
-        screen = SCREEN_CURTAINS;
-        Curtain_ResetSelection();
-    }
-    else if ((pTS->x >= select_screen1_layout.dynamic_zone.x0) && (pTS->x < select_screen1_layout.dynamic_zone.x1) &&
-             (pTS->y >= select_screen1_layout.dynamic_zone.y0) && (pTS->y < select_screen1_layout.dynamic_zone.y1))
-    {
-        // Pritisak u dinamičkoj zoni (Defroster/Ventilator)
-        switch(g_display_settings.selected_control_mode) {
-        case MODE_DEFROSTER:
-            if(Defroster_isActive(defHandle)) Defroster_Off(defHandle);
-            else Defroster_On(defHandle);
-            dynamicIconUpdateFlag = 1;
-            break;
-        case MODE_VENTILATOR:
-            if(Ventilator_isActive(ventHandle)) Ventilator_Off(ventHandle);
-            else Ventilator_On(ventHandle, false);
-            dynamicIconUpdateFlag = 1;
-            break;
-        case MODE_OFF:
-            break;
-        }
-        *click_flag = 1;
-    }
-    else if ((pTS->x >= select_screen1_layout.next_button_zone.x0) && (pTS->x < select_screen1_layout.next_button_zone.x1) &&
-             (pTS->y >= select_screen1_layout.next_button_zone.y0) && (pTS->y < select_screen1_layout.next_button_zone.y1))
-    {
-        // Pritisak na dugme "NEXT"
-        screen = SCREEN_SELECT_2;
+    // Ponovo radimo detekciju da bismo znali koji su moduli TRENUTNO prikazani
+    // --- KORAK 1: Detekcija aktivnih modula (identično kao u Service_... funkciji) ---
+    typedef struct {
+        const GUI_BITMAP* icon;
+        TextID text_id;
+        eScreen target_screen;
+        bool is_dynamic_toggle; // Fleg za dinamičku ikonu
+    } DynamicMenuItem;
+
+    DynamicMenuItem all_modules[] = {
+        { &bmSijalicaOff, TXT_LIGHTS, SCREEN_LIGHTS, false },
+        { &bmTermometar, TXT_THERMOSTAT, SCREEN_THERMOSTAT, false },
+        { &bmblindMedium, TXT_BLINDS, SCREEN_CURTAINS, false },
+        { NULL, TXT_DUMMY, SCREEN_SELECT_1, true } // Mjesto za dinamičku ikonu
+    };
+
+    DynamicMenuItem active_modules[4];
+    uint8_t active_modules_count = 0;
+
+    if (LIGHTS_getCount() > 0) active_modules[active_modules_count++] = all_modules[0];
+    if (Thermostat_GetGroup(pThst) > 0) active_modules[active_modules_count++] = all_modules[1];
+    if (Curtains_getCount() > 0) active_modules[active_modules_count++] = all_modules[2];
+
+    if (g_display_settings.selected_control_mode == MODE_DEFROSTER && Defroster_getPin(defHandle) > 0) {
+        active_modules[active_modules_count++] = all_modules[3];
+    } else if (g_display_settings.selected_control_mode == MODE_VENTILATOR && (Ventilator_getRelay(ventHandle) > 0 || Ventilator_getLocalPin(ventHandle) > 0)) {
+        active_modules[active_modules_count++] = all_modules[3];
     }
 
-    if(screen != SCREEN_SELECT_1) {
+    // --- KORAK 2: Dinamičko računanje zona dodira i provjera ---
+    TouchZone_t zone;
+    bool touched = false;
+
+    switch (active_modules_count) {
+    case 1:
+        zone.x0 = 0;
+        zone.y0 = 0;
+        zone.x1 = DRAWING_AREA_WIDTH;
+        zone.y1 = LCD_GetYSize();
+        if (pTS->x >= zone.x0 && pTS->x < zone.x1 && pTS->y >= zone.y0 && pTS->y < zone.y1) {
+            screen = active_modules[0].target_screen;
+            touched = true;
+        }
+        break;
+    case 2:
+        for (int i = 0; i < 2; i++) {
+            zone.x0 = (DRAWING_AREA_WIDTH / 2) * i;
+            zone.y0 = 0;
+            zone.x1 = zone.x0 + (DRAWING_AREA_WIDTH / 2);
+            zone.y1 = LCD_GetYSize();
+            if (pTS->x >= zone.x0 && pTS->x < zone.x1 && pTS->y >= zone.y0 && pTS->y < zone.y1) {
+                screen = active_modules[i].target_screen;
+                touched = true;
+                break;
+            }
+        }
+        break;
+    case 3:
+        for (int i = 0; i < 3; i++) {
+            zone.x0 = (DRAWING_AREA_WIDTH / 3) * i;
+            zone.y0 = 0;
+            zone.x1 = zone.x0 + (DRAWING_AREA_WIDTH / 3);
+            zone.y1 = LCD_GetYSize();
+            if (pTS->x >= zone.x0 && pTS->x < zone.x1 && pTS->y >= zone.y0 && pTS->y < zone.y1) {
+                screen = active_modules[i].target_screen;
+                touched = true;
+                break;
+            }
+        }
+        break;
+    case 4:
+    default:
+        for (int i = 0; i < 4; i++) {
+            zone.x0 = (i % 2 == 0) ? 0 : DRAWING_AREA_WIDTH / 2;
+            zone.y0 = (i < 2) ? 0 : LCD_GetYSize() / 2;
+            zone.x1 = zone.x0 + (DRAWING_AREA_WIDTH / 2);
+            zone.y1 = zone.y0 + (LCD_GetYSize() / 2);
+            if (pTS->x >= zone.x0 && pTS->x < zone.x1 && pTS->y >= zone.y0 && pTS->y < zone.y1) {
+                screen = active_modules[i].target_screen;
+                touched = true;
+                break;
+            }
+        }
+        break;
+    }
+
+    // Provjera dodira na "NEXT" dugme
+    if (!touched && (pTS->x >= 400 && pTS->x < 480)) {
+        screen = SCREEN_SELECT_2;
+        touched = true;
+    }
+
+    // Ako je dodir registrovan, postavi flegove
+    if (touched) {
+        // Ako je pritisnuta dinamička ikona, uradi toggle
+        if (screen == SCREEN_SELECT_1) {
+            if (g_display_settings.selected_control_mode == MODE_DEFROSTER) {
+                if(Defroster_isActive(defHandle)) Defroster_Off(defHandle);
+                else Defroster_On(defHandle);
+                dynamicIconUpdateFlag = 1;
+            } else if (g_display_settings.selected_control_mode == MODE_VENTILATOR) {
+                if(Ventilator_isActive(ventHandle)) Ventilator_Off(ventHandle);
+                else Ventilator_On(ventHandle, false);
+                dynamicIconUpdateFlag = 1;
+            }
+        }
+        // Ako je pritisnuta roletna, resetuj selekciju na "SVE"
+        else if (screen == SCREEN_CURTAINS) {
+            Curtain_ResetSelection();
+        }
+
         shouldDrawScreen = 1;
         *click_flag = 1;
     }
 }
+
 /**
  * @brief Obrada događaja pritiska za ekran "Select Screen 2".
  * @note Odgovoran je za prelazak na ekrane za čišćenje, Wi-Fi QR kod i App QR kod.
