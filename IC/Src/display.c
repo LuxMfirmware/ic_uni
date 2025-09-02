@@ -2766,7 +2766,7 @@ static void Service_SettingsScreen_5(void)
         }
         else if (BUTTON_IsPressed(hBUTTON_Next))
         {
-            uint8_t current_count = LIGHTS_getCount();
+            uint8_t current_count = LIGHTS_getCount() - 1;
             if (lightsModbusSettingsMenu < current_count) {
                 DSP_KillSet5Scrn();
                 ++lightsModbusSettingsMenu;
@@ -4895,55 +4895,85 @@ static void HandlePress_CurtainsScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
 
 /**
  * @brief Obrada događaja pritiska za ekran "Light Settings".
- * @note  Omogućava direktno podešavanje svjetline i boje svjetla
- * dodirom na gradijent i spektar boja. Koristi `light_settings_screen_layout`
- * za detekciju zona i `lights` API za primjenu promjena.
+ * @note  Verzija 2.4.6: Implementirane 4% "snap" zone na krajevima slajdera
+ * za lakši odabir 0% i 100% svjetline. Ispravljena greška u linearnom mapiranju.
  * @param pTS Pokazivač na strukturu sa stanjem dodira.
  */
 static void HandlePress_LightSettingsScreen(GUI_PID_STATE * pTS)
 {
-    // Varijable za detekciju promjene
     uint8_t new_brightness = 255; // Default vrijednost koja označava da nema promjene
-    uint32_t new_color = 0;       // Default vrijednost koja označava da nema promjene
+    uint32_t new_color = 0;
 
-    // Provjeravamo da li je aktivan RGB mod koristeći `lights` API
     bool is_rgb_mode = false;
-    if (light_selectedIndex == LIGHTS_MODBUS_SIZE) { // Sva svjetla
+    if (light_selectedIndex == LIGHTS_MODBUS_SIZE) {
         is_rgb_mode = lights_allSelected_hasRGB;
-    } else { // Jedno svjetlo
+    } else {
         LIGHT_Handle* handle = LIGHTS_GetInstance(light_selectedIndex);
         if (handle) {
             is_rgb_mode = LIGHT_isRGB(handle);
         }
     }
 
-    // << IZMJENA: Logika za detekciju zona sada koristi `light_settings_screen_layout` >>
-
     // Provjera dodira na bijeli kvadrat (samo u RGB modu)
     if (is_rgb_mode &&
             (pTS->x >= light_settings_screen_layout.white_square_zone.x0) && (pTS->x < light_settings_screen_layout.white_square_zone.x1) &&
             (pTS->y >= light_settings_screen_layout.white_square_zone.y0) && (pTS->y < light_settings_screen_layout.white_square_zone.y1))
     {
-        new_color = 0x00FFFFFF; // Bijela boja
+        new_color = 0x00FFFFFF;
     }
     // Provjera dodira na slajder svjetline
     else if ((pTS->x >= light_settings_screen_layout.brightness_slider_zone.x0) && (pTS->x < light_settings_screen_layout.brightness_slider_zone.x1) &&
              (pTS->y >= light_settings_screen_layout.brightness_slider_zone.y0) && (pTS->y < light_settings_screen_layout.brightness_slider_zone.y1))
     {
-        g_high_precision_mode = true; // Aktiviraj visoku preciznost za glatko pomjeranje
-        int relative_touch_x = pTS->x - light_settings_screen_layout.brightness_slider_zone.x0;
-        new_brightness = (uint8_t)((float)relative_touch_x / light_settings_screen_layout.brightness_slider_zone.x1 * 100.0f);
+        g_high_precision_mode = true;
+        
+        // =======================================================================
+        // << POČETAK NOVE LOGIKE SA 4% ZONAMA >>
+        // =======================================================================
+
+        // 1. Dobijamo dimenzije slajdera iz layout strukture
+        const int slider_x0 = light_settings_screen_layout.brightness_slider_zone.x0;
+        const int slider_x1 = light_settings_screen_layout.brightness_slider_zone.x1;
+        const int slider_width = slider_x1 - slider_x0;
+
+        // 2. Računamo granice za 4% zone
+        const int zone_width = slider_width * 0.04f; // 4% od ukupne širine
+        const int left_zone_end = slider_x0 + zone_width;
+        const int right_zone_start = slider_x1 - zone_width;
+
+        // 3. Primjenjujemo logiku na osnovu pozicije dodira
+        if (pTS->x < left_zone_end) {
+            // Ako je dodir u lijevoj zoni, postavi na 0%
+            new_brightness = 0;
+        } else if (pTS->x > right_zone_start) {
+            // Ako je dodir u desnoj zoni, postavi na 100%
+            new_brightness = 100;
+        } else {
+            // Ako je dodir u središnjoj zoni, mapiraj linearno od 1% do 99%
+            const int middle_zone_width = right_zone_start - left_zone_end;
+            const int relative_touch_in_middle = pTS->x - left_zone_end;
+            
+            // Mapiramo dodir u sredini na opseg od 98 vrijednosti (1-99)
+            float percentage = (float)relative_touch_in_middle / (float)middle_zone_width;
+            new_brightness = 1 + (uint8_t)(percentage * 98.0f);
+        }
+        
+        // Osiguravamo da vrijednost ne pređe 100 zbog grešaka u zaokruživanju
+        if (new_brightness > 100) new_brightness = 100;
+        
+        // =======================================================================
+        // << KRAJ NOVE LOGIKE >>
+        // =======================================================================
     }
     // Provjera dodira na paletu boja (samo u RGB modu)
     else if (is_rgb_mode &&
              (pTS->x >= light_settings_screen_layout.color_palette_zone.x0) && (pTS->x < light_settings_screen_layout.color_palette_zone.x1) &&
              (pTS->y >= light_settings_screen_layout.color_palette_zone.y0) && (pTS->y < light_settings_screen_layout.color_palette_zone.y1))
     {
-        // Uzimamo boju piksela sa ekrana na mjestu dodira
         new_color = LCD_GetPixelColor(pTS->x, pTS->y) & 0x00FFFFFF;
     }
 
-    // Primjena detektovanih promjena
+    // Primjena detektovanih promjena (ovaj dio koda ostaje isti)
     if (new_brightness != 255 || new_color != 0) {
         if (light_selectedIndex == LIGHTS_MODBUS_SIZE) { // Sva svjetla
             for(uint8_t i = 0; i < LIGHTS_getCount(); i++) {
