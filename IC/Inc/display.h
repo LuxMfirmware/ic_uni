@@ -69,6 +69,7 @@ typedef enum {
     TXT_APP,
     // --- Opšti tekstovi ---
     TXT_ALL,
+    TXT_SETTINGS,
     // --- Poruke i dugmad ---
     TXT_DISPLAY_CLEAN_TIME,
     TXT_FIRMWARE_UPDATE,
@@ -245,6 +246,7 @@ typedef enum{
     SCREEN_LIGHT_SETTINGS,
     SCREEN_QR_CODE,
     SCREEN_CLEAN,
+    SCREEN_PINPAD,
     SCREEN_RETURN_TO_FIRST,
     SCREEN_SETTINGS_1,
     SCREEN_SETTINGS_2,

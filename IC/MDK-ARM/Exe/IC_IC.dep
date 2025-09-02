@@ -1,18 +1,8 @@
 Dependencies for Project 'IC', Target 'IC': (DO NOT MODIFY !)
 CompilerVersion: 6190000::V6.19::ARMCLANG
-F (..\Src\Display\Home.c)(0x6884D659)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/home.o -MD)
-I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
-I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
-I (..\Inc\GUIConf.h)(0x6884D657)
-I (..\..\Middlewares\STemWin\inc\GUI_Type.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\LCD.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\SijalicaOff.c)(0x6898DC65)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/sijalicaoff.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -22,7 +12,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\SijalicaOn.c)(0x6898DC65)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/sijalicaon.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -32,87 +22,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\Termometar.c)(0x6898DC65)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/termometar.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
-I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
-I (..\Inc\GUIConf.h)(0x6884D657)
-I (..\..\Middlewares\STemWin\inc\GUI_Type.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\LCD.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
-F (..\Src\Display\clear_sky.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/clear_sky.o -MD)
-I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
-I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
-I (..\Inc\GUIConf.h)(0x6884D657)
-I (..\..\Middlewares\STemWin\inc\GUI_Type.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\LCD.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
-F (..\Src\Display\few_clouds.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/few_clouds.o -MD)
-I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
-I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
-I (..\Inc\GUIConf.h)(0x6884D657)
-I (..\..\Middlewares\STemWin\inc\GUI_Type.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\LCD.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
-F (..\Src\Display\mist.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/mist.o -MD)
-I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
-I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
-I (..\Inc\GUIConf.h)(0x6884D657)
-I (..\..\Middlewares\STemWin\inc\GUI_Type.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\LCD.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
-F (..\Src\Display\rain.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/rain.o -MD)
-I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
-I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
-I (..\Inc\GUIConf.h)(0x6884D657)
-I (..\..\Middlewares\STemWin\inc\GUI_Type.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\LCD.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
-F (..\Src\Display\scattered_clouds.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/scattered_clouds.o -MD)
-I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
-I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
-I (..\Inc\GUIConf.h)(0x6884D657)
-I (..\..\Middlewares\STemWin\inc\GUI_Type.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\LCD.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
-F (..\Src\Display\shower_rain.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/shower_rain.o -MD)
-I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
-I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
-I (..\Inc\GUIConf.h)(0x6884D657)
-I (..\..\Middlewares\STemWin\inc\GUI_Type.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\LCD.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
-F (..\Src\Display\snow.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/snow.o -MD)
-I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
-I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
-I (..\Inc\GUIConf.h)(0x6884D657)
-I (..\..\Middlewares\STemWin\inc\GUI_Type.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\LCD.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
-I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
-F (..\Src\Display\thunderstorm.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/thunderstorm.o -MD)
-I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -122,7 +32,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\clean.c)(0x6884D659)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/clean.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -132,7 +42,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\blindMedium.c)(0x6898DC64)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/blindmedium.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -142,7 +52,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\baflag.c)(0x6884D659)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/baflag.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -152,7 +62,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\engflag.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/engflag.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -162,7 +72,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\next.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/next.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -172,7 +82,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\alHamliQR.c)(0x6884D659)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/alhamliqr.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -182,7 +92,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\previous.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/previous.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -192,7 +102,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\ventilator_off.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/ventilator_off.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -202,7 +112,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\ventilator_on.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/ventilator_on.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -212,7 +122,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\wifi.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/wifi.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -222,7 +132,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\mobilePhone.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/mobilephone.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -232,7 +142,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\colorSpectrum.c)(0x6884D65A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/colorspectrum.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -242,7 +152,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\blackWhiteGradient.c)(0x6884D659)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/blackwhitegradient.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -252,7 +162,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\defrosterico.c)(0x68936D71)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/defrosterico.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -262,7 +172,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\defrosterOn.c)(0x68936C50)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/defrosteron.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -272,7 +182,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_ceiling_led_fixture_off.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_ceiling_led_fixture_off.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -282,7 +192,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_ceiling_led_fixture_on.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_ceiling_led_fixture_on.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -292,7 +202,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_chandelier_off.c)(0x68B5A08E)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_chandelier_off.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -302,7 +212,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_chandelier_on.c)(0x68B5A08E)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_chandelier_on.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -312,7 +222,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_hanging_off.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_hanging_off.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -322,7 +232,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_hanging_on.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_hanging_on.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -332,7 +242,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_led_off.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_led_off.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -342,7 +252,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_led_on.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_led_on.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -352,7 +262,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_spot_console_off.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_spot_console_off.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -362,7 +272,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_spot_console_on.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_spot_console_on.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -372,7 +282,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_spot_single_off.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_spot_single_off.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -382,7 +292,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_spot_single_on.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_spot_single_on.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -392,7 +302,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_stairs_off.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_stairs_off.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -402,7 +312,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_stairs_on.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_stairs_on.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -412,7 +322,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_wall_off.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_wall_off.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -422,7 +332,17 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\icons_lights_wall_on.c)(0x68B5B1F9)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_lights_wall_on.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
+I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
+I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
+I (..\Inc\GUIConf.h)(0x6884D657)
+I (..\..\Middlewares\STemWin\inc\GUI_Type.h)(0x6884D65C)
+I (..\..\Middlewares\STemWin\inc\LCD.h)(0x6884D65C)
+I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
+I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
+F (..\Src\Display\icons_settings.c)(0x68B7261E)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/icons_settings.o -MD)
+I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -432,7 +352,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\Verdana20.c)(0x68B46031)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/verdana20.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -442,7 +362,7 @@ I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (..\Src\Display\Verdana32.c)(0x68B478E5)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/verdana32.o -MD)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\STemWin\inc\GUI.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_ConfDefaults.h)(0x6884D65C)
 I (..\Inc\GUIConf.h)(0x6884D657)
@@ -498,7 +418,7 @@ I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_uart.h)(0x6884
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_uart_ex.h)(0x6884D656)
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_usart.h)(0x6884D656)
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_usart_ex.h)(0x6884D656)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (C:\Keil\ARM\ARMCLANG\include\math.h)(0x637B4F2A)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
 I (C:\Keil\ARM\ARMCLANG\include\string.h)(0x637B4F2C)
@@ -548,11 +468,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -618,7 +538,7 @@ I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_uart.h)(0x6884
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_uart_ex.h)(0x6884D656)
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_usart.h)(0x6884D656)
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_usart_ex.h)(0x6884D656)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (C:\Keil\ARM\ARMCLANG\include\math.h)(0x637B4F2A)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
 I (C:\Keil\ARM\ARMCLANG\include\string.h)(0x637B4F2C)
@@ -668,10 +588,10 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -737,7 +657,7 @@ I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_usart_ex.h)(0x
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\ft5336\ft5336.h)(0x6884D648)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\ft5336\..\Common\ts.h)(0x6884D648)
 F (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_qspi.c)(0x6884D648)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/stm32746g_qspi.o -MD)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
 I (C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h)(0x626FAD4E)
@@ -834,11 +754,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -901,7 +821,7 @@ I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_uart_ex.h)(0x6
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_usart.h)(0x6884D656)
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_usart_ex.h)(0x6884D656)
 F (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.c)(0x689EFA9D)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/stm32746g_eeprom.o -MD)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal.h)(0x6884D656)
 I (..\Inc\stm32f7xx_hal_conf.h)(0x6884D657)
@@ -950,8 +870,8 @@ I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_uart.h)(0x6884
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_uart_ex.h)(0x6884D656)
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_usart.h)(0x6884D656)
 I (..\..\Drivers\STM32F7xx\STM32F7xx_HAL_Driver\Inc\stm32f7xx_hal_usart_ex.h)(0x6884D656)
-I (..\Inc\display.h)(0x68B6D5B6)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\display.h)(0x68B7265B)
+I (..\Inc\main.h)(0x68B72CDB)
 I (C:\Keil\ARM\ARMCLANG\include\math.h)(0x637B4F2A)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
 I (C:\Keil\ARM\ARMCLANG\include\string.h)(0x637B4F2C)
@@ -1001,7 +921,7 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_ts.h)(0x6884D648)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\ft5336\ft5336.h)(0x6884D648)
@@ -2608,7 +2528,7 @@ I (..\..\Middlewares\STemWin\inc\LCD.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
 F (../Src/LCDConf.c)(0x6884D659)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/lcdconf.o -MD)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
 I (C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h)(0x626FAD4E)
@@ -2705,11 +2625,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3166,7 +3086,7 @@ I (..\..\Middlewares\STemWin\inc\GUI_Type.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\LCD.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\Global.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\GUI_Version.h)(0x6884D65C)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (C:\Keil\ARM\ARMCLANG\include\math.h)(0x637B4F2A)
 I (C:\Keil\ARM\ARMCLANG\include\stdlib.h)(0x637B4F2C)
 I (C:\Keil\ARM\ARMCLANG\include\string.h)(0x637B4F2C)
@@ -3209,11 +3129,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3230,7 +3150,7 @@ I (..\Inc\rs485.h)(0x689CC291)
 I (..\..\Middlewares\TinyFrame\TinyFrame.h)(0x6884D65C)
 I (..\..\Middlewares\TinyFrame\TF_Config.h)(0x6884D65C)
 F (..\Src\thermostat.c)(0x68A33AFE)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/thermostat.o -MD)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
 I (C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h)(0x626FAD4E)
@@ -3327,11 +3247,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3353,7 +3273,7 @@ I (C:\Keil\ARM\ARMCLANG\include\stdint.h)(0x637B4F2C)
 I (C:\Keil\ARM\ARMCLANG\include\stdbool.h)(0x637B4F2C)
 I (C:\Keil\ARM\ARMCLANG\include\stddef.h)(0x637B4F2C)
 I (C:\Keil\ARM\ARMCLANG\include\string.h)(0x637B4F2C)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
 I (C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h)(0x626FAD4E)
@@ -3446,11 +3366,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3466,7 +3386,7 @@ I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h)(0x6884D648)
 I (..\..\Middlewares\TinyFrame\TF_Config.h)(0x6884D65C)
 I (C:\Keil\ARM\ARMCLANG\include\signal.h)(0x637B4F2C)
 F (..\..\Common\common.c)(0x68B557C0)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/common.o -MD)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
 I (C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h)(0x626FAD4E)
@@ -3563,11 +3483,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3580,8 +3500,8 @@ I (..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\ft5336\..\Common\ts.h)(0x
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_qspi.h)(0x6884D648)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\n25q128a\n25q128a.h)(0x6884D648)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h)(0x6884D648)
-F (..\Src\display.c)(0x68B71A67)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/display.o -MD)
-I (..\Inc\main.h)(0x68B47332)
+F (..\Src\display.c)(0x68B74616)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/display.o -MD)
+I (..\Inc\main.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
 I (C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h)(0x626FAD4E)
@@ -3678,11 +3598,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3698,9 +3618,9 @@ I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h)(0x6884D648)
 I (..\Inc\rs485.h)(0x689CC291)
 I (..\..\Middlewares\TinyFrame\TinyFrame.h)(0x6884D65C)
 I (..\..\Middlewares\TinyFrame\TF_Config.h)(0x6884D65C)
-I (..\Inc\translations.h)(0x68B6CEBA)
+I (..\Inc\translations.h)(0x68B7275F)
 F (..\Src\rs485.c)(0x68AC72A7)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/rs485.o -MD)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
 I (C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h)(0x626FAD4E)
@@ -3797,11 +3717,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3817,8 +3737,8 @@ I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h)(0x6884D648)
 I (..\Inc\rs485.h)(0x689CC291)
 I (..\..\Middlewares\TinyFrame\TinyFrame.h)(0x6884D65C)
 I (..\..\Middlewares\TinyFrame\TF_Config.h)(0x6884D65C)
-F (../Src/main.c)(0x68B47082)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/main.o -MD)
-I (..\Inc\main.h)(0x68B47332)
+F (../Src/main.c)(0x68B72CDB)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/main.o -MD)
+I (..\Inc\main.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
 I (C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h)(0x626FAD4E)
@@ -3915,11 +3835,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -3936,7 +3856,7 @@ I (..\Inc\rs485.h)(0x689CC291)
 I (..\..\Middlewares\TinyFrame\TinyFrame.h)(0x6884D65C)
 I (..\..\Middlewares\TinyFrame\TF_Config.h)(0x6884D65C)
 F (..\Src\lights.c)(0x68B6DDD0)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/lights.o -MD)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
 I (C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h)(0x626FAD4E)
@@ -4033,11 +3953,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -4054,7 +3974,7 @@ I (..\Inc\rs485.h)(0x689CC291)
 I (..\..\Middlewares\TinyFrame\TinyFrame.h)(0x6884D65C)
 I (..\..\Middlewares\TinyFrame\TF_Config.h)(0x6884D65C)
 F (..\Src\curtain.c)(0x68AC7217)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/curtain.o -MD)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
 I (C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h)(0x626FAD4E)
@@ -4151,11 +4071,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -4172,7 +4092,7 @@ I (..\Inc\rs485.h)(0x689CC291)
 I (..\..\Middlewares\TinyFrame\TinyFrame.h)(0x6884D65C)
 I (..\..\Middlewares\TinyFrame\TF_Config.h)(0x6884D65C)
 F (..\Src\ventilator.c)(0x68AC67DB)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/ventilator.o -MD)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
 I (C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h)(0x626FAD4E)
@@ -4269,11 +4189,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)
@@ -4290,7 +4210,7 @@ I (..\Inc\rs485.h)(0x689CC291)
 I (..\..\Middlewares\TinyFrame\TinyFrame.h)(0x6884D65C)
 I (..\..\Middlewares\TinyFrame\TF_Config.h)(0x6884D65C)
 F (..\Src\defroster.c)(0x68AC6B9D)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Inc -I ../../Common -I ../../Drivers/STM32F7xx/STM32F7xx_HAL_Driver/Inc -I ../../Drivers/STM32F7xx/BSP/STM32F746 -I ../../Drivers/STM32F7xx/CMSIS/Device/ST/STM32F7xx/Include -I ../../Drivers/STM32F7xx/BSP/Components -I ../../Middlewares/STemWin/inc -I ../../Middlewares/STemWin/png -I ../../Middlewares/TinyFrame -I ../../Middlewares/LuxNET -Iscatter_file_path-I./RTE/_IC-IC:/Repo/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include-IC:/Repo/Packs/Keil/STM32F7xx_DFP/3.0.0/Drivers/CMSIS/Device/ST/STM32F7xx/Include-D__UVISION_VERSION="538" -D_RTE_ -DSTM32F746xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F746xx -DROOM_THERMOSTAT -DAPPLICATION -DUSE_DEBUGGER-o ./exe/defroster.o -MD)
-I (..\Inc\main.h)(0x68B47332)
+I (..\Inc\main.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f7xx.h)(0x6884D64A)
 I (..\..\Drivers\STM32F7xx\CMSIS\Device\ST\STM32F7xx\Include\stm32f746xx.h)(0x6884D64A)
 I (C:\Repo\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm7.h)(0x626FAD4E)
@@ -4387,11 +4307,11 @@ I (..\..\Middlewares\STemWin\inc\TEXT.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\TREEVIEW.h)(0x6884D65C)
 I (..\..\Middlewares\STemWin\inc\KNOB.h)(0x6884D65C)
 I (..\..\Common\common.h)(0x68A31BF3)
-I (..\Inc\Resource.h)(0x68B5A08E)
+I (..\Inc\Resource.h)(0x68B71DFD)
 I (..\..\Middlewares\LuxNET\LuxNET.h)(0x6884D65A)
-I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68A319C7)
+I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_eeprom.h)(0x68B72CDB)
 I (..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g.h)(0x6884D648)
-I (..\Inc\display.h)(0x68B6D5B6)
+I (..\Inc\display.h)(0x68B7265B)
 I (..\Inc\settings_widgets.def)(0x68B43B97)
 I (..\Inc\thermostat.h)(0x68A3183D)
 I (..\Inc\ventilator.h)(0x68AC66C8)

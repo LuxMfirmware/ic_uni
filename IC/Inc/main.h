@@ -48,7 +48,7 @@ typedef struct{
 } RTC_t;
 /* Exported constants --------------------------------------------------------*/
 /* Exported variable  --------------------------------------------------------*/
-
+extern char system_pin[5]; // << NOVO: Globalni bafer za sistemski PIN
 // Globalni fleg koji aktivira mod visoke preciznosti
 extern bool g_high_precision_mode;
 extern uint8_t sysfl, initfl;

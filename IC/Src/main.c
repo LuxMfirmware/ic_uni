@@ -88,6 +88,8 @@ static uint8_t pwm[32] = {0};
 uint8_t pca9685_register[PCA9685_REGISTER_SIZE] = {0};
 // Definišemo globalni fleg i postavljamo ga na `false` kao pocetno stanje.
 bool g_high_precision_mode = false;
+
+char system_pin[5]; // << NOVO: Definicija globalne varijable
 /* Private Macro -------------------------------------------------------------*/
 #define VREFIN_CAL_ADDRESS          ((uint16_t*) (0x1FF0F44A))
 #define TEMPSENSOR_CAL1_ADDR        ((uint16_t*) (0x1FF0F44C))
@@ -380,17 +382,30 @@ static void TS_Service(void) {
   * @retval None
   */
 static void RAM_Init(void) {
-    // Ucitaj sistemski fleg koji dijeli bootloader i aplikacija.
-    // OVO SE CITA DIREKTNO I NEMA CRC ZAŠTITU NAMJERNO.
+    // Ucitaj sistemski fleg
     EE_ReadBuffer(&sysfl, EE_SYS_STATE, 1);
 
-    // Ucitaj RS485 adresu (TinyFrame Interface Address).
+    // Ucitaj RS485 adresu
     EE_ReadBuffer(&tfifa, EE_TFIFA, 1);
 
-    // Ucitaj jedinstveni ID sistema.
+    // Ucitaj sistemski ID
     uint8_t sysid_buf[2];
     EE_ReadBuffer(sysid_buf, EE_SYSID, 2);
     sysid = ((sysid_buf[0] << 8) | sysid_buf[1]);
+
+    // << NOVO: Ucitavanje sistemskog PIN-a >>
+    uint8_t pin_buf[5];
+    EE_ReadBuffer(pin_buf, EE_SYSTEM_PIN, 5);
+    
+    // Provjera da li je PIN ikada snimljen (ako nije, prvi bajt ce biti 0xFF ili 0x00)
+    if (pin_buf[0] < '0' || pin_buf[0] > '9') {
+        // PIN nije validan, snimi default "1234" u EEPROM i u RAM
+        strcpy(system_pin, "1234");
+        EE_WriteBuffer((uint8_t*)system_pin, EE_SYSTEM_PIN, 5);
+    } else {
+        // PIN je validan, ucitaj ga u RAM
+        memcpy(system_pin, pin_buf, 5);
+    }
 }
 /**
   * @brief

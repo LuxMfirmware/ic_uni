@@ -33,29 +33,13 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_stairs_off;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_stairs_on;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_wall_off;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_wall_on;
-
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_settings;
   
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOn;
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOff;
 extern GUI_CONST_STORAGE GUI_BITMAP bmTermometar;
 extern GUI_CONST_STORAGE GUI_BITMAP bmHome;
 
-extern GUI_CONST_STORAGE GUI_BITMAP bmmist_img;
-extern GUI_CONST_STORAGE GUI_BITMAP bmmist_icon;
-extern GUI_CONST_STORAGE GUI_BITMAP bmrain_img;
-extern GUI_CONST_STORAGE GUI_BITMAP bmrain_icon;
-extern GUI_CONST_STORAGE GUI_BITMAP bmsnow_img;
-extern GUI_CONST_STORAGE GUI_BITMAP bmsnow_icon;
-extern GUI_CONST_STORAGE GUI_BITMAP bmclear_sky_img;
-extern GUI_CONST_STORAGE GUI_BITMAP bmclear_sky_icon;
-extern GUI_CONST_STORAGE GUI_BITMAP bmfew_clouds_img;
-extern GUI_CONST_STORAGE GUI_BITMAP bmfew_clouds_icon;
-extern GUI_CONST_STORAGE GUI_BITMAP bmshower_rain_img;
-extern GUI_CONST_STORAGE GUI_BITMAP bmshower_rain_icon;
-extern GUI_CONST_STORAGE GUI_BITMAP bmthunderstorm_img;
-extern GUI_CONST_STORAGE GUI_BITMAP bmthunderstorm_icon;
-extern GUI_CONST_STORAGE GUI_BITMAP bmscattered_clouds_img;
-extern GUI_CONST_STORAGE GUI_BITMAP bmscattered_clouds_icon;
 extern GUI_CONST_STORAGE GUI_BITMAP bmCLEAN;
 extern GUI_CONST_STORAGE GUI_BITMAP bmblindMedium;
 extern GUI_CONST_STORAGE GUI_BITMAP bmbaflag;

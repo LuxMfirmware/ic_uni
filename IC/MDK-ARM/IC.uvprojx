@@ -386,11 +386,6 @@
           <GroupName>Icons</GroupName>
           <Files>
             <File>
-              <FileName>Home.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\Home.c</FilePath>
-            </File>
-            <File>
               <FileName>SijalicaOff.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\SijalicaOff.c</FilePath>
@@ -404,46 +399,6 @@
               <FileName>Termometar.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\Termometar.c</FilePath>
-            </File>
-            <File>
-              <FileName>clear_sky.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\clear_sky.c</FilePath>
-            </File>
-            <File>
-              <FileName>few_clouds.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\few_clouds.c</FilePath>
-            </File>
-            <File>
-              <FileName>mist.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\mist.c</FilePath>
-            </File>
-            <File>
-              <FileName>rain.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\rain.c</FilePath>
-            </File>
-            <File>
-              <FileName>scattered_clouds.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\scattered_clouds.c</FilePath>
-            </File>
-            <File>
-              <FileName>shower_rain.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\shower_rain.c</FilePath>
-            </File>
-            <File>
-              <FileName>snow.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\snow.c</FilePath>
-            </File>
-            <File>
-              <FileName>thunderstorm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\thunderstorm.c</FilePath>
             </File>
             <File>
               <FileName>clean.c</FileName>
@@ -599,6 +554,11 @@
               <FileName>icons_lights_wall_on.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\icons_lights_wall_on.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_settings.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_settings.c</FilePath>
             </File>
           </Files>
         </Group>

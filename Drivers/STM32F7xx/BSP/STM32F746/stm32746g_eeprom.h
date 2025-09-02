@@ -50,7 +50,7 @@
 #define EE_SYS_STATE                        0x02    // 1 bajt:  Sistemski flegovi (dijeli se sa bootloaderom!).
 #define EE_TFIFA			                0x04	// 1 bajt:  Adresa uredaja na RS485 busu (TinyFrame).
 #define EE_SYSID			                0x05	// 2 bajta: Jedinstveni ID sistema.
-
+#define EE_SYSTEM_PIN                       0x08    // 5 bajtova: Sistemski PIN kod (npr. "1234\0")
 /**
  * @brief  Sekcija 2: Struktuirani Blokovi Podataka
  * @note   Ovo je glavni dio konfiguracije. Svaki modul ima svoj blok podataka

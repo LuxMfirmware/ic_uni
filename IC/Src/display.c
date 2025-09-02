@@ -96,6 +96,25 @@
 #define LIGHT_ICON_ID_STAIRS            8
 #define LIGHT_ICON_ID_WALL              9
 /** @} */
+/* Privatne definicije... */
+#define PIN_MASK_DELAY 2000 // 2 sekunde prije maskiranja karaktera
+#define MAX_PIN_LENGTH 8    // << NOVO: Maksimalna dužina PIN-a
+
+/* Definicije ID-jeva za PIN tastaturu */
+#define ID_PINPAD_BASE      (GUI_ID_USER + 100)
+#define ID_PINPAD_1         (ID_PINPAD_BASE + 1)
+#define ID_PINPAD_2         (ID_PINPAD_BASE + 2)
+#define ID_PINPAD_3         (ID_PINPAD_BASE + 3)
+#define ID_PINPAD_4         (ID_PINPAD_BASE + 4)
+#define ID_PINPAD_5         (ID_PINPAD_BASE + 5)
+#define ID_PINPAD_6         (ID_PINPAD_BASE + 6)
+#define ID_PINPAD_7         (ID_PINPAD_BASE + 7)
+#define ID_PINPAD_8         (ID_PINPAD_BASE + 8)
+#define ID_PINPAD_9         (ID_PINPAD_BASE + 9)
+#define ID_PINPAD_0         (ID_PINPAD_BASE + 0)
+#define ID_PINPAD_DEL       (ID_PINPAD_BASE + 10)
+#define ID_PINPAD_OK        (ID_PINPAD_BASE + 11)
+#define ID_PINPAD_TEXT      (ID_PINPAD_BASE + 12)
 
 /** @name Bazni ID-jevi za dinamičke widgete
  * @note Koriste se u petljama za kreiranje widgeta kao početna vrijednost.
@@ -338,55 +357,64 @@ select_screen1_drawing_layout =
     .next_button_zone       = { .x0 = 400, .y0 = 80, .x1 = 480, .y1 = 272 }
 };
 /**
- * @brief Struktura koja sadrži konstante za ISCRTAVANJE elemenata
- * na drugom ekranu za odabir (Clean, WiFi, App).
+ * @brief Struktura koja sadrži konstante za ISCRTAVANJE i ZONE DODIRA
+ * na drugom ekranu za odabir.
+ * @note  Verzija 2.6.0: Zadržano originalno ime `select_screen2_drawing_layout`.
+ * Redizajnirana da podrži fiksni 2x2 raspored.
  */
 static const struct
 {
-    /** @brief X pozicija prve vertikalne linije koja dijeli ekran na trećine. */
-    int16_t x_line1_pos;
-    /** @brief X pozicija druge vertikalne linije koja dijeli ekran na trećine. */
-    int16_t x_line2_pos;
-    /** @brief X pozicija krajnje desne vertikalne linije. */
-    int16_t x_separator_pos;
+    /** @brief Zona dodira za gornji lijevi kvadrant (Čišćenje). */
+    TouchZone_t clean_zone;
+    /** @brief Zona dodira za gornji desni kvadrant (WiFi). */
+    TouchZone_t wifi_zone;
+    /** @brief Zona dodira za donji lijevi kvadrant (App). */
+    TouchZone_t app_zone;
+    /** @brief Zona dodira za donji desni kvadrant (Podešavanja). */
+    TouchZone_t settings_zone;
+    /** @brief Zona dodira za "NEXT" dugme za rotaciju ekrana. */
+    TouchZone_t next_button_zone;
 
-    /** @brief X koordinata centra prve kolone. */
-    int16_t x_center_col1;
-    /** @brief X koordinata centra druge kolone. */
-    int16_t x_center_col2;
-    /** @brief X koordinata centra treće kolone. */
-    int16_t x_center_col3;
-
-    /** @brief Y koordinata centra za sve ikonice. */
-    int16_t y_icon_center;
-    /** @brief Y koordinata za ispis teksta ispod ikonica. */
-    int16_t y_text_pos;
-
-    /** @brief Y koordinata centra za "NEXT" dugme. */
-    int16_t y_next_button_center;
-
-    /** @brief Početna Y koordinata za linije između kolona. */
-    int16_t col_line_y_start;
-    /** @brief Krajnja Y koordinata za linije između kolona. */
-    int16_t col_line_y_end;
-
+    // Koordinate za iscrtavanje
+    /** @brief X koordinata centra lijeve kolone. */
+    int16_t x_center_left;
+    /** @brief X koordinata centra desne kolone. */
+    int16_t x_center_right;
+    /** @brief Y koordinata centra gornjeg reda. */
+    int16_t y_center_top;
+    /** @brief Y koordinata centra donjeg reda. */
+    int16_t y_center_bottom;
+    /** @brief Vertikalni pomak teksta u odnosu na centar ikonice. */
+    int16_t text_vertical_offset;
+    /** @brief Početna Y koordinata za vertikalne separatore. */
+    int16_t separator_y_start;
+    /** @brief Krajnja Y koordinata za vertikalne separatore. */
+    int16_t separator_y_end;
+    /** @brief Horizontalni padding za horizontalni separator. */
+    int16_t separator_x_padding;
+    /** @brief X pozicija za "NEXT" dugme. */
+    int16_t next_button_x_pos;
+    /** @brief Y centar za "NEXT" dugme. */
+    int16_t next_button_y_center;
 }
 select_screen2_drawing_layout =
 {
-    .x_line1_pos            = DRAWING_AREA_WIDTH / 3,
-    .x_line2_pos            = (DRAWING_AREA_WIDTH / 3) * 2,
-    .x_separator_pos        = DRAWING_AREA_WIDTH,
+    .clean_zone         = { .x0 = 0,   .y0 = 0, .x1 = 190, .y1 = 136 },
+    .wifi_zone          = { .x0 = 190, .y0 = 0, .x1 = 380, .y1 = 136 },
+    .app_zone           = { .x0 = 0,   .y0 = 136, .x1 = 190, .y1 = 272 },
+    .settings_zone      = { .x0 = 190, .y0 = 136, .x1 = 380, .y1 = 272 },
+    .next_button_zone   = { .x0 = 400, .y0 = 80, .x1 = 480, .y1 = 272 },
 
-    .x_center_col1          = (DRAWING_AREA_WIDTH / 3) / 2,
-    .x_center_col2          = (DRAWING_AREA_WIDTH / 3) + ((DRAWING_AREA_WIDTH / 3) / 2),
-    .x_center_col3          = ((DRAWING_AREA_WIDTH / 3) * 2) + ((DRAWING_AREA_WIDTH / 3) / 2),
-
-    .y_icon_center          = 116,
-    .y_text_pos             = 176,
-    .y_next_button_center   = 192,
-
-    .col_line_y_start       = 60,
-    .col_line_y_end         = 212,
+    .x_center_left      = 95,
+    .x_center_right     = 285,
+    .y_center_top       = 68,
+    .y_center_bottom    = 204,
+    .text_vertical_offset = 10,
+    .separator_y_start  = 20,
+    .separator_y_end    = 252,
+    .separator_x_padding = 20,
+    .next_button_x_pos  = DRAWING_AREA_WIDTH + 5,
+    .next_button_y_center = 192,
 };
 /**
  * @brief Pomoćna struktura za definisanje pozicije i dimenzija widget-a.
@@ -867,6 +895,7 @@ static CHECKBOX_Handle hCHKBX_LIGHT_NIGHT_TIMER;           // Handle za checkbox
 static LIGHT_settingsWidgets lightsWidgets[LIGHTS_MODBUS_SIZE]; // Niz struktura za postavke svjetala
 static Defroster_settingsWidgets defroster_settingWidgets;
 static DROPDOWN_Handle hDRPDN_Language;
+static BUTTON_Handle hKeypadButtons[12];
 
 /*============================================================================*/
 /* GLOBALNE VARIJABLE NA NIVOU PROJEKTA                                        */
@@ -927,8 +956,16 @@ static uint8_t old_min = 60;                                // Prethodna vrijedn
 static uint8_t old_day = 0;                                 // Prethodna vrijednost dana, za detekciju promjene.
 static uint8_t qr_codes[QR_CODE_COUNT][QR_CODE_LENGTH] = {0}; // Bafer za čuvanje stringova QR kodova.
 static uint8_t qr_code_draw_id = 0;                         // ID QR koda koji treba iscrtati.
-static uint8_t clrtmr = 0;                                  // Fleg za odbrojavanje na ekranu za ciscenje.
+static uint8_t clrtmr = 0;    
 
+// Fleg za odbrojavanje na ekranu za ciscenje.
+/* Privatne varijable za PIN tastaturu */
+
+static char pin_buffer[MAX_PIN_LENGTH + 1];
+static uint8_t pin_buffer_idx = 0;
+static uint32_t pin_mask_timer = 0;
+static bool pin_error_active = false;
+static char pin_last_char = 0;
 /*============================================================================*/
 /*============================================================================*/
 /* PROTOTIPOVI PRIVATNIH (STATIC) FUNKCIJA                                    */
@@ -1027,6 +1064,11 @@ static void HandlePress_ResetMenuSwitchesScreenArea(GUI_PID_STATE * pTS);
 static void HandleRelease_MainScreenLogic(GUI_PID_STATE * pTS);
 static void HandleRelease_ResetMenuSwitchesScreenArea(GUI_PID_STATE * pTS);
 /** @} */
+/* Prototipovi novih funkcija za PIN tastaturu */
+static void DSP_InitPinpadScreen(void);
+static void Service_PinpadScreen(void);
+static void DSP_KillPinpadScreen(void);
+static void DSP_DrawPinpadText(void);
 
 /**
  * @name Pomoćne (Utility) Funkcije
@@ -1206,6 +1248,9 @@ void DISP_Service(void)
     case SCREEN_CLEAN:
         Service_CleanScreen();
         break;
+    case SCREEN_PINPAD:
+        Service_PinpadScreen();
+        break;    
     case SCREEN_LIGHTS:
         Service_LightsScreen();
         break;
@@ -1378,6 +1423,10 @@ void PID_Hook(GUI_PID_STATE * pTS)
                 screen = SCREEN_RETURN_TO_FIRST;
                 break;
             case SCREEN_QR_CODE:
+                screen = SCREEN_SELECT_2;
+                break;
+            case SCREEN_PINPAD:
+                DSP_KillPinpadScreen();
                 screen = SCREEN_SELECT_2;
                 break;
             case SCREEN_LIGHT_SETTINGS:
@@ -1647,6 +1696,13 @@ static void ForceKillAllSettingsWidgets(void)
         id_to_check = ID_LightsModbusRelay + i;
         if ((hWidget = WM_GetDialogItem(WM_GetDesktopWindow(), id_to_check))) {
             WM_DeleteWindow(hWidget);
+        }
+    }
+     // << NOVO: Dodata provjera i brisanje zaostalih dugmadi sa tastature >>
+    for (int i = 0; i < 12; i++) {
+        if (WM_IsWindow(hKeypadButtons[i])) {
+            WM_DeleteWindow(hKeypadButtons[i]);
+            hKeypadButtons[i] = 0; // Poništi handle nakon brisanja
         }
     }
 }
@@ -1948,69 +2004,43 @@ static void Service_SelectScreen1(void)
  */
 static void Service_SelectScreen2(void)
 {
-    if(shouldDrawScreen) {
+    if (shouldDrawScreen) {
         shouldDrawScreen = 0;
-
-        /**
-         * @brief Inicijalizacija iscrtavanja.
-         * @note  Pokreće se višestruko baferovanje i čiste se oba grafička sloja.
-         */
+        
         GUI_MULTIBUF_BeginEx(1);
-        GUI_SelectLayer(0);
         GUI_Clear();
-        GUI_SelectLayer(1);
-        GUI_SetBkColor(GUI_TRANSPARENT);
-        GUI_Clear();
-
-        /**
-         * @brief Iscrtavanje statičkih elemenata interfejsa (linije i meni).
-         * @note  Sve pozicije se dobijaju iz `select_screen2_drawing_layout` strukture.
-         */
         DrawHamburgerMenu();
-        GUI_DrawLine(select_screen2_drawing_layout.x_separator_pos, 10, select_screen2_drawing_layout.x_separator_pos, 262);
-        GUI_DrawLine(select_screen2_drawing_layout.x_line1_pos, select_screen2_drawing_layout.col_line_y_start, select_screen2_drawing_layout.x_line1_pos, select_screen2_drawing_layout.col_line_y_end);
-        GUI_DrawLine(select_screen2_drawing_layout.x_line2_pos, select_screen2_drawing_layout.col_line_y_start, select_screen2_drawing_layout.x_line2_pos, select_screen2_drawing_layout.col_line_y_end);
+        
+        // Crtanje krstastog separatora za 2x2 mrežu
+        GUI_DrawLine(DRAWING_AREA_WIDTH / 2, select_screen2_drawing_layout.separator_y_start, 
+                     DRAWING_AREA_WIDTH / 2, select_screen2_drawing_layout.separator_y_end);
+        GUI_DrawLine(select_screen2_drawing_layout.separator_x_padding, LCD_GetYSize() / 2, 
+                     DRAWING_AREA_WIDTH - select_screen2_drawing_layout.separator_x_padding, LCD_GetYSize() / 2);
+        
+        // Definicija ikonica i tekstova za 4 kvadranta
+        const GUI_BITMAP* icons[] = {&bmCLEAN, &bmwifi, &bmmobilePhone, &bmicons_settings};
+        TextID texts[] = {TXT_CLEAN, TXT_WIFI, TXT_APP, TXT_SETTINGS};
+        int x_centers[] = {select_screen2_drawing_layout.x_center_left, select_screen2_drawing_layout.x_center_right, select_screen2_drawing_layout.x_center_left, select_screen2_drawing_layout.x_center_right};
+        int y_centers[] = {select_screen2_drawing_layout.y_center_top, select_screen2_drawing_layout.y_center_top, select_screen2_drawing_layout.y_center_bottom, select_screen2_drawing_layout.y_center_bottom};
+        
+        for (int i = 0; i < 4; i++) {
+            int x_pos = x_centers[i] - (icons[i]->XSize / 2);
+            int y_pos = y_centers[i] - (icons[i]->YSize / 2) - select_screen2_drawing_layout.text_vertical_offset;
+            GUI_DrawBitmap(icons[i], x_pos, y_pos);
 
-        /**
-         * @brief Pointeri na bitmape koje se koriste za iscrtavanje.
-         */
+            GUI_SetFont(&GUI_FontVerdana20);
+            GUI_SetColor(GUI_ORANGE);
+            GUI_SetTextMode(GUI_TM_TRANS);
+            GUI_SetTextAlign(GUI_TA_HCENTER);
+            GUI_DispStringAt(lng(texts[i]), x_centers[i], y_pos + icons[i]->YSize + select_screen2_drawing_layout.text_vertical_offset);
+        }
+
+        // << IZMJENA: Vraćeno iscrtavanje "NEXT" dugmeta >>
         const GUI_BITMAP* iconNext = &bmnext;
-        const GUI_BITMAP* iconClean = &bmCLEAN;
-        const GUI_BITMAP* iconWifi = &bmwifi;
-        const GUI_BITMAP* iconApp = &bmmobilePhone;
+        int x_pos = select_screen2_drawing_layout.next_button_x_pos;
+        int y_pos = select_screen2_drawing_layout.next_button_y_center - (iconNext->YSize / 2);
+        GUI_DrawBitmap(iconNext, x_pos, y_pos);
 
-        /**
-         * @brief Iscrtavanje "NEXT" dugmeta.
-         */
-        GUI_DrawBitmap(iconNext, select_screen2_drawing_layout.x_separator_pos + 5, select_screen2_drawing_layout.y_next_button_center - (iconNext->YSize / 2));
-
-        /**
-         * @brief Iscrtavanje ikona na izračunatim, centriranim pozicijama.
-         * @note  Pozicije se računaju na osnovu centra kolone i dimenzija same ikonice.
-         */
-        GUI_DrawBitmap(iconClean, select_screen2_drawing_layout.x_center_col1 - (iconClean->XSize / 2), select_screen2_drawing_layout.y_icon_center - (iconClean->YSize / 2));
-        GUI_DrawBitmap(iconWifi,  select_screen2_drawing_layout.x_center_col2 - (iconWifi->XSize / 2),  select_screen2_drawing_layout.y_icon_center - (iconWifi->YSize / 2));
-        GUI_DrawBitmap(iconApp,   select_screen2_drawing_layout.x_center_col3 - (iconApp->XSize / 2),   select_screen2_drawing_layout.y_icon_center - (iconApp->YSize / 2));
-
-        /**
-         * @brief Podešavanje fonta i ispisivanje tekstualnih labela ispod ikonica.
-         */
-        GUI_SetFont(&GUI_FontVerdana20);
-        GUI_SetColor(GUI_ORANGE);
-        GUI_SetTextMode(GUI_TM_TRANS);
-
-        GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
-        GUI_DispStringAt(lng(TXT_CLEAN), select_screen2_drawing_layout.x_center_col1, select_screen2_drawing_layout.y_text_pos);
-
-        GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
-        GUI_DispStringAt(lng(TXT_WIFI), select_screen2_drawing_layout.x_center_col2, select_screen2_drawing_layout.y_text_pos);
-
-        GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
-        GUI_DispStringAt(lng(TXT_APP), select_screen2_drawing_layout.x_center_col3, select_screen2_drawing_layout.y_text_pos);
-
-        /**
-         * @brief Završetak operacije iscrtavanja i prikaz na ekranu.
-         */
         GUI_MULTIBUF_EndEx(1);
     }
 }
@@ -4696,44 +4726,46 @@ static void HandlePress_SelectScreen1(GUI_PID_STATE * pTS, uint8_t *click_flag)
  */
 static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
 {
-    // << IZMJENA: Logika sada koristi `select_screen2_layout` strukturu >>
+    eScreen target_screen = screen;
 
-    // Provjera da li je dodir unutar zone za čišćenje
-    if ((pTS->x >= select_screen2_layout.clean_zone.x0) && (pTS->x < select_screen2_layout.clean_zone.x1) &&
-            (pTS->y >= select_screen2_layout.clean_zone.y0) && (pTS->y < select_screen2_layout.clean_zone.y1))
-    {
-        screen = SCREEN_CLEAN;
-        menu_clean = 0;
+    if (pTS->x >= select_screen2_drawing_layout.clean_zone.x0 && pTS->x < select_screen2_drawing_layout.clean_zone.x1 &&
+        pTS->y >= select_screen2_drawing_layout.clean_zone.y0 && pTS->y < select_screen2_drawing_layout.clean_zone.y1) {
+        target_screen = SCREEN_CLEAN;
     }
-    // Provjera da li je dodir unutar zone za Wi-Fi
-    else if ((pTS->x >= select_screen2_layout.wifi_zone.x0) && (pTS->x < select_screen2_layout.wifi_zone.x1) &&
-             (pTS->y >= select_screen2_layout.wifi_zone.y0) && (pTS->y < select_screen2_layout.wifi_zone.y1))
-    {
-        screen = SCREEN_QR_CODE;
-        qr_code_draw_id = QR_CODE_WIFI_ID;
+    else if (pTS->x >= select_screen2_drawing_layout.wifi_zone.x0 && pTS->x < select_screen2_drawing_layout.wifi_zone.x1 &&
+             pTS->y >= select_screen2_drawing_layout.wifi_zone.y0 && pTS->y < select_screen2_drawing_layout.wifi_zone.y1) {
+        menu_lc  = 0;
+        target_screen = SCREEN_QR_CODE;
+    }
+    else if (pTS->x >= select_screen2_drawing_layout.app_zone.x0 && pTS->x < select_screen2_drawing_layout.app_zone.x1 &&
+             pTS->y >= select_screen2_drawing_layout.app_zone.y0 && pTS->y < select_screen2_drawing_layout.app_zone.y1) {
+        menu_lc  = 1;
+        target_screen = SCREEN_QR_CODE;
+    }
+    else if (pTS->x >= select_screen2_drawing_layout.settings_zone.x0 && pTS->x < select_screen2_drawing_layout.settings_zone.x1 &&
+             pTS->y >= select_screen2_drawing_layout.settings_zone.y0 && pTS->y < select_screen2_drawing_layout.settings_zone.y1) {
+        target_screen = SCREEN_PINPAD;
+    }
+    // << IZMJENA: Vraćena provjera za "NEXT" dugme koje sada rotira na SCREEN_SELECT_1 >>
+    else if (pTS->x >= select_screen2_drawing_layout.next_button_zone.x0 && pTS->x < select_screen2_drawing_layout.next_button_zone.x1 &&
+             pTS->y >= select_screen2_drawing_layout.next_button_zone.y0 && pTS->y < select_screen2_drawing_layout.next_button_zone.y1) {
+        target_screen = SCREEN_SELECT_1;
+    }
+    
+    if (target_screen != screen) {
+        screen = target_screen;
         shouldDrawScreen = 1;
-    }
-    // Provjera da li je dodir unutar zone za App
-    else if ((pTS->x >= select_screen2_layout.app_zone.x0) && (pTS->x < select_screen2_layout.app_zone.x1) &&
-             (pTS->y >= select_screen2_layout.app_zone.y0) && (pTS->y < select_screen2_layout.app_zone.y1))
-    {
-        screen = SCREEN_QR_CODE;
-        qr_code_draw_id = QR_CODE_APP_ID;
-        shouldDrawScreen = 1;
-    }
-    // Provjera da li je dodir unutar zone za dugme "NEXT"
-    else if ((pTS->x >= select_screen2_layout.next_button_zone.x0) && (pTS->x < select_screen2_layout.next_button_zone.x1) &&
-             (pTS->y >= select_screen2_layout.next_button_zone.y0) && (pTS->y < select_screen2_layout.next_button_zone.y1))
-    {
-        screen = SCREEN_SELECT_1;
-        menu_lc = 0;
-        shouldDrawScreen = 1;
-    }
-
-    if(screen != SCREEN_SELECT_2) {
         *click_flag = 1;
+        
+        // Sprečavanje "bleed-through" dodira
+        GUI_PID_STATE ts_release;
+        do {
+            GUI_PID_GetState(&ts_release);
+            HAL_Delay(5);
+        } while (ts_release.Pressed);
     }
 }
+
 /**
  * @brief Obrada događaja pritiska za ekran "Thermostat".
  * @note Rukuje dodirima na zone za povećanje (+) i smanjenje (-) zadane temperature,
@@ -5131,3 +5163,212 @@ static void HandleRelease_ResetMenuSwitchesScreenArea(GUI_PID_STATE * pTS)
     shouldDrawScreen = 1;
     screen = SCREEN_MAIN;
 }
+// =======================================================================
+// === NOVE FUNKCIJE ZA PIN TASTATURU (Verzija 3.0 - Direktno iscrtavanje) ===
+// =======================================================================
+/**
+ * @brief Kreira i inicijalizuje sve GUI widgete za ekran sa PIN tastaturom.
+ * @note  Ova funkcija je odgovorna za kompletan vizuelni setup ekrana. Prvo poziva
+ * `ForceKillAllSettingsWidgets` da osigura da nema zaostalih widgeta sa prethodnih
+ * ekrana. Zatim dinamički računa pozicije za 12 dugmadi kako bi cijeli
+ * blok tastature (uključujući prostor za tekst) bio vertikalno i horizontalno
+ * centriran. Na kraju, resetuje sve statičke varijable vezane za unos PIN-a
+ * i poziva `DSP_DrawPinpadText()` za inicijalno iscrtavanje (praznog) polja za unos.
+ * @param None
+ * @retval None
+ */
+static void DSP_InitPinpadScreen(void) {
+    ForceKillAllSettingsWidgets(); // Sigurnosno brisanje eventualno zaostalih widgeta
+
+    GUI_MULTIBUF_BeginEx(1);
+    GUI_Clear();
+    DrawHamburgerMenu();
+    
+    // Definicije za dimenzije elemenata
+    const int text_h = 50;
+    const int btn_w = 80, btn_h = 40;
+    const int x_gap = 10, y_gap = 10;
+    const int x_start = (DRAWING_AREA_WIDTH - (3 * btn_w + 2 * x_gap)) / 2;
+
+    // Dinamičko računanje Y pozicija za vertikalno centriranje
+    const int keypad_h = (4 * btn_h + 3 * y_gap);   // Ukupna visina bloka sa dugmadima
+    const int total_h = text_h + y_gap + keypad_h;   // Ukupna visina (tekst + razmak + dugmad)
+    const int y_block_start = (LCD_GetYSize() - total_h) / 2; // Početna Y tačka cijelog bloka
+    const int y_keypad_start = y_block_start + text_h + y_gap;
+
+    // Tekstovi i ID-jevi za dugmad
+    const char* key_texts[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "DEL", "0", "OK"};
+    const int key_ids[] = {ID_PINPAD_1, ID_PINPAD_2, ID_PINPAD_3, ID_PINPAD_4, ID_PINPAD_5, ID_PINPAD_6, ID_PINPAD_7, ID_PINPAD_8, ID_PINPAD_9, ID_PINPAD_DEL, ID_PINPAD_0, ID_PINPAD_OK};
+
+    // Kreiranje dugmadi u petlji
+    for (int i = 0; i < 12; i++) {
+        int row = i / 3;
+        int col = i % 3;
+        int x_pos = x_start + col * (btn_w + x_gap);
+        int y_pos = y_keypad_start + row * (btn_h + y_gap);
+
+        hKeypadButtons[i] = BUTTON_CreateEx(x_pos, y_pos, btn_w, btn_h, 0, WM_CF_SHOW, 0, key_ids[i]);
+        BUTTON_SetText(hKeypadButtons[i], key_texts[i]);
+        BUTTON_SetFont(hKeypadButtons[i], &GUI_Font24_1);
+        // Ne postavljamo callback jer koristimo direktnu provjeru (polling)
+    }
+
+    // Resetuj stanje i inicijalno iscrtaj prazno polje za unos
+    pin_buffer_idx = 0;
+    pin_buffer[0] = '\0';
+    pin_mask_timer = 0;
+    pin_error_active = false;
+    DSP_DrawPinpadText();
+
+    GUI_MULTIBUF_EndEx(1);
+}
+/**
+ * @brief Glavna servisna funkcija za ekran sa PIN tastaturom.
+ * @note  Ova funkcija se poziva u petlji iz `DISP_Service`. Odgovorna je za dvije
+ * ključne stvari:
+ * 1. Provjeru stanja svih 12 dugmadi (polling) kako bi detektovala kada je
+ * dugme pritisnuto i otpušteno. Logika za unos, brisanje i potvrdu PIN-a
+ * se aktivira prilikom otpuštanja dugmeta.
+ * 2. Upravljanje tajmerom (`pin_mask_timer`) koji maskira posljednju unesenu
+ * cifru u zvjezdicu nakon `PIN_MASK_DELAY` milisekundi.
+ * @param None
+ * @retval None
+ */
+static void Service_PinpadScreen(void) {
+    static int button_pressed_id = -1; // -1 = nijedno dugme nije pritisnuto
+
+    if (shouldDrawScreen) {
+        shouldDrawScreen = 0;
+        DSP_InitPinpadScreen();
+    }
+
+    // Provjera pritiska na svako dugme (polling)
+    int currently_pressed_id = -1;
+    for (int i = 0; i < 12; i++) {
+        if (BUTTON_IsPressed(hKeypadButtons[i])) {
+            currently_pressed_id = i;
+            break;
+        }
+    }
+
+    // Događaj se aktivira kada se dugme OTPUSTI (prelazak sa pritisnutog na nepritisnuto stanje)
+    if (currently_pressed_id == -1 && button_pressed_id != -1) {
+        BuzzerOn(); HAL_Delay(1); BuzzerOff();
+        pin_mask_timer = 0;
+        pin_error_active = false;
+        int Id = button_pressed_id; // ID dugmeta koje je upravo otpušteno (0-8 su 1-9, 9=DEL, 10=0, 11=OK)
+
+        if (Id >= 0 && Id <= 8) { // Brojevi 1-9
+            if (pin_buffer_idx < MAX_PIN_LENGTH) {
+                pin_last_char = (Id + 1) + '0';
+                pin_buffer[pin_buffer_idx++] = pin_last_char;
+                pin_buffer[pin_buffer_idx] = '\0';
+                pin_mask_timer = HAL_GetTick();
+            }
+        } else if (Id == 10) { // Broj 0
+             if (pin_buffer_idx < MAX_PIN_LENGTH) {
+                pin_last_char = '0';
+                pin_buffer[pin_buffer_idx++] = pin_last_char;
+                pin_buffer[pin_buffer_idx] = '\0';
+                pin_mask_timer = HAL_GetTick();
+            }
+        } else if (Id == 9) { // DEL
+            if (pin_buffer_idx > 0) {
+                pin_buffer[--pin_buffer_idx] = '\0';
+            }
+        } else if (Id == 11) { // OK
+//            if (strcmp(pin_buffer, system_pin) == 0) {
+            if (strcmp(pin_buffer, "1234") == 0) {
+                DSP_KillPinpadScreen();
+                DSP_InitSet1Scrn(); // Pripremi sljedeći ekran
+                screen = SCREEN_SETTINGS_1;
+                shouldDrawScreen = 1;
+            } else {
+                pin_error_active = true;
+                pin_mask_timer = HAL_GetTick(); // Tajmer za trajanje "ERROR" poruke
+            }
+        }
+        if(!shouldDrawScreen) DSP_DrawPinpadText(); // Nakon svake akcije, ponovo iscrtaj tekst
+    }
+
+    button_pressed_id = currently_pressed_id; // Sačuvaj trenutno stanje za sljedeću provjeru
+
+    // Upravljanje tajmerom za maskiranje karaktera
+    if (pin_mask_timer != 0 && (HAL_GetTick() - pin_mask_timer) >= PIN_MASK_DELAY) {
+        pin_mask_timer = 0;
+        if (pin_error_active) {
+            pin_buffer_idx = 0;
+            pin_buffer[0] = '\0';
+            pin_error_active = false;
+        }
+        DSP_DrawPinpadText(); // Iscrtaj maskiran tekst
+    }
+}
+/**
+ * @brief Uništava sve GUI widgete kreirane za PIN tastaturu.
+ * @note  Ova funkcija se poziva prilikom navigacije sa `SCREEN_PINPAD` na bilo
+ * koji drugi ekran. Iterira kroz niz `hKeypadButtons` i sigurno uništava
+ * svaki postojeći widget pomoću `WM_DeleteWindow`, a zatim resetuje handle
+ * na 0. Ovo je ključno za oslobađanje memorije i sprečavanje "duhova"
+ * (ghost widgets) na ekranu.
+ * @param None
+ * @retval None
+ */
+static void DSP_KillPinpadScreen(void) {
+    for (int i = 0; i < 12; i++) {
+        if (WM_IsWindow(hKeypadButtons[i])) {
+            WM_DeleteWindow(hKeypadButtons[i]);
+            hKeypadButtons[i] = 0;
+        }
+    }
+}
+/**
+ * @brief Pomoćna funkcija koja iscrtava trenutno stanje unosa PIN-a.
+ * @note  Centralizuje svu logiku za prikaz teksta na jednom mjestu. Funkcija
+ * prvo obriše staro područje teksta (`GUI_ClearRect`), a zatim iscrtava
+ * novi sadržaj. Prikazuje "ERROR" poruku, zvjezdice, ili kombinaciju
+ * zvjezdica i posljednje unesene cifre, u zavisnosti od globalnih
+ * varijabli (`pin_error_active`, `pin_mask_timer`).
+ * @param None
+ * @retval None
+ */
+static void DSP_DrawPinpadText(void) {
+    // Definicije za poziciju i font (da budu na jednom mjestu)
+    const int text_h = 50;
+    const int keypad_h = (4 * 40 + 3 * 10);
+    const int total_h = text_h + 10 + keypad_h;
+    const int y_block_start = (LCD_GetYSize() - total_h) / 2;
+    const int y_text_pos = y_block_start;
+    const int y_text_center = y_text_pos + (text_h / 2);
+
+    char display_buffer[MAX_PIN_LENGTH + 1] = {0};
+
+    GUI_MULTIBUF_BeginEx(1);
+    GUI_ClearRect(10, y_text_pos, 370, y_text_pos + text_h); // Obriši samo staro područje
+    
+    GUI_SetFont(GUI_FONT_32B_1);
+    GUI_SetTextMode(GUI_TM_TRANS);
+    
+    // << IZMJENA: Poravnanje je sada centrirano >>
+    GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
+    
+    if (pin_error_active) {
+        GUI_SetColor(GUI_RED);
+        strcpy(display_buffer, "ERROR");
+    } else {
+        // << IZMJENA: Boja je sada narandžasta >>
+        GUI_SetColor(GUI_ORANGE);
+        memset(display_buffer, '*', pin_buffer_idx);
+        if (pin_mask_timer != 0) { // Ako tajmer radi, prikaži zadnju cifru
+            if(pin_buffer_idx > 0) {
+                display_buffer[pin_buffer_idx - 1] = pin_last_char;
+            }
+        }
+    }
+    
+    // << IZMJENA: X koordinata je sada centar područja za crtanje >>
+    GUI_DispStringAt(display_buffer, DRAWING_AREA_WIDTH / 2, y_text_center);
+    GUI_MULTIBUF_EndEx(1);
+}
+/************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/
+
