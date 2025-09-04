@@ -13,8 +13,8 @@ Zadatak											Prioritet	Status				Bilješke
 12.	Treperenje dim svjetala						Srednji		Nije započeto		Kada se brzo pritisne jedno	dim svjetlo, ostala počnu treperiti.								
 13.	Integracija u Home Assistant				Nizak		Nije započeto		Implementirati automatsko otkrivanje uređaja (MQTT Discovery ili ESPHome).							
 14.	OTA (bežični) Update						Nizak		Nije započeto		Zavisi od dodavanja WiFi modula.					
-15.	Update firmvera preko RS485					Visok		Nije započeto		Implementirati pouzdan mehanizam sa retransmisijom i rukovanjem greškama.	
-16. Meni Select Screen 2						Visok		Nije započeto		Dodati settings ikonu u meni i ovaj meni postaje stalno 2x2 matrica, dodati pin unos i u settings meniju mogućnost promjene pina
+15.	Update firmvera preko RS485					Visok		Započeto			Implementirati pouzdan mehanizam sa retransmisijom i rukovanjem greškama.	
+16. Meni Select Screen 2						Visok		Završeno			Dodati settings ikonu u meni i ovaj meni postaje stalno 2x2 matrica, dodati pin unos i u settings meniju mogućnost promjene pina
 
 
 *-----------------------------------------------------------------------------------------------------------------------------------*

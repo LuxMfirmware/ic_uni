@@ -22,7 +22,6 @@
 /* JAVNE DEFINICIJE I KONSTANTE                                               */
 /*============================================================================*/
 #define EEPROM_THERMOSTAT_CONFIG_SIZE               32      // Rucno definisane velicine na osnovu pravila "velicina * 2 zaokruženo na najbliži višekratnik 16"
-#define USE_THERMOSTAT                              1       // Glavni prekidac za ukljucivanje koda termostata u kompajliranje.
 #define FANC_FAN_MIN_ON_TIME                        560U    // Minimalno vrijeme (u ms) izmedu promjena brzine ventilatora.
 #define THST_SP_MIN                                 5       // Minimalna dozvoljena zadata temperatura (°C).
 #define THST_SP_MAX                                 40      // Maksimalna dozvoljena zadata temperatura (°C).

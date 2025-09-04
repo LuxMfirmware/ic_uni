@@ -23,6 +23,7 @@
 #include "lights.h"
 #include "display.h"
 #include "stm32746g_eeprom.h" // Mapa ide nakon svih definicija
+#include "firmware_update_agent.h"
 #include "rs485.h"
 
 /* Imported Types  -----------------------------------------------------------*/
@@ -176,7 +177,6 @@ TF_Result RGB_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
 
     return TF_STAY;
 }
-#ifdef USE_THERMOSTAT
 /**
 * @brief :  Ovo je tip samo za explicitan zahtjev sa http-a inace svi uredaji
 *           u busu imaju sve zadnje promjene stanja preko info poruka
@@ -379,30 +379,24 @@ TF_Result THERMOSTAT_SETUP_Listener(TinyFrame *tf, TF_Msg *msg)
     }
     return TF_STAY;
 }
-#endif
 /**
-* @brief :  Zahtjev za update firmvera je na ovom callback-u
-*           u zahtjevu je nova firmvare verzija koji ce ovaj kontroler
-*           uporediti sa svojom zato je bitno da je kompajlirana uz sve
-*           user run sekcije u uVision. ako i adresa ovog kontrolera
-*           odgovara zahtjevu pravi se backup kopija flash memorije ovog
-*           koda mikrokontrolera, formatira se prostor za novi firmware,
-*           pokrece se transfer binarnog fajla, izracunava crc na cijeli
-*           fajl i poredi sa pecatom unutar bin fajla i ako je sve u redu
-*           restartuje se mikrokontroler. bootloader ce odraditi ostalo
-*           i ako se novi kod uspješno pokrene, oznacice flag u eepromu,
-*           ukoliko se sruši prije ovoga, bootloader ce vratiti stari kod,
-*           i takoder oznaciti da je neuspješan update, svo ovo vrijeme
-*           aplikacija koja je zapocela update ceka finalni odgovor od
-*           kontrolera koji je validan tek nakon reboota, što u najgorem
-*           slucaju može biti i 10-tak sekundi.
-*
-* @param :
-* @retval:
-*/
+ * @brief Listener posvecen iskljucivo porukama za ažuriranje firmvera.
+ *
+ * @note  Ova funkcija služi kao "dispecer". Ona ne sadrži nikakvu logiku, vec
+ * samo prosljeduje primljenu poruku modulu "Firmware Update Agent" koji
+ * sadrži kompletnu logiku mašine stanja. Na ovaj nacin, `rs485.c` ostaje
+ * cist i zadužen samo za transport, dok je sva kompleksnost ažuriranja
+ * enkapsulirana u svom modulu.
+ *
+ * @param tf    Pokazivac na TinyFrame instancu.
+ * @param msg   Pokazivac na primljenu TF_Msg poruku.
+ * @retval      TF_Result Uvijek vraca TF_STAY da listener ostane aktivan.
+ */
 TF_Result FIRMWARE_UPDATE_Listener(TinyFrame *tf, TF_Msg *msg)
 {
-
+    // Proslijedi poruku Agentu na dalju obradu.
+    FwUpdateAgent_ProcessMessage(tf, msg);
+    
     return TF_STAY;
 }
 /**
@@ -613,13 +607,11 @@ void RS485_Init(void)
         TF_AddTypeListener(&tfapp, JALOUSIE_SET, JALOUSIE_SET_Listener);
         TF_AddTypeListener(&tfapp, QR_REQUEST, QR_REQUEST_Listener);
         TF_AddTypeListener(&tfapp, TIME_INFO, TIME_INFO_Listener);
-#ifdef USE_THERMOSTAT
         TF_AddTypeListener(&tfapp, THERMOSTAT_GET, THERMOSTAT_GET_Listener);
         TF_AddTypeListener(&tfapp, THERMOSTAT_SET, THERMOSTAT_SET_Listener);
         TF_AddTypeListener(&tfapp, THERMOSTAT_INFO, THERMOSTAT_INFO_Listener);
         TF_AddTypeListener(&tfapp, THERMOSTAT_SETUP, THERMOSTAT_SETUP_Listener);
         TF_AddTypeListener(&tfapp, FIRMWARE_UPDATE, FIRMWARE_UPDATE_Listener);
-#endif
     }
     HAL_UART_Receive_IT(&huart1, &rec, 1);
 }

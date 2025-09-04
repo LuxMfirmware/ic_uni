@@ -517,7 +517,7 @@ uint8_t GetFwInfo(FwInfoTypeDef *fw_info)
 	        ((fw_info->size - VERS_INF_OFFSET - 0x8U) / 0x4U));
 #endif 
 	if (fwcrc32 != fw_info->crc32) return 0x6U;
-//	if (((fw_info->version & 0xFF000000U) < 0x10000000) || ((fw_info->version & 0xFF000000U) > 0x37000000)) return 0x7U;
+	if (((fw_info->version & 0xFF000000U) < 0x10000000) || ((fw_info->version & 0xFF000000U) > 0x37000000)) return 0x7U;
 	return 0x0U;
 }
 /**
@@ -531,26 +531,26 @@ uint8_t ValidateFwInfo(FwInfoTypeDef *fw_info)
 // check write address and compare to RT_APPL_ADDR
 // check fw type by adding type string type = R+T+B+L
 // check postfix
-//    uint32_t fwcrc32 = 0x0U;
-//    uint32_t dummy_buf[2];
+    uint32_t fwcrc32 = 0x0U;
+    uint32_t dummy_buf[2];
 	if ((fw_info->size      > FLASH_SIZE) || ((fw_info->size    == 0U))) return 0x2U;
 	if ((fw_info->crc32   == 0xFFFFFFFFU) || ((fw_info->crc32   == 0U))) return 0x3U;
 	if ((fw_info->version == 0xFFFFFFFFU) || ((fw_info->version == 0U))) return 0x4U;
 	if ((fw_info->wr_addr   < FLASH_ADDR) ||  (fw_info->wr_addr > (FLASH_END_ADDR + fw_info->size))) return 0x5U;
-//    dummy_buf[0] = fw_info->size;
-//    dummy_buf[1] = 0xFFFFFFFFU;
-//#ifdef USE_STDPERIPH_DRIVER
-//    CRC_ResetDR();
-//    CRC_CalcBlockCRC((uint32_t*) fw_info->ld_addr, VERS_INF_OFFSET / 0x4U);
-//    CRC_CalcBlockCRC((uint32_t*) dummy_buf, 0x2U);
-//    fwcrc32 = CRC_CalcBlockCRC((uint32_t*)(fw_info->ld_addr + VERS_INF_OFFSET + 0x8U), ((fw_info->size - VERS_INF_OFFSET - 0x8U) / 0x4U));
-//#elif defined USE_HAL_DRIVER
-//    fwcrc32 = HAL_CRC_Calculate  (&hcrc,(uint32_t*) fw_info->ld_addr, VERS_INF_OFFSET / 0x4U);
-//    fwcrc32 = HAL_CRC_Accumulate (&hcrc,(uint32_t*) dummy_buf, 0x2);
-//    fwcrc32 = HAL_CRC_Accumulate (&hcrc,(uint32_t*)(fw_info->ld_addr + VERS_INF_OFFSET + 0x8U), ((fw_info->size - VERS_INF_OFFSET - 0x8U) / 0x4U));
-//#endif 
-//    if (fwcrc32 != fw_info->crc32) return 0x6U;
-//    if (((fw_info->version & 0xFF000000U) < 0x10000000) || ((fw_info->version & 0xFF000000U) > 0x37000000)) return 0x7U;
+    dummy_buf[0] = fw_info->size;
+    dummy_buf[1] = 0xFFFFFFFFU;
+#ifdef USE_STDPERIPH_DRIVER
+    CRC_ResetDR();
+    CRC_CalcBlockCRC((uint32_t*) fw_info->ld_addr, VERS_INF_OFFSET / 0x4U);
+    CRC_CalcBlockCRC((uint32_t*) dummy_buf, 0x2U);
+    fwcrc32 = CRC_CalcBlockCRC((uint32_t*)(fw_info->ld_addr + VERS_INF_OFFSET + 0x8U), ((fw_info->size - VERS_INF_OFFSET - 0x8U) / 0x4U));
+#elif defined USE_HAL_DRIVER
+    fwcrc32 = HAL_CRC_Calculate  (&hcrc,(uint32_t*) fw_info->ld_addr, VERS_INF_OFFSET / 0x4U);
+    fwcrc32 = HAL_CRC_Accumulate (&hcrc,(uint32_t*) dummy_buf, 0x2);
+    fwcrc32 = HAL_CRC_Accumulate (&hcrc,(uint32_t*)(fw_info->ld_addr + VERS_INF_OFFSET + 0x8U), ((fw_info->size - VERS_INF_OFFSET - 0x8U) / 0x4U));
+#endif 
+    if (fwcrc32 != fw_info->crc32) return 0x6U;
+    if (((fw_info->version & 0xFF000000U) < 0x10000000) || ((fw_info->version & 0xFF000000U) > 0x37000000)) return 0x7U;
 	return 0x0U;
 }
 /**

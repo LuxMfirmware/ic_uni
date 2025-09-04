@@ -966,6 +966,7 @@ static uint8_t pin_buffer_idx = 0;
 static uint32_t pin_mask_timer = 0;
 static bool pin_error_active = false;
 static char pin_last_char = 0;
+
 /*============================================================================*/
 /*============================================================================*/
 /* PROTOTIPOVI PRIVATNIH (STATIC) FUNKCIJA                                    */
@@ -4757,11 +4758,11 @@ static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
         shouldDrawScreen = 1;
         *click_flag = 1;
         
-        // Sprečavanje "bleed-through" dodira
         GUI_PID_STATE ts_release;
         do {
+            TS_Service(); // Očitavaj hardver da dobiješ svjež status
             GUI_PID_GetState(&ts_release);
-            HAL_Delay(5);
+            HAL_Delay(100);
         } while (ts_release.Pressed);
     }
 }

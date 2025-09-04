@@ -103,6 +103,6 @@
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\ft5336\..\Common\ts.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_qspi.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\n25q128a\n25q128a.h \
-  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h ..\Inc\rs485.h \
-  ..\..\Middlewares\TinyFrame\TinyFrame.h \
-  ..\..\Middlewares\TinyFrame\TF_Config.h
+  ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h \
+  ..\Inc\firmware_update_agent.h ..\..\Middlewares\TinyFrame\TinyFrame.h \
+  ..\..\Middlewares\TinyFrame\TF_Config.h ..\Inc\rs485.h

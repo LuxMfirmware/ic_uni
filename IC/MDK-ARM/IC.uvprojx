@@ -1040,6 +1040,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\defroster.c</FilePath>
             </File>
+            <File>
+              <FileName>firmware_update_agent.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\firmware_update_agent.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

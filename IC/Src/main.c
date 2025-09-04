@@ -99,7 +99,6 @@ char system_pin[5]; // << NOVO: Definicija globalne varijable
 static void RAM_Init(void);
 static void ADC3_Read(void);
 static void MPU_Config(void);
-static void TS_Service(void);
 static void MX_IWDG_Init(void);
 static void MX_RTC_Init(void);
 static void MX_CRC_Init(void);
@@ -319,7 +318,7 @@ static void MX_IWDG_Init(void) {
   * @param
   * @retval
   */
-static void TS_Service(void) {
+void TS_Service(void) {
 // Definicije za dinamicki treshold osjetljivosti na dodir
 #define NORMAL_TOUCH_THRESHOLD      30U // Standardna osjetljivost (manje precizno)
 #define HIGH_PRECISION_THRESHOLD    2U  // Visoka osjetljivost (precizno za slajdere)

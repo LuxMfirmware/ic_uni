@@ -137,6 +137,7 @@ extern DMA2D_HandleTypeDef hdma2d;
 /* Exported function --------------------------------------------------------*/
 void SYSRestart(void);
 void SetDefault(void);
+void TS_Service(void);
 void SetPin(uint8_t pin, uint8_t pinVal);
 void RTC_GetDateTime(RTC_t* data, uint32_t format);
 void ErrorHandler(uint8_t function, uint8_t driver);

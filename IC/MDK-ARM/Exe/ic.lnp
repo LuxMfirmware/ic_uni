@@ -121,6 +121,7 @@
 ".\exe\curtain.o"
 ".\exe\ventilator.o"
 ".\exe\defroster.o"
+".\exe\firmware_update_agent.o"
 --library_type=microlib --strict --scatter ".\Run\db.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
