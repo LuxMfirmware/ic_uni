@@ -13,10 +13,11 @@
  ******************************************************************************
  */
 
-#include "update_manager.h"
+#include "update_manager.h" // Ključni include koji je nedostajao
 #include "main.h"
 #include "rs485.h"
-#include "ff.h" // Za rad sa fajlovima na uSD kartici
+#include "ff.h"
+#include "common.h"
 
 //=============================================================================
 // Definicije
@@ -27,60 +28,34 @@
 /** @brief Broj ponovnih pokušaja slanja jednog paketa prije odustajanja. */
 #define MAX_RETRIES 10
 /** @brief Timeout u ms za čekanje na ACK nakon slanja DATA paketa. */
-#define T_WAIT_FOR_DATA_ACK 100
+#define T_WAIT_FOR_DATA_ACK 200
 /** @brief Timeout u ms za čekanje na START ACK nakon slanja zahtjeva. */
 #define T_WAIT_FOR_START_ACK 6000
 /** @brief Timeout u ms za čekanje na FINISH ACK nakon slanja finalnog zahtjeva. */
 #define T_WAIT_FOR_FINISH_ACK 1000
 /** @brief Timeout u ms za čekanje na restart klijenta prije finalne provjere. */
 #define T_FINAL_VERIFICATION_DELAY 10000
+/** @brief Veličina jednog dijela (chunk) firmvera koji se šalje u jednom paketu. */
+#define FW_PACKET_DATA_SIZE 256
 
-/** @brief Enumeracija stanja za mašinu stanja svake sesije na serveru. */
-typedef enum {
-    S_IDLE,                     /**< Slot za sesiju je slobodan. */
-    S_STARTING,                 /**< Iniciran, čeka se slanje START_REQUEST. */
-    S_WAITING_FOR_START_ACK,    /**< Čeka se ACK na START_REQUEST. */
-    S_SENDING_DATA,             /**< Stanje slanja paketa sa podacima. */
-    S_WAITING_FOR_DATA_ACK,     /**< Čeka se ACK na poslati DATA paket. */
-    S_FINISHING,                /**< Svi podaci poslati, šalje se FINISH_REQUEST. */
-    S_WAITING_FOR_FINISH_ACK,   /**< Čeka se ACK na FINISH_REQUEST. */
-    S_WAITING_FOR_VERIFICATION, /**< Čeka se da prođe 10s za finalnu provjeru. */
-    S_COMPLETED_OK,             /**< Sesija uspješno završena. */
-    S_FAILED                    /**< Sesija neuspješna. */
-} ServerSessionState_e;
-
-/**
- * @brief Enumeracija koja definiše sve moguće sub-komande unutar FIRMWARE_UPDATE poruke.
- */
-typedef enum {
-    SUB_CMD_START_REQUEST   = 0x01,
-    SUB_CMD_START_ACK       = 0x02,
-    SUB_CMD_START_NACK      = 0x03,
-    SUB_CMD_DATA_PACKET     = 0x10,
-    SUB_CMD_DATA_ACK        = 0x11,
-    SUB_CMD_FINISH_REQUEST  = 0x20,
-    SUB_CMD_FINISH_ACK      = 0x21,
-    SUB_CMD_FINISH_NACK     = 0x22,
-} FwUpdate_SubCommand_e;
-
-/** @brief Struktura koja sadrži sve podatke za jednu update sesiju. */
-typedef struct {
-    ServerSessionState_e state;             /**< Trenutno stanje sesije. */
-    uint8_t         clientAddress;          /**< Adresa klijenta koji se ažurira. */
-    FwInfoTypeDef   fwInfo;                 /**< Metapodaci o firmveru. */
-    FIL             fileObject;             /**< File handle za .BIN fajl na uSD. */
-    uint32_t        bytesSent;              /**< Ukupan broj poslatih bajtova. */
-    uint32_t        currentSequenceNum;     /**< Sekvencijalni broj paketa koji se trenutno šalje. */
-    uint32_t        timeoutStart;           /**< Vrijeme početka tajmera za trenutnu operaciju. */
-    uint8_t         retryCount;             /**< Brojač preostalih pokušaja za trenutni paket. */
-} UpdateSession_t;
-
-/** @brief Niz koji čuva stanje za sve potencijalne sesije. */
+/** @brief Niz koji čuva stanje za sve potencijalne sesije. Privatna varijabla modula. */
 static UpdateSession_t sessions[MAX_SESSIONS];
 
+//=============================================================================
+// Prototipovi Privatnih Funkcija
+//=============================================================================
+static void CleanupSession(UpdateSession_t* s);
+static void SendStartRequest(UpdateSession_t* s);
+static void SendDataPacket(UpdateSession_t* s);
+static void SendFinishRequest(UpdateSession_t* s);
+static void SendGetInfoRequest(uint8_t clientAddress);
+static const char* NackReasonToString(FwUpdate_NackReason_e reason);
+
+// Pretpostavka je da je ova funkcija dostupna iz drugog modula (npr. display.c)
+extern void DISP_UpdateLog(const char *pbuf);
 
 //=============================================================================
-// Implementacija Funkcija
+// Implementacija Javnih Funkcija
 //=============================================================================
 
 /**
@@ -97,39 +72,61 @@ void UpdateManager_Init(void)
 
 /**
  * @brief Pokreće novu update sesiju.
- * @note  Ovu funkciju poziva HTTP_CGI_Handler. Funkcija pronalazi slobodan slot,
- * otvara fajl, čita metapodatke i priprema sesiju za početak.
- * @param clientAddress Adresa uređaja koji treba ažurirati.
- * @param filePath      Putanja do .BIN fajla na uSD kartici.
- * @retval bool         `true` ako je sesija uspješno pokrenuta, `false` ako ne.
+ * @note  Ovu funkciju poziva HTTP_CGI_Handler. Funkcija je ne-blokirajuća; ona samo
+ * pronalazi slobodan slot, otvara fajl, čita metapodatke ("pečat"), validira
+ * ih i priprema sesiju za početak. Stvarni transfer se odvija u pozadini
+ * preko `UpdateManager_Service`.
  */
 bool UpdateManager_StartSession(uint8_t clientAddress, const char* filePath)
 {
-    // Pronađi prvi slobodan slot za novu sesiju
     int session_index = -1;
-    for (int i = 0; i < MAX_SESSIONS; i++)
-    {
-        if (sessions[i].state == S_IDLE)
-        {
+    for (int i = 0; i < MAX_SESSIONS; i++) {
+        if (sessions[i].state == S_IDLE) {
+            memset(&sessions[i], 0, sizeof(UpdateSession_t));
             session_index = i;
             break;
         }
     }
-    if (session_index == -1) return false; // Nema slobodnih slotova
+    if (session_index == -1) return false;
 
     UpdateSession_t* s = &sessions[session_index];
+
+    //if (f_mount(&fatfs, "0:", 0) != FR_OK) return false;
     
-    // Otvori fajl i pročitaj FwInfoTypeDef
-    // TODO: Implementirati logiku za otvaranje fajla i čitanje pečata...
-    // if (f_open(...) != FR_OK) return false;
-    // f_read(...) -> s->fwInfo;
+    if (f_open(&s->fileObject, filePath, FA_READ) != FR_OK) {
+        //f_mount(NULL, "0:", 0);
+        return false;
+    }
+
+    FRESULT fr;
+    UINT bytesRead;
+    fr = f_lseek(&s->fileObject, VERS_INF_OFFSET);
+    if (fr != FR_OK) {
+        f_close(&s->fileObject);
+        //f_mount(NULL, "0:", 0);
+        return false;
+    }
+
+    fr = f_read(&s->fileObject, &s->fwInfo.size,    sizeof(uint32_t), &bytesRead);
+    fr |= f_read(&s->fileObject, &s->fwInfo.crc32,   sizeof(uint32_t), &bytesRead);
+    fr |= f_read(&s->fileObject, &s->fwInfo.version, sizeof(uint32_t), &bytesRead);
+    fr |= f_read(&s->fileObject, &s->fwInfo.wr_addr, sizeof(uint32_t), &bytesRead);
     
-    // Inicijalizuj sesiju
+    if (fr != FR_OK) {
+        f_close(&s->fileObject);
+        //f_mount(NULL, "0:", 0);
+        return false;
+    }
+    
+    f_lseek(&s->fileObject, 0);
+
+    if (ValidateFwInfo(&s->fwInfo) != 0) {
+        f_close(&s->fileObject);
+        //f_mount(NULL, "0:", 0);
+        return false;
+    }
+
     s->clientAddress = clientAddress;
-    s->bytesSent = 0;
-    s->currentSequenceNum = 0;
-    
-    // Postavi stanje na STARTING. `UpdateManager_Service` će preuzeti odavde.
     s->state = S_STARTING;
     
     return true;
@@ -138,174 +135,254 @@ bool UpdateManager_StartSession(uint8_t clientAddress, const char* filePath)
 /**
  * @brief Glavna servisna funkcija koja upravlja svim aktivnim sesijama.
  * @note  Ovo je ne-blokirajući drajver mašine stanja. Poziva se iz `main()`.
+ * Prolazi kroz sve aktivne sesije i na osnovu njihovog stanja izvršava
+ * sljedeći korak (npr. šalje paket, provjerava tajmer, ponovo šalje paket).
  */
 void UpdateManager_Service(void)
 {
     for (int i = 0; i < MAX_SESSIONS; i++)
     {
         UpdateSession_t* s = &sessions[i];
-        if (s->state == S_IDLE || s->state == S_COMPLETED_OK || s->state == S_FAILED)
-        {
-            continue; // Preskoči neaktivne sesije
+
+        if (s->state == S_IDLE) continue;
+
+        if (s->state == S_COMPLETED_OK || s->state == S_FAILED) {
+            CleanupSession(s);
+            continue;
         }
 
         switch (s->state)
         {
             case S_STARTING:
-                // TODO: Formiraj i pošalji SUB_CMD_START_REQUEST...
-                // s->timeoutStart = HAL_GetTick();
-                // s->state = S_WAITING_FOR_START_ACK;
+                SendStartRequest(s);
                 break;
-
+            case S_SENDING_DATA:
+                SendDataPacket(s);
+                break;
+            case S_FINISHING:
+                SendFinishRequest(s);
+                break;
+            case S_WAITING_FOR_START_ACK:
             case S_WAITING_FOR_DATA_ACK:
-                if ((HAL_GetTick() - s->timeoutStart) > T_WAIT_FOR_DATA_ACK)
-                {
-                    // Tajmer je istekao, probaj ponovo poslati
-                    s->retryCount--;
-                    if (s->retryCount > 0)
-                    {
-                        // TODO: Ponovo pošalji isti paket...
-                        // s->timeoutStart = HAL_GetTick(); // Restartuj tajmer
-                    }
-                    else
-                    {
-                        s->state = S_FAILED; // Potrošeni svi pokušaji
+            case S_WAITING_FOR_FINISH_ACK:
+            {
+                uint32_t timeout_duration = 0;
+                if(s->state == S_WAITING_FOR_START_ACK)  timeout_duration = T_WAIT_FOR_START_ACK;
+                if(s->state == S_WAITING_FOR_DATA_ACK)  timeout_duration = T_WAIT_FOR_DATA_ACK;
+                if(s->state == S_WAITING_FOR_FINISH_ACK) timeout_duration = T_WAIT_FOR_FINISH_ACK;
+
+                if ((HAL_GetTick() - s->timeoutStart) > timeout_duration) {
+                    if (s->state == S_WAITING_FOR_DATA_ACK && s->retryCount > 0) {
+                        s->retryCount--;
+                        s->state = S_SENDING_DATA; 
+                    } else {
+                        s->failReason = NACK_REASON_SERVER_TIMEOUT;
+                        s->state = S_FAILED;
                     }
                 }
                 break;
-            
-            // TODO: Implementirati logiku za ostala stanja...
-            // S_SENDING_DATA, S_WAITING_FOR_VERIFICATION, itd.
-            
-            default:
+            }
+            case S_WAITING_FOR_VERIFICATION:
+            {
+                if ((HAL_GetTick() - s->timeoutStart) > T_FINAL_VERIFICATION_DELAY) {
+                    SendGetInfoRequest(s->clientAddress);
+                    s->state = S_COMPLETED_OK; // Pretpostavljamo uspjeh, stvarna potvrda stiže asinhrono.
+                }
                 break;
+            }
+            default: break;
         }
     }
 }
 
 /**
  * @brief Obrađuje dolazni odgovor (ACK/NACK) od klijenta.
- * @note  Ovu funkciju poziva TinyFrame listener iz `rs485.c` svaki put kada stigne
- * poruka tipa `FIRMWARE_UPDATE`. Funkcija pronalazi odgovarajuću sesiju
- * na osnovu adrese pošiljaoca iz payload-a i ažurira njeno stanje.
- *
- * @param msg Primljena TinyFrame poruka.
+ * @note  Ovu funkciju poziva TinyFrame listener iz `rs485.c` (ili sličnog modula).
+ * Ona pronalazi odgovarajuću sesiju na osnovu adrese pošiljaoca iz
+ * payload-a i ažurira njeno stanje u mašini stanja.
  */
 void UpdateManager_ProcessResponse(TF_Msg *msg)
 {
-    // Svaka poruka od klijenta mora imati bar 2 bajta (sub-komanda + adresa)
     if (msg->len < 2) return; 
 
-    // Čitamo sub-komandu i adresu klijenta iz payload-a
     FwUpdate_SubCommand_e sub_cmd = (FwUpdate_SubCommand_e)msg->data[0];
     uint8_t clientAddress = msg->data[1]; 
 
-    // Pronađi sesiju koja odgovara adresi `clientAddress`
     UpdateSession_t* s = NULL;
-    for (int i = 0; i < MAX_SESSIONS; i++)
-    {
-        if (sessions[i].state != S_IDLE && sessions[i].clientAddress == clientAddress)
-        {
+    for (int i = 0; i < MAX_SESSIONS; i++) {
+        if (sessions[i].state != S_IDLE && sessions[i].clientAddress == clientAddress) {
             s = &sessions[i];
             break;
         }
     }
-    
-    // Ako sesija za ovog klijenta nije aktivna, ignorišemo poruku.
     if (s == NULL) return;
 
-    // Na osnovu sub-komande, odlučujemo šta dalje.
     switch (sub_cmd)
     {
-        /**
-         * Klijent je potvrdio da je primio START_REQUEST, obrisao memoriju
-         * i da je spreman za prijem podataka.
-         */
         case SUB_CMD_START_ACK:
-            // Ovaj ACK je validan samo ako smo ga očekivali.
-            if (s->state == S_WAITING_FOR_START_ACK)
-            {
-                // Odlično, prelazimo u stanje slanja podataka.
-                // UpdateManager_Service će u sljedećem ciklusu poslati prvi paket.
+            if (s->state == S_WAITING_FOR_START_ACK) {
                 s->state = S_SENDING_DATA;
             }
             break;
-
-        /**
-         * Klijent je odbio zahtjev za ažuriranje. Sesija je neuspješna.
-         */
         case SUB_CMD_START_NACK:
-            if (s->state == S_WAITING_FOR_START_ACK)
-            {
-                // Klijent je odbio update, sesija je propala.
+            if (s->state == S_WAITING_FOR_START_ACK) {
+                if(msg->len > 2) s->failReason = (FwUpdate_NackReason_e)msg->data[2];
                 s->state = S_FAILED;
-                // Ovdje možemo pročitati i razlog iz msg->data[2] i ispisati na displeju servera.
             }
             break;
-
-        /**
-         * Klijent je potvrdio prijem jednog paketa sa podacima.
-         */
         case SUB_CMD_DATA_ACK:
-            // Ovaj ACK je validan samo ako smo ga očekivali.
-            if (s->state == S_WAITING_FOR_DATA_ACK)
-            {
+            if (s->state == S_WAITING_FOR_DATA_ACK) {
                 uint32_t ackedSeqNum;
                 memcpy(&ackedSeqNum, &msg->data[2], sizeof(uint32_t));
-
-                // Provjeravamo da li se broj potvrđenog paketa poklapa sa onim koji smo poslali.
-                if (ackedSeqNum == s->currentSequenceNum)
-                {
-                    // ACK je ispravan. Ažuriramo stanje sesije.
-                    // NAPOMENA: Potrebno je dodati `lastPacketSize` u UpdateSession_t strukturu
-                    // s->bytesSent += s->lastPacketSize; 
+                if (ackedSeqNum == s->currentSequenceNum) {
+                    s->bytesSent += s->lastPacketSize; 
                     s->currentSequenceNum++;
-
-                    // Provjeravamo da li smo poslali cijeli fajl.
-                    if (s->bytesSent >= s->fwInfo.size)
-                    {
-                        // Svi podaci su poslati, prelazimo u fazu finalizacije.
+                    if (s->bytesSent >= s->fwInfo.size) {
                         s->state = S_FINISHING;
-                    }
-                    else
-                    {
-                        // Nismo još gotovi, pripremi se za slanje sljedećeg paketa.
+                    } else {
                         s->state = S_SENDING_DATA;
                     }
                 }
-                // Ako ackedSeqNum ne odgovara, ignorišemo ga. Naš retransmit tajmer će
-                // svakako ponovo poslati paket ako pravi ACK ne stigne na vrijeme.
             }
             break;
-
-        /**
-         * Klijent je potvrdio da je primio cijeli fajl, da je CRC provjera
-         * uspješna i da se restartuje kako bi bootloader preuzeo.
-         */
         case SUB_CMD_FINISH_ACK:
-            if (s->state == S_WAITING_FOR_FINISH_ACK)
-            {
-                // Odlično. Naš dio posla je skoro gotov.
-                // Sada pokrećemo tajmer od 10 sekundi i čekamo da se uređaj vrati online.
+            if (s->state == S_WAITING_FOR_FINISH_ACK) {
                 s->state = S_WAITING_FOR_VERIFICATION;
                 s->timeoutStart = HAL_GetTick();
             }
             break;
-
-        /**
-         * Klijent javlja da finalna CRC provjera nije uspjela. Sesija je neuspješna.
-         */
         case SUB_CMD_FINISH_NACK:
-            if (s->state == S_WAITING_FOR_FINISH_ACK)
-            {
+             if (s->state == S_WAITING_FOR_FINISH_ACK) {
+                if(msg->len > 2) s->failReason = (FwUpdate_NackReason_e)msg->data[2];
                 s->state = S_FAILED;
-                // Ovdje ispisujemo grešku na displeju servera.
             }
             break;
-            
-        default:
-            // Nepoznata ili neočekivana sub-komanda. Ignorišemo.
-            break;
+        default: break;
     }
 }
 
+/**
+ * @brief Omogućava 'read-only' pristup podacima o određenoj sesiji.
+ */
+const UpdateSession_t* UpdateManager_GetSessionInfo(uint8_t session_index)
+{
+    if (session_index < MAX_SESSIONS) {
+        return (const UpdateSession_t*)&sessions[session_index];
+    }
+    return NULL;
+}
+
+//=============================================================================
+// Implementacija Privatnih Funkcija
+//=============================================================================
+
+/**
+ * @brief Pomoćna funkcija za čišćenje i oslobađanje resursa jedne sesije.
+ */
+static void CleanupSession(UpdateSession_t* s)
+{
+    char logBuffer[128];
+    f_close(&s->fileObject);
+    
+    if (s->state == S_COMPLETED_OK) {
+        sprintf(logBuffer, "Update za Klijent %d: USPJESAN!", s->clientAddress);
+    } else {
+        const char* reason_text = NackReasonToString(s->failReason);
+        sprintf(logBuffer, "Update za Klijent %d: NEUSPJEH! Razlog: %s", s->clientAddress, reason_text);
+    }
+    DISP_UpdateLog(logBuffer);
+
+    memset(s, 0, sizeof(UpdateSession_t));
+    s->state = S_IDLE;
+}
+
+/**
+ * @brief Sastavlja i šalje SUB_CMD_START_REQUEST poruku.
+ */
+static void SendStartRequest(UpdateSession_t* s)
+{
+    uint8_t payload[2 + sizeof(FwInfoTypeDef)];
+    payload[0] = SUB_CMD_START_REQUEST;
+    payload[1] = s->clientAddress;
+    memcpy(&payload[2], &s->fwInfo, sizeof(FwInfoTypeDef));
+
+    AddCommand(&thermoQueue, FIRMWARE_UPDATE, payload, sizeof(payload));
+
+    s->timeoutStart = HAL_GetTick();
+    s->state = S_WAITING_FOR_START_ACK;
+}
+
+/**
+ * @brief Čita dio fajla, sastavlja i šalje SUB_CMD_DATA_PACKET.
+ */
+static void SendDataPacket(UpdateSession_t* s)
+{
+    uint8_t tx_buffer[6 + FW_PACKET_DATA_SIZE]; // SUB(1)+ADR(1)+SEQ(4)+DATA
+    UINT bytesToRead, bytesRead;
+    
+    uint32_t remainingBytes = s->fwInfo.size - s->bytesSent;
+    bytesToRead = (remainingBytes > FW_PACKET_DATA_SIZE) ? FW_PACKET_DATA_SIZE : remainingBytes;
+
+    f_lseek(&s->fileObject, s->bytesSent);
+    if (f_read(&s->fileObject, &tx_buffer[6], bytesToRead, &bytesRead) != FR_OK || bytesRead != bytesToRead) {
+        s->failReason = NACK_REASON_INTERNAL_ERROR;
+        s->state = S_FAILED;
+        return;
+    }
+
+    tx_buffer[0] = SUB_CMD_DATA_PACKET;
+    tx_buffer[1] = s->clientAddress;
+    memcpy(&tx_buffer[2], &s->currentSequenceNum, sizeof(uint32_t));
+    
+    AddCommand(&thermoQueue, FIRMWARE_UPDATE, tx_buffer, bytesRead + 6);
+
+    s->lastPacketSize = bytesRead;
+    s->retryCount = MAX_RETRIES;
+    s->timeoutStart = HAL_GetTick();
+    s->state = S_WAITING_FOR_DATA_ACK;
+}
+
+/**
+ * @brief Sastavlja i šalje SUB_CMD_FINISH_REQUEST poruku.
+ */
+static void SendFinishRequest(UpdateSession_t* s)
+{
+    uint8_t payload[2 + sizeof(uint32_t)];
+    payload[0] = SUB_CMD_FINISH_REQUEST;
+    payload[1] = s->clientAddress;
+    memcpy(&payload[2], &s->fwInfo.crc32, sizeof(uint32_t));
+
+    AddCommand(&thermoQueue, FIRMWARE_UPDATE, payload, sizeof(payload));
+
+    s->timeoutStart = HAL_GetTick();
+    s->state = S_WAITING_FOR_FINISH_ACK;
+}
+
+/**
+ * @brief Šalje GET_INFO upit za finalnu verifikaciju.
+ */
+static void SendGetInfoRequest(uint8_t clientAddress)
+{
+    // TODO: Implementirati slanje GET_APPL_STAT poruke
+    // uint8_t payload[] = {GET_APPL_STAT, clientAddress};
+    // AddCommand(&neki_red, GET_APPL_STAT, payload, sizeof(payload));
+}
+
+/**
+ * @brief Pretvara kod greške (NackReason) u tekstualni opis.
+ */
+static const char* NackReasonToString(FwUpdate_NackReason_e reason)
+{
+    switch (reason)
+    {
+        case NACK_REASON_FILE_TOO_LARGE:    return "Fajl je prevelik";
+        case NACK_REASON_INVALID_VERSION:   return "Verzija nije ispravna";
+        case NACK_REASON_ERASE_FAILED:      return "Brisanje memorije neuspjesno";
+        case NACK_REASON_WRITE_FAILED:      return "Greska pri upisu podataka";
+        case NACK_REASON_CRC_MISMATCH:      return "CRC provjera neuspjesna";
+        case NACK_REASON_UNEXPECTED_PACKET: return "Neocekivani paket";
+        case NACK_REASON_SIZE_MISMATCH:     return "Velicina fajla se ne poklapa";
+        case NACK_REASON_SERVER_TIMEOUT:    return "Timeout - klijent se ne odaziva";
+        default:                            return "Nepoznata greska";
+    }
+}
