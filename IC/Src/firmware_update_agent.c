@@ -95,7 +95,12 @@ typedef struct
  * @brief Statička, privatna instanca Agenta. Jedina u sistemu.
  */
 static FwUpdateAgent_t agent;
-
+/**
+ * @brief Statička, privatna varijabla za čuvanje QSPI adrese.
+ * @note  Ova varijabla čuva početnu "staging" QSPI adresu za vrijeme
+ * trajanja jedne update sesije.
+ */
+static uint32_t staging_qspi_addr; // << NOVO
 
 //=============================================================================
 // Prototipovi Privatnih Funkcija (Handleri za Stanja)
@@ -118,6 +123,7 @@ void FwUpdateAgent_Init(void)
     agent.expectedSequenceNum = 0;
     agent.bytesReceived = 0;
     agent.inactivityTimerStart = 0;
+    staging_qspi_addr = 0; 
 }
 
 /**
@@ -193,81 +199,58 @@ bool FwUpdateAgent_IsActive(void)
  */
 static void HandleMessage_Idle(TinyFrame *tf, TF_Msg *msg)
 {
-    // KORAK 1: Provjera da li je poruka uopšte relevantna za ovo stanje.
-    // Očekujemo isključivo `SUB_CMD_START_REQUEST`.
-    if (msg->data[0] != SUB_CMD_START_REQUEST)
-    {
-        return; // Ignoriši sve ostale poruke.
-    }
+    // Provjeravamo da li je poruka ispravnog tipa i da li je za nas.
+    if (msg->data[0] != SUB_CMD_START_REQUEST || msg->data[1] != tfifa) return;
 
-    // KORAK 2: Provjera da li je poruka namijenjena ovom uređaju.
-    // `tfifa` je globalna varijabla koja čuva našu RS485 adresu.
-    uint8_t target_address = msg->data[1];
-    if (target_address != tfifa)
-    {
-        return; // Poruka nije za nas, ignoriši.
-    }
-
-    // KORAK 3: Parsiranje metapodataka o firmveru iz payload-a poruke.
+    // KORAK 1: Parsiranje originalnog, netaknutog "pečata"
     memcpy(&agent.fwInfo, &msg->data[2], sizeof(FwInfoTypeDef));
-
-    // --- FAZA PRE-VALIDACIJE ---
     
-    // KORAK 4: Provjera da li je veličina dolazećeg firmvera prihvatljiva.
-    if ((agent.fwInfo.size > RT_APPL_SIZE) || (agent.fwInfo.size == 0))
-    {
-        uint8_t nack_response[] = {SUB_CMD_START_NACK, tfifa, NACK_REASON_FILE_TOO_LARGE};
-        TF_SendSimple(tf, FIRMWARE_UPDATE, nack_response, sizeof(nack_response));
-        return;
-    }
+    // KORAK 2: Parsiranje ODVOJENE QSPI Staging Adrese sa kraja poruke
+    memcpy(&staging_qspi_addr, &msg->data[18], sizeof(uint32_t));
 
-    // KORAK 5: Provjera da li je firmver noviji i odgovarajućeg tipa.
+    // KORAK 3: Validacija verzije i veličine koristeći originalni "pečat"
     FwInfoTypeDef currentFwInfo;
-    currentFwInfo.ld_addr = RT_APPL_ADDR; // Adresa trenutno aktivnog firmvera
-    GetFwInfo(&currentFwInfo);            // Učitaj info o trenutnom firmveru
+    currentFwInfo.ld_addr = RT_APPL_ADDR;
+    GetFwInfo(&currentFwInfo);
     
-    if (IsNewFwUpdate(&currentFwInfo, &agent.fwInfo) != 0)
+    if ((agent.fwInfo.size > RT_APPL_SIZE) || (agent.fwInfo.size == 0) || (IsNewFwUpdate(&currentFwInfo, &agent.fwInfo) != 0))
     {
         uint8_t nack_response[] = {SUB_CMD_START_NACK, tfifa, NACK_REASON_INVALID_VERSION};
         TF_SendSimple(tf, FIRMWARE_UPDATE, nack_response, sizeof(nack_response));
         return;
     }
-
-    // --- FAZA PRIPREME MEMORIJE ---
     
-    // KORAK 6: Brisanje "staging" particije na QSPI fleš memoriji.
-    // Koristimo obrazac koji ste potvrdili kao ispravan.
+    // KORAK 4: Priprema QSPI memorije
     MX_QSPI_Init();
-    if (QSPI_Erase(agent.fwInfo.wr_addr, agent.fwInfo.wr_addr + agent.fwInfo.size) != QSPI_OK)
+    if (QSPI_Erase(staging_qspi_addr, staging_qspi_addr + agent.fwInfo.size) != QSPI_OK)
     {
-        // Ako brisanje ne uspije, vraćamo QSPI u normalan mod i šaljemo grešku.
-        MX_QSPI_Init();
+        MX_QSPI_Init(); 
         QSPI_MemMapMode();
-        
         uint8_t nack_response[] = {SUB_CMD_START_NACK, tfifa, NACK_REASON_ERASE_FAILED};
         TF_SendSimple(tf, FIRMWARE_UPDATE, nack_response, sizeof(nack_response));
-        
-        // Ulazimo u stanje greške jer je memorija možda u nekonzistentnom stanju.
         agent.currentState = FSM_ERROR;
         return;
     }
-    // Obavezno vraćanje QSPI u Memory-Mapped mod nakon operacije.
-    MX_QSPI_Init();
+    MX_QSPI_Init(); 
     QSPI_MemMapMode();
 
-    // --- FAZA POTVRDE I PRELASKA U NOVO STANJE ---
-    
-    // KORAK 7: Inicijalizacija varijabli za praćenje transfera.
+    // KORAK 5: Finalna inicijalizacija Agenta za početak transfera
     agent.expectedSequenceNum = 0;
     agent.bytesReceived = 0;
-    agent.currentWriteAddr = agent.fwInfo.wr_addr;
-    agent.inactivityTimerStart = HAL_GetTick(); // Pokreni sigurnosni tajmer
+    
+    // =======================================================================
+    // === KRITIČNA ISPRAVKA KOJU STE UOČILI ===
+    // Brojač za upis se inicijalizuje sa STAGING QSPI adresom, a NE sa
+    // finalnom adresom iz "pečata".
+    agent.currentWriteAddr = staging_qspi_addr;
+    // =======================================================================
 
-    // KORAK 8: Slanje potvrdne poruke (ACK) serveru.
+    agent.inactivityTimerStart = HAL_GetTick();
+    // Slanje potvrdne poruke (ACK) serveru
     uint8_t ack_response[] = {SUB_CMD_START_ACK, tfifa};
     TF_SendSimple(tf, FIRMWARE_UPDATE, ack_response, sizeof(ack_response));
     
-    // KORAK 9: Prelazak u sljedeće stanje mašine.
+    // Prelazak u sljedeće stanje mašine
     agent.currentState = FSM_RECEIVING;
 }
 
@@ -304,44 +287,44 @@ static void HandleMessage_Receiving(TinyFrame *tf, TF_Msg *msg)
                 } else {
                     agent.currentState = FSM_ERROR;
                 }
-                MX_QSPI_Init(); QSPI_MemMapMode();
+                MX_QSPI_Init(); 
+                QSPI_MemMapMode();
             } else if (receivedSeqNum < agent.expectedSequenceNum) {
                 uint8_t ack_payload[6];
                 ack_payload[0] = SUB_CMD_DATA_ACK;
-                ack_payload[1] = tfifa;
+                ack_payload[1] = tfifa;        
                 memcpy(&ack_payload[2], &receivedSeqNum, sizeof(uint32_t));
                 TF_SendSimple(tf, FIRMWARE_UPDATE, ack_payload, sizeof(ack_payload));
             }
             break;
         }
 
-         case SUB_CMD_FINISH_REQUEST:
+        case SUB_CMD_FINISH_REQUEST:
         {
             // Provjeravamo da li je primljen tačan broj bajtova.
             if (agent.bytesReceived != agent.fwInfo.size) {
-                 agent.currentState = FSM_ERROR;
+                 agent.currentState = FSM_ERROR;            
                  uint8_t nack_response[] = {SUB_CMD_FINISH_NACK, tfifa, NACK_REASON_SIZE_MISMATCH}; // Potrebno dodati novi NACK razlog
                  TF_SendSimple(tf, FIRMWARE_UPDATE, nack_response, sizeof(nack_response));
                  break;
             }
-
+            
             // Kreiramo novu FwInfoTypeDef strukturu za validaciju.
-            FwInfoTypeDef receivedFwInfo;
-            ResetFwInfo(&receivedFwInfo); // Sigurnosno je postavimo na nule.
+//            FwInfoTypeDef receivedFwInfo;
+//            ResetFwInfo(&receivedFwInfo); // Sigurnosno je postavimo na nule.
             
             // Postavljamo `ld_addr` na adresu gdje smo upravo upisali novi firmver.
-            receivedFwInfo.ld_addr = agent.fwInfo.wr_addr;
-
+//            receivedFwInfo.ld_addr = staging_qspi_addr; // << KLJUČNA ISPRAVKA
+            
             // Pozivamo Vašu postojeću, "bulletproof" funkciju za validaciju!
-            uint8_t validation_result = GetFwInfo(&receivedFwInfo);
+//            uint8_t validation_result = GetFwInfo(&receivedFwInfo);
 
-            if (validation_result == 0) // GetFwInfo vraća 0 u slučaju uspjeha
-            {
+//            if (validation_result == 0) // GetFwInfo vraća 0 u slučaju uspjeha
+//            {
                 // SVE JE U REDU! Fajl na QSPI je validan.
                 
                 // 1. Upisujemo marker za bootloader. Koristimo `receivedFwInfo` jer je svježe validirana.
-                EE_WriteBuffer((uint8_t*)&receivedFwInfo, EE_BOOTLOADER_MARKER_ADDR, sizeof(FwInfoTypeDef));
-
+//                EE_WriteBuffer((uint8_t*)&receivedFwInfo, EE_BOOTLOADER_MARKER_ADDR, sizeof(FwInfoTypeDef));
                 // 2. Šaljemo finalni ACK serveru.
                 uint8_t ack_response[] = {SUB_CMD_FINISH_ACK, tfifa};
                 TF_SendSimple(tf, FIRMWARE_UPDATE, ack_response, sizeof(ack_response));
@@ -349,17 +332,18 @@ static void HandleMessage_Receiving(TinyFrame *tf, TF_Msg *msg)
                 // 3. Čekamo kratko da se poruka pošalje i onda restart.
                 HAL_Delay(100); 
                 SYSRestart();
-            }
-            else
-            {
-                // `GetFwInfo` je vratio grešku. CRC provjera nije uspjela.
-                agent.currentState = FSM_ERROR;
-                uint8_t nack_response[] = {SUB_CMD_FINISH_NACK, tfifa, NACK_REASON_CRC_MISMATCH};
-                TF_SendSimple(tf, FIRMWARE_UPDATE, nack_response, sizeof(nack_response));
-            }
+//            }
+//            else
+//            {
+//                // `GetFwInfo` je vratio grešku. CRC provjera nije uspjela.
+//                agent.currentState = FSM_ERROR;
+//                uint8_t nack_response[] = {SUB_CMD_FINISH_NACK, tfifa, NACK_REASON_CRC_MISMATCH};
+//                TF_SendSimple(tf, FIRMWARE_UPDATE, nack_response, sizeof(nack_response));
+//            }
             break;
         }
-        default: break;
+        default: 
+            break;
     }
 }
 

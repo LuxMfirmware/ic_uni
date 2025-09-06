@@ -105,4 +105,4 @@
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\..\Components\n25q128a\n25q128a.h \
   ..\..\Drivers\STM32F7xx\BSP\STM32F746\stm32746g_sdram.h ..\Inc\rs485.h \
   ..\..\Middlewares\TinyFrame\TinyFrame.h \
-  ..\..\Middlewares\TinyFrame\TF_Config.h
+  ..\..\Middlewares\TinyFrame\TF_Config.h ..\Inc\firmware_update_agent.h

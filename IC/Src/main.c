@@ -30,7 +30,7 @@
 #include "lights.h"
 #include "display.h"
 #include "rs485.h"
-
+#include "firmware_update_agent.h"
 
 /* Constants -----------------------------------------------------------------*/
 /* Imported Type  ------------------------------------------------------------*/
@@ -180,6 +180,7 @@ int main(void) {
 #endif
         RS485_Service(); // prvo sve obradi pa šalji
         CheckRTC_Clock(); // provjera ispravnosti RTC oscilatora i prelazak na LSI
+        FwUpdateAgent_Service();
     }
 }
 /**
@@ -305,7 +306,7 @@ void HAL_RTC_MspDeInit(RTC_HandleTypeDef *hrtc) {
 static void MX_IWDG_Init(void) {
 #ifdef	USE_WATCHDOG
     hiwdg.Instance = IWDG;
-    hiwdg.Init.Prescaler = IWDG_PRESCALER_64; //(1/(32000/32))*4095 = 4,095s
+    hiwdg.Init.Prescaler = IWDG_PRESCALER_256; //(1/(32000/32))*4095 = 4,095s
     hiwdg.Init.Window = 4095;
     hiwdg.Init.Reload = 4095;
     if (HAL_IWDG_Init(&hiwdg) != HAL_OK) {

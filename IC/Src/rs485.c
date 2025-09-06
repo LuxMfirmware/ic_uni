@@ -682,7 +682,7 @@ void RS485_Tick(void)
   */
 void TF_WriteImpl(TinyFrame *tf, const uint8_t *buff, uint32_t len)
 {
-    delay_us(2000);
+    delay_us(4000);
     HAL_UART_Transmit(&huart1,(uint8_t*)buff, len, RESP_TOUT);
     HAL_UART_Receive_IT(&huart1, &rec, 1);
 }
