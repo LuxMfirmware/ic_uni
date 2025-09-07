@@ -34,3 +34,9 @@ Specijalizovana			LED Traka				LED TRAKA				ISPOD ELEMENTA, IZNAD ELEMENTA, ORMA
 Vanjska rasvjeta		Vanjska zidna			FASADA					ULAZ, TERASA, BALKON, LIJEVA, DESNA, ZADNJA				
 						Vanjska podna/staza		STAZA					PRILAZ, DVORIŠTE				
 						Reflektor				REFLEKTOR				DRVO, DVORIŠTE				
+
+
+problem na displeju sa ispisom log liste kasni kasni kasni,
+problem sa overflov komandi z aupdate vraće sesija već pokrenuta i kada je višak komandi 
+ponekad na progres baru ne piše tekst klijen xx %
+na klijentu obezbijedit brisanje i backupa i novog fajla iz qspi kada je transfer neuspješan
