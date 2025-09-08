@@ -73,6 +73,7 @@ typedef enum {
     // --- Poruke i dugmad ---
     TXT_DISPLAY_CLEAN_TIME,
     TXT_FIRMWARE_UPDATE,
+    TXT_UPDATE_IN_PROGRESS,
     // --- Dani u sedmici ---
     TXT_MONDAY,
     TXT_TUESDAY,

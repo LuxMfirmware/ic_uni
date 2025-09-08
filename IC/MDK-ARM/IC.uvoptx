@@ -203,7 +203,17 @@
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
+          <ItemText>currentFwInfo</ItemText>
+        </Ww>
+        <Ww>
+          <count>11</count>
+          <WinNumber>1</WinNumber>
           <ItemText>fw_info</ItemText>
+        </Ww>
+        <Ww>
+          <count>12</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>dummy_buf</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

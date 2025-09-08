@@ -387,6 +387,9 @@ TF_Result THERMOSTAT_SETUP_Listener(TinyFrame *tf, TF_Msg *msg)
  * sadrži kompletnu logiku mašine stanja. Na ovaj nacin, `rs485.c` ostaje
  * cist i zadužen samo za transport, dok je sva kompleksnost ažuriranja
  * enkapsulirana u svom modulu.
+ * NOVO: Ova funkcija sada ažurira i globalni tajmer `g_last_fw_packet_timestamp`
+ * pri svakom primljenom paketu ovog tipa. Ovo omogucava svim uredajima
+ * na busu da budu svjesni aktivnosti ažuriranja i da se privremeno blokiraju.
  *
  * @param tf    Pokazivac na TinyFrame instancu.
  * @param msg   Pokazivac na primljenu TF_Msg poruku.
@@ -394,6 +397,10 @@ TF_Result THERMOSTAT_SETUP_Listener(TinyFrame *tf, TF_Msg *msg)
  */
 TF_Result FIRMWARE_UPDATE_Listener(TinyFrame *tf, TF_Msg *msg)
 {
+    // Ažuriraj globalni tajmer da signalizira aktivnost na busu.
+    // Ovo se dešava za SVAKI primljeni paket tipa FIRMWARE_UPDATE.
+    g_last_fw_packet_timestamp = HAL_GetTick();
+
     // Proslijedi poruku Agentu na dalju obradu.
     FwUpdateAgent_ProcessMessage(tf, msg);
     

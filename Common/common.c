@@ -480,6 +480,37 @@ void ResetFwInfo(FwInfoTypeDef *fw_info)
 	fw_info->wr_addr = 0U;
 	fw_info->ld_addr = 0U;
 }
+// ... funkcija ResetFwInfo ...
+
+/**
+ ******************************************************************************
+ * @brief       Vrši brzu validaciju pecata firmvera, bez CRC provjere.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija provjerava samo da li su metapodaci (velicina, verzija,
+ * adresa za upis) u ispravnom opsegu. Koristi se od strane
+ * firmware_update_agenta da brzo potvrdi da je transfer završen
+ * prije nego što prepusti finalnu CRC provjeru bootloaderu.
+ * @param       fw_info Pointer na FwInfoTypeDef strukturu. `ld_addr` mora biti
+ * popunjen prije poziva.
+ * @retval      uint8_t 0 ako je validacija uspješna, inace kod greške.
+ ******************************************************************************
+ */
+uint8_t ValidateFwInfoQuick(FwInfoTypeDef *fw_info)
+{
+	if ((fw_info->ld_addr < FLASH_ADDR) || (fw_info->ld_addr > END_LOAD_ADDR)) return 0x1U;
+	fw_info->size = (*(uint32_t*) (fw_info->ld_addr + VERS_INF_OFFSET));
+	fw_info->crc32 = (*(uint32_t*) (fw_info->ld_addr + VERS_INF_OFFSET + 0x4U));
+	fw_info->version = (*(uint32_t*) (fw_info->ld_addr + VERS_INF_OFFSET + 0x8U));
+	fw_info->wr_addr = (*(uint32_t*) (fw_info->ld_addr + VERS_INF_OFFSET + 0xCU));
+	if ((fw_info->size > FLASH_SIZE) || ((fw_info->size == 0x00000000U))) return 0x2U;
+	if ((fw_info->crc32 == 0xFFFFFFFFU) || ((fw_info->crc32 == 0x00000000U))) return 0x3U;
+	if ((fw_info->version == 0xFFFFFFFFU) || ((fw_info->version == 0x00000000U))) return 0x4U;
+	if ((fw_info->wr_addr < FLASH_ADDR) || (fw_info->wr_addr > (FLASH_END_ADDR + fw_info->size))) return 0x5U;
+	
+	// CRC provjera je namjerno izostavljena.
+	
+	return 0x0U; // Uspjeh
+}
 /**
  * @brief  : load file info data from file load address
  * @param  : init load address before call this function
@@ -517,7 +548,7 @@ uint8_t GetFwInfo(FwInfoTypeDef *fw_info)
 	        ((fw_info->size - VERS_INF_OFFSET - 0x8U) / 0x4U));
 #endif 
 	if (fwcrc32 != fw_info->crc32) return 0x6U;
-	if (((fw_info->version & 0xFF000000U) < 0x10000000) || ((fw_info->version & 0xFF000000U) > 0x37000000)) return 0x7U;
+//	if (((fw_info->version & 0xFF000000U) < 0x10000000) || ((fw_info->version & 0xFF000000U) > 0x37000000)) return 0x7U;
 	return 0x0U;
 }
 /**

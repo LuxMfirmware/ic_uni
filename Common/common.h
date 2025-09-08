@@ -16,9 +16,9 @@
 /*  time and buld number are result of executing batch files and vb script	is compiled	    */
 /* 	                                                                                        */
 /**/
-#define FW_DATE                                	0x00250907
-#define FW_TIME                        			0x00182613 
-#define FW_BUILD_NUMBER                          12486
+#define FW_DATE                                	0x00250908
+#define FW_TIME                        			0x00174600 
+#define FW_BUILD_NUMBER                          12495
 
 /* select application if preprocessor symbol no defined -----------------*/
 //#define HOTEL_CONTROLLER
@@ -1267,5 +1267,6 @@ void Hex2Str(char *pstr, const uint8_t *phex, uint16_t str_size);
 void mem_copy(uint8_t *dest, const uint8_t *source, uint32_t len);
 int mem_comp(const uint8_t *s1, const uint8_t *s2, uint32_t len);
 uint8_t IsNewFwUpdate(FwInfoTypeDef *old_fw, FwInfoTypeDef *new_fw);
+uint8_t ValidateFwInfoQuick(FwInfoTypeDef *fw_info);
 #endif  /* __COMMON_H */
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/

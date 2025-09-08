@@ -88,7 +88,7 @@ static uint8_t pwm[32] = {0};
 uint8_t pca9685_register[PCA9685_REGISTER_SIZE] = {0};
 // Definišemo globalni fleg i postavljamo ga na `false` kao pocetno stanje.
 bool g_high_precision_mode = false;
-
+volatile uint32_t g_last_fw_packet_timestamp = 0; // Definicija globalne varijable
 char system_pin[5]; // << NOVO: Definicija globalne varijable
 /* Private Macro -------------------------------------------------------------*/
 #define VREFIN_CAL_ADDRESS          ((uint16_t*) (0x1FF0F44A))

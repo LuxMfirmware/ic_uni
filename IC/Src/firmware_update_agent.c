@@ -8,6 +8,8 @@
  * Sadrži kompletnu implementaciju mašine stanja (State Machine) za pouzdan
  * prijem i validaciju firmvera preko RS485 protokola. Koristi interne tajmere
  * za detekciju grešaka i prekida u komunikaciji.
+ * Verzija 2.0: Dodata robusna obrada grešaka sa automatskim čišćenjem QSPI
+ * memorije i resetovanjem stanja agenta.
  ******************************************************************************
  */
 
@@ -74,7 +76,6 @@ typedef enum
 {
     FSM_IDLE,           /**< Agent je neaktivan i čeka komandu za početak. */
     FSM_RECEIVING,      /**< Agent je prihvatio update, obrisao memoriju i prima pakete. */
-    FSM_ERROR           /**< Desila se greška, Agent je u stanju greške do reseta. */
 } FSM_State_e;
 
 
@@ -100,22 +101,28 @@ static FwUpdateAgent_t agent;
  * @note  Ova varijabla čuva početnu "staging" QSPI adresu za vrijeme
  * trajanja jedne update sesije.
  */
-static uint32_t staging_qspi_addr; // << NOVO
+static uint32_t staging_qspi_addr;
 
 //=============================================================================
 // Prototipovi Privatnih Funkcija (Handleri za Stanja)
 //=============================================================================
 static void HandleMessage_Idle(TinyFrame *tf, TF_Msg *msg);
 static void HandleMessage_Receiving(TinyFrame *tf, TF_Msg *msg);
-static uint32_t QSPI_CalculateCRC32(uint32_t address, uint32_t size);
-
+static void Agent_HandleFailure(void); // << NOVO
 
 //=============================================================================
 // Implementacija Javnih Funkcija (API)
 //=============================================================================
 
 /**
- * @brief Inicijalizuje Agent.
+ ******************************************************************************
+ * @brief       Inicijalizuje Agent ili ga resetuje na početno stanje.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija postavlja mašinu stanja u FSM_IDLE, resetuje sve
+ * brojače i tajmere. Poziva se jednom pri startu sistema, ali i
+ * nakon svake neuspješne operacije ažuriranja kako bi se
+ * agent pripremio za novi, čist početak.
+ ******************************************************************************
  */
 void FwUpdateAgent_Init(void)
 {
@@ -123,36 +130,51 @@ void FwUpdateAgent_Init(void)
     agent.expectedSequenceNum = 0;
     agent.bytesReceived = 0;
     agent.inactivityTimerStart = 0;
-    staging_qspi_addr = 0; 
+    staging_qspi_addr = 0;
+    memset(&agent.fwInfo, 0, sizeof(FwInfoTypeDef));
 }
 
 /**
- * @brief Servisna funkcija za upravljanje tajmerima.
+ ******************************************************************************
+ * @brief       Servisna funkcija koja upravlja tajmerom za neaktivnost.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Poziva se periodično iz `main()`. Ako je agent u stanju primanja
+ * paketa (FSM_RECEIVING) i prođe više vremena od definisanog
+ * T_INACTIVITY_TIMEOUT, automatski će se pokrenuti procedura
+ * za obradu greške (`Agent_HandleFailure`).
+ ******************************************************************************
  */
 void FwUpdateAgent_Service(void)
 {
-    // Provjera tajmera za neaktivnost se vrši samo ako smo u stanju prijema.
     if (agent.currentState == FSM_RECEIVING)
     {
         if ((HAL_GetTick() - agent.inactivityTimerStart) > T_INACTIVITY_TIMEOUT)
         {
             // Server predugo nije poslao paket. Prekidamo proces.
-            agent.currentState = FSM_ERROR;
-            // Ovdje se može dodati logika za logovanje greške.
+            Agent_HandleFailure();
         }
     }
 }
 
 /**
- * @brief Glavni dispečer poruka koji poziva odgovarajući handler.
+ ******************************************************************************
+ * @brief       Glavni dispečer poruka koji poziva odgovarajući handler.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ovu funkciju poziva `FIRMWARE_UPDATE_Listener` iz `rs485.c`.
+ * Prvo provjerava da li je poruka namijenjena ovom uređaju
+ * (osim za `START_REQUEST` koji je broadcast), a zatim je
+ * prosljeđuje funkciji zaduženoj za trenutno stanje mašine.
+ * @param       tf    Pokazivač na TinyFrame instancu.
+ * @param       msg   Pokazivač na primljenu TF_Msg poruku.
+ ******************************************************************************
  */
 void FwUpdateAgent_ProcessMessage(TinyFrame *tf, TF_Msg *msg)
 {
-    // Adresa je uvijek na drugom bajtu, bez obzira na sub-komandu.
     uint8_t target_address = msg->data[1];
     
-    // Ako poruka nije za nas, ignorišemo je, osim ako je START_REQUEST
-    // koji je namijenjen svima da bi prikazali poruku na ekranu.
+    // START_REQUEST je jedina poruka koja se obrađuje iako nije direktno
+    // adresirana na nas (kako bi se prikazala poruka na ekranu).
+    // Sve ostale poruke se ignorišu ako adresa nije naša.
     if (msg->data[0] != SUB_CMD_START_REQUEST && target_address != tfifa)
     {
         return;
@@ -166,9 +188,14 @@ void FwUpdateAgent_ProcessMessage(TinyFrame *tf, TF_Msg *msg)
     }
 }
 
-
 /**
- * @brief Provjerava da li je Agent aktivan.
+ ******************************************************************************
+ * @brief       Provjerava da li je proces ažuriranja trenutno u toku.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ovu funkciju koristi `display.c` modul da bi znao da li treba
+ * prikazati poruku "Update in progress..." i blokirati GUI.
+ * @retval      bool `true` ako je ažuriranje aktivno, inače `false`.
+ ******************************************************************************
  */
 bool FwUpdateAgent_IsActive(void)
 {
@@ -181,34 +208,51 @@ bool FwUpdateAgent_IsActive(void)
 //=============================================================================
 
 /**
- * @brief Handler za obradu poruka kada je Agent u IDLE stanju.
- *
- * @note
- * U ovom stanju, jedina relevantna poruka je `SUB_CMD_START_REQUEST`. Ova funkcija
- * djeluje kao "čuvar kapije" za proces ažuriranja. Njen zadatak je da:
- * 1. Provjeri da li je poruka validan zahtjev za početak ažuriranja.
- * 2. Provjeri da li je zahtjev namijenjen baš ovom uređaju.
- * 3. Izvrši sve neophodne pred-provjere (veličina fajla, verzija) kako bi se
- * proces otkazao što je ranije moguće ako uslovi nisu ispunjeni ("fail fast").
- * 4. Ako su svi uslovi ispunjeni, priprema QSPI memoriju brisanjem.
- * 5. Šalje potvrdan (`ACK`) ili negativan (`NACK`) odgovor serveru.
- * 6. Ako je odgovor potvrdan, prebacuje mašinu stanja u `FSM_RECEIVING`.
- *
- * @param tf    Pokazivač na TinyFrame instancu, potreban za slanje odgovora.
- * @param msg   Pokazivač na primljenu TF_Msg poruku.
+ ******************************************************************************
+ * @brief       Centralizovana funkcija za obradu svih neuspjeha u transferu.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ovo je ključna funkcija za robusnost. Kada se pozove, ona
+ * briše potencijalno neispravne podatke iz QSPI memorije na
+ * "staging" adresi, a zatim resetuje kompletan agent u početno
+ * stanje pozivom `FwUpdateAgent_Init()`.
+ ******************************************************************************
+ */
+static void Agent_HandleFailure(void)
+{
+    // Ako imamo validne informacije o firmveru (veličina i adresa), brišemo QSPI.
+    if (staging_qspi_addr != 0 && agent.fwInfo.size > 0)
+    {
+        MX_QSPI_Init();
+        // Brišemo tačno onoliko koliko je trebalo biti upisano.
+        QSPI_Erase(staging_qspi_addr, staging_qspi_addr + agent.fwInfo.size);
+        MX_QSPI_Init(); 
+        QSPI_MemMapMode();
+    }
+    
+    // Vraćamo agenta na početne postavke, spreman je za novi pokušaj.
+    FwUpdateAgent_Init();
+}
+
+/**
+ ******************************************************************************
+ * @brief       Handler za obradu poruka kada je Agent u IDLE stanju.
+ * @author      Gemini & [Vaše Ime]
+ * @note        U ovom stanju, jedina relevantna poruka je `SUB_CMD_START_REQUEST`.
+ * Funkcija vrši sve pred-provjere (veličina, verzija), briše
+ * potreban segment QSPI memorije i ako je sve u redu, šalje ACK
+ * i prelazi u `FSM_RECEIVING` stanje. U slučaju greške, poziva
+ * `Agent_HandleFailure()` i šalje NACK.
+ * @param       tf    Pokazivač na TinyFrame instancu.
+ * @param       msg   Pokazivač na primljenu TF_Msg poruku.
+ ******************************************************************************
  */
 static void HandleMessage_Idle(TinyFrame *tf, TF_Msg *msg)
 {
-    // Provjeravamo da li je poruka ispravnog tipa i da li je za nas.
     if (msg->data[0] != SUB_CMD_START_REQUEST || msg->data[1] != tfifa) return;
 
-    // KORAK 1: Parsiranje originalnog, netaknutog "pečata"
     memcpy(&agent.fwInfo, &msg->data[2], sizeof(FwInfoTypeDef));
-    
-    // KORAK 2: Parsiranje ODVOJENE QSPI Staging Adrese sa kraja poruke
     memcpy(&staging_qspi_addr, &msg->data[18], sizeof(uint32_t));
 
-    // KORAK 3: Validacija verzije i veličine koristeći originalni "pečat"
     FwInfoTypeDef currentFwInfo;
     currentFwInfo.ld_addr = RT_APPL_ADDR;
     GetFwInfo(&currentFwInfo);
@@ -217,10 +261,10 @@ static void HandleMessage_Idle(TinyFrame *tf, TF_Msg *msg)
     {
         uint8_t nack_response[] = {SUB_CMD_START_NACK, tfifa, NACK_REASON_INVALID_VERSION};
         TF_SendSimple(tf, FIRMWARE_UPDATE, nack_response, sizeof(nack_response));
+        // Ne pozivamo Agent_HandleFailure() jer još ništa nismo ni počeli raditi (npr. brisati memoriju)
         return;
     }
     
-    // KORAK 4: Priprema QSPI memorije
     MX_QSPI_Init();
     if (QSPI_Erase(staging_qspi_addr, staging_qspi_addr + agent.fwInfo.size) != QSPI_OK)
     {
@@ -228,35 +272,35 @@ static void HandleMessage_Idle(TinyFrame *tf, TF_Msg *msg)
         QSPI_MemMapMode();
         uint8_t nack_response[] = {SUB_CMD_START_NACK, tfifa, NACK_REASON_ERASE_FAILED};
         TF_SendSimple(tf, FIRMWARE_UPDATE, nack_response, sizeof(nack_response));
-        agent.currentState = FSM_ERROR;
+        Agent_HandleFailure(); // Greška, očisti i resetuj
         return;
     }
     MX_QSPI_Init(); 
     QSPI_MemMapMode();
 
-    // KORAK 5: Finalna inicijalizacija Agenta za početak transfera
     agent.expectedSequenceNum = 0;
     agent.bytesReceived = 0;
-    
-    // =======================================================================
-    // === KRITIČNA ISPRAVKA KOJU STE UOČILI ===
-    // Brojač za upis se inicijalizuje sa STAGING QSPI adresom, a NE sa
-    // finalnom adresom iz "pečata".
     agent.currentWriteAddr = staging_qspi_addr;
-    // =======================================================================
-
     agent.inactivityTimerStart = HAL_GetTick();
-    // Slanje potvrdne poruke (ACK) serveru
+
     uint8_t ack_response[] = {SUB_CMD_START_ACK, tfifa};
     TF_SendSimple(tf, FIRMWARE_UPDATE, ack_response, sizeof(ack_response));
     
-    // Prelazak u sljedeće stanje mašine
     agent.currentState = FSM_RECEIVING;
 }
 
 /**
- * @brief Handler za obradu poruka kada je Agent u RECEIVING stanju.
- * @note  U ovom stanju, očekuju se UPDATE_DATA_PACKET i UPDATE_FINISH_REQUEST.
+ ******************************************************************************
+ * @brief       Handler za obradu poruka kada je Agent u RECEIVING stanju.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ovdje se obrađuju `SUB_CMD_DATA_PACKET` i `SUB_CMD_FINISH_REQUEST`.
+ * Funkcija upisuje podatke u QSPI i na kraju vrši finalnu
+ * validaciju. Ako je sve uspješno, upisuje marker za bootloader
+ * i restartuje uređaj. U slučaju bilo kakve greške, poziva
+ * `Agent_HandleFailure()` i šalje odgovarajući NACK.
+ * @param       tf    Pokazivač na TinyFrame instancu.
+ * @param       msg   Pokazivač na primljenu TF_Msg poruku.
+ ******************************************************************************
  */
 static void HandleMessage_Receiving(TinyFrame *tf, TF_Msg *msg)
 {
@@ -285,11 +329,13 @@ static void HandleMessage_Receiving(TinyFrame *tf, TF_Msg *msg)
                     memcpy(&ack_payload[2], &receivedSeqNum, sizeof(uint32_t));
                     TF_SendSimple(tf, FIRMWARE_UPDATE, ack_payload, sizeof(ack_payload));
                 } else {
-                    agent.currentState = FSM_ERROR;
+                    // Greška pri upisu u QSPI!
+                    Agent_HandleFailure(); 
                 }
                 MX_QSPI_Init(); 
                 QSPI_MemMapMode();
             } else if (receivedSeqNum < agent.expectedSequenceNum) {
+                // Server je ponovo poslao stari paket, samo šaljemo ACK ponovo.
                 uint8_t ack_payload[6];
                 ack_payload[0] = SUB_CMD_DATA_ACK;
                 ack_payload[1] = tfifa;        
@@ -301,49 +347,73 @@ static void HandleMessage_Receiving(TinyFrame *tf, TF_Msg *msg)
 
         case SUB_CMD_FINISH_REQUEST:
         {
-            // Provjeravamo da li je primljen tačan broj bajtova.
+            // Provjera da li se broj primljenih bajtova poklapa sa očekivanim.
             if (agent.bytesReceived != agent.fwInfo.size) {
-                 agent.currentState = FSM_ERROR;            
-                 uint8_t nack_response[] = {SUB_CMD_FINISH_NACK, tfifa, NACK_REASON_SIZE_MISMATCH}; // Potrebno dodati novi NACK razlog
-                 TF_SendSimple(tf, FIRMWARE_UPDATE, nack_response, sizeof(nack_response));
-                 break;
+                uint8_t nack_response[] = {SUB_CMD_FINISH_NACK, tfifa, NACK_REASON_SIZE_MISMATCH};
+                TF_SendSimple(tf, FIRMWARE_UPDATE, nack_response, sizeof(nack_response));
+                Agent_HandleFailure();
+                break;
             }
             
-            // Kreiramo novu FwInfoTypeDef strukturu za validaciju.
-//            FwInfoTypeDef receivedFwInfo;
-//            ResetFwInfo(&receivedFwInfo); // Sigurnosno je postavimo na nule.
-            
-            // Postavljamo `ld_addr` na adresu gdje smo upravo upisali novi firmver.
-//            receivedFwInfo.ld_addr = staging_qspi_addr; // << KLJUČNA ISPRAVKA
-            
-            // Pozivamo Vašu postojeću, "bulletproof" funkciju za validaciju!
-//            uint8_t validation_result = GetFwInfo(&receivedFwInfo);
+            uint32_t primask_state;
+            FwInfoTypeDef receivedFwInfo;
+            uint8_t validation_result;
 
-//            if (validation_result == 0) // GetFwInfo vraća 0 u slučaju uspjeha
-//            {
+            // Započinjemo kritičnu sekciju da osiguramo stabilno okruženje.
+            primask_state = __get_PRIMASK();
+            __disable_irq();
+            SCB_DisableDCache();
+
+            // =======================================================================
+            // === KORAK 1: Privremena rekonfiguracija CRC periferije na WORDS mod ===
+            // Deinicijalizujemo drajver da bismo osigurali čisto stanje, zatim ga
+            // inicijalizujemo sa FORMAT_WORDS, kako bootloader očekuje.
+            // =======================================================================
+            HAL_CRC_DeInit(&hcrc);
+            hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_WORDS;
+            if (HAL_CRC_Init(&hcrc) != HAL_OK) {
+                // Ako rekonfiguracija ne uspije, izlazimo sigurno.
+                validation_result = 0xFF; // Postavljamo na kod greške
+            } else {
+                // === KORAK 2: Izvršavanje validacije sa ispravnom konfiguracijom ===
+                memset(&receivedFwInfo, 0, sizeof(FwInfoTypeDef));
+                receivedFwInfo.ld_addr = staging_qspi_addr;
+                validation_result = GetFwInfo(&receivedFwInfo);
+            }
+
+            // =======================================================================
+            // === KORAK 3: Vraćanje CRC periferije na originalni BYTES mod ===
+            // Odmah nakon provjere, vraćamo CRC konfiguraciju na onu koju
+            // ostatak aplikacije (npr. EEPROM) očekuje.
+            // =======================================================================
+            HAL_CRC_DeInit(&hcrc);
+            hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
+            HAL_CRC_Init(&hcrc); // Ovdje ne provjeravamo grešku jer je ovo originalna, ispravna konfiguracija
+            
+            // Završavamo kritičnu sekciju.
+            SCB_EnableDCache();
+            __set_PRIMASK(primask_state);
+
+
+            if (validation_result == 0) // Vraća 0 u slučaju uspjeha
+            {
                 // SVE JE U REDU! Fajl na QSPI je validan.
-                
-                // 1. Upisujemo marker za bootloader. Koristimo `receivedFwInfo` jer je svježe validirana.
 //                EE_WriteBuffer((uint8_t*)&receivedFwInfo, EE_BOOTLOADER_MARKER_ADDR, sizeof(FwInfoTypeDef));
-                // 2. Šaljemo finalni ACK serveru.
                 uint8_t ack_response[] = {SUB_CMD_FINISH_ACK, tfifa};
                 TF_SendSimple(tf, FIRMWARE_UPDATE, ack_response, sizeof(ack_response));
-
-                // 3. Čekamo kratko da se poruka pošalje i onda restart.
                 HAL_Delay(100); 
                 SYSRestart();
-//            }
-//            else
-//            {
-//                // `GetFwInfo` je vratio grešku. CRC provjera nije uspjela.
-//                agent.currentState = FSM_ERROR;
-//                uint8_t nack_response[] = {SUB_CMD_FINISH_NACK, tfifa, NACK_REASON_CRC_MISMATCH};
-//                TF_SendSimple(tf, FIRMWARE_UPDATE, nack_response, sizeof(nack_response));
-//            }
+            }
+            else
+            {
+                // Greška se desila ili tokom rekonfiguracije ili tokom same CRC provjere.
+                uint8_t nack_response[] = {SUB_CMD_FINISH_NACK, tfifa, NACK_REASON_CRC_MISMATCH};
+                TF_SendSimple(tf, FIRMWARE_UPDATE, nack_response, sizeof(nack_response));
+                Agent_HandleFailure();
+            }
             break;
         }
         default: 
             break;
     }
 }
-

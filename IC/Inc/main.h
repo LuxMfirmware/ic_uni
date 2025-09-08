@@ -55,6 +55,13 @@ extern uint8_t sysfl, initfl;
 extern uint32_t thstfl_memo;
 extern uint8_t dispfl_memo;
 extern bool LSE_Failed; // flag oznacava LSE oscilator rtc modula false = 32.768 Hz kristal / true = interni oscilator
+/**
+ * @brief Timestamp (HAL_GetTick()) posljednjeg primljenog FW update paketa.
+ * @note  Ovu varijablu postavlja RS485 drajver za SVAKI paket tipa FIRMWARE_UPDATE,
+ * bez obzira na adresu. Služi kao globalni indikator aktivnosti ažuriranja na busu
+ * kako bi se ostali uredaji mogli privremeno blokirati.
+ */
+extern volatile uint32_t g_last_fw_packet_timestamp;
 /* Exported macros  --------------------------------------------------------*/
 #define SYS_NewLogSet()             (sysfl |=  (0x1U<<0))
 #define SYS_NewLogReset()           (sysfl &=(~(0x1U<<0)))

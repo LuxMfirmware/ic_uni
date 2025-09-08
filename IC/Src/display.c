@@ -67,6 +67,7 @@
 #define EVENT_ONOFF_TOUT                500     ///< Svrha: Maksimalno vrijeme za "kratak dodir". Vrijednost: 500 milisekundi.
 #define VALUE_STEP_TOUT                 15      ///< Svrha: Brzina promjene vrijednosti kod držanja dugmeta (npr. dimovanje). Vrijednost: 15 milisekundi.
 #define GHOST_WIDGET_SCAN_INTERVAL      2000    ///< Svrha: Period za skeniranje i brisanje "duhova" (zaostalih widgeta). Vrijednost: 2000 milisekundi.
+#define FW_UPDATE_BUS_TIMEOUT           15000U   ///< Svrha: Vrijeme (u ms) nakon kojeg smatramo da je FW update na busu završen ako nema novih paketa.
 /** @} */
 
 /** @name Konfiguracija ekrana i prikaza
@@ -1121,6 +1122,8 @@ static uint8_t Service_HandleFirmwareUpdate(void);
  * @note Koristi se kao "fail-safe" mehanizam za čišćenje "duhova" sa ekrana.
  */
 static void ForceKillAllSettingsWidgets(void);
+
+static bool IsBusFwUpdateActive(void); 
 /** @} */
 
 /*============================================================================*/
@@ -1379,6 +1382,14 @@ void PID_Hook(GUI_PID_STATE * pTS)
     static uint8_t release = 0; // Fleg koji prati da li je dodir bio pritisnut i čeka otpuštanje.
     uint8_t click = 0;          // Fleg koji signalizira da treba generisati zvučni signal (klik).
 
+    // NOVO: Potpuna blokada dodira ako je detektovana aktivnost ažuriranja na busu.
+    if (IsBusFwUpdateActive()) {
+        // Ako je ažuriranje aktivno, resetujemo screensaver da ekran ostane upaljen
+        // i vidljiv, ali ignorišemo svaki unos dodirom.
+        DISPResetScrnsvr();
+        return;
+    }
+    
     // Provjera da li je dodir registrovan na početku s nulama, i resetuj btnset.
     // NOVO: Svaka linija je objašnjena
     if(pTS->x == 0 && pTS->y == 0 && pTS->Pressed == 0) { // Provjerava da li su koordinate nula i pritisak nula
@@ -1589,6 +1600,25 @@ void DISP_SignalDynamicIconUpdate(void)
 /* IMPLEMENTACIJA STATIČKIH (PRIVATNIH) FUNKCIJA                              */
 /*============================================================================*/
 /**
+ ******************************************************************************
+ * @brief Provjerava da li je u toku ažuriranje firmvera bilo gdje na RS485 busu.
+ * @author Gemini & [Vaše Ime]
+ * @note  Funkcija provjerava globalni tajmer koji se resetuje svakim primljenim
+ * FIRMWARE_UPDATE paketom. Ako je od zadnjeg paketa prošlo manje od
+ * FW_UPDATE_BUS_TIMEOUT, smatra se da je ažuriranje i dalje aktivno.
+ * @retval bool true ako je ažuriranje aktivno, inače false.
+ ******************************************************************************
+ */
+static bool IsBusFwUpdateActive(void)
+{
+    // Provjera da li je tajmer inicijalizovan (da ne bi bilo lažno pozitivnih na startu)
+    if (g_last_fw_packet_timestamp == 0) {
+        return false;
+    }
+    // Provjera da li je prošlo manje vremena od definisanog timeout-a
+    return ((HAL_GetTick() - g_last_fw_packet_timestamp) < FW_UPDATE_BUS_TIMEOUT);
+}
+/**
  * @brief  Postavlja sve postavke displeja na sigurne fabričke vrijednosti.
  * @note   Ova funkcija se poziva kada podaci u EEPROM-u nisu validni.
  * @param  None
@@ -1734,8 +1764,8 @@ static uint8_t Service_HandleFirmwareUpdate(void)
 {
     static uint8_t fwmsg = 2; // Statički fleg za praćenje stanja iscrtavanja poruke
 
-    // Provjeri globalni fleg koji postavlja RS485 modul
-    if (IsFwUpdateActiv()) {
+    // IZMJENA: Sada provjeravamo da li je ažuriranje aktivno BILO GDJE NA BUSU.
+    if (IsBusFwUpdateActive()) {
         // Ako je ažuriranje aktivno, a poruka još nije iscrtana
         if (!fwmsg) {
             fwmsg = 1; // Postavi fleg da je poruka iscrtana
@@ -1746,16 +1776,18 @@ static uint8_t Service_HandleFirmwareUpdate(void)
             GUI_SetTextMode(GUI_TM_TRANS);
             GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
             // Koristi lng() za prikaz poruke na odabranom jeziku
-            GUI_DispStringAt(lng(TXT_FIRMWARE_UPDATE), 240, 135);
+            GUI_DispStringAt(lng(TXT_UPDATE_IN_PROGRESS), 240, 135);
             GUI_MULTIBUF_EndEx(1);
             DISPResetScrnsvr();
         }
         return 1; // Vrati 1 da signalizira da je ažuriranje u toku
     }
-    // Ako je ažuriranje upravo završeno (fleg je bio 1, a sada je IsFwUpdateActiv() false)
+    // Ako je ažuriranje upravo završeno (fleg je bio 1, a sada je IsBusFwUpdateActive() false)
     else if (fwmsg == 1) {
         fwmsg = 0; // Resetuj fleg
         scrnsvr_tmr = 0; // Resetuj tajmer za screensaver
+        // Forsiraj ponovno iscrtavanje trenutnog ekrana da se ukloni poruka o ažuriranju
+        shouldDrawScreen = 1;
     }
     // Jednokratno iscrtavanje inicijalne grafike na samom početku
     else if (fwmsg == 2) {
