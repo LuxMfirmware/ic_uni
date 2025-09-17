@@ -41,8 +41,17 @@
  * i citanje 100% pouzdanim.
  */
 typedef struct {
-    uint16_t relayUp;               /**< Modbus adresa releja za podizanje. */
-    uint16_t relayDown;             /**< Modbus adresa releja za spuštanje. */
+    /** @brief Adresa releja za podizanje. Format zavisi od globalne postavke protokola. */
+    union {
+        uint16_t tf;            /**< Apsolutna adresa za TinyFrame. */
+        struct { uint16_t mod; uint8_t pin; } mb; /**< Par adresa za Modbus. */
+    } relayUp;
+
+    /** @brief Adresa releja za spuštanje. Format zavisi od globalne postavke protokola. */
+    union {
+        uint16_t tf;            /**< Apsolutna adresa za TinyFrame. */
+        struct { uint16_t mod; uint8_t pin; } mb; /**< Par adresa za Modbus. */
+    } relayDown;
 } Curtain_EepromConfig_t;
 
 /**

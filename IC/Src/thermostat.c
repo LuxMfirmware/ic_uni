@@ -486,15 +486,15 @@ void Thermostat_SetMeasuredTemp(THERMOSTAT_TypeDef* const handle, int16_t temp)
     // Histereza je sada centralizovana unutar ovog modula.
     // Provjeravamo da li je apsolutna razlika izmedu stare i nove temperature
     // veca od 2 (što odgovara 0.2°C, jer su vrijednosti pomnožene sa 10).
-    if (abs(handle->mv_temp - temp) > 2) 
+    if (abs(handle->mv_temp - temp) > 2)
     {
         // Ako je promjena znacajna, ažuriramo internu vrijednost temperature.
         handle->mv_temp = temp;
-        
+
         // Podižemo interni fleg koji `THSTAT_Service` koristi da zna da treba
         // poslati info paket na RS485 mrežu.
         handle->hasInfoChanged = true;
-        
+
         // Podižemo globalni fleg koji `display.c` koristi da zna da treba
         // osvježiti prikaz izmjerene temperature na ekranu.
         MVUpdateSet();

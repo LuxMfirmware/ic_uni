@@ -134,7 +134,7 @@ int main(void) {
     THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
     Ventilator_Handle* pVen = Ventilator_GetInstance();
     Defroster_Handle* pDef = Defroster_GetInstance();
-    
+
     SaveResetSrc();
     MPU_Config();
     CACHE_Config();
@@ -396,7 +396,7 @@ static void RAM_Init(void) {
     // << NOVO: Ucitavanje sistemskog PIN-a >>
     uint8_t pin_buf[5];
     EE_ReadBuffer(pin_buf, EE_SYSTEM_PIN, 5);
-    
+
     // Provjera da li je PIN ikada snimljen (ako nije, prvi bajt ce biti 0xFF ili 0x00)
     if (pin_buf[0] < '0' || pin_buf[0] > '9') {
         // PIN nije validan, snimi default "1234" u EEPROM i u RAM
@@ -856,11 +856,11 @@ static void ADC3_Read(void) {
     static uint16_t sample_value[10] = {0};
     static bool first_run = true;
     static float filtered_temp = 0.0f;
-    
+
     // Provjera da li je vrijeme za novo ocitavanje.
     if ((HAL_GetTick() - adctmr) >= ADC_READOUT_PERIOD) {
         adctmr = HAL_GetTick();
-        
+
         // Inicijalizacija filtera pri prvom pokretanju (Vaša originalna logika).
         if (first_run) {
             first_run = false;
@@ -895,14 +895,14 @@ static void ADC3_Read(void) {
         } else {
             // NTC je konektovan. Obavijesti termostat modul.
             Thermostat_SetNtcStatus(pThst, true, false);
-            
+
             // Primjena eksponencijalnog filtera za "peglanje" vrijednosti (Vaša originalna logika).
             float new_temp = ROOM_GetTemperature(tmp_avg);
             filtered_temp = (filtered_temp * 0.9f) + (new_temp * 0.1f);
-            
+
             // Konverzija u format koji termostat koristi (int16_t, vrijednost x10).
             int16_t ntc_temp = filtered_temp * 10;
-            
+
             // JEDINI POSAO: Pozovi setter i proslijedi mu novu, filtriranu temperaturu.
             // Termostat modul ce sam odluciti da li je promjena znacajna.
             Thermostat_SetMeasuredTemp(pThst, ntc_temp);
@@ -1186,7 +1186,7 @@ static void PCA9685_Reset(void) {
   * @param
   * @retval
   */
-static void PCA9685_SetOutputFrequency(uint16_t frequency){
+static void PCA9685_SetOutputFrequency(uint16_t frequency) {
     uint8_t buf[2];
     buf[0] = 0x00U;
     buf[1]= 0x10U;
@@ -1242,7 +1242,7 @@ static void PCA9685_SetOutputFrequency(uint16_t frequency){
   * @retval
   */
 static void PCA9685_OutputUpdate(void) {
-    
+
     uint16_t pwm_out;
     uint8_t i,j,buf[70];
     if(!pwminit) return;
@@ -1306,7 +1306,7 @@ void SetDefault(void) // Not all settings from the settings menu are set to defa
     THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
     Ventilator_Handle* pVen = Ventilator_GetInstance();
     Defroster_Handle* pDef = Defroster_GetInstance();
-    
+
     Thermostat_SetDefault(pThst);
     THSTAT_Save(pThst);
 
@@ -1315,7 +1315,7 @@ void SetDefault(void) // Not all settings from the settings menu are set to defa
 
     Curtains_SetDefault();
     Curtains_Save();
-    
+
     Ventilator_SetDefault(pVen);
     Ventilator_Save(pVen);
 
@@ -1328,7 +1328,7 @@ void SetDefault(void) // Not all settings from the settings menu are set to defa
   * @param
   * @retval
   */
-void SetPin(uint8_t pin, uint8_t pinVal){
+void SetPin(uint8_t pin, uint8_t pinVal) {
     if(pin > 0 && pin < 7) { // Dodata provjera da li je pin validan
         switch(pin)
         {

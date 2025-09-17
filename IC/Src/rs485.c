@@ -92,7 +92,7 @@ TF_Result BINARY_SET_Listener(TinyFrame *tf, TF_Msg *msg)
     {
         // =======================================================================
         // === POCETAK REFAKTORISANJA ===
-        
+
         // KORAK 1: Izvlacimo adresu i novo stanje iz primljene poruke.
         uint16_t adr = (uint16_t)(msg->data[0] << 8) | msg->data[1];
         uint8_t state = (msg->data[2] == BINARY_ON) ? 1 : 0;
@@ -101,7 +101,7 @@ TF_Result BINARY_SET_Listener(TinyFrame *tf, TF_Msg *msg)
         // Umjesto da `rs485` modul pretražuje svjetla, on samo poziva
         // jednu javnu funkciju i prosljeduje joj adresu i stanje.
         LIGHTS_UpdateExternalState(adr, state);
-        
+
         // === KRAJ REFAKTORISANJA ===
         // =======================================================================
     }
@@ -120,7 +120,7 @@ TF_Result DIMMER_SET_Listener(TinyFrame *tf, TF_Msg *msg)
     {
         // =======================================================================
         // === POCETAK REFAKTORISANJA ===
-        
+
         // KORAK 1: Izvlacimo adresu i novu vrijednost svjetline iz poruke.
         uint16_t adr = (uint16_t)(msg->data[0] << 8) | msg->data[1];
         uint8_t brightness = msg->data[2];
@@ -132,7 +132,7 @@ TF_Result DIMMER_SET_Listener(TinyFrame *tf, TF_Msg *msg)
             // `rs485` modul više ne brine o tome koje je svjetlo na kojoj adresi.
             LIGHTS_UpdateExternalBrightness(adr, brightness);
         }
-        
+
         // === KRAJ REFAKTORISANJA ===
         // =======================================================================
     }
@@ -153,7 +153,7 @@ TF_Result JALOUSIE_SET_Listener(TinyFrame *tf, TF_Msg *msg)
     // odgovarajucu roletnu i ažurirati njeno stanje.
     // Više ne moramo da prolazimo kroz petlju ovdje.
     Curtain_Update_External(adr, dir);
-    
+
     return TF_STAY;
 }
 /**
@@ -219,7 +219,7 @@ TF_Result THERMOSTAT_GET_Listener(TinyFrame *tf, TF_Msg *msg)
         resp[12] = Thermostat_GetFanHighBand(pThst);
         resp[13] = Thermostat_GetFanDifference(pThst);
         resp[14] = Thermostat_GetFanControlMode(pThst);
-        
+
         // Ostatak logike ostaje isti.
         msg->len = 15;
         msg->data = resp;
@@ -246,7 +246,7 @@ TF_Result THERMOSTAT_SET_Listener(TinyFrame *tf, TF_Msg *msg)
     if(Thermostat_IsMaster(pThst) && (Thermostat_GetGroup(pThst) != 0) && (Thermostat_GetGroup(pThst) == msg->data[0]))
     {
         Thermostat_SP_Temp_Set(pThst, msg->data[1]);
-        
+
         resp[0] = msg->data[0];
         resp[1] = msg->data[1];
         resp[2] = ACK;
@@ -285,7 +285,7 @@ TF_Result THERMOSTAT_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
     {
         if(!all_zero) {
             Thermostat_SetControlMode(pThst, msg->data[2]);
-            
+
             // Slave termostat prihvata izmjerenu temperaturu od mastera
             if(!Thermostat_IsMaster(pThst)) {
                 int16_t new_mv_temp = (int16_t)(msg->data[4] << 8) | msg->data[5];
@@ -296,7 +296,7 @@ TF_Result THERMOSTAT_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
         // Ako je ovaj uredaj master, on odgovara na info poruke
         if(Thermostat_IsMaster(pThst)) {
             // Provjera da li se drugi master pojavio na mreži
-            if(msg->data[1]) { 
+            if(msg->data[1]) {
                 Thermostat_SetMaster(pThst, false);
                 th_save = true; // Flag za snimanje promjene uloge
             }
@@ -318,7 +318,7 @@ TF_Result THERMOSTAT_INFO_Listener(TinyFrame *tf, TF_Msg *msg)
             resp[13] = Thermostat_GetFanDifference(pThst);
             resp[14] = Thermostat_GetFanControlMode(pThst);
             resp[15] = ACK;
-            
+
             msg->data = resp;
             msg->len = 16;
             TF_Respond(tf, msg);
@@ -348,27 +348,27 @@ TF_Result THERMOSTAT_SETUP_Listener(TinyFrame *tf, TF_Msg *msg)
         Thermostat_SetGroup(pThst, msg->data[0]);
         Thermostat_SetMaster(pThst, msg->data[1]);
         Thermostat_SetControlMode(pThst, msg->data[2]);
-        
+
         // Objašnjenje za komentare:
         // th_state (stanje releja) i mv_temp (izmjerena temp.) se ne postavljaju preko ove komande.
         // - th_state je REZULTAT rada termostata, a ne postavka.
         // - mv_temp dolazi sa fizickog senzora preko ADC-a.
         // Zato preskacemo msg->data[3] i msg->data[4].
-        
+
         Thermostat_SP_Temp_Set(pThst, msg->data[5]);
         Thermostat_Set_SP_Min(pThst, msg->data[6]);
         Thermostat_Set_SP_Max(pThst, msg->data[7]);
         Thermostat_SetSetpointDifference(pThst, msg->data[8]);
-        
+
         // fan_speed je takoder rezultat rada, ne postavka, preskacemo msg->data[9].
 
         Thermostat_SetFanLowBand(pThst, msg->data[10]);
         Thermostat_SetFanHighBand(pThst, msg->data[11]);
         Thermostat_SetFanDifference(pThst, msg->data[12]);
         Thermostat_SetFanControlMode(pThst, msg->data[13]);
-        
+
         THSTAT_Save(pThst); // Sacuvaj sve nove promjene odjednom.
-        
+
         resp[0] = msg->data[0];
         resp[1] = ACK;
         msg->data = resp;
@@ -403,7 +403,7 @@ TF_Result FIRMWARE_UPDATE_Listener(TinyFrame *tf, TF_Msg *msg)
 
     // Proslijedi poruku Agentu na dalju obradu.
     FwUpdateAgent_ProcessMessage(tf, msg);
-    
+
     return TF_STAY;
 }
 /**
@@ -633,7 +633,7 @@ void RS485_Init(void)
 void RS485_Service(void)
 {
     THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
-    
+
     uint32_t now = HAL_GetTick();
 
     if (IsFwUpdateActiv())

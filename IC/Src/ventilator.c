@@ -209,18 +209,42 @@ void Ventilator_SetDefault(Ventilator_Handle* const handle)
 }
 // --- Grupa 2: Getteri i Setteri za Konfiguraciju ---
 
-void Ventilator_setRelay(Ventilator_Handle* const handle, const uint16_t val) { handle->config.relay = val; }
-uint16_t Ventilator_getRelay(const Ventilator_Handle* const handle) { return handle->config.relay; }
-void Ventilator_setDelayOnTime(Ventilator_Handle* const handle, uint8_t val) { handle->config.delayOnTime = val; }
-uint8_t Ventilator_getDelayOnTime(const Ventilator_Handle* const handle) { return handle->config.delayOnTime; }
-void Ventilator_setDelayOffTime(Ventilator_Handle* const handle, uint8_t val) { handle->config.delayOffTime = val; }
-uint8_t Ventilator_getDelayOffTime(const Ventilator_Handle* const handle) { return handle->config.delayOffTime; }
-void Ventilator_setTriggerSource1(Ventilator_Handle* const handle, const uint8_t val) { handle->config.trigger_source1 = val; }
-uint8_t Ventilator_getTriggerSource1(const Ventilator_Handle* const handle) { return handle->config.trigger_source1; }
-void Ventilator_setTriggerSource2(Ventilator_Handle* const handle, const uint8_t val) { handle->config.trigger_source2 = val; }
-uint8_t Ventilator_getTriggerSource2(const Ventilator_Handle* const handle) { return handle->config.trigger_source2; }
-void Ventilator_setLocalPin(Ventilator_Handle* const handle, const uint8_t val) { handle->config.local_pin = val; }
-uint8_t Ventilator_getLocalPin(const Ventilator_Handle* const handle) { return handle->config.local_pin; }
+void Ventilator_setRelay(Ventilator_Handle* const handle, const uint16_t val) {
+    handle->config.relay = val;
+}
+uint16_t Ventilator_getRelay(const Ventilator_Handle* const handle) {
+    return handle->config.relay;
+}
+void Ventilator_setDelayOnTime(Ventilator_Handle* const handle, uint8_t val) {
+    handle->config.delayOnTime = val;
+}
+uint8_t Ventilator_getDelayOnTime(const Ventilator_Handle* const handle) {
+    return handle->config.delayOnTime;
+}
+void Ventilator_setDelayOffTime(Ventilator_Handle* const handle, uint8_t val) {
+    handle->config.delayOffTime = val;
+}
+uint8_t Ventilator_getDelayOffTime(const Ventilator_Handle* const handle) {
+    return handle->config.delayOffTime;
+}
+void Ventilator_setTriggerSource1(Ventilator_Handle* const handle, const uint8_t val) {
+    handle->config.trigger_source1 = val;
+}
+uint8_t Ventilator_getTriggerSource1(const Ventilator_Handle* const handle) {
+    return handle->config.trigger_source1;
+}
+void Ventilator_setTriggerSource2(Ventilator_Handle* const handle, const uint8_t val) {
+    handle->config.trigger_source2 = val;
+}
+uint8_t Ventilator_getTriggerSource2(const Ventilator_Handle* const handle) {
+    return handle->config.trigger_source2;
+}
+void Ventilator_setLocalPin(Ventilator_Handle* const handle, const uint8_t val) {
+    handle->config.local_pin = val;
+}
+uint8_t Ventilator_getLocalPin(const Ventilator_Handle* const handle) {
+    return handle->config.local_pin;
+}
 
 
 // --- Grupa 3: Kontrola Stanja ---

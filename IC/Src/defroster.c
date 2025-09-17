@@ -224,7 +224,7 @@ static void HandleDefrosterActiveTime(Defroster_Handle* const handle)
 {
     // Ako aktivno vrijeme nije podešeno (vrijednost 0), ne radi ništa.
     if (handle->config.activeTime == 0) return;
-    
+
     // Ako tajmer nije ni pokrenut, ne radi ništa.
     if (handle->activeTime_TimerStart == 0) return;
 

@@ -39,8 +39,19 @@
 #include "main.h" // Ukljucen samo 'main.h' za osnovne tipove
 
 /*============================================================================*/
-/* DEFINICIJE ZA INTERNACIONALIZACIJU (i18n)                                  */
+/* JAVNE, GLOBALNE DEFINICIJE I ENUMERATORI                                   */
 /*============================================================================*/
+
+/**
+ * @brief Definiše podržane komunikacione protokole za aktuatore i senzore.
+ * @note  Ovo je globalna sistemska postavka.
+ */
+typedef enum {
+    PROTOCOL_TINYFRAME,     /**< Koristi jedinstvenu, apsolutnu adresu za svaki I/O. */
+    PROTOCOL_MODBUS         /**< Koristi par: Adresa Modula + Adresa Registra/Coil-a. */
+} ProtocolType_e;
+
+
 #define TS_LAYER                        1       ///< Svrha: GUI "sloj" (layer) na kojem se obraduju dodiri. Vrijednost: 1 (sloj iznad pozadinskog).
 
 /**
@@ -67,92 +78,59 @@ typedef enum {
     TXT_CLEAN,
     TXT_WIFI,
     TXT_APP,
+    // --- NOVI Glavni meniji (SELECT_2, SELECT_3) ---
+    TXT_GATE,                       /**< Tekst za ikonicu "Kapija" na `SCREEN_SELECT_2`. */
+    TXT_TIMER,                      /**< Tekst za ikonicu "Tajmer" na `SCREEN_SELECT_2`. */
+    TXT_SECURITY,                   /**< Tekst za ikonicu "Security/Alarm" na `SCREEN_SELECT_2`. */
+    TXT_SCENES,                     /**< Tekst za naslov ekrana sa scenama i za ikonicu menija. */
+    TXT_LANGUAGE_SOS_ALL_OFF,       /**< Tekst za multi-funkcionalnu ikonicu na `SCREEN_SELECT_2`. */
     // --- Opšti tekstovi ---
     TXT_ALL,
     TXT_SETTINGS,
+    TXT_SAVE,                       /**< Tekst za "Snimi" dugme u menijima za podešavanja. */
+    TXT_CANCEL,                     /**< Tekst za "Otkaži" dugme u menijima za podešavanja. */
+    TXT_DELETE,                     /**< Tekst za "Obriši" dugme u menijima za podešavanja. */
+    TXT_CONFIGURE_DEVICE_MSG,       /**< Poruka koja se prikazuje ako uredaj nije uopšte konfigurisan. */
+    TXT_SCENE_SAVED_MSG,            /**< Poruka potvrde nakon snimanja scene. */
+    TXT_PLEASE_CONFIGURE_SCENE_MSG, /**< Poruka koja poziva na konfigurisanje prve, defaultne scene. */
     // --- Poruke i dugmad ---
     TXT_DISPLAY_CLEAN_TIME,
     TXT_FIRMWARE_UPDATE,
     TXT_UPDATE_IN_PROGRESS,
     // --- Dani u sedmici ---
-    TXT_MONDAY,
-    TXT_TUESDAY,
-    TXT_WEDNESDAY,
-    TXT_THURSDAY,
-    TXT_FRIDAY,
-    TXT_SATURDAY,
-    TXT_SUNDAY,
+    TXT_MONDAY, TXT_TUESDAY, TXT_WEDNESDAY, TXT_THURSDAY, TXT_FRIDAY, TXT_SATURDAY, TXT_SUNDAY,
     // --- Mjeseci ---
-    TXT_MONTH_JAN,
-    TXT_MONTH_FEB,
-    TXT_MONTH_MAR,
-    TXT_MONTH_APR,
-    TXT_MONTH_MAY,
-    TXT_MONTH_JUN,
-    TXT_MONTH_JUL,
-    TXT_MONTH_AUG,
-    TXT_MONTH_SEP,
-    TXT_MONTH_OCT,
-    TXT_MONTH_NOV,
-    TXT_MONTH_DEC,
+    TXT_MONTH_JAN, TXT_MONTH_FEB, TXT_MONTH_MAR, TXT_MONTH_APR, TXT_MONTH_MAY, TXT_MONTH_JUN,
+    TXT_MONTH_JUL, TXT_MONTH_AUG, TXT_MONTH_SEP, TXT_MONTH_OCT, TXT_MONTH_NOV, TXT_MONTH_DEC,
     // --- Nazivi jezika ---
     TXT_LANGUAGE_NAME,
-    // --- Primarni tekstovi za ikonice (prema todo.txt) ---
-    TXT_LUSTER,
-    TXT_SPOT,
-    TXT_VISILICA,
-    TXT_PLAFONJERA,
-    TXT_ZIDNA,
-    TXT_SLIKA,
-    TXT_PODNA,
-    TXT_STOLNA,
-    TXT_LED_TRAKA,
-    TXT_VENTILATOR_IKONA,
-    TXT_FASADA,
-    TXT_STAZA,
-    TXT_REFLEKTOR,
-    // --- Sekundarni tekstovi za ikonice (prema todo.txt) ---
-    TXT_GLAVNI_SECONDARY,
-    TXT_AMBIJENT_SECONDARY,
-    TXT_TRPEZARIJA_SECONDARY,
-    TXT_DNEVNA_SOBA_SECONDARY,
-    TXT_LIJEVI_SECONDARY,
-    TXT_DESNI_SECONDARY,
-    TXT_CENTRALNI_SECONDARY,
-    TXT_PREDNJI_SECONDARY,
-    TXT_ZADNJI_SECONDARY,
-    TXT_HODNIK_SECONDARY,
-    TXT_KUHINJA_SECONDARY,
-    TXT_IZNAD_SANKA_SECONDARY,
-    TXT_IZNAD_STola_SECONDARY,
-    TXT_PORED_KREVETA_1_SECONDARY,
-    TXT_PORED_KREVETA_2_SECONDARY,
-    TXT_GLAVNA_SECONDARY,
-    TXT_SOBA_1_SECONDARY,
-    TXT_SOBA_2_SECONDARY,
-    TXT_KUPATILO_SECONDARY,
-    TXT_LIJEVA_SECONDARY,
-    TXT_DESNA_SECONDARY,
-    TXT_GORE_SECONDARY,
-    TXT_DOLE_SECONDARY,
-    TXT_CITANJE_SECONDARY,
-    TXT_OGLEDALO_SECONDARY,
-    TXT_UGAO_SECONDARY,
-    TXT_PORED_FOTELJE_SECONDARY,
-    TXT_RADNI_STO_SECONDARY,
-    TXT_NOCNA_1_SECONDARY,
-    TXT_NOCNA_2_SECONDARY,
-    TXT_ISPOD_ELEMENTA_SECONDARY,
-    TXT_IZNAD_ELEMENTA_SECONDARY,
-    TXT_ORMAR_SECONDARY,
-    TXT_STEPENICE_SECONDARY,
-    TXT_TV_SECONDARY,
-    TXT_ULAZ_SECONDARY,
-    TXT_TERASA_SECONDARY,
-    TXT_BALKON_SECONDARY,
-    TXT_ZADNJA_SECONDARY,
-    TXT_PRILAZ_SECONDARY,
-    TXT_DVORISTE_SECONDARY,
+    // --- Primarni tekstovi za ikonice (postojeci) ---
+    TXT_LUSTER, TXT_SPOT, TXT_VISILICA, TXT_PLAFONJERA, TXT_ZIDNA, TXT_SLIKA,
+    TXT_PODNA, TXT_STOLNA, TXT_LED_TRAKA, TXT_VENTILATOR_IKONA, TXT_FASADA, TXT_STAZA, TXT_REFLEKTOR,
+    // --- NOVI Nazivi za Scene ---
+    TXT_SCENE_WIZZARD,
+    TXT_SCENE_MORNING,
+    TXT_SCENE_SLEEP,
+    TXT_SCENE_LEAVING,
+    TXT_SCENE_HOMECOMING,
+    TXT_SCENE_MOVIE,
+    TXT_SCENE_DINNER,
+    TXT_SCENE_READING,
+    TXT_SCENE_RELAXING,
+    TXT_SCENE_GATHERING,
+    TXT_SCENE_SECURITY,
+    // --- Sekundarni tekstovi za ikonice (postojeci) ---
+    TXT_GLAVNI_SECONDARY, TXT_AMBIJENT_SECONDARY, TXT_TRPEZARIJA_SECONDARY, TXT_DNEVNA_SOBA_SECONDARY,
+    TXT_LIJEVI_SECONDARY, TXT_DESNI_SECONDARY, TXT_CENTRALNI_SECONDARY, TXT_PREDNJI_SECONDARY,
+    TXT_ZADNJI_SECONDARY, TXT_HODNIK_SECONDARY, TXT_KUHINJA_SECONDARY, TXT_IZNAD_SANKA_SECONDARY,
+    TXT_IZNAD_STola_SECONDARY, TXT_PORED_KREVETA_1_SECONDARY, TXT_PORED_KREVETA_2_SECONDARY,
+    TXT_GLAVNA_SECONDARY, TXT_SOBA_1_SECONDARY, TXT_SOBA_2_SECONDARY, TXT_KUPATILO_SECONDARY,
+    TXT_LIJEVA_SECONDARY, TXT_DESNA_SECONDARY, TXT_GORE_SECONDARY, TXT_DOLE_SECONDARY,
+    TXT_CITANJE_SECONDARY, TXT_OGLEDALO_SECONDARY, TXT_UGAO_SECONDARY, TXT_PORED_FOTELJE_SECONDARY,
+    TXT_RADNI_STO_SECONDARY, TXT_NOCNA_1_SECONDARY, TXT_NOCNA_2_SECONDARY,
+    TXT_ISPOD_ELEMENTA_SECONDARY, TXT_IZNAD_ELEMENTA_SECONDARY, TXT_ORMAR_SECONDARY,
+    TXT_STEPENICE_SECONDARY, TXT_TV_SECONDARY, TXT_ULAZ_SECONDARY, TXT_TERASA_SECONDARY,
+    TXT_BALKON_SECONDARY, TXT_ZADNJA_SECONDARY, TXT_PRILAZ_SECONDARY, TXT_DVORISTE_SECONDARY,
     TXT_DRVO_SECONDARY,
     TEXT_COUNT // Uvijek na kraju!
 } TextID;
@@ -176,6 +154,20 @@ typedef enum {
     ICON_WALL,                      // Vrijednost = 9
     // Ovdje se mogu dodati i ostale ikonice iz todo.txt kada za njih budu kreirane bitmape
     // Npr. ICON_PICTURE_LIGHT, ICON_FLOOR_LAMP, itd.
+    
+    // --- NOVO: Ikonice za Scene ---
+    ICON_SCENE_WIZZARD,
+    ICON_SCENE_MORNING,
+    ICON_SCENE_SLEEP,
+    ICON_SCENE_LEAVING,
+    ICON_SCENE_HOMECOMING,
+    ICON_SCENE_MOVIE,
+    ICON_SCENE_DINNER,
+    ICON_SCENE_READING,
+    ICON_SCENE_RELAXING,
+    ICON_SCENE_GATHERING,
+    ICON_SCENE_SECURITY,
+    
     ICON_COUNT // Ukupan broj definisanih vizuelnih tipova ikonica
 } IconID;
 
@@ -200,19 +192,21 @@ typedef struct {
  */
 typedef struct
 {
-    uint16_t magic_number;              // "Potpis" za validaciju podataka.
-    uint8_t  low_bcklght;               // Vrijednost niske svjetline ekrana.
-    uint8_t  high_bcklght;              // Vrijednost visoke svjetline ekrana.
-    uint8_t  scrnsvr_tout;              // Timeout za screensaver u sekundama.
-    uint8_t  scrnsvr_ena_hour;          // Sat kada se screensaver automatski aktivira.
-    uint8_t  scrnsvr_dis_hour;          // Sat kada se screensaver automatski deaktivira.
-    uint8_t  scrnsvr_clk_clr;           // Boja sata na screensaver-u.
-    bool     scrnsvr_on_off;            // Fleg da li je screensaver sat ukljucen.
-    bool     leave_scrnsvr_on_release;  // Fleg, ako je true, screensaver se gasi samo nakon otpuštanja dodirom.
-    uint8_t  language;                  // Odabrani jezik (BOS = 0, ENG = 1, ...).
-    uint8_t  selected_control_mode;     // Odabrani mod za dinamicku ikonu (Defroster/Ventilator/Off)
-    bool     light_night_timer_enabled; // Fleg za nocni tajmer svjetala.
-    uint16_t crc;                       // CRC za provjeru integriteta.
+    uint16_t magic_number;              /**< "Potpis" za validaciju podataka. */
+    uint8_t  low_bcklght;               /**< Vrijednost niske svjetline ekrana (1-90). */
+    uint8_t  high_bcklght;              /**< Vrijednost visoke svjetline ekrana (1-90). */
+    uint8_t  scrnsvr_tout;              /**< Timeout za screensaver u sekundama. */
+    uint8_t  scrnsvr_ena_hour;          /**< Sat (0-23) kada se screensaver automatski aktivira. */
+    uint8_t  scrnsvr_dis_hour;          /**< Sat (0-23) kada se screensaver automatski deaktivira. */
+    uint8_t  scrnsvr_clk_clr;           /**< Indeks boje sata na screensaver-u. */
+    bool     scrnsvr_on_off;            /**< Fleg da li je screensaver sat ukljucen. */
+    bool     leave_scrnsvr_on_release;  /**< Fleg, ako je true, screensaver se gasi samo nakon otpuštanja dodirom. */
+    uint8_t  language;                  /**< Odabrani jezik (BSHC = 0, ENG = 1, ...). */
+    ProtocolType_e rs485_protocol;      /**< Globalno odabrani protokol za cijeli sistem (TinyFrame ili Modbus). */
+    uint8_t  rs485_baud_rate_index;     /**< Indeks odabrane brzine u nizu `bps[]` iz `common.c`. */
+    uint8_t  selected_control_mode;     /**< Odabrani mod za dinamicku ikonu (Defroster/Ventilator/Off). */
+    bool     light_night_timer_enabled; /**< Fleg za nocni tajmer svjetala. */
+    uint16_t crc;                       /**< CRC za provjeru integriteta. */
 } Display_EepromSettings_t;
 #pragma pack(pop)
 
@@ -240,14 +234,25 @@ typedef enum{
     SCREEN_RESET_MENU_SWITCHES = 0,
     SCREEN_MAIN = 1,
     SCREEN_SELECT_1,
-    SCREEN_SELECT_2,
+    SCREEN_SELECT_2,                /**< NOVI EKRAN: Sadrži ikonice za Kapiju, Tajmer, Alarm i Multi-funkciju. */
+    SCREEN_SELECT_3,                /**< NOVI EKRAN: Rezervisan za buduci razvoj (npr. Scene, Potrošnja). */
+    SCREEN_SELECT_LAST,             /**< PREIMENOVAN (bivši SCREEN_SELECT_2): Sadrži pomocne funkcije (Cišcenje, WiFi, App, Podešavanja). */
     SCREEN_THERMOSTAT,
     SCREEN_LIGHTS,
     SCREEN_CURTAINS,
+    SCREEN_GATE,                    /**< NOVI EKRAN (placeholder): Prikaz statusa i osnovne kontrole za kapije. */
+    SCREEN_TIMER,                   /**< NOVI EKRAN (placeholder): Prikaz i podešavanje tajmera. */
+    SCREEN_SECURITY,                /**< NOVI EKRAN (placeholder): Prikaz i kontrola alarmnog sistema. */
+    SCREEN_SCENE,                   /**< NOVI EKRAN: Prikaz i aktivacija korisnicki definisanih scena. */
+    SCREEN_SCENE_EDIT,              /**< NOVI EKRAN ("Carobnjak"): Vodi korisnika kroz kreiranje/editovanje scene. */
+    SCREEN_GATE_CONTROL_PANEL,      /**< NOVI EKRAN (pop-up): Prikazuje napredne, "custom" kontrole za kapiju. */
     SCREEN_LIGHT_SETTINGS,
     SCREEN_QR_CODE,
     SCREEN_CLEAN,
-    SCREEN_PINPAD,
+    SCREEN_NUMPAD,
+    SCREEN_KEYBOARD_ALPHA,          /**< NOVI EKRAN: Univerzalna alfanumericka tastatura za unos teksta. */
+    SCREEN_NUMPAD,                  /**< NOVI EKRAN: Univerzalni numericki keypad za unos brojeva. */
+    SCREEN_CONFIGURE_DEVICE,        /**< NOVI EKRAN: Prikazuje poruku ako uredaj nije uopšte konfigurisan. */
     SCREEN_RETURN_TO_FIRST,
     SCREEN_SETTINGS_1,
     SCREEN_SETTINGS_2,
@@ -255,7 +260,9 @@ typedef enum{
     SCREEN_SETTINGS_4,
     SCREEN_SETTINGS_5,
     SCREEN_SETTINGS_6,
-    SCREEN_SETTINGS_7
+    SCREEN_SETTINGS_7,
+    SCREEN_SETTINGS_GATE,           /**< NOVI EKRAN: Meni za detaljno podešavanje do 6 kapija/garažnih vrata. */
+    SCREEN_SETTINGS_HELP            /**< NOVI EKRAN: Prikazuje tekstualnu pomoc i uputstva za korištenje. */
 }eScreen;
 
 typedef enum{

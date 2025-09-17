@@ -24,6 +24,7 @@
 /* JAVNE DEFINICIJE I KONSTANTE                                               */
 /*============================================================================*/
 
+#pragma pack(push, 1)
 /**
  * @brief Struktura koja sadrži iskljucivo podatke koji se trajno cuvaju u EEPROM.
  * @note  Ova definicija je javna kako bi `stm32746g_eeprom.h` (EEPROM mapa)
@@ -31,16 +32,50 @@
  * Zahvaljujuci `#pragma pack`, ova struktura je kompaktna i njen raspored
  * u memoriji je garantovano isti.
  */
-#pragma pack(push, 1)
 typedef struct {
-    uint16_t magic_number;      /**< "Magicni broj" koji služi kao potpis firmvera za validaciju podataka. */
-    uint16_t relay;             /**< Modbus adresa releja koji kontroliše ovaj ventilator. */
-    uint8_t  delayOnTime;       /**< Vrijeme odgode u sekundama (x10) prije paljenja ventilatora. */
-    uint8_t  delayOffTime;      /**< Vrijeme u sekundama (x10) nakon kojeg ce se ventilator ugasiti. */
-    uint8_t  trigger_source1;   /**< Indeks prvog svjetla (1-6) koje može okinuti rad ventilatora. 0 = iskljuceno. */
-    uint8_t  trigger_source2;   /**< Indeks drugog svjetla (1-6) koje može okinuti rad ventilatora. 0 = iskljuceno. */
-    uint8_t  local_pin;         /**< ID lokalnog GPIO pina na ovom uredaju koji kontroliše ventilator. 0 = nije povezan. */
-    uint16_t crc;               /**< CRC (Cyclic Redundancy Check) za provjeru integriteta podataka. */
+    /**
+     * @brief "Magicni broj" koji služi kao potpis firmvera za validaciju podataka.
+     */
+    uint16_t magic_number;
+
+    /**
+     * @brief Adresa releja koji kontroliše ovaj ventilator.
+     * @note  Format adrese zavisi od globalne postavke protokola u sistemu.
+     */
+    union {
+        uint16_t tf;            /**< Apsolutna adresa za TinyFrame protokol. */
+        struct { uint16_t mod; uint8_t pin; } mb; /**< Par adresa (modul+pin) za Modbus protokol. */
+    } address;
+
+    /**
+     * @brief Vrijeme odgode u sekundama (x10) prije paljenja ventilatora.
+     */
+    uint8_t  delayOnTime;
+
+    /**
+     * @brief Vrijeme u sekundama (x10) nakon kojeg ce se ventilator ugasiti.
+     */
+    uint8_t  delayOffTime;
+
+    /**
+     * @brief Indeks prvog svjetla (1-6) koje može okinuti rad ventilatora. 0 = iskljuceno.
+     */
+    uint8_t  trigger_source1;
+
+    /**
+     * @brief Indeks drugog svjetla (1-6) koje može okinuti rad ventilatora. 0 = iskljuceno.
+     */
+    uint8_t  trigger_source2;
+
+    /**
+     * @brief ID lokalnog GPIO pina na ovom uredaju koji kontroliše ventilator. 0 = nije povezan.
+     */
+    uint8_t  local_pin;
+
+    /**
+     * @brief CRC (Cyclic Redundancy Check) za provjeru integriteta podataka.
+     */
+    uint16_t crc;
 } Ventilator_EepromConfig_t;
 #pragma pack(pop)
 

@@ -66,7 +66,8 @@
 #define EE_DEFROSTER                        (EE_VENTILATOR + sizeof(Ventilator_EepromConfig_t))
 #define EE_CURTAINS                         (EE_DEFROSTER + sizeof(Defroster_EepromConfig_t))
 #define EE_LIGHTS_MODBUS                    (EE_CURTAINS + sizeof(Curtains_EepromData_t))
-
+#define EE_SCENES                           (EE_LIGHTS_MODBUS + (sizeof(LIGHT_EepromConfig_t) * LIGHTS_MODBUS_SIZE))
+#define EE_GATES                            (EE_SCENES + sizeof(SceneEepromBlock_t)) // Koristit cemo wrapper strukturu kao za roletne
 
 /**
  * @brief  Sekcija 3: Blokovi za Specijalne Namjene

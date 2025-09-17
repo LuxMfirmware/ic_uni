@@ -72,6 +72,29 @@ static const IconMapping_t icon_mapping_table[] = {
 };
 
 /**
+ ******************************************************************************
+ * @brief       Tabela predefinisanih izgleda za scene.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova tabela služi kao biblioteka izgleda koje korisnik može
+ * odabrati prilikom kreiranja ili editovanja scene. Povezuje
+ * jedinstveni vizuelni ID ikonice (`IconID`) sa odgovarajućim
+ * nazivom scene (`TextID`). Koristi se u "čarobnjaku" za scene.
+ ******************************************************************************
+ */
+static const SceneAppearance_t scene_appearance_table[] = {
+    { ICON_SCENE_WIZZARD,     TXT_SCENE_WIZZARD     },
+    { ICON_SCENE_MORNING,     TXT_SCENE_MORNING     },
+    { ICON_SCENE_SLEEP,       TXT_SCENE_SLEEP       },
+    { ICON_SCENE_LEAVING,     TXT_SCENE_LEAVING     },
+    { ICON_SCENE_HOMECOMING,  TXT_SCENE_HOMECOMING  },
+    { ICON_SCENE_MOVIE,       TXT_SCENE_MOVIE       },
+    { ICON_SCENE_DINNER,      TXT_SCENE_DINNER      },
+    { ICON_SCENE_READING,     TXT_SCENE_READING     },
+    { ICON_SCENE_RELAXING,    TXT_SCENE_RELAXING    },
+    { ICON_SCENE_GATHERING,   TXT_SCENE_GATHERING   },
+    { ICON_SCENE_SECURITY,    TXT_SCENE_SECURITY    }
+};
+/**
  * @brief Glavna tabela sa prevodima.
  * @note  Svaki red odgovara jednom ID-ju iz `TextID` enuma, a svaka kolona jednom jeziku iz `Languages` enuma.
  */

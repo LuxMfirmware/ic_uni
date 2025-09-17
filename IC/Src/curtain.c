@@ -129,13 +129,25 @@ void Curtains_SetDefault(void)
     curtains_eeprom_data.upDownDurationSeconds = 15;
 }
 
-void Curtain_SetMoveTime(const uint8_t seconds) { curtains_eeprom_data.upDownDurationSeconds = seconds; }
-uint8_t Curtain_GetMoveTime(void) { return curtains_eeprom_data.upDownDurationSeconds; }
+void Curtain_SetMoveTime(const uint8_t seconds) {
+    curtains_eeprom_data.upDownDurationSeconds = seconds;
+}
+uint8_t Curtain_GetMoveTime(void) {
+    return curtains_eeprom_data.upDownDurationSeconds;
+}
 
-void Curtain_setRelayUp(Curtain_Handle* const handle, uint16_t relay) { if(handle) handle->config.relayUp = relay; }
-uint16_t Curtain_getRelayUp(const Curtain_Handle* const handle) { return handle ? handle->config.relayUp : 0; }
-void Curtain_setRelayDown(Curtain_Handle* const handle, uint16_t relay) { if(handle) handle->config.relayDown = relay; }
-uint16_t Curtain_getRelayDown(const Curtain_Handle* const handle) { return handle ? handle->config.relayDown : 0; }
+void Curtain_setRelayUp(Curtain_Handle* const handle, uint16_t relay) {
+    if(handle) handle->config.relayUp = relay;
+}
+uint16_t Curtain_getRelayUp(const Curtain_Handle* const handle) {
+    return handle ? handle->config.relayUp : 0;
+}
+void Curtain_setRelayDown(Curtain_Handle* const handle, uint16_t relay) {
+    if(handle) handle->config.relayDown = relay;
+}
+uint16_t Curtain_getRelayDown(const Curtain_Handle* const handle) {
+    return handle ? handle->config.relayDown : 0;
+}
 
 // --- Grupa 3: Pristup i Brojaci ---
 
@@ -168,10 +180,18 @@ uint8_t Curtains_getCount(void)
 
 // --- Grupa 4: Selekcija (za GUI) ---
 
-void Curtain_Select(const uint8_t curtain_index) { curtain_selected = curtain_index; }
-uint8_t Curtain_getSelected(void) { return curtain_selected; }
-bool Curtain_areAllSelected(void) { return curtain_selected == curtains_count; }
-void Curtain_ResetSelection(void) { curtain_selected = curtains_count; }
+void Curtain_Select(const uint8_t curtain_index) {
+    curtain_selected = curtain_index;
+}
+uint8_t Curtain_getSelected(void) {
+    return curtain_selected;
+}
+bool Curtain_areAllSelected(void) {
+    return curtain_selected == curtains_count;
+}
+void Curtain_ResetSelection(void) {
+    curtain_selected = curtains_count;
+}
 
 // --- Grupa 5: Kontrola i Upravljanje ---
 
@@ -258,10 +278,18 @@ void Curtain_Update_External(uint16_t relay, uint8_t state)
 
 // --- Grupa 6: Provjera Stanja ---
 
-bool Curtain_hasRelays(const Curtain_Handle* const handle) { return handle && (handle->config.relayUp != 0 || handle->config.relayDown != 0); }
-bool Curtain_isMoving(const Curtain_Handle* const handle) { return handle && (handle->upDown_old != CURTAIN_STOP); }
-bool Curtain_isMovingUp(const Curtain_Handle* const handle) { return handle && (handle->upDown_old == CURTAIN_UP); }
-bool Curtain_isMovingDown(const Curtain_Handle* const handle) { return handle && (handle->upDown_old == CURTAIN_DOWN); }
+bool Curtain_hasRelays(const Curtain_Handle* const handle) {
+    return handle && (handle->config.relayUp != 0 || handle->config.relayDown != 0);
+}
+bool Curtain_isMoving(const Curtain_Handle* const handle) {
+    return handle && (handle->upDown_old != CURTAIN_STOP);
+}
+bool Curtain_isMovingUp(const Curtain_Handle* const handle) {
+    return handle && (handle->upDown_old == CURTAIN_UP);
+}
+bool Curtain_isMovingDown(const Curtain_Handle* const handle) {
+    return handle && (handle->upDown_old == CURTAIN_DOWN);
+}
 
 bool Curtains_isAnyCurtainMoving(void)
 {
@@ -383,11 +411,11 @@ static void HandleCurtainDirectionChange(Curtain_Handle* const handle)
         if(relay != 0) {
             sendDataBuff[0] = (relay >> 8) & 0xFF;
             sendDataBuff[1] = relay & 0xFF;
-            
+
             // Odabir protokola i slanje komande
             if (handle->config.relayUp != handle->config.relayDown) {
-                 sendDataBuff[2] = command;
-                 AddCommand(&binaryQueue, BINARY_SET, sendDataBuff, 3);
+                sendDataBuff[2] = command;
+                AddCommand(&binaryQueue, BINARY_SET, sendDataBuff, 3);
             } else {
                 sendDataBuff[2] = handle->upDown; // Jalousie protokol koristi 0, 1, 2
                 AddCommand(&curtainQueue, JALOUSIE_SET, sendDataBuff, 3);

@@ -46,5 +46,7 @@ typedef enum {
     FIRMWARE_UPDATE     = 51,   // upit i provjera verzije, backup trenutne verzije, formatiranje i početak transfera
     TIME_INFO           = 52,   // svi koje interesuje tačno vrijeme i datum imaju registrovan ovaj tip
     CONTEROLLER_GET     = 53,   // uzmi cijelu strukturu kontrolera sve pinove sve registre
-    CONTROLLER_SET      = 54    // upiši cijelu strukturu kontrolera i reinicijalizuj 
+    CONTROLLER_SET      = 54,   // upiši cijelu strukturu kontrolera i reinicijalizuj 
+    SCENE_CONTROL       = 55,   // Poruka za sinhronizaciju aktivacije scena između displeja.
+    DIGITAL_INPUT_EVENT = 56    // Poruka koju šalje modul sa ulazima kada detektuje promjenu stanja.
 } tf_types_t;

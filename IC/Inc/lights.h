@@ -72,11 +72,14 @@ typedef struct
     uint16_t magic_number;
 
     /**
-     * @brief Modbus adresa releja ili dimera koji kontroliše ovo svjetlo.
-     * Ovo je kljucna informacija za slanje komandi preko RS485 bus-a.
+     * @brief Adresa releja ili dimera. Format zavisi od globalne postavke protokola.
+     * @note  Ovo je kljucna informacija za slanje komandi preko RS485 bus-a.
      * Koristi se u `HandleLightStatusChanges`.
      */
-    uint16_t index;
+    union {
+        uint16_t tf;            /**< Apsolutna adresa za TinyFrame protokol. */
+        struct { uint16_t mod; uint8_t pin; } mb; /**< Par adresa (modul+pin) za Modbus protokol. */
+    } address;
 
     /**
      * @brief Fleg (0 ili 1) koji oznacava da li je svjetlo povezano sa glavnim prekidacem.
@@ -93,16 +96,19 @@ typedef struct
 
     /**
      * @brief ID ikonice koja ce se prikazivati na GUI-ju.
-     * Koristi se kao indeks u `light_modbus_images` nizu da bi se odabrala
-     * odgovarajuca slicica (npr. sijalica ili ventilator).
+     * Koristi se kao indeks u `icon_mapping_table` nizu da bi se odabrala
+     * odgovarajuca slicica i tekstualni opisi.
      */
     uint8_t  iconID;
 
     /**
-     * @brief Modbus adresa DRUGOG uredaja (npr. ventilatora) koji ce se aktivirati
-     * zajedno sa ovim svjetlom. Logika za ovo trenutno nije u potpunosti implementirana.
+     * @brief Adresa DRUGOG uredaja (npr. ventilatora) koji ce se aktivirati
+     * zajedno sa ovim svjetlom.
      */
-    uint16_t controllerID_on;
+    union {
+        uint16_t tf;            /**< Apsolutna adresa za TinyFrame protokol. */
+        struct { uint16_t mod; uint8_t pin; } mb; /**< Par adresa (modul+pin) za Modbus protokol. */
+    } controllerID_on;
 
     /**
      * @brief Vrijeme odgode u minutama za "delayed-on" tajmer.
@@ -127,7 +133,7 @@ typedef struct
     /**
      * @brief Tip svjetla (1=BIN, 2=DIM, 3=COLOR).
      * Kljucna varijabla u `HandleLightStatusChanges` koja odlucuje kakav tip
-     * Modbus komande treba poslati (binarnu, dimersku ili RGB).
+     * komande treba poslati.
      */
     uint8_t  communication_type;
 
@@ -141,7 +147,6 @@ typedef struct
     /**
      * @brief Vrijeme mirovanja.
      * Trenutno se može podesiti u meniju, ali se nigdje u kodu ne koristi.
-     * Ostatak nedovršene funkcionalnosti.
      */
     uint8_t  sleep_time;
 
@@ -153,20 +158,24 @@ typedef struct
 
     /**
      * @brief Fleg (0 ili 1) koji odreduje da li dimer pamti posljednju svjetlinu.
-     * Koristi se u `LIGHT_Off` da odluci da li da resetuje `brightness` na 0
-     * i u `LIGHT_SetBrightness` da li da oznaci promjenu za snimanje.
      */
     uint8_t  rememberBrightness;
 
     /**
      * @brief Vrijednost svjetline od 0 do 100.
-     * Ovo je glavna vrijednost koja se cuva i šalje dimeru.
      */
     uint8_t  brightness;
 
     /**
+     * @brief Korisnicki definisan naziv za svjetlo (npr. "Luster Dnevna").
+     * @note  Maksimalno 20 karaktera + NUL terminator. Ako je ovo polje prazno,
+     * sistem koristi defaultni, prevedeni naziv iz `icon_mapping_table`.
+     */
+    char     custom_label[21];
+
+    /**
      * @brief CRC (Cyclic Redundancy Check) "digitalni otisak prsta".
-     * Izracunava se i snima u `LIGHT_Save`. Provjerava se u `LIGHT_Init`
+     * Izracunava se i snima u `LIGHTS_Save`. Provjerava se u `LIGHTS_Init`
      * da bi se potvrdio integritet svih ostalih podataka u ovoj strukturi.
      */
     uint16_t crc;
@@ -239,6 +248,8 @@ uint8_t   LIGHT_GetBrightness(const LIGHT_Handle* const handle);
 void      LIGHT_SetBrightness(LIGHT_Handle* const handle, uint8_t brightness);
 uint32_t  LIGHT_GetColor(const LIGHT_Handle* const handle);
 void      LIGHT_SetColor(LIGHT_Handle* const handle, uint32_t color);
+const char* LIGHT_GetCustomLabel(const LIGHT_Handle* const handle);
+void        LIGHT_SetCustomLabel(LIGHT_Handle* const handle, const char* label);
 
 // --- Grupa 4: Kontrola Stanja ---
 void LIGHT_Flip(LIGHT_Handle* const handle);

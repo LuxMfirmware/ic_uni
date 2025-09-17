@@ -61,5 +61,18 @@ WIDGET( ID_DEFROSTER_CYCLE_TIME,        0x97B, "ID za Spinbox vremena ciklusa od
 WIDGET( ID_DEFROSTER_ACTIVE_TIME,       0x97C, "ID za Spinbox aktivnog vremena odmrzivača" )
 WIDGET( ID_DEFROSTER_PIN,               0x97D, "ID za Spinbox GPIO pina odmrzivača" )
 
+// --- NOVO: Ekran 7 (preimenovat cemo ga kasnije): Kapije ---
+WIDGET( ID_GATE_SELECT,                 0x980, "ID za Spinbox odabira kapije (1-6)" )
+WIDGET( ID_GATE_TYPE,                   0x981, "ID za Dropdown tipa kapije (krilna, klizna...)" )
+WIDGET( ID_GATE_RELAY_OPEN,             0x982, "ID za EDIT widget za adresu 'OPEN' releja" )
+WIDGET( ID_GATE_RELAY_CLOSE,            0x983, "ID za EDIT widget za adresu 'CLOSE' releja" )
+WIDGET( ID_GATE_RELAY_PED,              0x984, "ID za EDIT widget za adresu 'PEDESTRIAN' releja" )
+WIDGET( ID_GATE_RELAY_STOP,             0x985, "ID za EDIT widget za adresu 'STOP' releja" )
+WIDGET( ID_GATE_FEEDBACK_OPEN,          0x986, "ID za EDIT widget za adresu 'OPEN' senzora" )
+WIDGET( ID_GATE_FEEDBACK_CLOSE,         0x987, "ID za EDIT widget za adresu 'CLOSE' senzora" )
+WIDGET( ID_GATE_CYCLE_TIMER,            0x988, "ID za EDIT widget za vrijeme ciklusa" )
+WIDGET( ID_GATE_PED_TIMER,              0x989, "ID za EDIT widget za vrijeme pješačkog moda" )
+WIDGET( ID_GATE_PULSE_TIMER,            0x98A, "ID za EDIT widget za trajanje impulsa" )
+
 // NAPOMENA: Dinamički ID-jevi kao što su ID_LightsModbusRelay i ID_CurtainsRelay
 // se ne stavljaju ovdje jer nisu statični.

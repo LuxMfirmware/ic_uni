@@ -578,6 +578,136 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Animation</GroupName>
+          <Files>
+            <File>
+              <FileName>animation_welcome_candle_frame_1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_candle_frame_1.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_candle_frame_2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_candle_frame_2.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_candle_frame_3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_candle_frame_3.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_candle_frame_4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_candle_frame_4.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_05.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_05.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_10.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_15.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_15.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_20.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_20.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_25.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_25.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_30.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_30.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_35.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_35.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_40.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_40.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_45.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_45.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_50.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_50.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_55.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_55.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_60.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_60.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_65.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_65.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_70.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_70.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_75.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_75.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_80.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_80.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_85.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_85.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_90.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_90.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_95.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_95.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_100.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_100.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_welcome_frame_final.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_welcome_frame_final.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Drivers/CMSIS</GroupName>
           <Files>
             <File>
@@ -1026,19 +1156,24 @@
               <FilePath>..\Src\lights.c</FilePath>
             </File>
             <File>
+              <FileName>scene.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\scene.c</FilePath>
+            </File>
+            <File>
               <FileName>curtain.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\curtain.c</FilePath>
             </File>
             <File>
-              <FileName>ventilator.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\ventilator.c</FilePath>
-            </File>
-            <File>
               <FileName>defroster.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\defroster.c</FilePath>
+            </File>
+            <File>
+              <FileName>ventilator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\ventilator.c</FilePath>
             </File>
             <File>
               <FileName>firmware_update_agent.c</FileName>

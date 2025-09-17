@@ -19,20 +19,19 @@
 #error "application not selected for application type in common.h"
 #endif
 /* Includes ------------------------------------------------------------------*/
-#include "png.h"
-#include "main.h"
-#include "rs485.h"
-#include "display.h"
+/*============================================================================*/
+/* UKLJUCENI FAJLOVI (INCLUDES)                                               */
+/*============================================================================*/
+#include "main.h" // Uvijek prvi - sada povlaci i QSPI/SDRAM headere
 #include "thermostat.h"
 #include "ventilator.h"
+#include "defroster.h"
 #include "curtain.h"
 #include "lights.h"
-#include "defroster.h"
-#include "stm32746g.h"
-#include "stm32746g_ts.h"
-#include "stm32746g_qspi.h"
-#include "stm32746g_sdram.h"
-#include "stm32746g_eeprom.h"
+#include "display.h"
+#include "rs485.h"
+#include "firmware_update_agent.h"
+
 /* Constants -----------------------------------------------------------------*/
 /* Imported Type  ------------------------------------------------------------*/
 /* Imported Variable  --------------------------------------------------------*/
@@ -66,6 +65,18 @@ DMA2D_HandleTypeDef hdma2d;
 #define SYSTEM_STARTUP_TIME                 8765U   // 8s application startup time
 #define LSE_RESTART_ATTEMPTS                10      // Broj pokušaja prije nego što predemo na LSI
 #define LSE_TIMEOUT                         2345    // Timeout za proveru stanja oscilatora (u milisekundama)
+#define PCA9685_GENERAL_CALL_ACK			0x00U		// pca9685 general call address with ACK response
+#define PCA9685_LED_0_ON_L_REG_ADDRESS      0x06U
+#define PCA9685_PRE_SCALE_REG_ADDRESS       0xfeU
+#define PCA9685_SW_RESET_COMMAND			0x06U		// i2c pwm controller reset command
+#define PCA9685_PRE_SCALE_REGISTER          (pca9685_register[254])
+#define I2CPWM0_WRADD                       0x90
+#define I2CPWM_TOUT                         15
+#define PWM_UPDATE_TIMEOUT					12U			// 20 ms pwm data transfer timeout
+#define PWM_0_15_FREQUENCY_DEFAULT			1000U		// i2c pwm controller 1 default frequency in Hertz 
+#define PWM_16_31_FREQUENCY_DEFAULT			1000U		// i2c pwm controller 2 default frequency in Hertz 
+#define PCA9685_REGISTER_SIZE				256U        // nuber of pca9685 registers
+
 /* Private Variable ----------------------------------------------------------*/
 uint8_t sysfl   = 0, initfl = 0;
 uint16_t sysid;
@@ -77,6 +88,8 @@ static uint8_t pwm[32] = {0};
 uint8_t pca9685_register[PCA9685_REGISTER_SIZE] = {0};
 // Definišemo globalni fleg i postavljamo ga na `false` kao pocetno stanje.
 bool g_high_precision_mode = false;
+volatile uint32_t g_last_fw_packet_timestamp = 0; // Definicija globalne varijable
+char system_pin[5]; // << NOVO: Definicija globalne varijable
 /* Private Macro -------------------------------------------------------------*/
 #define VREFIN_CAL_ADDRESS          ((uint16_t*) (0x1FF0F44A))
 #define TEMPSENSOR_CAL1_ADDR        ((uint16_t*) (0x1FF0F44C))
@@ -86,8 +99,7 @@ bool g_high_precision_mode = false;
 static void RAM_Init(void);
 static void ADC3_Read(void);
 static void MPU_Config(void);
-static void TS_Service(void);
-void MX_IWDG_Init(void);
+static void MX_IWDG_Init(void);
 static void MX_RTC_Init(void);
 static void MX_CRC_Init(void);
 static void SaveResetSrc(void);
@@ -108,6 +120,10 @@ static void CheckRTC_Clock(void);
 static void SystemClock_Config(void);
 static uint32_t RTC_GetUnixTimeStamp(RTC_t* data);
 static float ROOM_GetTemperature(uint16_t adc_value);
+static void PCA9685_Init(void);
+static void PCA9685_Reset(void);
+static void PCA9685_OutputUpdate(void);
+static void PCA9685_SetOutputFrequency(uint16_t frequency);
 /* Program Code  -------------------------------------------------------------*/
 /**
   * @brief
@@ -115,14 +131,16 @@ static float ROOM_GetTemperature(uint16_t adc_value);
   * @retval
   */
 int main(void) {
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
+    Ventilator_Handle* pVen = Ventilator_GetInstance();
+    Defroster_Handle* pDef = Defroster_GetInstance();
+    
     SaveResetSrc();
     MPU_Config();
     CACHE_Config();
     HAL_Init();
     SystemClock_Config();
-#ifdef	USE_WATCHDOG
     MX_IWDG_Init();
-#endif
     MX_CRC_Init();
     MX_RTC_Init();
     MX_ADC3_Init();
@@ -138,13 +156,13 @@ int main(void) {
     RS485_Init();
     LIGHTS_Init();
     Curtains_Init();
-    Defroster_Init();
+    Defroster_Init(pDef);
     DISP_Init();
-    THSTAT_Init();
+    THSTAT_Init(pThst);
     PCA9685_Reset();
     PCA9685_Init();
     if(pwminit) PCA9685_SetOutputFrequency(PWM_0_15_FREQUENCY_DEFAULT);
-    Ventilator_Init();
+    Ventilator_Init(pVen);
 #ifdef	USE_WATCHDOG
     HAL_IWDG_Refresh(&hiwdg);
 #endif
@@ -154,14 +172,15 @@ int main(void) {
         DISP_Service();
         LIGHT_Service();
         Curtain_Service();
-        Defroster_Service();
-        THSTAT_Service();
-        Ventilator_Service();
+        Defroster_Service(pDef);
+        THSTAT_Service(pThst);
+        Ventilator_Service(pVen);
 #ifdef	USE_WATCHDOG
         HAL_IWDG_Refresh(&hiwdg);
 #endif
         RS485_Service(); // prvo sve obradi pa šalji
         CheckRTC_Clock(); // provjera ispravnosti RTC oscilatora i prelazak na LSI
+        FwUpdateAgent_Service();
     }
 }
 /**
@@ -284,21 +303,23 @@ void HAL_RTC_MspDeInit(RTC_HandleTypeDef *hrtc) {
   * @param
   * @retval
   */
-void MX_IWDG_Init(void) {
+static void MX_IWDG_Init(void) {
+#ifdef	USE_WATCHDOG
     hiwdg.Instance = IWDG;
-    hiwdg.Init.Prescaler = IWDG_PRESCALER_64; //(1/(32000/32))*4095 = 4,095s
+    hiwdg.Init.Prescaler = IWDG_PRESCALER_256; //(1/(32000/32))*4095 = 4,095s
     hiwdg.Init.Window = 4095;
     hiwdg.Init.Reload = 4095;
     if (HAL_IWDG_Init(&hiwdg) != HAL_OK) {
         SYSRestart();
     }
+#endif
 }
 /**
   * @brief
   * @param
   * @retval
   */
-static void TS_Service(void) {
+void TS_Service(void) {
 // Definicije za dinamicki treshold osjetljivosti na dodir
 #define NORMAL_TOUCH_THRESHOLD      30U // Standardna osjetljivost (manje precizno)
 #define HIGH_PRECISION_THRESHOLD    2U  // Visoka osjetljivost (precizno za slajdere)
@@ -361,17 +382,30 @@ static void TS_Service(void) {
   * @retval None
   */
 static void RAM_Init(void) {
-    // Ucitaj sistemski fleg koji dijeli bootloader i aplikacija.
-    // OVO SE CITA DIREKTNO I NEMA CRC ZAŠTITU NAMJERNO.
+    // Ucitaj sistemski fleg
     EE_ReadBuffer(&sysfl, EE_SYS_STATE, 1);
 
-    // Ucitaj RS485 adresu (TinyFrame Interface Address).
+    // Ucitaj RS485 adresu
     EE_ReadBuffer(&tfifa, EE_TFIFA, 1);
-    
-    // Ucitaj jedinstveni ID sistema.
+
+    // Ucitaj sistemski ID
     uint8_t sysid_buf[2];
     EE_ReadBuffer(sysid_buf, EE_SYSID, 2);
     sysid = ((sysid_buf[0] << 8) | sysid_buf[1]);
+
+    // << NOVO: Ucitavanje sistemskog PIN-a >>
+    uint8_t pin_buf[5];
+    EE_ReadBuffer(pin_buf, EE_SYSTEM_PIN, 5);
+    
+    // Provjera da li je PIN ikada snimljen (ako nije, prvi bajt ce biti 0xFF ili 0x00)
+    if (pin_buf[0] < '0' || pin_buf[0] > '9') {
+        // PIN nije validan, snimi default "1234" u EEPROM i u RAM
+        strcpy(system_pin, "1234");
+        EE_WriteBuffer((uint8_t*)system_pin, EE_SYSTEM_PIN, 5);
+    } else {
+        // PIN je validan, ucitaj ga u RAM
+        memcpy(system_pin, pin_buf, 5);
+    }
 }
 /**
   * @brief
@@ -803,75 +837,75 @@ static void MX_CRC_DeInit(void) {
     HAL_CRC_DeInit(&hcrc);
 }
 /**
-  * @brief koristi eksponencijalno klizno srednje Exponential Moving Average – EMA
-  *        za filtriranje konverzije i brzu konverziju inicijalne vrijednosti
-  * @param
-  * @retval
+  * @brief  Ocitava temperaturu sa NTC senzora i prosljeduje je termostat modulu.
+  * @note   Finalna, refaktorisana verzija. Sva originalna logika za filtriranje je
+  * sacuvana, dok je logika za odlucivanje (histereza) premještena u termostat modul.
+  * @param  None
+  * @retval None
   */
 static void ADC3_Read(void) {
+    // Dobijamo handle za termostat na pocetku.
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
+
+    // Ako ovaj uredaj nije master, ne treba ni da mjeri temperaturu.
+    if (!Thermostat_IsMaster(pThst)) return;
+
+    // Lokalne staticke varijable za filtriranje ocitanja (Vaša originalna logika).
     static uint32_t adctmr = 0U;
     static uint32_t sample_cnt = 0U;
     static uint16_t sample_value[10] = {0};
-    static bool first_run = true; // Indikator za inicijalizaciju
+    static bool first_run = true;
     static float filtered_temp = 0.0f;
-    float new_temp;
-    int16_t ntc_temp;
-    uint32_t tmp, t;
-    // Dobijamo handle za termostat na pocetku funkcije.
-    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
     
-    if(!Thermostat_IsMaster(pThst)) return; // ne gubi vrijeme ako ne treba mjerit temperaturu
-    if (first_run) {
-        // Prvo punjenje sample_value[] sa 10 pravih ocitavanja
-        for (uint8_t i = 0; i < 10; i++) {
-            HAL_ADC_Start(&hadc3);
-            HAL_ADC_PollForConversion(&hadc3, 10);
-            sample_value[i] = HAL_ADC_GetValue(&hadc3);
-        }
-
-        // Racunanje prosecne vrijednosti prije nego što pozovemo ROOM_GetTemperature
-        tmp = 0;
-        for (t = 0; t < 10; t++) tmp += sample_value[t];
-        tmp /= 10; // Srednja vrijednost 10 uzoraka
-
-        // Koristi tu vrijednost za izracunavanje pocetne temperature
-        filtered_temp = ROOM_GetTemperature(tmp);
-        first_run = false;  // Postavi flag da ovo ne radi više puta
-    }
-
-
+    // Provjera da li je vrijeme za novo ocitavanje.
     if ((HAL_GetTick() - adctmr) >= ADC_READOUT_PERIOD) {
         adctmr = HAL_GetTick();
+        
+        // Inicijalizacija filtera pri prvom pokretanju (Vaša originalna logika).
+        if (first_run) {
+            first_run = false;
+            uint32_t tmp_init = 0;
+            for (uint8_t i = 0; i < 10; i++) {
+                HAL_ADC_Start(&hadc3);
+                HAL_ADC_PollForConversion(&hadc3, 10);
+                sample_value[i] = HAL_ADC_GetValue(&hadc3);
+                tmp_init += sample_value[i];
+            }
+            tmp_init /= 10;
+            filtered_temp = ROOM_GetTemperature(tmp_init);
+        }
+
+        // Uzimanje novog uzorka sa ADC-a i ažuriranje bafera za prosjek.
         HAL_ADC_Start(&hadc3);
         HAL_ADC_PollForConversion(&hadc3, 10);
-        uint16_t new_sample = HAL_ADC_GetValue(&hadc3);
-        sample_value[sample_cnt] = new_sample;
-
+        sample_value[sample_cnt] = HAL_ADC_GetValue(&hadc3);
         if (++sample_cnt > 9) sample_cnt = 0;
 
-        tmp = 0;
-        for (t = 0; t < 10; t++) tmp += sample_value[t];
-        tmp /= 10; // Srednja vrijednost 10 uzoraka
+        // Racunanje prosjeka zadnjih 10 uzoraka.
+        uint32_t tmp_avg = 0;
+        for (uint8_t t = 0; t < 10; t++) tmp_avg += sample_value[t];
+        tmp_avg /= 10;
 
-        // Sigurnosna provjera da li je NTC otpornik diskonektovan
-        if ((tmp < 100) || (tmp > 4000)) {
-            if (sample_cnt == 0) Thermostat_SetNtcStatus(pThst, false, true);
+        // Provjera da li je NTC senzor (dis)konektovan.
+        if ((tmp_avg < 100) || (tmp_avg > 4000)) {
+            // NTC je diskonektovan. Obavijesti termostat modul o novom stanju.
+            Thermostat_SetNtcStatus(pThst, false, true);
+            // Javi termostatu da je temperatura 0. On ce interno obraditi tu informaciju.
             Thermostat_SetMeasuredTemp(pThst, 0);
         } else {
-            if (sample_cnt == 0) Thermostat_SetNtcStatus(pThst, true, false);
-
-            // Eksponencijalno klizno srednje za stabilizaciju ocitanja
-            new_temp = ROOM_GetTemperature(tmp);
-            filtered_temp = (filtered_temp * 0.9f) + (new_temp * 0.1f); // 10% nove vrijednosti utice na rezultat
-
-            ntc_temp = filtered_temp * 10;
-
-            // Histereza: promjena se dešava samo ako razlika prede prag
-            if (abs((Thermostat_GetMeasuredTemp(pThst) / 10) - (ntc_temp / 10)) > 0.2f) {
-                Thermostat_SetMeasuredTemp(pThst, ntc_temp);
-                MVUpdateSet();
-                thst.hasInfoChanged = true; // šalji promjenu temperature
-            }
+            // NTC je konektovan. Obavijesti termostat modul.
+            Thermostat_SetNtcStatus(pThst, true, false);
+            
+            // Primjena eksponencijalnog filtera za "peglanje" vrijednosti (Vaša originalna logika).
+            float new_temp = ROOM_GetTemperature(tmp_avg);
+            filtered_temp = (filtered_temp * 0.9f) + (new_temp * 0.1f);
+            
+            // Konverzija u format koji termostat koristi (int16_t, vrijednost x10).
+            int16_t ntc_temp = filtered_temp * 10;
+            
+            // JEDINI POSAO: Pozovi setter i proslijedi mu novu, filtriranu temperaturu.
+            // Termostat modul ce sam odluciti da li je promjena znacajna.
+            Thermostat_SetMeasuredTemp(pThst, ntc_temp);
         }
     }
 }
@@ -1111,7 +1145,12 @@ static uint32_t RTC_GetUnixTimeStamp(RTC_t* data) {
     return seconds;
 }
 
-void PCA9685_Init(void) { //registrovana 2 PCA965 0x90 I2CPWM0_WRADD  i 0x92  I2CPWM1_WRADD
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+static void PCA9685_Init(void) { //registrovana 2 PCA965 0x90 I2CPWM0_WRADD  i 0x92  I2CPWM1_WRADD
     uint8_t buf[2];
     if(!pwminit) return;
     buf[0] = 0x00U;
@@ -1128,9 +1167,12 @@ void PCA9685_Init(void) { //registrovana 2 PCA965 0x90 I2CPWM0_WRADD  i 0x92  I2
     ZEROFILL(pwm, 32);
     ZEROFILL(pca9685_register, PCA9685_REGISTER_SIZE);
 }
-
-
-void PCA9685_Reset(void) {
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+static void PCA9685_Reset(void) {
     uint8_t cmd = PCA9685_SW_RESET_COMMAND;
 
     if(HAL_I2C_Master_Transmit(&hi2c4, PCA9685_GENERAL_CALL_ACK, &cmd, 1, I2CPWM_TOUT) != HAL_OK) {
@@ -1139,7 +1181,12 @@ void PCA9685_Reset(void) {
 }
 
 
-void PCA9685_SetOutputFrequency(uint16_t frequency) {
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+static void PCA9685_SetOutputFrequency(uint16_t frequency){
     uint8_t buf[2];
     buf[0] = 0x00U;
     buf[1]= 0x10U;
@@ -1189,7 +1236,13 @@ void PCA9685_SetOutputFrequency(uint16_t frequency) {
 //	}
 }
 
-void PCA9685_OutputUpdate(void) {
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+static void PCA9685_OutputUpdate(void) {
+    
     uint16_t pwm_out;
     uint8_t i,j,buf[70];
     if(!pwminit) return;
@@ -1232,30 +1285,50 @@ void PCA9685_OutputUpdate(void) {
 //	}
 }
 
+/**
+  * @brief
+  * @param
+  * @retval
+  */
 void PCA9685_SetOutput(const uint8_t pin, const uint8_t value) {
     if(!pwminit) return;
     pwm[pin - 1] = value;
     PCA9685_OutputUpdate();
 }
 
-
-
+/**
+  * @brief
+  * @param
+  * @retval
+  */
 void SetDefault(void) // Not all settings from the settings menu are set to default
 {
-    Thermostat_SetDefault();
-    THSTAT_Save();
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
+    Ventilator_Handle* pVen = Ventilator_GetInstance();
+    Defroster_Handle* pDef = Defroster_GetInstance();
+    
+    Thermostat_SetDefault(pThst);
+    THSTAT_Save(pThst);
 
     LIGHTS_SetDefault();
     LIGHTS_Save();
 
     Curtains_SetDefault();
     Curtains_Save();
+    
+    Ventilator_SetDefault(pVen);
+    Ventilator_Save(pVen);
 
-    Defroster_SetDefault();
-    Defroster_Save();
+    Defroster_SetDefault(pDef);
+    Defroster_Save(pDef);
 }
-void SetPin(uint8_t pin, uint8_t pinVal)
-{
+
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+void SetPin(uint8_t pin, uint8_t pinVal){
     if(pin > 0 && pin < 7) { // Dodata provjera da li je pin validan
         switch(pin)
         {

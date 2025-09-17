@@ -16,9 +16,18 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
+/*============================================================================*/
+/* UKLJUCENI FAJLOVI (INCLUDES)                                               */
+/*============================================================================*/
+#include "main.h" // Uvijek prvi
 #include "thermostat.h"
-#include "main.h"
-#include "stm32746g_eeprom.h"
+#include "ventilator.h"
+#include "defroster.h"
+#include "curtain.h"
+#include "lights.h"
+#include "display.h"
+#include "stm32746g_eeprom.h" // Mapa ide nakon svih definicija
+#include "rs485.h"
 
 /*============================================================================*/
 /* PRIVATNE DEFINICIJE I MAKROI                                               */
@@ -44,26 +53,6 @@
 /* PRIVATNA DEFINICIJA STRUKTURE                                              */
 /*============================================================================*/
 
-#pragma pack(push, 1)
-// Definicija EEPROM dijela strukture (privatna za ovaj fajl)
-typedef struct {
-    uint16_t magic_number;
-    uint8_t group;
-    bool    master;
-    uint8_t  th_ctrl;
-    uint8_t  sp_temp;
-    uint8_t  sp_max;
-    uint8_t  sp_min;
-    uint8_t  sp_diff;
-    int8_t   mv_offset;
-    uint8_t  fan_ctrl;
-    uint8_t  fan_diff;
-    uint8_t  fan_loband;
-    uint8_t  fan_hiband;
-    uint16_t crc;
-} THERMOSTAT_EepromConfig_t;
-#pragma pack(pop)
-
 // Puna definicija glavne strukture, sakrivena od ostatka programa
 struct THERMOSTAT_TypeDef_s {
     THERMOSTAT_EepromConfig_t config; // Podaci koji se cuvaju
@@ -78,17 +67,22 @@ struct THERMOSTAT_TypeDef_s {
 /*============================================================================*/
 /* PRIVATNA (STATICKA) INSTANCA                                               */
 /*============================================================================*/
-
 /**
  * @brief Jedina instanca termostata u cijelom sistemu.
  * @note  Kljucna rijec 'static' je cini vidljivom samo unutar ovog .c fajla.
  */
 static THERMOSTAT_TypeDef thst;
 
-
 /*============================================================================*/
 /* IMPLEMENTACIJA JAVNIH FUNKCIJA                                             */
 /*============================================================================*/
+/**
+  * @brief Vraca pointer na jedinu (singleton) instancu termostata.
+  */
+THERMOSTAT_TypeDef* Thermostat_GetInstance(void) // <-- DODATA IMPLEMENTACIJA
+{
+    return &thst;
+}
 /**
   * @brief Inicijalizuje termostat iz EEPROM-a, uz provjeru validnosti podataka.
   */
@@ -119,7 +113,7 @@ void THSTAT_Init(THERMOSTAT_TypeDef* const handle)
     handle->ntc_flags = 0;
 
     // Postavljanje pocetnog moda rada.
-    Thermostat_SetControlMode(handle, 2); // Heating
+    //Thermostat_SetControlMode(handle, 2); // Heating
 }
 
 /**
@@ -334,8 +328,8 @@ void Thermostat_SetControlMode(THERMOSTAT_TypeDef* const handle, uint8_t mode)
     handle->config.th_ctrl = mode;
 }
 
-uint8_t Thermostat_Get_SP_Max(THERMOSTAT_TypeDef* const handle) 
-    {
+uint8_t Thermostat_Get_SP_Max(THERMOSTAT_TypeDef* const handle)
+{
     return handle->config.sp_max;
 }
 
@@ -347,8 +341,8 @@ void Thermostat_Set_SP_Max(THERMOSTAT_TypeDef* const handle, const uint8_t value
     else                                     handle->config.sp_max = value;
 }
 
-uint8_t Thermostat_Get_SP_Min(THERMOSTAT_TypeDef* const handle) 
-    {
+uint8_t Thermostat_Get_SP_Min(THERMOSTAT_TypeDef* const handle)
+{
     return handle->config.sp_min;
 }
 
@@ -360,8 +354,8 @@ void Thermostat_Set_SP_Min(THERMOSTAT_TypeDef* const handle, const uint8_t value
     else                                     handle->config.sp_min = value;
 }
 
-bool Thermostat_IsMaster(THERMOSTAT_TypeDef* const handle) 
-    {
+bool Thermostat_IsMaster(THERMOSTAT_TypeDef* const handle)
+{
     return handle->config.master;
 }
 
@@ -434,7 +428,23 @@ void Thermostat_SetFanControlMode(THERMOSTAT_TypeDef* const handle, uint8_t mode
 
 
 // --- Grupa 5: Ocitavanje Stanja (Runtime Getters) ---
+uint8_t Thermostat_GetState(THERMOSTAT_TypeDef* const handle)
+{
+    return handle->th_state;
+}
 
+uint8_t Thermostat_GetSetpointDifference(THERMOSTAT_TypeDef* const handle)
+{
+    return handle->config.sp_diff;
+}
+
+void Thermostat_SetSetpointDifference(THERMOSTAT_TypeDef* const handle, uint8_t value)
+{
+    if (handle->config.sp_diff != value) {
+        handle->config.sp_diff = value;
+        handle->hasInfoChanged = true;
+    }
+}
 int16_t Thermostat_GetMeasuredTemp(THERMOSTAT_TypeDef* const handle)
 {
     return handle->mv_temp;
@@ -462,11 +472,33 @@ bool Thermostat_IsNtcError(THERMOSTAT_TypeDef* const handle)
 
 
 // --- Grupa 6: Postavljanje Eksternih Podataka (External Setters) ---
-
+/**
+ * @brief  Postavlja vrijednost izmjerene temperature (poziva se iz ADC logike).
+ * @note   Ova funkcija je sada "pametna". Sadrži logiku histereze i ona je
+ * ta koja odlucuje da li je promjena temperature dovoljno znacajna da
+ * se ažurira interno stanje i obavijeste GUI i mreža.
+ * @param  handle Pointer na instancu termostata.
+ * @param  temp Nova izmjerena vrijednost temperature (vrijednost x10, npr. 235 za 23.5°C).
+ * @retval None
+ */
 void Thermostat_SetMeasuredTemp(THERMOSTAT_TypeDef* const handle, int16_t temp)
 {
-    handle->mv_temp = temp;
-    handle->hasInfoChanged = true;
+    // Histereza je sada centralizovana unutar ovog modula.
+    // Provjeravamo da li je apsolutna razlika izmedu stare i nove temperature
+    // veca od 2 (što odgovara 0.2°C, jer su vrijednosti pomnožene sa 10).
+    if (abs(handle->mv_temp - temp) > 2) 
+    {
+        // Ako je promjena znacajna, ažuriramo internu vrijednost temperature.
+        handle->mv_temp = temp;
+        
+        // Podižemo interni fleg koji `THSTAT_Service` koristi da zna da treba
+        // poslati info paket na RS485 mrežu.
+        handle->hasInfoChanged = true;
+        
+        // Podižemo globalni fleg koji `display.c` koristi da zna da treba
+        // osvježiti prikaz izmjerene temperature na ekranu.
+        MVUpdateSet();
+    }
 }
 
 /**
@@ -499,9 +531,15 @@ uint8_t Thermostat_GetGroup(THERMOSTAT_TypeDef* const handle)
     return handle->config.group;
 }
 
+
 void Thermostat_SetGroup(THERMOSTAT_TypeDef* const handle, uint8_t value)
 {
     handle->config.group = value;
     handle->hasInfoChanged = true;
+}
+
+void Thermostat_SetInfoChanged(THERMOSTAT_TypeDef* const handle, bool state)
+{
+    handle->hasInfoChanged = state;
 }
 /******************************   RAZLAZ SIJELA  ********************************/
