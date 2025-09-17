@@ -137,16 +137,16 @@ uint8_t Curtain_GetMoveTime(void) {
 }
 
 void Curtain_setRelayUp(Curtain_Handle* const handle, uint16_t relay) {
-    if(handle) handle->config.relayUp = relay;
+    if(handle) handle->config.relayUp.tf = relay;
 }
 uint16_t Curtain_getRelayUp(const Curtain_Handle* const handle) {
-    return handle ? handle->config.relayUp : 0;
+    return handle ? handle->config.relayUp.tf : 0;
 }
 void Curtain_setRelayDown(Curtain_Handle* const handle, uint16_t relay) {
-    if(handle) handle->config.relayDown = relay;
+    if(handle) handle->config.relayDown.tf = relay;
 }
 uint16_t Curtain_getRelayDown(const Curtain_Handle* const handle) {
-    return handle ? handle->config.relayDown : 0;
+    return handle ? handle->config.relayDown.tf : 0;
 }
 
 // --- Grupa 3: Pristup i Brojaci ---
@@ -279,7 +279,7 @@ void Curtain_Update_External(uint16_t relay, uint8_t state)
 // --- Grupa 6: Provjera Stanja ---
 
 bool Curtain_hasRelays(const Curtain_Handle* const handle) {
-    return handle && (handle->config.relayUp != 0 || handle->config.relayDown != 0);
+    return handle && (handle->config.relayUp.tf != 0 || handle->config.relayDown.tf != 0);
 }
 bool Curtain_isMoving(const Curtain_Handle* const handle) {
     return handle && (handle->upDown_old != CURTAIN_STOP);
@@ -347,7 +347,7 @@ static Curtain_Handle* FindCurtainByRelay(uint16_t relay)
     if (relay == 0) return NULL;
     for (uint8_t i = 0; i < CURTAINS_SIZE; i++)
     {
-        if ((curtains[i].config.relayUp == relay) || (curtains[i].config.relayDown == relay))
+        if ((curtains[i].config.relayUp.tf == relay) || (curtains[i].config.relayDown.tf == relay))
         {
             return &curtains[i];
         }
@@ -397,14 +397,14 @@ static void HandleCurtainDirectionChange(Curtain_Handle* const handle)
 
         // Odredivanje koji relej i komandu treba poslati
         if (handle->upDown == CURTAIN_UP) {
-            relay = handle->config.relayUp;
+            relay = handle->config.relayUp.tf;
             command = BINARY_ON;
         } else if (handle->upDown == CURTAIN_DOWN) {
-            relay = handle->config.relayDown;
+            relay = handle->config.relayDown.tf;
             command = BINARY_ON;
         } else { // CURTAIN_STOP
-            if(handle->upDown_old == CURTAIN_UP) relay = handle->config.relayUp;
-            else if(handle->upDown_old == CURTAIN_DOWN) relay = handle->config.relayDown;
+            if(handle->upDown_old == CURTAIN_UP) relay = handle->config.relayUp.tf;
+            else if(handle->upDown_old == CURTAIN_DOWN) relay = handle->config.relayDown.tf;
             command = BINARY_OFF;
         }
 
@@ -413,7 +413,7 @@ static void HandleCurtainDirectionChange(Curtain_Handle* const handle)
             sendDataBuff[1] = relay & 0xFF;
 
             // Odabir protokola i slanje komande
-            if (handle->config.relayUp != handle->config.relayDown) {
+            if (handle->config.relayUp.tf != handle->config.relayDown.tf) {
                 sendDataBuff[2] = command;
                 AddCommand(&binaryQueue, BINARY_SET, sendDataBuff, 3);
             } else {

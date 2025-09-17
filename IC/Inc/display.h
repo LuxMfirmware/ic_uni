@@ -249,7 +249,6 @@ typedef enum{
     SCREEN_LIGHT_SETTINGS,
     SCREEN_QR_CODE,
     SCREEN_CLEAN,
-    SCREEN_NUMPAD,
     SCREEN_KEYBOARD_ALPHA,          /**< NOVI EKRAN: Univerzalna alfanumericka tastatura za unos teksta. */
     SCREEN_NUMPAD,                  /**< NOVI EKRAN: Univerzalni numericki keypad za unos brojeva. */
     SCREEN_CONFIGURE_DEVICE,        /**< NOVI EKRAN: Prikazuje poruku ako uredaj nije uopšte konfigurisan. */

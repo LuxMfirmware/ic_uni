@@ -23,6 +23,7 @@
 /* UKLJUCENI FAJLOVI (INCLUDES)                                               */
 /*============================================================================*/
 #include "main.h" // Uvijek prvi - sada povlaci i QSPI/SDRAM headere
+#include "firmware_update_agent.h"
 #include "thermostat.h"
 #include "ventilator.h"
 #include "defroster.h"
@@ -30,7 +31,8 @@
 #include "lights.h"
 #include "display.h"
 #include "rs485.h"
-#include "firmware_update_agent.h"
+#include "scene.h"
+#include "gate.h"
 
 /* Constants -----------------------------------------------------------------*/
 /* Imported Type  ------------------------------------------------------------*/
@@ -156,6 +158,8 @@ int main(void) {
     RS485_Init();
     LIGHTS_Init();
     Curtains_Init();
+    Gate_Init();
+    Scene_Init(); 
     Defroster_Init(pDef);
     DISP_Init();
     THSTAT_Init(pThst);
@@ -172,15 +176,17 @@ int main(void) {
         DISP_Service();
         LIGHT_Service();
         Curtain_Service();
-        Defroster_Service(pDef);
         THSTAT_Service(pThst);
+        Defroster_Service(pDef);
         Ventilator_Service(pVen);
-#ifdef	USE_WATCHDOG
-        HAL_IWDG_Refresh(&hiwdg);
-#endif
+        Gate_Service();
+        Scene_Service();
         RS485_Service(); // prvo sve obradi pa šalji
         CheckRTC_Clock(); // provjera ispravnosti RTC oscilatora i prelazak na LSI
         FwUpdateAgent_Service();
+#ifdef	USE_WATCHDOG
+        HAL_IWDG_Refresh(&hiwdg);
+#endif        
     }
 }
 /**

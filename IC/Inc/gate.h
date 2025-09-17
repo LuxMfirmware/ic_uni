@@ -51,6 +51,15 @@ typedef enum {
     GATE_STATE_FAULT,           /**< Desila se greška (npr. timeout, senzor nije aktiviran na vrijeme). */
 } GateState_e;
 
+/**
+ * @brief Definiše tip aktivnog tajmera unutar gate modula.
+ */
+typedef enum {
+    GATE_TIMER_NONE,            /**< Nijedan tajmer nije aktivan. */
+    GATE_TIMER_CYCLE,           /**< Aktivan je tajmer za puni ciklus (za detekciju greške). */
+    GATE_TIMER_PEDESTRIAN,      /**< Aktivan je tajmer za pješački mod. */
+    GATE_TIMER_PULSE            /**< Aktivan je kratki tajmer za puls na releju. */
+} GateTimerType_e;
 
 /*============================================================================*/
 /* JAVNA STRUKTURA (ZA EEPROM)                                                */
@@ -125,16 +134,51 @@ typedef struct Gate_s Gate_Handle;
 /* JAVNI API - PROTOTIPOVI FUNKCIJA                                           */
 /*============================================================================*/
 
-/** Ovdje će doći deklaracije svih javnih funkcija, npr.: */
-// void Gate_Init(void);
-// void Gate_Service(void);
-// Gate_Handle* Gate_GetInstance(uint8_t index);
-// void Gate_Save(void);
-// void Gate_TriggerSmartStep(Gate_Handle* handle);
-// void Gate_TriggerFullCycleOpen(Gate_Handle* handle);
-// void Gate_TriggerFullCycleClose(Gate_Handle* handle);
-// void Gate_TriggerPedestrian(Gate_Handle* handle);
-// void Gate_TriggerStop(Gate_Handle* handle);
-// void Gate_CheckEvent(uint16_t module_addr, uint8_t pin_num, uint8_t state);
+// --- Grupa 1: Inicijalizacija, Servis i Upravljanje Instancama ---
+void Gate_Init(void);
+void Gate_Service(void);
+Gate_Handle* Gate_GetInstance(uint8_t index);
+void Gate_Save(void);
+
+// --- Grupa 2: Komande (Triggers) ---
+void Gate_TriggerSmartStep(Gate_Handle* handle);
+void Gate_TriggerFullCycleOpen(Gate_Handle* handle);
+void Gate_TriggerFullCycleClose(Gate_Handle* handle);
+void Gate_TriggerPedestrian(Gate_Handle* handle);
+void Gate_TriggerStop(Gate_Handle* handle);
+
+// --- Grupa 3: Obrada Eksternih Događaja ---
+void Gate_CheckEvent(uint16_t sensor_addr, uint8_t state);
+
+// --- Grupa 4: Getteri i Setteri za Konfiguraciju ---
+GateType_e Gate_GetType(const Gate_Handle* handle);
+void       Gate_SetType(Gate_Handle* handle, GateType_e type);
+
+uint16_t   Gate_GetRelayOpenAddr(const Gate_Handle* handle);
+void       Gate_SetRelayOpenAddr(Gate_Handle* handle, uint16_t addr);
+
+uint16_t   Gate_GetRelayCloseAddr(const Gate_Handle* handle);
+void       Gate_SetRelayCloseAddr(Gate_Handle* handle, uint16_t addr);
+
+uint16_t   Gate_GetRelayPedAddr(const Gate_Handle* handle);
+void       Gate_SetRelayPedAddr(Gate_Handle* handle, uint16_t addr);
+
+uint16_t   Gate_GetRelayStopAddr(const Gate_Handle* handle);
+void       Gate_SetRelayStopAddr(Gate_Handle* handle, uint16_t addr);
+
+uint16_t   Gate_GetFeedbackOpenAddr(const Gate_Handle* handle);
+void       Gate_SetFeedbackOpenAddr(Gate_Handle* handle, uint16_t addr);
+
+uint16_t   Gate_GetFeedbackCloseAddr(const Gate_Handle* handle);
+void       Gate_SetFeedbackCloseAddr(Gate_Handle* handle, uint16_t addr);
+
+uint8_t    Gate_GetCycleTimer(const Gate_Handle* handle);
+void       Gate_SetCycleTimer(Gate_Handle* handle, uint8_t seconds);
+
+uint8_t    Gate_GetPedestrianTimer(const Gate_Handle* handle);
+void       Gate_SetPedestrianTimer(Gate_Handle* handle, uint8_t seconds);
+
+uint16_t   Gate_GetPulseTimer(const Gate_Handle* handle);
+void       Gate_SetPulseTimer(Gate_Handle* handle, uint16_t ms);
 
 #endif // __GATE_CTRL_H__

@@ -26,10 +26,9 @@
 #include "lights.h"
 #include "curtain.h"
 #include "thermostat.h"
-// #include "gate.h" // Bit će uključeno kada gate.h bude kreiran
+#include "gate.h"
 #include "rs485.h"
 #include "stm32746g_eeprom.h"
-
 
 /*============================================================================*/
 /* PRIVATNE DEFINICIJE I MAKROI (INTERNI)                                     */
@@ -69,7 +68,10 @@ static void Scene_SetDefault(void);
 /*============================================================================*/
 /* IMPLEMENTACIJA JAVNOG API-JA                                               */
 /*============================================================================*/
-
+void Scene_Service(void)
+{
+    // TODO: Implementirati 
+}
 /**
  ******************************************************************************
  * @brief       Inicijalizuje modul za scene pri pokretanju sistema.
@@ -93,7 +95,7 @@ void Scene_Init(void)
     } eeprom_block;
 
     // Učitaj cijeli blok iz EEPROM-a
-    EE_ReadBuffer((uint8_t*)&eeprom_block, EE_SCENES_START_ADDR, EE_SCENES_BLOCK_SIZE);
+    EE_ReadBuffer((uint8_t*)&eeprom_block, EE_SCENES, EE_SCENES_BLOCK_SIZE);
 
     // Provjeri validnost podataka
     if (eeprom_block.magic_number != EEPROM_MAGIC_NUMBER)

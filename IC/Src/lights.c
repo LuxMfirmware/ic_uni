@@ -257,7 +257,7 @@ static void DefragmentLights(void)
     uint8_t read_index = 0;
 
     while (read_index < LIGHTS_MODBUS_SIZE) {
-        if (lights_modbus[read_index].config.index != 0) {
+        if (lights_modbus[read_index].config.address.tf  != 0) {
             if (read_index > write_index) {
                 // Kopiraj cijelu strukturu sa `read_index` na `write_index`
                 memcpy(&lights_modbus[write_index], &lights_modbus[read_index], sizeof(LIGHT_Handle));
@@ -301,10 +301,10 @@ void LIGHTS_SetDefault(void) {
 // --- Grupa 3: Getteri i Setteri za Konfiguraciju ---
 
 uint16_t  LIGHT_GetRelay(const LIGHT_Handle* const handle) {
-    return handle->config.index;
+    return handle->config.address.tf;
 }
 void      LIGHT_SetRelay(LIGHT_Handle* const handle, const uint16_t val) {
-    handle->config.index = val;
+    handle->config.address.tf = val;
 }
 
 bool      LIGHT_isTiedToMainLight(const LIGHT_Handle* const handle) {
@@ -329,10 +329,10 @@ void      LIGHT_SetIconID(LIGHT_Handle* const handle, const uint8_t id) {
 }
 
 uint16_t  LIGHT_GetControllerID(const LIGHT_Handle* const handle) {
-    return handle->config.controllerID_on;
+    return handle->config.controllerID_on.tf;
 }
 void      LIGHT_SetControllerID(LIGHT_Handle* const handle, uint16_t val) {
-    handle->config.controllerID_on = val;
+    handle->config.controllerID_on.tf = val;
 }
 
 uint8_t   LIGHT_GetOnDelayTime(const LIGHT_Handle* const handle) {
@@ -594,7 +594,7 @@ uint8_t LIGHTS_GetNightTimerCountdown(void) {
 static LIGHT_Handle* FindLightByRelayAddress(uint16_t address) {
     if (address == 0) return NULL;
     for (int i = 0; i < lights_count; i++) {
-        if (lights_modbus[i].config.index == address) {
+        if (lights_modbus[i].config.address.tf == address) {
             return &lights_modbus[i];
         }
     }
@@ -676,7 +676,7 @@ static void HandleLightNightTimer(void) {
 static void HandleLightStatusChanges(void) {
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++) {
         LIGHT_Handle* handle = &lights_modbus[i];
-        if (handle->config.index == 0) continue;
+        if (handle->config.address.tf == 0) continue;
 
         bool statusChanged = (handle->value != handle->old_value);
         bool brightnessChanged = (handle->config.brightness != handle->brightness_old);
@@ -685,29 +685,29 @@ static void HandleLightStatusChanges(void) {
         if (statusChanged) {
             if(LIGHT_isBinary(handle) || LIGHT_isRGB(handle)) {
                 uint8_t buff[3];
-                buff[0] = (handle->config.index >> 8) & 0xFF;
-                buff[1] = handle->config.index & 0xFF;
+                buff[0] = (handle->config.address.tf >> 8) & 0xFF;
+                buff[1] = handle->config.address.tf & 0xFF;
                 buff[2] = handle->value ? BINARY_ON : BINARY_OFF;
                 AddCommand(&binaryQueue, BINARY_SET, buff, 3);
             } else if (LIGHT_isDimmer(handle)) {
                 uint8_t buff[3];
-                buff[0] = (handle->config.index >> 8) & 0xFF;
-                buff[1] = handle->config.index & 0xFF;
+                buff[0] = (handle->config.address.tf >> 8) & 0xFF;
+                buff[1] = handle->config.address.tf & 0xFF;
                 buff[2] = handle->value ? handle->config.brightness : 0;
                 AddCommand(&dimmerQueue, DIMMER_SET, buff, 3);
             }
         } else if (brightnessChanged && LIGHT_isDimmer(handle)) {
             uint8_t buff[3];
-            buff[0] = (handle->config.index >> 8) & 0xFF;
-            buff[1] = handle->config.index & 0xFF;
+            buff[0] = (handle->config.address.tf >> 8) & 0xFF;
+            buff[1] = handle->config.address.tf & 0xFF;
             buff[2] = handle->config.brightness;
             AddCommand(&dimmerQueue, DIMMER_SET, buff, 3);
         }
 
         if (colorChanged && LIGHT_isRGB(handle)) {
             uint8_t buff[5];
-            buff[0] = (handle->config.index >> 8) & 0xFF;
-            buff[1] = handle->config.index & 0xFF;
+            buff[0] = (handle->config.address.tf >> 8) & 0xFF;
+            buff[1] = handle->config.address.tf & 0xFF;
             buff[2] = handle->color & 0xFF;         // Blue
             buff[3] = (handle->color >> 8) & 0xFF;  // Green
             buff[4] = (handle->color >> 16) & 0xFF; // Red
@@ -798,7 +798,7 @@ static void LIGHT_Save_Single(LIGHT_Handle* const handle, const uint16_t addr) {
 static void LIGHT_Calculate(void) {
     lights_count = 0;
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i) {
-        if(lights_modbus[i].config.index != 0) {
+        if(lights_modbus[i].config.address.tf != 0) {
             lights_count++;
         }
     }

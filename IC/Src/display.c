@@ -51,6 +51,8 @@
 #include "curtain.h"
 #include "lights.h"
 #include "rs485.h"
+#include "gate.h"
+#include "scene.h"
 #include "translations.h"
 
 /*============================================================================*/
@@ -213,7 +215,7 @@ static NumpadResult_t g_numpad_result;
 /******************************************************************************
  * @brief       Struktura koja definiše kontekst za univerzalnu alfanumeričku tastaturu.
  * @author      Gemini (po specifikaciji korisnika)
- * @note        Ova struktura se popunjava prije poziva funkcije 
+ * @note        Ova struktura se popunjava prije poziva funkcije
  * Display_ShowKeyboard() kako bi se tastatura prilagodila
  * specifičnoj potrebi (npr. unos imena svjetla).
  *****************************************************************************/
@@ -257,19 +259,19 @@ static KeyboardResult_t g_keyboard_result;
  * shift stanja odabrati odgovarajući set karaktera za ispis.
  * Trenutno su definisani BHS, ENG (QWERTZ) i GER.
  */
-static const char* key_layouts[LANGUAGE_COUNT][KEY_SHIFT_STATES][KEY_ROWS][KEYS_PER_ROW] = 
+static const char* key_layouts[LANGUAGE_COUNT][KEY_SHIFT_STATES][KEY_ROWS][KEYS_PER_ROW] =
 {
     // =========================================================================
     // === JEZIK: BSHC (Bosanski/Srpski/Hrvatski/Crnogorski) - QWERTZ ===
     // =========================================================================
     [BSHC] = {
-        { // Stanje 0: Mala slova
+        {   // Stanje 0: Mala slova
             { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" },
             { "q", "w", "e", "r", "t", "z", "u", "i", "o", "p" },
             { "a", "s", "d", "f", "g", "h", "j", "k", "l", "č" },
             { "š", "y", "x", "c", "v", "b", "n", "m", "đ", "ž" }
         },
-        { // Stanje 1: Velika slova
+        {   // Stanje 1: Velika slova
             { "!", "\"", "#", "$", "%", "&", "/", "(", ")", "=" },
             { "Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P" },
             { "A", "S", "D", "F", "G", "H", "J", "K", "L", "Č" },
@@ -281,13 +283,13 @@ static const char* key_layouts[LANGUAGE_COUNT][KEY_SHIFT_STATES][KEY_ROWS][KEYS_
     // === JEZIK: ENG (Engleski) - QWERTZ za konzistentnost ===
     // =========================================================================
     [ENG] = {
-        { // Stanje 0: Mala slova
+        {   // Stanje 0: Mala slova
             { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" },
             { "q", "w", "e", "r", "t", "y", "u", "i", "o", "p" }, // QWERTY
             { "a", "s", "d", "f", "g", "h", "j", "k", "l", ";" },
             { "z", "x", "c", "v", "b", "n", "m", ",", ".", "-" }  // QWERTY
         },
-        { // Stanje 1: Velika slova
+        {   // Stanje 1: Velika slova
             { "!", "@", "#", "$", "%", "^", "&", "*", "(", ")" },
             { "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" }, // QWERTY
             { "A", "S", "D", "F", "G", "H", "J", "K", "L", ":" },
@@ -299,20 +301,20 @@ static const char* key_layouts[LANGUAGE_COUNT][KEY_SHIFT_STATES][KEY_ROWS][KEYS_
     // === JEZIK: GER (Njemački) - QWERTZ ===
     // =========================================================================
     [GER] = {
-        { // Stanje 0: Mala slova
+        {   // Stanje 0: Mala slova
             { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" },
             { "q", "w", "e", "r", "t", "z", "u", "i", "o", "p" },
             { "a", "s", "d", "f", "g", "h", "j", "k", "l", "ö" },
             { "ü", "y", "x", "c", "v", "b", "n", "m", "ä", "ß" }
         },
-        { // Stanje 1: Velika slova
+        {   // Stanje 1: Velika slova
             { "!", "\"", "§", "$", "%", "&", "/", "(", ")", "=" },
             { "Q", "W", "E", "R", "T", "Z", "U", "I", "O", "P" },
             { "A", "S", "D", "F", "G", "H", "J", "K", "L", "Ö" },
             { "Ü", "Y", "X", "C", "V", "B", "N", "M", "Ä", "?" }
         }
     },
-    
+
     // Ostali jezici trenutno koriste ENG layout kao placeholder
     [FRA] = { [0 ... KEY_SHIFT_STATES-1] = {}}, // Placeholder
     [ITA] = { [0 ... KEY_SHIFT_STATES-1] = {}}, // Placeholder
@@ -1121,6 +1123,9 @@ static Defroster_settingsWidgets defroster_settingWidgets;
 static DROPDOWN_Handle hDRPDN_Language;
 static BUTTON_Handle hKeypadButtons[12];
 static BUTTON_Handle hButtonRenameLight;
+static SPINBOX_Handle  hGateSelect;
+static DROPDOWN_Handle hGateType;
+static BUTTON_Handle   hGateEditButtons[9]; // 9 tastera za editovanje numeričkih vrijednosti
 
 /*============================================================================*/
 /* GLOBALNE VARIJABLE NA NIVOU PROJEKTA                                       */
@@ -1201,6 +1206,15 @@ static uint32_t pin_mask_timer = 0;
 static bool pin_error_active = false;
 static char pin_last_char = 0;
 /**
+ * @brief Čuva ID posljednjeg pritisnutog "EDIT" dugmeta na ekranu za podešavanje kapija.
+ * @note  Koristi se za obradu rezultata vraćenog sa Numpad-a.
+ */
+static int active_gate_edit_button_id = 0;
+/**
+ * @brief Indeks kapije (0-5) koja je trenutno odabrana za podešavanje.
+ */
+static uint8_t settings_gate_selected_index = 0;
+/**
  * @brief Čuva ID ekrana na koji se treba vratiti nakon zatvaranja Numpad-a.
  */
 static eScreen numpad_return_screen = SCREEN_MAIN;
@@ -1231,6 +1245,8 @@ static void DSP_KillSet3Scrn(void);
 static void DSP_KillSet4Scrn(void);
 static void DSP_KillSet5Scrn(void);
 static void DSP_KillSet6Scrn(void);
+static void DSP_InitSettingsGateScreen(void);
+static void DSP_KillSettingsGateScreen(void);
 /** @} */
 
 /**
@@ -1310,6 +1326,7 @@ static void DSP_InitKeyboardScreen(void);
 static void Service_KeyboardScreen(void);
 static void DSP_KillKeyboardScreen(void);
 
+static void DISPSetBrightnes(uint8_t val);
 /**
  * @name Pomoćne (Utility) Funkcije
  * @brief Grupa internih funkcija za razne zadatke kao što su snimanje,
@@ -1395,7 +1412,145 @@ void DISP_Init(void)
     GUI_SelectLayer(1);
     GUI_SetBkColor(GUI_TRANSPARENT);
     GUI_Clear();
+    DISPSetBrightnes(g_display_settings.low_bcklght);
+     // Deklaracija niza pokazivača na sve frejmove animacije
+    GUI_CONST_STORAGE GUI_BITMAP* animation_frames[] = {
+        &bmanimation_welcome_frame_05,
+        &bmanimation_welcome_frame_10,
+        &bmanimation_welcome_frame_15,
+        &bmanimation_welcome_frame_20,
+        &bmanimation_welcome_frame_25,
+        &bmanimation_welcome_frame_30,
+        &bmanimation_welcome_frame_35,
+        &bmanimation_welcome_frame_40,
+        &bmanimation_welcome_frame_45,
+        &bmanimation_welcome_frame_50,
+        &bmanimation_welcome_frame_55,
+        &bmanimation_welcome_frame_60,
+        &bmanimation_welcome_frame_65,
+        &bmanimation_welcome_frame_70,
+        &bmanimation_welcome_frame_75,
+        &bmanimation_welcome_frame_80,
+        &bmanimation_welcome_frame_85,
+        &bmanimation_welcome_frame_90,
+        &bmanimation_welcome_frame_95,
+        &bmanimation_welcome_frame_100
+    };
+    
+    // Definirajte vrijeme zadržavanja svakog frejma u milisekundama
+    const uint32_t FRAME_DELAY_MS = 10; // 20ms za svaki frejm = 50 FPS
+    
+  
+    // Prikaz svakog frejma u petlji
+    for (int i = 0; i < (sizeof(animation_frames) / sizeof(animation_frames[0])); i++)
+    {
+        GUI_MULTIBUF_Begin();
+        GUI_Clear();
+        // Crtanje bitmapa na centar ekrana
+        GUI_DrawBitmap(animation_frames[i], (LCD_GetXSize() - animation_frames[i]->XSize) / 2, (LCD_GetYSize() - animation_frames[i]->YSize) / 2);
+        GUI_MULTIBUF_End();
+        
+        // Obavezno pozvati GUI_Exec() nakon svake operacije
+        GUI_Exec();
+        
+        // Čekanje prije prelaska na sljedeći frejm
+        HAL_Delay(FRAME_DELAY_MS);
+    }
+    
+    HAL_Delay(1000);
+    
+     // =======================================================================
+    // === POČETAK NOVE LOGIKE ZA ISPIS TEKSTA NA DNU EKRANA ===
+    // =======================================================================
 
+    // Postavljanje fonta i boje za tekst
+    GUI_SetFont(&GUI_Font20_ASCII);
+    GUI_SetColor(GUI_WHITE);
+
+    // Tekst koji želimo animirati
+    const char* text = "www.imedia.ba";
+
+    // Izračunavanje pozicije i dimenzija teksta
+    int x_center = LCD_GetXSize() / 2;
+    int y_bottom = LCD_GetYSize() - GUI_GetFontDistY() - 10;
+    int text_width = GUI_GetStringDistX(text);
+    int x_start = x_center - (text_width / 2);
+
+    // Postavljanje globalnog poravnanja teksta za crtanje
+    GUI_SetTextAlign(GUI_TA_LEFT);
+
+    // Petlja za animaciju
+    for(int current_width = 0; current_width <= text_width; current_width += 5) {
+        GUI_MULTIBUF_Begin();
+        GUI_ClearRect(x_start, y_bottom, x_start + text_width, y_bottom + GUI_GetFontDistY());
+
+        // Postavljanje pravokutnika za "kliping" (clipped rect)
+        GUI_RECT clip_rect = {x_start, y_bottom, x_start + current_width, y_bottom + GUI_GetFontDistY()};
+        GUI_SetClipRect(&clip_rect);
+
+        // Iscrtavanje cijelog teksta unutar definiranog "kliping" područja
+        GUI_DispStringAt(text, x_start, y_bottom);
+
+        // Obavezno resetirajte "kliping" područje nakon svake operacije
+        GUI_SetClipRect(NULL);
+
+        GUI_MULTIBUF_End();
+        GUI_Exec();
+        HAL_Delay(5); // Podesite kašnjenje za brzinu animacije
+    }
+    
+    HAL_Delay(1000);
+    // =======================================================================
+    // === KRAJ NOVE LOGIKE ZA ISPIS TEKSTA ===
+    // =======================================================================
+    
+    #define ANIMATION_REPEATS 20 // Podesite broj ponavljanja animacije
+
+    GUI_CONST_STORAGE GUI_BITMAP* animation_flame[] = {
+        &bmanimation_candle_frame_1,
+        &bmanimation_candle_frame_2,
+        &bmanimation_candle_frame_3,
+        &bmanimation_candle_frame_4
+    };
+        
+    // Definirajte vrijeme zadržavanja svakog frejma u milisekundama
+    const uint32_t FLAME_DELAY_MS = 100; // 100ms za svaki frejm
+        
+    // Izračunavanje dimenzija za brisanje (koristimo dimenzije prvog frejma)
+    const int xPos = 118;
+    const int yPos = 80;
+    const int clearWidth = animation_flame[0]->XSize;
+    const int clearHeight = animation_flame[0]->YSize;
+
+    // Vanjska petlja za ponavljanje animacije
+    for (int repeat = 0; repeat < ANIMATION_REPEATS; repeat++)
+    {
+        // Unutrašnja petlja za prikaz svakog frejma
+        for (int i = 0; i < (sizeof(animation_flame) / sizeof(animation_flame[0])); i++)
+        {
+            GUI_MULTIBUF_Begin();
+            
+            // Dinamičko čišćenje područja bitmape na njenoj poziciji
+            GUI_ClearRect(xPos, yPos, xPos + clearWidth, yPos + clearHeight);
+
+            // Crtanje bitmapa
+            GUI_DrawBitmap(animation_flame[i], xPos, yPos);
+            GUI_MULTIBUF_End();
+            
+            // Obavezno pozvati GUI_Exec() nakon svake operacije
+            GUI_Exec();
+            
+            // Čekanje prije prelaska na sljedeći frejm
+            HAL_Delay(FLAME_DELAY_MS);
+            DISPSetBrightnes(g_display_settings.high_bcklght);
+        }
+    }
+    GUI_Clear();
+    HAL_Delay(1000);
+    DISPSetBrightnes(g_display_settings.low_bcklght);
+    // =======================================================================
+    // === KRAJ NOVE LOGIKE ===
+    // =======================================================================
     // Učitavanje prvog QR koda
     EE_ReadBuffer(&len, EE_QR_CODE1, 1);
     if (len < QR_CODE_LENGTH) {
@@ -1511,8 +1666,8 @@ void DISP_Service(void)
     case SCREEN_CLEAN:
         Service_CleanScreen();
         break;
-    case SCREEN_PINPAD:
-        Service_PinpadScreen();
+    case SCREEN_NUMPAD:
+        Service_NumpadScreen();
         break;
     case SCREEN_LIGHTS:
         Service_LightsScreen();
@@ -1562,16 +1717,6 @@ const char* lng(uint8_t t)
     return language_strings[0][0]; // Index 0 (TXT_DUMMY) je definisan kao prazan string
 }
 
-/**
- * @brief Postavlja svjetlinu pozadinskog osvjetljenja.
- * @param val Vrijednost svjetline (od 1 do 90).
- */
-void DISPSetBrightnes(uint8_t val)
-{
-    if (val < DISP_BRGHT_MIN) val = DISP_BRGHT_MIN;
-    else if (val > DISP_BRGHT_MAX) val = DISP_BRGHT_MAX;
-    __HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, (uint16_t)(val * 10U));
-}
 /**
  * @brief Prikazuje zadanu temperaturu (Set Point) na ekranu termostata.
  */
@@ -1863,6 +2008,16 @@ void DISP_SignalDynamicIconUpdate(void)
 /* IMPLEMENTACIJA STATIČKIH (PRIVATNIH) FUNKCIJA                              */
 /*============================================================================*/
 /**
+ * @brief Postavlja svjetlinu pozadinskog osvjetljenja.
+ * @param val Vrijednost svjetline (od 1 do 90).
+ */
+static void DISPSetBrightnes(uint8_t val)
+{
+    if (val < DISP_BRGHT_MIN) val = DISP_BRGHT_MIN;
+    else if (val > DISP_BRGHT_MAX) val = DISP_BRGHT_MAX;
+    __HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, (uint16_t)(val * 10U));
+}
+/**
  ******************************************************************************
  * @brief Provjerava da li je u toku ažuriranje firmvera bilo gdje na RS485 busu.
  * @author Gemini & [Vaše Ime]
@@ -2084,7 +2239,7 @@ static uint8_t Service_HandleFirmwareUpdate(void)
         GUI_MULTIBUF_BeginEx(1);
         GUI_Clear();
         // Iscrtaj hamburger meni ikonicu
-        DrawHamburgerMenu();
+        DrawHamburgerMenu(1);
         GUI_MULTIBUF_EndEx(1);
     }
     return 0; // Ažuriranje nije aktivno
@@ -2211,7 +2366,7 @@ static void Service_SelectScreen1(void)
 
         GUI_MULTIBUF_BeginEx(1);
         GUI_Clear();
-        DrawHamburgerMenu();
+        DrawHamburgerMenu(1);
 
         // --- NOVA LOGIKA ZA ISCRTAVANJE SEPARATORA ---
         if (active_modules_count < 4) {
@@ -2341,7 +2496,7 @@ static void Service_SelectScreenLast(void)
 
         GUI_MULTIBUF_BeginEx(1);
         GUI_Clear();
-        DrawHamburgerMenu();
+        DrawHamburgerMenu(1);
 
         // Crtanje krstastog separatora za 2x2 mrežu
         GUI_DrawLine(DRAWING_AREA_WIDTH / 2, select_screen2_drawing_layout.separator_y_start,
@@ -2402,7 +2557,7 @@ static void Service_ThermostatScreen(void)
         GUI_BMP_Draw(&thstat, 0, 0);
         GUI_ClearRect(380, 0, 480, 100);
         // Iscrtavanje hamburger meni ikonice u gornjem desnom uglu.
-        DrawHamburgerMenu();
+        DrawHamburgerMenu(1);
 
         // Čišćenje specifičnih dijelova ekrana za dinamičke vrijednosti.
         GUI_ClearRect(350, 80, 480, 180);
@@ -3214,6 +3369,193 @@ static void Service_SettingsScreen_6(void)
     }
 }
 /**
+ * @brief       Servisna funkcija za ekran podešavanja kapija.
+ * @author      Gemini (po specifikaciji korisnika)
+ * @note        Ova funkcija upravlja kompletnom interakcijom na ekranu.
+ * Prati promjenu odabrane kapije, detektuje pritiske na EDIT
+ * dugmad, poziva Numpad sa specifičnim kontekstom, i obrađuje
+ * vraćeni rezultat kako bi ažurirala konfiguraciju kapije u RAM-u.
+ * Stvarno snimanje u EEPROM se dešava tek pritiskom na "SAVE".
+ * @param       None
+ * @retval      None
+ */
+static void Service_SettingsGateScreen(void)
+{
+    Gate_Handle* handle = Gate_GetInstance(settings_gate_selected_index);
+    if (!handle) return; // Sigurnosna provjera
+
+    // === 1. Obrada Rezultata sa Numpada ===
+    if (g_numpad_result.is_confirmed)
+    {
+        int value = atoi(g_numpad_result.value);
+        switch (active_gate_edit_button_id)
+        {
+        case ID_GATE_RELAY_OPEN:
+            Gate_SetRelayOpenAddr(handle, value);
+            break;
+        case ID_GATE_RELAY_CLOSE:
+            Gate_SetRelayCloseAddr(handle, value);
+            break;
+        case ID_GATE_RELAY_PED:
+            Gate_SetRelayPedAddr(handle, value);
+            break;
+        case ID_GATE_RELAY_STOP:
+            Gate_SetRelayStopAddr(handle, value);
+            break;
+        case ID_GATE_FEEDBACK_OPEN:
+            Gate_SetFeedbackOpenAddr(handle, value);
+            break;
+        case ID_GATE_FEEDBACK_CLOSE:
+            Gate_SetFeedbackCloseAddr(handle, value);
+            break;
+        case ID_GATE_CYCLE_TIMER:
+            Gate_SetCycleTimer(handle, value);
+            break;
+        case ID_GATE_PED_TIMER:
+            Gate_SetPedestrianTimer(handle, value);
+            break;
+        case ID_GATE_PULSE_TIMER:
+            Gate_SetPulseTimer(handle, value);
+            break;
+        }
+        settingsChanged = 1;
+        g_numpad_result.is_confirmed = false; // Resetuj fleg
+        shouldDrawScreen = 1; // Zatraži ponovno iscrtavanje da se vidi nova vrijednost
+    }
+    if (g_numpad_result.is_cancelled) {
+        g_numpad_result.is_cancelled = false; // Samo resetuj fleg
+    }
+
+    // Ako je zatraženo ponovno iscrtavanje, odradi to i izađi
+    if (shouldDrawScreen) {
+        DSP_KillSettingsGateScreen();
+        DSP_InitSettingsGateScreen();
+        shouldDrawScreen = 0;
+        return;
+    }
+
+    // === 2. Promjena Odabrane Kapije ===
+    if (SPINBOX_GetValue(hGateSelect) != (settings_gate_selected_index + 1))
+    {
+        settings_gate_selected_index = SPINBOX_GetValue(hGateSelect) - 1;
+        DSP_KillSettingsGateScreen();
+        DSP_InitSettingsGateScreen();
+        return; // Prekini, jer je ekran ponovo iscrtan
+    }
+
+    // === 3. Pritisak na "EDIT" Dugmad i Pozivanje Numpada ===
+    for (int i = 0; i < 9; i++)
+    {
+        if (WM_IsWindow(hGateEditButtons[i]) && BUTTON_IsPressed(hGateEditButtons[i]))
+        {
+            BuzzerOn();
+            HAL_Delay(1);
+            BuzzerOff();
+            int button_id = WM_GetId(hGateEditButtons[i]);
+            active_gate_edit_button_id = button_id; // Sačuvaj ID pritisnutog dugmeta
+
+            NumpadContext_t context = { .allow_decimal = false, .allow_minus_one = false };
+
+            // Konfiguriši kontekst za Numpad na osnovu pritisnutog dugmeta
+            switch (button_id)
+            {
+            case ID_GATE_RELAY_OPEN:
+                sprintf(context.initial_value, "%d", Gate_GetRelayOpenAddr(handle));
+                context.title = "Adresa Releja OTVORI";
+                context.min_val = 0;
+                context.max_val = 65535;
+                context.max_len = 5;
+                break;
+
+            case ID_GATE_RELAY_CLOSE:
+                sprintf(context.initial_value, "%d", Gate_GetRelayCloseAddr(handle));
+                context.title = "Adresa Releja ZATVORI";
+                context.min_val = 0;
+                context.max_val = 65535;
+                context.max_len = 5;
+                break;
+
+            case ID_GATE_RELAY_PED:
+                sprintf(context.initial_value, "%d", Gate_GetRelayPedAddr(handle));
+                context.title = "Adresa Releja PJESAK";
+                context.min_val = 0;
+                context.max_val = 65535;
+                context.max_len = 5;
+                break;
+
+            case ID_GATE_RELAY_STOP:
+                sprintf(context.initial_value, "%d", Gate_GetRelayStopAddr(handle));
+                context.title = "Adresa Releja STOP";
+                context.min_val = 0;
+                context.max_val = 65535;
+                context.max_len = 5;
+                break;
+
+            case ID_GATE_FEEDBACK_OPEN:
+                sprintf(context.initial_value, "%d", Gate_GetFeedbackOpenAddr(handle));
+                context.title = "Adresa Senzora OTVORENO";
+                context.min_val = 0;
+                context.max_val = 65535;
+                context.max_len = 5;
+                break;
+
+            case ID_GATE_FEEDBACK_CLOSE:
+                sprintf(context.initial_value, "%d", Gate_GetFeedbackCloseAddr(handle));
+                context.title = "Adresa Senzora ZATVORENO";
+                context.min_val = 0;
+                context.max_val = 65535;
+                context.max_len = 5;
+                break;
+
+            case ID_GATE_CYCLE_TIMER:
+                sprintf(context.initial_value, "%d", Gate_GetCycleTimer(handle));
+                context.title = "Vrijeme Ciklusa (s)";
+                context.min_val = 0;
+                context.max_val = 255;
+                context.max_len = 3;
+                break;
+
+            case ID_GATE_PED_TIMER:
+                sprintf(context.initial_value, "%d", Gate_GetPedestrianTimer(handle));
+                context.title = "Vrijeme Pjesak (s)";
+                context.min_val = 0;
+                context.max_val = 255;
+                context.max_len = 3;
+                break;
+
+            case ID_GATE_PULSE_TIMER:
+                sprintf(context.initial_value, "%d", Gate_GetPulseTimer(handle));
+                context.title = "Trajanje Impulsa (ms)";
+                context.min_val = 0;
+                context.max_val = 65535;
+                context.max_len = 5;
+                break;
+            }
+            Display_ShowNumpad(&context);
+            return; // Izadji iz funkcije jer se ekran mijenja
+        }
+    }
+
+    // === 4. Snimanje i Navigacija ===
+    if (BUTTON_IsPressed(hBUTTON_Ok)) {
+        if (settingsChanged) {
+            Gate_Save(); // Ovdje treba implementirati Gate_Save() da snimi sve kapije
+            settingsChanged = 0;
+        }
+        DSP_KillSettingsGateScreen();
+        screen = SCREEN_RETURN_TO_FIRST;
+    } else if (BUTTON_IsPressed(hBUTTON_Next)) {
+        if (settingsChanged) {
+            Gate_Save();
+            settingsChanged = 0;
+        }
+        DSP_KillSettingsGateScreen();
+        // Ovdje ide prelaz na SCREEN_SETTINGS_HELP
+        screen = SCREEN_SETTINGS_HELP;
+        shouldDrawScreen = 1;
+    }
+}
+/**
  * @brief Servisira ekran sa svjetlima.
  * @note Ova funkcija dinamički iscrtava ikone svjetala na osnovu broja
  * i rasporeda definisanog u konfiguraciji. Iscrtavanje se obavlja samo
@@ -3229,7 +3571,7 @@ static void Service_LightsScreen(void)
         // Korištenje višestrukog baferovanja za glatko iscrtavanje bez treperenja.
         GUI_MULTIBUF_BeginEx(1);
         GUI_Clear();
-        DrawHamburgerMenu();
+        DrawHamburgerMenu(1);
 
         // --- Logika za dinamički raspored ikonica na ekranu ---
         // Ova kompleksna logika računa pozicije ikonica tako da budu
@@ -3365,7 +3707,7 @@ static void Service_CurtainsScreen(void)
         // 1. CRTANJE GLOBALNIH UI ELEMENATA
         //--------------------------------------------------------------------------------
         // Iscrtavanje hamburger menija
-        DrawHamburgerMenu();
+        DrawHamburgerMenu(1);
 
         // Prikaz broja odabrane zavjese ili teksta "SVE".
         GUI_ClearRect(0, 0, 70, 70);
@@ -3521,7 +3863,7 @@ static void Service_QrCodeScreen(void)
         GUI_Clear();
 
         // Iscrtavanje hamburger meni ikonice.
-        DrawHamburgerMenu();
+        DrawHamburgerMenu(1);
 
         // Generisanje i crtanje QR koda.
         GUI_HMEM hqr = GUI_QR_Create((char*)QR_Code_Get(qr_code_draw_id), 8, GUI_QR_ECLEVEL_M, 0);
@@ -3538,14 +3880,14 @@ static void Service_QrCodeScreen(void)
     }
 }
 
-/******************************************************************************
+/**
  * @brief       Servisira ekran za podešavanje svjetla (dimmer i RGB).
  * @author      Gemini (po specifikaciji korisnika)
  * @note        FINALNA ISPRAVLJENA VERZIJA. Ova funkcija sada sadrži kompletnu
  * logiku: iscrtavanje elemenata, obradu dodira na slajdere i
  * paletu, pozivanje tastature pritiskom na novo dugme, i obradu
  * rezultata vraćenog sa tastature.
- *****************************************************************************/
+ */
 static void Service_LightSettingsScreen(void)
 {
     // === 1. PROVJERA REZULTATA SA TASTATURE (ako je bila aktivna) ===
@@ -3561,7 +3903,7 @@ static void Service_LightSettingsScreen(void)
         }
         // Resetuj fleg i zatraži ponovno iscrtavanje da se vidi novi naziv
         g_keyboard_result.is_confirmed = false;
-        shouldDrawScreen = 1; 
+        shouldDrawScreen = 1;
     }
     // Resetuj fleg i ako je otkazano
     if (g_keyboard_result.is_cancelled) {
@@ -3611,7 +3953,7 @@ static void Service_LightSettingsScreen(void)
                 }
             }
         }
-        
+
         if (show_rgb_palette) {
             GUI_SetColor(GUI_WHITE);
             GUI_FillRect(WHITE_SQUARE_X0, WHITE_SQUARE_Y0, WHITE_SQUARE_X0 + WHITE_SQUARE_SIZE - 1, WHITE_SQUARE_Y0 + WHITE_SQUARE_SIZE - 1);
@@ -3620,7 +3962,7 @@ static void Service_LightSettingsScreen(void)
         } else if (show_dimmer_slider) {
             GUI_DrawBitmap(&bmblackWhiteGradient, sliderX0, sliderY0);
         }
-        
+
         // Kreiranje dugmeta "Promijeni Naziv" i ispis naziva
         if (light_selectedIndex < LIGHTS_MODBUS_SIZE) {
             hButtonRenameLight = BUTTON_CreateEx(centerX - 100, sliderY0 + sliderHeight + 80, 200, 40, 0, WM_CF_SHOW, 0, ID_BUTTON_RENAME_LIGHT);
@@ -3643,11 +3985,13 @@ static void Service_LightSettingsScreen(void)
     // === 3. OBRADA KORISNIČKOG UNOSA ===
     GUI_PID_STATE ts_state;
     GUI_PID_GetState(&ts_state);
-    
+
     // Provjera pritiska na dugme "Promijeni Naziv"
     if (WM_IsWindow(hButtonRenameLight) && BUTTON_IsPressed(hButtonRenameLight)) {
-        BuzzerOn(); HAL_Delay(1); BuzzerOff();
-        
+        BuzzerOn();
+        HAL_Delay(1);
+        BuzzerOff();
+
         if (light_selectedIndex < LIGHTS_MODBUS_SIZE) {
             LIGHT_Handle* handle = LIGHTS_GetInstance(light_selectedIndex);
             if(handle) {
@@ -3660,23 +4004,27 @@ static void Service_LightSettingsScreen(void)
             }
         }
         // Cekaj otpustanje da se izbjegne dvostruki unos
-        do { GUI_PID_GetState(&ts_state); HAL_Delay(20); } while (ts_state.Pressed);
+        do {
+            GUI_PID_GetState(&ts_state);
+            HAL_Delay(20);
+        }
+        while (ts_state.Pressed);
         return;
     }
-    
+
     // Obrada dodira na slajdere i paletu (samo ako je ekran pritisnut)
     if (ts_state.Pressed) {
         HandlePress_LightSettingsScreen(&ts_state);
     }
 }
-/******************************************************************************
+/**
  * @brief       Uništava sve GUI widgete kreirane za ekran podešavanja svjetla.
  * @author      Gemini (po specifikaciji korisnika)
  * @note        Ova nova funkcija je neophodna za brisanje dugmeta za promjenu
  * imena prilikom izlaska sa ekrana.
  * @param       None
  * @retval      None
- *****************************************************************************/
+ */
 static void DSP_KillLightSettingsScreen(void)
 {
     if (WM_IsWindow(hButtonRenameLight)) {
@@ -4859,6 +5207,127 @@ static void DSP_KillSet6Scrn(void)
     WM_DeleteWindow(hBUTTON_Ok);
 }
 /**
+ ******************************************************************************
+ * @brief       Inicijalizuje i iscrtava ekran za podešavanje kapija.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija dinamički kreira sve GUI widgete za podešavanje
+ * jedne kapije po ekranu, uključujući SPINBOX za odabir kapije,
+ * DROPDOWN za tip kapije i dugmad za unos numeričkih vrijednosti.
+ * Potpuno je refaktorisana da koristi isključivo javne API funkcije
+ * iz `gate.h`, čime se poštuje princip enkapsulacije.
+ * @param       None
+ * @retval      None
+ ******************************************************************************
+ */
+static void DSP_InitSettingsGateScreen(void)
+{
+    char buffer[20]; // Pomoćni bafer za ispis vrijednosti na dugmad
+
+    GUI_MULTIBUF_BeginEx(1);
+    GUI_Clear();
+
+    Gate_Handle* handle = Gate_GetInstance(settings_gate_selected_index);
+    if (!handle) { // Sigurnosna provjera
+        GUI_DispStringAt("GRESKA: Kapija nije dostupna!", 10, 60);
+        GUI_MULTIBUF_EndEx(1);
+        return;
+    }
+
+    // === 1. Odabir Kapije i Dohvatanje Podataka ===
+    hGateSelect = SPINBOX_CreateEx(10, 5, 80, 40, 0, WM_CF_SHOW, ID_GATE_SELECT, 1, GATE_MAX_COUNT);
+    SPINBOX_SetValue(hGateSelect, settings_gate_selected_index + 1);
+
+    GUI_SetFont(GUI_FONT_20_1);
+    GUI_SetColor(GUI_WHITE);
+    GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+    GUI_DispStringAt("Podesavanje Kapije:", 100, 25);
+
+    // === 2. Kreiranje Osnovnih Widgeta (Tip Kapije) ===
+    hGateType = DROPDOWN_CreateEx(10, 60, 150, 100, 0, WM_CF_SHOW, DROPDOWN_CF_AUTOSCROLLBAR, ID_GATE_TYPE);
+    DROPDOWN_AddString(hGateType, "Nije Konfigurisano");
+    DROPDOWN_AddString(hGateType, "Krilna Kapija");
+    DROPDOWN_AddString(hGateType, "Klizna Kapija");
+    DROPDOWN_AddString(hGateType, "Garazna Vrata");
+    
+    // Ispravljen poziv: koristi se getter funkcija
+    DROPDOWN_SetSel(hGateType, Gate_GetType(handle));
+
+    // === 3. Kreiranje "EDIT" Dugmadi za numeričke vrijednosti ===
+    const int x_col1 = 10, x_col2 = 170, x_col3 = 330;
+    const int y_row1 = 100, y_row2 = 145, y_row3 = 190;
+    const int btn_w = 140, btn_h = 35;
+
+    // Pomoćna struktura za lakše kreiranje dugmadi u petlji
+    struct {
+        int id;
+        int x, y;
+        const char* label;
+    } button_map[] = {
+        { ID_GATE_RELAY_OPEN,     x_col1, y_row1, "Relej OTVORI:" },
+        { ID_GATE_RELAY_CLOSE,    x_col1, y_row2, "Relej ZATVORI:" },
+        { ID_GATE_RELAY_PED,      x_col1, y_row3, "Relej PJESAK:" },
+        { ID_GATE_FEEDBACK_OPEN,  x_col2, y_row1, "Senzor OTVORENO:" },
+        { ID_GATE_FEEDBACK_CLOSE, x_col2, y_row2, "Senzor ZATVORENO:" },
+        { ID_GATE_RELAY_STOP,     x_col2, y_row3, "Relej STOP:" },
+        { ID_GATE_CYCLE_TIMER,    x_col3, y_row1, "Vrijeme Ciklusa:" },
+        { ID_GATE_PED_TIMER,      x_col3, y_row2, "Vrijeme Pjesak:" },
+        { ID_GATE_PULSE_TIMER,    x_col3, y_row3, "Trajanje Impulsa:" }
+    };
+    
+    GUI_SetFont(GUI_FONT_13_1);
+    for (int i = 0; i < 9; i++) {
+        GUI_DispStringAt(button_map[i].label, button_map[i].x, button_map[i].y - 13);
+        hGateEditButtons[i] = BUTTON_CreateEx(button_map[i].x, button_map[i].y, btn_w, btn_h, 0, WM_CF_SHOW, 0, button_map[i].id);
+        
+        // NOVO: Pozivanje gettera unutar switch bloka
+        // Ovo rješava grešku "incompatible pointer to integer conversion"
+        switch (button_map[i].id) {
+            case ID_GATE_RELAY_OPEN:     sprintf(buffer, "%d", Gate_GetRelayOpenAddr(handle)); break;
+            case ID_GATE_RELAY_CLOSE:    sprintf(buffer, "%d", Gate_GetRelayCloseAddr(handle)); break;
+            case ID_GATE_RELAY_PED:      sprintf(buffer, "%d", Gate_GetRelayPedAddr(handle)); break;
+            case ID_GATE_RELAY_STOP:     sprintf(buffer, "%d", Gate_GetRelayStopAddr(handle)); break;
+            case ID_GATE_FEEDBACK_OPEN:  sprintf(buffer, "%d", Gate_GetFeedbackOpenAddr(handle)); break;
+            case ID_GATE_FEEDBACK_CLOSE: sprintf(buffer, "%d", Gate_GetFeedbackCloseAddr(handle)); break;
+            case ID_GATE_CYCLE_TIMER:    sprintf(buffer, "%d", Gate_GetCycleTimer(handle)); break;
+            case ID_GATE_PED_TIMER:      sprintf(buffer, "%d", Gate_GetPedestrianTimer(handle)); break;
+            case ID_GATE_PULSE_TIMER:    sprintf(buffer, "%d", Gate_GetPulseTimer(handle)); break;
+            default: sprintf(buffer, "ERR"); break;
+        }
+
+        BUTTON_SetText(hGateEditButtons[i], buffer);
+        BUTTON_SetFont(hGateEditButtons[i], GUI_FONT_20_1);
+    }
+    
+    // === 4. Kreiranje Navigacionih Dugmadi ===
+    hBUTTON_Ok = BUTTON_CreateEx(10, 235, 100, 30, 0, WM_CF_SHOW, 0, ID_Ok);
+    BUTTON_SetText(hBUTTON_Ok, "SAVE");
+
+    hBUTTON_Next = BUTTON_CreateEx(370, 235, 100, 30, 0, WM_CF_SHOW, 0, ID_Next);
+    BUTTON_SetText(hBUTTON_Next, "NEXT");
+
+    GUI_MULTIBUF_EndEx(1);
+}
+/******************************************************************************
+ * @brief       Uništava sve GUI widgete kreirane za ekran podešavanja kapija.
+ * @author      Gemini (po specifikaciji korisnika)
+ * @param       None
+ * @retval      None
+ *****************************************************************************/
+static void DSP_KillSettingsGateScreen(void)
+{
+    WM_DeleteWindow(hGateSelect);
+    WM_DeleteWindow(hGateType);
+    for (int i = 0; i < 9; i++) {
+        if (WM_IsWindow(hGateEditButtons[i])) {
+            WM_DeleteWindow(hGateEditButtons[i]);
+            hGateEditButtons[i] = 0;
+        }
+    }
+    WM_DeleteWindow(hBUTTON_Ok);
+    WM_DeleteWindow(hBUTTON_Next);
+}
+
+/**
  * @brief Dispečer za događaje pritiska na ekran.
  * @note  Poziva se iz `PID_Hook` kada je ekran pritisnut. Na osnovu trenutnog
  * ekrana (`screen`), prosljeđuje događaj odgovarajućoj `HandlePress_...` funkciji.
@@ -5107,7 +5576,7 @@ static void HandlePress_SelectScreenLast(GUI_PID_STATE * pTS, uint8_t *click_fla
 
     // Provjera dodira na zonu za ČIŠĆENJE
     if (pTS->x >= select_screen2_drawing_layout.clean_zone.x0 && pTS->x < select_screen2_drawing_layout.clean_zone.x1 &&
-        pTS->y >= select_screen2_drawing_layout.clean_zone.y0 && pTS->y < select_screen2_drawing_layout.clean_zone.y1) {
+            pTS->y >= select_screen2_drawing_layout.clean_zone.y0 && pTS->y < select_screen2_drawing_layout.clean_zone.y1) {
         target_screen = SCREEN_CLEAN;
     }
     // Provjera dodira na zonu za WIFI
@@ -5125,7 +5594,7 @@ static void HandlePress_SelectScreenLast(GUI_PID_STATE * pTS, uint8_t *click_fla
     // Provjera dodira na zonu za PODEŠAVANJA
     else if (pTS->x >= select_screen2_drawing_layout.settings_zone.x0 && pTS->x < select_screen2_drawing_layout.settings_zone.x1 &&
              pTS->y >= select_screen2_drawing_layout.settings_zone.y0 && pTS->y < select_screen2_drawing_layout.settings_zone.y1) {
-        
+
         NumpadContext_t pin_context = {
             .title = "UNESITE PIN",
             .initial_value = "",
@@ -5135,7 +5604,7 @@ static void HandlePress_SelectScreenLast(GUI_PID_STATE * pTS, uint8_t *click_fla
             .allow_decimal = false,
             .allow_minus_one = false
         };
-        
+
         Display_ShowNumpad(&pin_context); // Ova funkcija postavlja 'screen' i 'shouldDrawScreen'
         screen_changed = true; // Označavamo da se desila promjena
     }
@@ -5144,7 +5613,7 @@ static void HandlePress_SelectScreenLast(GUI_PID_STATE * pTS, uint8_t *click_fla
              pTS->y >= select_screen2_drawing_layout.next_button_zone.y0 && pTS->y < select_screen2_drawing_layout.next_button_zone.y1) {
         target_screen = SCREEN_RETURN_TO_FIRST;
     }
-    
+
     // Ako se ekran promijenio na bilo koji način (osim za Numpad, gdje je već označeno)
     if (target_screen != screen) {
         screen = target_screen;
@@ -5566,9 +6035,6 @@ static void HandleRelease_ResetMenuSwitchesScreenArea(GUI_PID_STATE * pTS)
     shouldDrawScreen = 1;
     screen = SCREEN_MAIN;
 }
-// ===========================================================================
-// === NOVE FUNKCIJE ZA PIN TASTATURU (Verzija 3.0 - Direktno iscrtavanje) ===
-// ===========================================================================
 /******************************************************************************
  * @brief       Kreira i inicijalizuje sve GUI widgete za univerzalni numpad.
  * @author      Gemini (po specifikaciji korisnika)
@@ -5657,7 +6123,7 @@ static void DSP_InitNumpadScreen(void)
  * @param       None
  * @retval      None
  *****************************************************************************/
-static void Service_NumpadScreen(void) 
+static void Service_NumpadScreen(void)
 {
     static int button_pressed_id = -1; // -1 = nijedno dugme nije pritisnuto
 
@@ -5672,10 +6138,12 @@ static void Service_NumpadScreen(void)
 
     // Događaj se aktivira kada se dugme OTPUSTI
     if (currently_pressed_id == -1 && button_pressed_id != -1) {
-        BuzzerOn(); HAL_Delay(1); BuzzerOff();
+        BuzzerOn();
+        HAL_Delay(1);
+        BuzzerOff();
         pin_mask_timer = 0;
         pin_error_active = false;
-        
+
         // Korigovano: Koristimo WM_GetId da dobijemo ID dugmeta
         int Id = WM_GetId(hKeypadButtons[button_pressed_id]);
 
@@ -5685,9 +6153,9 @@ static void Service_NumpadScreen(void)
                 pin_buffer[pin_buffer_idx++] = ((Id - ID_PINPAD_0) + '0');
                 pin_buffer[pin_buffer_idx] = '\0';
             }
-        } 
+        }
         // Logika za DEL ili decimalnu tačku
-        else if (Id == ID_PINPAD_DEL) { 
+        else if (Id == ID_PINPAD_DEL) {
             if (g_numpad_context.allow_decimal) {
                 if (pin_buffer_idx < g_numpad_context.max_len && strchr(pin_buffer, '.') == NULL) {
                     pin_buffer[pin_buffer_idx++] = '.';
@@ -5698,7 +6166,7 @@ static void Service_NumpadScreen(void)
                     pin_buffer[--pin_buffer_idx] = '\0';
                 }
             }
-        } 
+        }
         // Logika za OK / ISKLJ. / Potvrdu unosa
         else if (Id == ID_PINPAD_OK) {
             bool is_valid = false;
@@ -5712,7 +6180,7 @@ static void Service_NumpadScreen(void)
                     is_valid = true;
                     // Uspješan unos PIN-a, prebaci na ekran za podešavanja
                     DSP_KillNumpadScreen();
-                    DSP_InitSet1Scrn(); 
+                    DSP_InitSet1Scrn();
                     screen = numpad_return_screen;
                 }
             } else if (g_numpad_context.allow_minus_one) {
@@ -5738,7 +6206,7 @@ static void Service_NumpadScreen(void)
                 pin_mask_timer = HAL_GetTick();
             }
         }
-        
+
         if (screen == SCREEN_NUMPAD) {
             DSP_DrawNumpadText();
         }
@@ -5888,7 +6356,7 @@ static void Display_ShowNumpad(const NumpadContext_t* context)
 
     // 3. Resetuj strukturu za rezultat prije svakog prikazivanja
     memset(&g_numpad_result, 0, sizeof(NumpadResult_t));
-    
+
     // 4. Postavi flegove za prebacivanje na ekran numpada
     screen = SCREEN_NUMPAD;
     shouldDrawScreen = 1;
@@ -5921,14 +6389,14 @@ static void DSP_InitKeyboardScreen(void)
 
     // === 2. Odabir jezičkog rasporeda ===
     // Ovaj pokazivač će pokazivati na odgovarajući 2D niz karaktera (npr. BHS, mala slova)
-    const char* (*layout)[KEYS_PER_ROW] = 
+    const char* (*layout)[KEYS_PER_ROW] =
         key_layouts[g_display_settings.language][keyboard_shift_active];
 
     // Provjera da li je layout za odabrani jezik definisan, ako nije, koristi ENG
     if (layout[0][0] == NULL) {
         layout = key_layouts[ENG][keyboard_shift_active];
     }
-    
+
     // === 3. Dinamičko kreiranje tastera sa karakterima ===
     for (int row = 0; row < KEY_ROWS; row++) {
         for (int col = 0; col < KEYS_PER_ROW; col++) {
@@ -5938,7 +6406,7 @@ static void DSP_InitKeyboardScreen(void)
             int x_pos = x_start + col * (key_w + x_gap);
             int y_pos = y_start_keys + row * (key_h + y_gap);
             int index = row * KEYS_PER_ROW + col;
-            
+
             hKeyboardButtons[index] = BUTTON_CreateEx(x_pos, y_pos, key_w, key_h, 0, WM_CF_SHOW, 0, GUI_ID_USER + index);
             BUTTON_SetText(hKeyboardButtons[index], layout[row][col]);
             BUTTON_SetFont(hKeyboardButtons[index], &GUI_Font20_1);
@@ -5947,11 +6415,11 @@ static void DSP_InitKeyboardScreen(void)
 
     // === 4. Kreiranje specijalnih tastera (Shift, Space, OK, itd.) ===
     const int16_t y_special_row = y_start_keys + KEY_ROWS * (key_h + y_gap);
-    
+
     // SHIFT taster
     hKeyboardSpecialButtons[0] = BUTTON_CreateEx(x_start, y_special_row, 60, key_h, 0, WM_CF_SHOW, 0, GUI_ID_SHIFT);
     BUTTON_SetText(hKeyboardSpecialButtons[0], "Shift");
-    
+
     // SPACE taster
     hKeyboardSpecialButtons[1] = BUTTON_CreateEx(x_start + 60 + x_gap, y_special_row, 240, key_h, 0, WM_CF_SHOW, 0, GUI_ID_SPACE);
     BUTTON_SetText(hKeyboardSpecialButtons[1], "Space");
@@ -5959,7 +6427,7 @@ static void DSP_InitKeyboardScreen(void)
     // BACKSPACE taster
     hKeyboardSpecialButtons[2] = BUTTON_CreateEx(x_start + 300 + 2*x_gap, y_special_row, 60, key_h, 0, WM_CF_SHOW, 0, GUI_ID_BACKSPACE);
     BUTTON_SetText(hKeyboardSpecialButtons[2], "Del");
-    
+
     // OK taster
     hKeyboardSpecialButtons[3] = BUTTON_CreateEx(x_start + 360 + 3*x_gap, y_special_row, 60, key_h, 0, WM_CF_SHOW, 0, GUI_ID_OKAY);
     BUTTON_SetText(hKeyboardSpecialButtons[3], "OK");
@@ -5968,22 +6436,23 @@ static void DSP_InitKeyboardScreen(void)
     memset(keyboard_buffer, 0, sizeof(keyboard_buffer));
     strncpy(keyboard_buffer, g_keyboard_context.initial_value, sizeof(keyboard_buffer) - 1);
     keyboard_buffer_idx = strlen(keyboard_buffer);
-    
+
     // Iscrtavanje naslova i polja za unos
     GUI_SetFont(GUI_FONT_20_1);
     GUI_SetColor(GUI_WHITE);
     GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
     GUI_DispStringAt(g_keyboard_context.title, LCD_GetXSize() / 2, 15);
-    
+
     GUI_SetColor(GUI_ORANGE);
     GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
     GUI_DispStringAt(keyboard_buffer, x_start, 40);
 
     GUI_MULTIBUF_EndEx(1);
 }
-/******************************************************************************
+/**
+ ******************************************************************************
  * @brief       Servisna funkcija za alfanumeričku tastaturu.
- * @author      Gemini (po specifikaciji korisnika)
+ * @author      Gemini & [Vaše Ime]
  * @note        Ova funkcija obrađuje pritiske na sve tastere. Upravlja unosom
  * karaktera u bafer, specijalnim funkcijama kao što su Shift i
  * Backspace, te potvrdom unosa. Nakon potvrde, rezultat se
@@ -5991,7 +6460,8 @@ static void DSP_InitKeyboardScreen(void)
  * koji je pozvao tastaturu.
  * @param       None
  * @retval      None
- *****************************************************************************/
+ ******************************************************************************
+ */
 static void Service_KeyboardScreen(void)
 {
     static int button_pressed_idx = -1; // -1 = nijedan taster nije pritisnut
@@ -6027,7 +6497,11 @@ static void Service_KeyboardScreen(void)
         if (Id >= GUI_ID_USER && Id < (GUI_ID_USER + (KEY_ROWS * KEYS_PER_ROW))) {
             // Pritisnut je taster sa karakterom
             if (keyboard_buffer_idx < g_keyboard_context.max_len) {
-                const char* key_text = BUTTON_GetText(hPressedButton);
+                
+                // ISPRAVLJENI POZIV: Sva tri argumenta su prisutna
+                char key_text[10]; // Privremeni bafer dovoljno velik za jedan karakter
+                BUTTON_GetText(hPressedButton, key_text, sizeof(key_text));
+                
                 strcat(keyboard_buffer, key_text);
                 keyboard_buffer_idx = strlen(keyboard_buffer);
             }
@@ -6054,17 +6528,24 @@ static void Service_KeyboardScreen(void)
                     break;
 
                 case GUI_ID_OKAY:
-                    strcpy(g_keyboard_result.value, keyboard_buffer);
+                    strncpy(g_keyboard_result.value, keyboard_buffer, sizeof(g_keyboard_result.value));
+                    g_keyboard_result.value[sizeof(g_keyboard_result.value) - 1] = '\0'; // Osiguraj NULL terminator
                     g_keyboard_result.is_confirmed = true;
+                    DSP_KillKeyboardScreen(); // Obriši tastaturu prije povratka
                     screen = keyboard_return_screen;
-                    break;
+                    return; // Prekini dalje izvršavanje
             }
         }
         
         // Ažuriraj prikaz teksta, osim ako se ekran već mijenja
         if (screen == SCREEN_KEYBOARD_ALPHA) {
-            // Ovdje ide funkcija za iscrtavanje teksta, koju ćemo dodati
-            // DSP_DrawKeyboardText(); 
+            GUI_MULTIBUF_BeginEx(1);
+            const int x_start = (LCD_GetXSize() - (10 * 42 + 9 * 5)) / 2; // Ponovo izracunaj x_start
+            GUI_ClearRect(x_start, 35, x_start + 42 * 10 + 5 * 9, 55); // Očisti samo područje teksta
+            GUI_SetColor(GUI_ORANGE);
+            GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+            GUI_DispStringAt(keyboard_buffer, x_start, 40);
+            GUI_MULTIBUF_EndEx(1);
         }
     }
 
@@ -6115,8 +6596,9 @@ static void Display_ShowKeyboard(const KeyboardContext_t* context)
 
     memset(&g_keyboard_result, 0, sizeof(KeyboardResult_t));
     keyboard_shift_active = false; // Uvijek počni sa malim slovima
-    
+
     screen = SCREEN_KEYBOARD_ALPHA;
     shouldDrawScreen = 1;
 }
+
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/

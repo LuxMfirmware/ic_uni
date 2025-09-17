@@ -581,26 +581,6 @@
           <GroupName>Animation</GroupName>
           <Files>
             <File>
-              <FileName>animation_welcome_candle_frame_1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\animation_welcome_candle_frame_1.c</FilePath>
-            </File>
-            <File>
-              <FileName>animation_welcome_candle_frame_2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\animation_welcome_candle_frame_2.c</FilePath>
-            </File>
-            <File>
-              <FileName>animation_welcome_candle_frame_3.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\animation_welcome_candle_frame_3.c</FilePath>
-            </File>
-            <File>
-              <FileName>animation_welcome_candle_frame_4.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\animation_welcome_candle_frame_4.c</FilePath>
-            </File>
-            <File>
               <FileName>animation_welcome_frame_05.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\animation_welcome_frame_05.c</FilePath>
@@ -704,6 +684,26 @@
               <FileName>animation_welcome_frame_final.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\animation_welcome_frame_final.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_candle_frame_1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_candle_frame_1.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_candle_frame_2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_candle_frame_2.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_candle_frame_3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_candle_frame_3.c</FilePath>
+            </File>
+            <File>
+              <FileName>animation_candle_frame_4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\animation_candle_frame_4.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1116,6 +1116,11 @@
           <GroupName>Application/User</GroupName>
           <Files>
             <File>
+              <FileName>firmware_update_agent.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\firmware_update_agent.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f7xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Src/stm32f7xx_it.c</FilePath>
@@ -1131,24 +1136,29 @@
               <FilePath>..\..\Middlewares\TinyFrame\TinyFrame.c</FilePath>
             </File>
             <File>
+              <FileName>ventilator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\ventilator.c</FilePath>
+            </File>
+            <File>
               <FileName>common.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Common\common.c</FilePath>
             </File>
             <File>
+              <FileName>defroster.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\defroster.c</FilePath>
+            </File>
+            <File>
+              <FileName>curtain.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\curtain.c</FilePath>
+            </File>
+            <File>
               <FileName>display.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\display.c</FilePath>
-            </File>
-            <File>
-              <FileName>rs485.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\rs485.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/main.c</FilePath>
             </File>
             <File>
               <FileName>lights.c</FileName>
@@ -1161,24 +1171,19 @@
               <FilePath>..\Src\scene.c</FilePath>
             </File>
             <File>
-              <FileName>curtain.c</FileName>
+              <FileName>rs485.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Src\curtain.c</FilePath>
+              <FilePath>..\Src\rs485.c</FilePath>
             </File>
             <File>
-              <FileName>defroster.c</FileName>
+              <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Src\defroster.c</FilePath>
+              <FilePath>../Src/main.c</FilePath>
             </File>
             <File>
-              <FileName>ventilator.c</FileName>
+              <FileName>gate.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Src\ventilator.c</FilePath>
-            </File>
-            <File>
-              <FileName>firmware_update_agent.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\firmware_update_agent.c</FilePath>
+              <FilePath>..\Src\gate.c</FilePath>
             </File>
           </Files>
         </Group>

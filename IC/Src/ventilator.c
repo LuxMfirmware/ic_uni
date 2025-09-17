@@ -195,7 +195,7 @@ void Ventilator_SetDefault(Ventilator_Handle* const handle)
     // KORAK 2: Eksplicitno postavljanje default vrijednosti.
     handle->config.magic_number = 0;
     handle->config.crc = 0;
-    handle->config.relay = 0;
+    handle->config.address.tf = 0;
     handle->config.delayOnTime = 0;
     handle->config.delayOffTime = 0;
     handle->config.trigger_source1 = 0;
@@ -210,10 +210,10 @@ void Ventilator_SetDefault(Ventilator_Handle* const handle)
 // --- Grupa 2: Getteri i Setteri za Konfiguraciju ---
 
 void Ventilator_setRelay(Ventilator_Handle* const handle, const uint16_t val) {
-    handle->config.relay = val;
+    handle->config.address.tf = val;
 }
 uint16_t Ventilator_getRelay(const Ventilator_Handle* const handle) {
-    return handle->config.relay;
+    return handle->config.address.tf;
 }
 void Ventilator_setDelayOnTime(Ventilator_Handle* const handle, uint8_t val) {
     handle->config.delayOnTime = val;
@@ -319,7 +319,7 @@ bool Ventilator_isActive(const Ventilator_Handle* const handle)
  */
 static bool Ventilator_isConfigured(const Ventilator_Handle* const handle)
 {
-    return (handle->config.relay > 0) || (handle->config.local_pin > 0);
+    return (handle->config.address.tf > 0) || (handle->config.local_pin > 0);
 }
 
 /**
@@ -403,11 +403,11 @@ static void HandleVentilatorStatusChanges(Ventilator_Handle* const handle)
     static uint8_t old_flags = 0;
     if (old_flags != handle->flags)
     {
-        if(handle->config.relay > 0)
+        if(handle->config.address.tf > 0)
         {
             uint8_t sendDataBuff[3] = {0};
-            sendDataBuff[0] = (handle->config.relay >> 8) & 0xFF;
-            sendDataBuff[1] = handle->config.relay & 0xFF;
+            sendDataBuff[0] = (handle->config.address.tf >> 8) & 0xFF;
+            sendDataBuff[1] = handle->config.address.tf & 0xFF;
             sendDataBuff[2] = Ventilator_isActive(handle) ? BINARY_ON : BINARY_OFF;
             AddCommand(&binaryQueue, BINARY_SET, sendDataBuff, 3);
         }
