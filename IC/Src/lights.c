@@ -188,7 +188,8 @@ static LIGHT_Handle* FindLightByRelayAddress(uint16_t address);
  * da bi ucitao konfiguraciju iz EEPROM-a, i na kraju poziva `LIGHT_Calculate`
  * da prebroji konfigurisana svjetla i pripremi ih za prikaz.
  */
-void LIGHTS_Init(void) {
+void LIGHTS_Init(void)
+{
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++) {
         uint16_t address = EE_LIGHTS_MODBUS + (i * sizeof(LIGHT_EepromConfig_t));
         LIGHT_Init_Single(&lights_modbus[i], address);
@@ -202,7 +203,8 @@ void LIGHTS_Init(void) {
  * svih internih `Handle...` funkcija koje upravljaju tajmerima, eksternim
  * tasterima i slanjem komandi na bus.
  */
-void LIGHT_Service(void) {
+void LIGHT_Service(void)
+{
     HandleExternalButtonActivity();
     HandleOnDelayTimers();
     HandleOffTimeTimers();
@@ -218,7 +220,8 @@ void LIGHT_Service(void) {
  * @param index Logicki indeks svjetla (0 do LIGHTS_MODBUS_SIZE - 1).
  * @retval LIGHT_Handle* Pokazivac na instancu, ili `NULL` ako je indeks neispravan.
  */
-LIGHT_Handle* LIGHTS_GetInstance(uint8_t index) {
+LIGHT_Handle* LIGHTS_GetInstance(uint8_t index)
+{
     if (index < LIGHTS_MODBUS_SIZE) {
         return &lights_modbus[index];
     }
@@ -230,7 +233,8 @@ LIGHT_Handle* LIGHTS_GetInstance(uint8_t index) {
  * @note Vraca broj svjetala cija Modbus adresa (index) nije 0.
  * @retval uint8_t Broj konfigurisanih svjetala.
  */
-uint8_t LIGHTS_getCount(void) {
+uint8_t LIGHTS_getCount(void)
+{
     return lights_count;
 }
 
@@ -239,7 +243,8 @@ uint8_t LIGHTS_getCount(void) {
  * @note Vrijednost se izracunava u privatnoj `LIGHT_Calculate` funkciji.
  * @retval uint8_t Broj redova.
  */
-uint8_t LIGHTS_Rows_getCount(void) {
+uint8_t LIGHTS_Rows_getCount(void)
+{
     return lights_modbus_rows;
 }
 
@@ -275,7 +280,8 @@ static void DefragmentLights(void)
  * @note Iterira kroz sva svjetla i poziva privatnu `LIGHT_Save_Single` funkciju.
  * Nakon snimanja, ponovo poziva `LIGHT_Calculate`.
  */
-void LIGHTS_Save(void) {
+void LIGHTS_Save(void)
+{
     // NOVO: Pozivamo internu, privatnu funkciju za defragmentaciju prije snimanja.
     DefragmentLights();
 
@@ -290,7 +296,8 @@ void LIGHTS_Save(void) {
  * @brief Postavlja fabricke (default) vrijednosti za sva svjetla.
  * @note Briše kompletan `lights_modbus` niz i postavlja pocetne vrijednosti.
  */
-void LIGHTS_SetDefault(void) {
+void LIGHTS_SetDefault(void)
+{
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++) {
         memset(&lights_modbus[i], 0, sizeof(LIGHT_Handle));
         lights_modbus[i].config.on_hour = -1;
@@ -300,101 +307,129 @@ void LIGHTS_SetDefault(void) {
 
 // --- Grupa 3: Getteri i Setteri za Konfiguraciju ---
 
-uint16_t  LIGHT_GetRelay(const LIGHT_Handle* const handle) {
+uint16_t  LIGHT_GetRelay(const LIGHT_Handle* const handle)
+{
     return handle->config.address.tf;
 }
-void      LIGHT_SetRelay(LIGHT_Handle* const handle, const uint16_t val) {
+void LIGHT_SetRelay(LIGHT_Handle* const handle, const uint16_t val)
+{
     handle->config.address.tf = val;
 }
 
-bool      LIGHT_isTiedToMainLight(const LIGHT_Handle* const handle) {
+bool LIGHT_isTiedToMainLight(const LIGHT_Handle* const handle)
+{
     return handle->config.tiedToMainLight;
 }
-void      LIGHT_SetTiedToMainLight(LIGHT_Handle* const handle, bool isTied) {
+void LIGHT_SetTiedToMainLight(LIGHT_Handle* const handle, bool isTied)
+{
     handle->config.tiedToMainLight = isTied;
 }
 
-uint8_t   LIGHT_GetOffTime(const LIGHT_Handle* const handle) {
+uint8_t LIGHT_GetOffTime(const LIGHT_Handle* const handle) 
+{
     return handle->config.off_time;
 }
-void      LIGHT_SetOffTime(LIGHT_Handle* const handle, const uint8_t val) {
+void LIGHT_SetOffTime(LIGHT_Handle* const handle, const uint8_t val)
+{
     handle->config.off_time = val;
 }
 
-uint8_t   LIGHT_GetIconID(const LIGHT_Handle* const handle) {
+uint8_t LIGHT_GetIconID(const LIGHT_Handle* const handle)
+{
     return handle->config.iconID;
 }
-void      LIGHT_SetIconID(LIGHT_Handle* const handle, const uint8_t id) {
+void LIGHT_SetIconID(LIGHT_Handle* const handle, const uint8_t id)
+{
     handle->config.iconID = id;
 }
 
-uint16_t  LIGHT_GetControllerID(const LIGHT_Handle* const handle) {
+uint16_t LIGHT_GetControllerID(const LIGHT_Handle* const handle)
+{
     return handle->config.controllerID_on.tf;
 }
-void      LIGHT_SetControllerID(LIGHT_Handle* const handle, uint16_t val) {
+void LIGHT_SetControllerID(LIGHT_Handle* const handle, uint16_t val)
+{
     handle->config.controllerID_on.tf = val;
 }
 
-uint8_t   LIGHT_GetOnDelayTime(const LIGHT_Handle* const handle) {
+uint8_t LIGHT_GetOnDelayTime(const LIGHT_Handle* const handle)
+{
     return handle->config.controllerID_on_delay;
 }
-void      LIGHT_SetOnDelayTime(LIGHT_Handle* const handle, uint8_t val) {
+void LIGHT_SetOnDelayTime(LIGHT_Handle* const handle, uint8_t val)
+{
     handle->config.controllerID_on_delay = val;
 }
 
-int8_t    LIGHT_GetOnHour(const LIGHT_Handle* const handle) {
+int8_t LIGHT_GetOnHour(const LIGHT_Handle* const handle)
+{
     return handle->config.on_hour;
 }
-void      LIGHT_SetOnHour(LIGHT_Handle* const handle, int8_t hour) {
+void LIGHT_SetOnHour(LIGHT_Handle* const handle, int8_t hour)
+{
     handle->config.on_hour = hour;
 }
 
-uint8_t   LIGHT_GetOnMinute(const LIGHT_Handle* const handle) {
+uint8_t LIGHT_GetOnMinute(const LIGHT_Handle* const handle)
+{
     return handle->config.on_minute;
 }
-void      LIGHT_SetOnMinute(LIGHT_Handle* const handle, uint8_t minute) {
+void LIGHT_SetOnMinute(LIGHT_Handle* const handle, uint8_t minute)
+{
     handle->config.on_minute = minute;
 }
 
-uint8_t   LIGHT_GetCommunicationType(const LIGHT_Handle* const handle) {
+uint8_t LIGHT_GetCommunicationType(const LIGHT_Handle* const handle)
+{
     return handle->config.communication_type;
 }
-void      LIGHT_SetCommunicationType(LIGHT_Handle* const handle, uint8_t type) {
+void LIGHT_SetCommunicationType(LIGHT_Handle* const handle, uint8_t type)
+{
     handle->config.communication_type = type;
 }
 
-uint8_t   LIGHT_GetLocalPin(const LIGHT_Handle* const handle) {
+uint8_t LIGHT_GetLocalPin(const LIGHT_Handle* const handle)
+{
     return handle->config.local_pin;
 }
-void      LIGHT_SetLocalPin(LIGHT_Handle* const handle, uint8_t pin) {
+void LIGHT_SetLocalPin(LIGHT_Handle* const handle, uint8_t pin)
+{
     handle->config.local_pin = pin;
 }
 
-uint8_t   LIGHT_GetSleepTime(const LIGHT_Handle* const handle) {
+uint8_t LIGHT_GetSleepTime(const LIGHT_Handle* const handle)
+{
     return handle->config.sleep_time;
 }
-void      LIGHT_SetSleepTime(LIGHT_Handle* const handle, uint8_t time) {
+void LIGHT_SetSleepTime(LIGHT_Handle* const handle, uint8_t time)
+{
     handle->config.sleep_time = time;
 }
 
-uint8_t   LIGHT_GetButtonExternal(const LIGHT_Handle* const handle) {
+uint8_t LIGHT_GetButtonExternal(const LIGHT_Handle* const handle)
+{
     return handle->config.button_external;
 }
-void      LIGHT_SetButtonExternal(LIGHT_Handle* const handle, uint8_t mode) {
+void LIGHT_SetButtonExternal(LIGHT_Handle* const handle, uint8_t mode)
+{
     handle->config.button_external = mode;
 }
 
-bool      LIGHT_isBrightnessRemembered(const LIGHT_Handle* const handle) {
+bool LIGHT_isBrightnessRemembered(const LIGHT_Handle* const handle)
+{
     return handle->config.rememberBrightness;
 }
-void      LIGHT_SetRememberBrightness(LIGHT_Handle* const handle, const bool remember) {
+void LIGHT_SetRememberBrightness(LIGHT_Handle* const handle, const bool remember)
+{
     handle->config.rememberBrightness = remember;
 }
 
-uint8_t   LIGHT_GetBrightness(const LIGHT_Handle* const handle) {
+uint8_t LIGHT_GetBrightness(const LIGHT_Handle* const handle)
+{
     return handle->config.brightness;
 }
-void      LIGHT_SetBrightness(LIGHT_Handle* const handle, uint8_t brightness) {
+void LIGHT_SetBrightness(LIGHT_Handle* const handle, uint8_t brightness)
+{
     handle->config.brightness = (brightness > 100) ? 100 : brightness;
     handle->value = (handle->config.brightness > 0) ? 1 : 0;
     if (LIGHT_isBrightnessRemembered(handle)) {
@@ -436,10 +471,12 @@ void LIGHT_SetCustomLabel(LIGHT_Handle* const handle, const char* label)
 
 // --- Grupa 4: Getteri i Setteri za Runtime Stanje ---
 
-uint32_t LIGHT_GetColor(const LIGHT_Handle* const handle) {
+uint32_t LIGHT_GetColor(const LIGHT_Handle* const handle)
+{
     return handle->color;
 }
-void      LIGHT_SetColor(LIGHT_Handle* const handle, uint32_t color) {
+void      LIGHT_SetColor(LIGHT_Handle* const handle, uint32_t color)
+{
     handle->color = color;
 }
 
@@ -449,7 +486,8 @@ void      LIGHT_SetColor(LIGHT_Handle* const handle, uint32_t color) {
  * @brief Mijenja stanje svjetla (pali ako je ugašeno, gasi ako je upaljeno).
  * @param handle Pokazivac na instancu svjetla.
  */
-void LIGHT_Flip(LIGHT_Handle* const handle) {
+void LIGHT_Flip(LIGHT_Handle* const handle)
+{
     LIGHT_SetState(handle, !handle->value);
 }
 
@@ -460,7 +498,8 @@ void LIGHT_Flip(LIGHT_Handle* const handle) {
  * @param handle Pokazivac na instancu svjetla.
  * @param state Željeno stanje (`true` za ON, `false` za OFF).
  */
-void LIGHT_SetState(LIGHT_Handle* const handle, const bool state) {
+void LIGHT_SetState(LIGHT_Handle* const handle, const bool state)
+{
     handle->value = state;
     if (state) { // Paljenje
         if ((!LIGHT_isBinary(handle)) && (handle->config.brightness == 0)) {
@@ -488,19 +527,23 @@ void LIGHT_SetState(LIGHT_Handle* const handle, const bool state) {
  * @param handle Pokazivac na instancu svjetla.
  * @retval bool `true` ako je svjetlo upaljeno, inace `false`.
  */
-bool LIGHT_isActive(const LIGHT_Handle* const handle) {
+bool LIGHT_isActive(const LIGHT_Handle* const handle)
+{
     return handle->value;
 }
 
 // --- Grupa 6: Provjera Tipova ---
 
-bool LIGHT_isBinary(const LIGHT_Handle* const handle) {
+bool LIGHT_isBinary(const LIGHT_Handle* const handle)
+{
     return handle->config.communication_type == LIGHT_COM_BIN;
 }
-bool LIGHT_isDimmer(const LIGHT_Handle* const handle) {
+bool LIGHT_isDimmer(const LIGHT_Handle* const handle)
+{
     return handle->config.communication_type == LIGHT_COM_DIM;
 }
-bool LIGHT_isRGB(const LIGHT_Handle* const handle) {
+bool LIGHT_isRGB(const LIGHT_Handle* const handle)
+{
     return handle->config.communication_type == LIGHT_COM_COLOR;
 }
 
@@ -511,7 +554,8 @@ bool LIGHT_isRGB(const LIGHT_Handle* const handle) {
  * @note  Ažurirano da provjerava `tiedToMainLight` fleg.
  * @retval bool `true` ako je bar jedno takvo svjetlo upaljeno, inace `false`.
  */
-bool LIGHTS_isAnyLightOn(void) {
+bool LIGHTS_isAnyLightOn(void)
+{
     for(uint8_t i = 0; i < lights_count; ++i) {
         // Kreiramo handle da bismo mogli pozvati API funkciju
         LIGHT_Handle* handle = &lights_modbus[i];
@@ -533,7 +577,8 @@ bool LIGHTS_isAnyLightOn(void) {
  * @param relay_address Modbus adresa svjetla.
  * @param state Novo stanje (1 za ON, 0 za OFF).
  */
-void LIGHTS_UpdateExternalState(uint16_t relay_address, uint8_t state) {
+void LIGHTS_UpdateExternalState(uint16_t relay_address, uint8_t state)
+{
     LIGHT_Handle* handle = FindLightByRelayAddress(relay_address);
     if (handle) {
         handle->value = state;
@@ -547,7 +592,8 @@ void LIGHTS_UpdateExternalState(uint16_t relay_address, uint8_t state) {
  * @param relay_address Modbus adresa dimera.
  * @param brightness Nova vrijednost svjetline (0-100).
  */
-void LIGHTS_UpdateExternalBrightness(uint16_t relay_address, uint8_t brightness) {
+void LIGHTS_UpdateExternalBrightness(uint16_t relay_address, uint8_t brightness)
+{
     LIGHT_Handle* handle = FindLightByRelayAddress(relay_address);
     if (handle) {
         handle->config.brightness = (brightness > 100) ? 100 : brightness;
@@ -563,18 +609,22 @@ void LIGHTS_UpdateExternalBrightness(uint16_t relay_address, uint8_t brightness)
 
 // --- Grupa 9: API za Nocni Tajmer ---
 
-void LIGHTS_StartNightTimer(void) {
+void LIGHTS_StartNightTimer(void)
+{
     if (!LightNightTimer_StartTime) {
         LightNightTimer_StartTime = HAL_GetTick() ? HAL_GetTick() : 1;
     }
 }
-void LIGHTS_StopNightTimer(void) {
+void LIGHTS_StopNightTimer(void)
+{
     LightNightTimer_StartTime = 0;
 }
-bool LIGHTS_IsNightTimerActive(void) {
+bool LIGHTS_IsNightTimerActive(void)
+{
     return (LightNightTimer_StartTime != 0);
 }
-uint8_t LIGHTS_GetNightTimerCountdown(void) {
+uint8_t LIGHTS_GetNightTimerCountdown(void)
+{
     if (!LightNightTimer_StartTime) return 0;
     uint32_t elapsed_ms = HAL_GetTick() - LightNightTimer_StartTime;
     uint32_t total_ms = LIGHT_NIGHT_TIMER_DURATION * 1000;
@@ -591,7 +641,9 @@ uint8_t LIGHTS_GetNightTimerCountdown(void) {
  * @param address Modbus adresa koja se traži.
  * @retval LIGHT_Handle* Pokazivac na pronadeno svjetlo, ili `NULL`.
  */
-static LIGHT_Handle* FindLightByRelayAddress(uint16_t address) {
+static LIGHT_Handle* FindLightByRelayAddress(uint16_t address)
+{
+
     if (address == 0) return NULL;
     for (int i = 0; i < lights_count; i++) {
         if (lights_modbus[i].config.address.tf == address) {
@@ -605,7 +657,8 @@ static LIGHT_Handle* FindLightByRelayAddress(uint16_t address) {
  * @brief Interni handler koji provjerava i reaguje na pritisak eksternog tastera.
  * @note Poziva se iz `LIGHT_Service()`.
  */
-static void HandleExternalButtonActivity(void) {
+static void HandleExternalButtonActivity(void)
+{
     static bool is_button_pressed_old = false;
     bool is_button_pressed_new = IsButtonActive();
     if (is_button_pressed_new && !is_button_pressed_old) {
@@ -625,7 +678,8 @@ static void HandleExternalButtonActivity(void) {
  * @brief Interni handler koji upravlja tajmerima za odloženo paljenje.
  * @note Poziva se iz `LIGHT_Service()`.
  */
-static void HandleOnDelayTimers(void) {
+static void HandleOnDelayTimers(void)
+{
     for(uint8_t i = 0; i < lights_count; ++i) {
         LIGHT_Handle* handle = &lights_modbus[i];
         if(handle->on_delay_timer_start && (HAL_GetTick() - handle->on_delay_timer_start) >= (handle->config.controllerID_on_delay * 60000UL)) {
@@ -640,7 +694,8 @@ static void HandleOnDelayTimers(void) {
  * @brief Interni handler koji upravlja tajmerima za automatsko gašenje.
  * @note Poziva se iz `LIGHT_Service()`.
  */
-static void HandleOffTimeTimers(void) {
+static void HandleOffTimeTimers(void)
+{
     for(uint8_t i = 0; i < lights_count; ++i) {
         LIGHT_Handle* handle = &lights_modbus[i];
         if(handle->off_timer_start && (HAL_GetTick() - handle->off_timer_start) >= (handle->config.off_time * 60000UL)) {
@@ -655,7 +710,8 @@ static void HandleOffTimeTimers(void) {
  * @brief Interni handler koji upravlja globalnim nocnim tajmerom.
  * @note Poziva se iz `LIGHT_Service()`.
  */
-static void HandleLightNightTimer(void) {
+static void HandleLightNightTimer(void)
+{
     if(LightNightTimer_StartTime && (HAL_GetTick() - LightNightTimer_StartTime) >= (LIGHT_NIGHT_TIMER_DURATION * 1000UL)) {
         LightNightTimer_StartTime = 0;
         for(uint8_t i = 0; i < lights_count; ++i) {
@@ -673,7 +729,8 @@ static void HandleLightNightTimer(void) {
  * @brief Interni handler koji detektuje promjene i šalje komande na RS485 bus.
  * @note Poziva se iz `LIGHT_Service()`. Ovo je srž komunikacione logike.
  */
-static void HandleLightStatusChanges(void) {
+static void HandleLightStatusChanges(void)
+{
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++) {
         LIGHT_Handle* handle = &lights_modbus[i];
         if (handle->config.address.tf == 0) continue;
@@ -728,7 +785,8 @@ static void HandleLightStatusChanges(void) {
  * @brief Interni handler koji upravlja odloženim snimanjem u EEPROM.
  * @note Poziva se iz `LIGHT_Service()`. Štiti EEPROM od precestog upisivanja.
  */
-static void HandleDelayedSave(void) {
+static void HandleDelayedSave(void)
+{
     if (save_brightness_timer_start && (HAL_GetTick() - save_brightness_timer_start) >= BRIGHTNESS_SAVE_DELAY_MS) {
         save_brightness_timer_start = 0;
         bool needs_saving = false;
@@ -749,7 +807,8 @@ static void HandleDelayedSave(void) {
  * @param handle Pokazivac na instancu svjetla koju treba inicijalizovati.
  * @param addr Adresa u EEPROM-u sa koje se cita.
  */
-static void LIGHT_Init_Single(LIGHT_Handle* const handle, const uint16_t addr) {
+static void LIGHT_Init_Single(LIGHT_Handle* const handle, const uint16_t addr)
+{
     EE_ReadBuffer((uint8_t*)&handle->config, addr, sizeof(LIGHT_EepromConfig_t));
 
     if (handle->config.magic_number != EEPROM_MAGIC_NUMBER) {
@@ -784,7 +843,8 @@ static void LIGHT_Init_Single(LIGHT_Handle* const handle, const uint16_t addr) {
  * @param handle Pokazivac na instancu svjetla koju treba snimiti.
  * @param addr Adresa u EEPROM-u na koju se upisuje.
  */
-static void LIGHT_Save_Single(LIGHT_Handle* const handle, const uint16_t addr) {
+static void LIGHT_Save_Single(LIGHT_Handle* const handle, const uint16_t addr)
+{
     handle->config.magic_number = EEPROM_MAGIC_NUMBER;
     handle->config.crc = 0;
     handle->config.crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&handle->config, sizeof(LIGHT_EepromConfig_t));
@@ -795,7 +855,8 @@ static void LIGHT_Save_Single(LIGHT_Handle* const handle, const uint16_t addr) {
  * @brief Prebrojava konfigurisana svjetla i izracunava broj redova za GUI.
  * @note Poziva se nakon inicijalizacije i snimanja.
  */
-static void LIGHT_Calculate(void) {
+static void LIGHT_Calculate(void)
+{
     lights_count = 0;
     for(uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; ++i) {
         if(lights_modbus[i].config.address.tf != 0) {

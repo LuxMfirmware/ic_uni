@@ -411,16 +411,6 @@
               <FilePath>..\Src\Display\blindMedium.c</FilePath>
             </File>
             <File>
-              <FileName>baflag.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\baflag.c</FilePath>
-            </File>
-            <File>
-              <FileName>engflag.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\engflag.c</FilePath>
-            </File>
-            <File>
               <FileName>next.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\next.c</FilePath>
@@ -560,20 +550,105 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Display\icons_settings.c</FilePath>
             </File>
+            <File>
+              <FileName>icons_security_sos.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_security_sos.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_language_bos.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_language_bos.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_language_eng.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_language_eng.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_scena_homecoming.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_scena_homecoming.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_scene_dinner.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_scene_dinner.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_scene_gathering.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_scene_gathering.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_scene_leaving.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_scene_leaving.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_scene_morning.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_scene_morning.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_scene_movie.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_scene_movie.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_scene_reading.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_scene_reading.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_scene_relaxing.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_scene_relaxing.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_scene_security.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_scene_security.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_scene_sleep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_scene_sleep.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_scene_wizzard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_scene_wizzard.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_gate.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_gate.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_timers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_timers.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>Fonts</GroupName>
           <Files>
             <File>
-              <FileName>Verdana20.c</FileName>
+              <FileName>Verdana16_LAT.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Src\Display\Verdana20.c</FilePath>
+              <FilePath>..\Src\Display\Verdana16_LAT.c</FilePath>
             </File>
             <File>
-              <FileName>Verdana32.c</FileName>
+              <FileName>Verdana20_LAT.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Src\Display\Verdana32.c</FilePath>
+              <FilePath>..\Src\Display\Verdana20_LAT.c</FilePath>
+            </File>
+            <File>
+              <FileName>Verdana32_LAT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\Verdana32_LAT.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -14,8 +14,9 @@ Content     : Main resource header file of weather forecast demo
 #ifndef GUI_CONST_STORAGE
   #define GUI_CONST_STORAGE const
 #endif
-extern GUI_CONST_STORAGE GUI_FONT GUI_FontVerdana20;
-extern GUI_CONST_STORAGE GUI_FONT GUI_FontVerdana32;
+extern GUI_CONST_STORAGE GUI_FONT GUI_FontVerdana16_LAT;
+extern GUI_CONST_STORAGE GUI_FONT GUI_FontVerdana20_LAT;
+extern GUI_CONST_STORAGE GUI_FONT GUI_FontVerdana32_LAT;
   
 extern GUI_CONST_STORAGE GUI_BITMAP bmanimation_candle_frame_1;
 extern GUI_CONST_STORAGE GUI_BITMAP bmanimation_candle_frame_2;
@@ -81,6 +82,24 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmcolorSpectrum;
 extern GUI_CONST_STORAGE GUI_BITMAP bmblackWhiteGradient;
 extern GUI_CONST_STORAGE GUI_BITMAP bmdefrosterico;
 extern GUI_CONST_STORAGE GUI_BITMAP bmdefrostericoOn;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_security_sos;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_language_bos;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_language_eng;
+
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_gate;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_timers;
+
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scena_homecoming;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_dinner;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_gathering;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_leaving;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_morning;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_movie;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_reading;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_relaxing;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_security;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_sleep;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_wizzard;
 
 extern const unsigned long thstat_size;
 extern const unsigned char thstat[];

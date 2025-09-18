@@ -1,18 +1,21 @@
-#ifndef __TRANSLATIONS_H__
-#define __TRANSLATIONS_H__
-
 /**
+ ******************************************************************************
  * @file    translations.h
  * @author  Gemini & [Vaše Ime]
  * @brief   Centralizovana datoteka za sve prevodive stringove i mapiranja u aplikaciji.
  *
- * @note
- * Ova datoteka sadrži tabelu `language_strings` koja je ključna za
- * internacionalizaciju (i18n), kao i novu `icon_mapping_table` koja
- * fleksibilno povezuje ID izbora korisnika sa vizuelnim prikazom ikonica
- * i njihovim opisima.
+ * @note    Ova datoteka sadrži tabelu `language_strings` koja je ključna za
+ * internacionalizaciju (i18n), kao i `icon_mapping_table` i
+ * `scene_appearance_table` koje fleksibilno povezuju ID izbora
+ * korisnika sa vizuelnim prikazom ikonica i njihovim opisima.
+ ******************************************************************************
  */
-#include "display.h" // Uključujemo display.h da bismo vidjeli enum TextID i IconID
+
+#ifndef __TRANSLATIONS_H__
+#define __TRANSLATIONS_H__
+
+#include "display.h" 
+#include "scene.h"
 
 /**
  * @brief Glavna tabela za mapiranje ikonica svjetala.
@@ -20,7 +23,6 @@
  * Vrijednost iz SPINBOX-a (`iconID`) se koristi kao direktan indeks u ovom nizu.
  * Svaki element niza definiše koju sličicu (bitmapu) treba prikazati i koje
  * tekstualne opise koristiti, omogućavajući višestruke opise za istu sličicu.
- * Redoslijed je preuzet iz `todo.txt` fajla.
  */
 static const IconMapping_t icon_mapping_table[] = {
     // --- Plafonska rasvjeta ---
@@ -94,9 +96,11 @@ static const SceneAppearance_t scene_appearance_table[] = {
     { ICON_SCENE_GATHERING,   TXT_SCENE_GATHERING   },
     { ICON_SCENE_SECURITY,    TXT_SCENE_SECURITY    }
 };
+
 /**
  * @brief Glavna tabela sa prevodima.
- * @note  Svaki red odgovara jednom ID-ju iz `TextID` enuma, a svaka kolona jednom jeziku iz `Languages` enuma.
+ * @note  KONAČNA ISPRAVLJENA VERZIJA. Svaki red odgovara jednom ID-ju iz `TextID` enuma.
+ * Dodati su redovi koji nedostaju da bi se redoslijed uskladio.
  */
 static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_DUMMY */                     { "", "", "","", "", "", "", "", "", "", "" },
@@ -108,8 +112,21 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_CLEAN */                     { "ČIŠĆENJE", "CLEAN", "REINIGEN", "NETTOYER", "PULIRE", "LIMPIAR", "ЧИСТКА", "ЧИЩЕННЯ", "CZYŚĆ", "ČISTIT", "ČISTIŤ" },
     /* TXT_WIFI */                      { "Wi-Fi", "Wi-Fi", "WLAN", "WI-FI", "WI-FI", "WI-FI", "WI-FI", "WI-FI", "WI-FI", "WI-FI", "WI-FI" },
     /* TXT_APP */                       { "APP", "APP", "APP", "APPLI", "APP", "APP", "ПРИЛ.", "ДОДАТОК", "APLIKACJA", "APLIKACE", "APLIKÁCIA" },
+    
+    /* TXT_GATE */                      { "KAPIJA", "GATE", "TOR", "PORTAIL", "CANCELLO", "PUERTA", "ВОРОТА", "ВОРОТА", "BRAMA", "BRÁNA", "BRÁNA" },
+    /* TXT_TIMER */                     { "TAJMER", "TIMER", "TIMER", "MINUTERIE", "TIMER", "TEMPORIZADOR", "ТАЙМЕР", "ТАЙМЕР", "MINUTNIK", "ČASOVAČ", "ČASOVAČ" },
+    /* TXT_SECURITY */                  { "ALARM", "SECURITY", "SICHERHEIT", "SÉCURITÉ", "SICUREZZA", "SEGURIDAD", "ОХРАНА", "ОХОРОНА", "ALARM", "ZABEZPEČENÍ", "ZABEZPEČENIE" },
+    /* TXT_SCENES */                    { "SCENE", "SCENES", "SZENEN", "SCÈNES", "SCENE", "ESCENAS", "СЦЕНЫ", "СЦЕНИ", "SCENY", "SCÉNY", "SCÉNY" },
+    /* TXT_LANGUAGE_SOS_ALL_OFF */      { "SOS", "SOS", "SOS", "SOS", "SOS", "SOS", "SOS", "SOS", "SOS", "SOS", "SOS" },
+
     /* TXT_ALL */                       { "SVE", "ALL", "ALLE", "TOUT", "TUTTI", "TODOS", "ВСЕ", "ВСІ", "WSZYSTKO", "VŠECHNY", "VŠETKY" },
     /* TXT_SETTINGS */                  { "POSTAVKE", "SETTINGS", "EINSTELLUNGEN", "RÉGLAGES", "IMPOSTAZIONI", "AJUSTES", "НАСТРОЙКИ", "НАЛАШТУВАННЯ", "USTAWIENIA", "NASTAVENÍ", "NASTAVENIA" },
+    /* TXT_SAVE */                      { "SNIMI", "SAVE", "SPEICHERN", "SAUVEGARDER", "SALVA", "GUARDAR", "СОХРАНИТЬ", "ЗБЕРЕГТИ", "ZAPISZ", "ULOŽIT", "ULOŽIŤ" },
+    /* TXT_CANCEL */                    { "OTKAŽI", "CANCEL", "ABBRECHEN", "ANNULER", "ANNULLA", "CANCELAR", "ОТМЕНА", "СКАСУВАТИ", "ANULUJ", "ZRUŠIT", "ZRUŠIŤ" },
+    /* TXT_DELETE */                    { "OBRIŠI", "DELETE", "LÖSCHEN", "SUPPRIMER", "ELIMINA", "ELIMINAR", "УДАЛИТЬ", "ВИДАЛИТИ", "USUŃ", "SMAZAT", "VYMAZAŤ" },
+    /* TXT_CONFIGURE_DEVICE_MSG */      { "Uređaj nije konfigurisan.", "Device not configured.", "Gerät nicht konfiguriert.", "Appareil non configuré.", "Dispositivo non configurato.", "Dispositivo no configurado.", "Устройство не настроено.", "Пристрій не налаштовано.", "Urządzenie nie jest skonfigurowane.", "Zařízení není nakonfigurováno.", "Zariadenie nie je nakonfigurované." },
+    /* TXT_SCENE_SAVED_MSG */           { "Scena snimljena.", "Scene saved.", "Szene gespeichert.", "Scène enregistrée.", "Scena salvata.", "Escena guardada.", "Сцена сохранена.", "Сцену збережено.", "Scena zapisana.", "Scéna uložena.", "Scéna uložená." },
+    /* TXT_PLEASE_CONFIGURE_SCENE_MSG */{ "Molimo konfigurišite scenu.", "Please configure the scene.", "Bitte konfigurieren Sie die Szene.", "Veuillez configurer la scène.", "Si prega di configurare la scena.", "Por favor, configure la escena.", "Пожалуйста, настройте сцену.", "Будь ласка, налаштуйте сцену.", "Proszę skonfigurować scenę.", "Nakonfigurujte prosím scénu.", "Nakonfigurujte prosím scénu." },
     /* TXT_DISPLAY_CLEAN_TIME */        { "VRIJEME BRISANJA EKRANA:", "DISPLAY CLEAN TIME:", "BILDSCHIRMREINIGUNGSZEIT:", "TEMPS DE NETTOYAGE:", "TEMPO PULIZIA:", "TIEMPO DE LIMPIEZA:", "ВРЕМЯ ОЧИСТКИ:", "ЧАС ОЧИЩЕННЯ:", "CZAS CZYSZCZENIA:", "ČAS ČIŠTĚNÍ:", "ČAS ČISTENIA:" },
     /* TXT_FIRMWARE_UPDATE */           { "AŽURIRANJE...", "UPDATING...", "AKTUALISIERUNG...", "MISE À JOUR...", "AGGIORNAMENTO...", "ACTUALIZANDO...", "ОБНОВЛЕНИЕ...", "ОНОВЛЕННЯ...", "AKTUALIZACJA...", "AKTUALIZACE...", "AKTUALIZÁCIA..." },
     /* TXT_UPDATE_IN_PROGRESS */        { "Ažuriranje u toku, molimo sacekajte...", "Update in progress, please wait...", "Aktualisierung läuft, bitte warten...", "Mise à jour en cours, veuillez patienter...", "Aggiornamento in corso, attendere prego...", "Actualización en curso, por favor espere...", "Идет обновление, подождите...", "Триває оновлення, зачекайте...", "Aktualizacja w toku, proszę czekać...", "Probíhá aktualizace, čekejte prosím...", "Prebieha aktualizácia, čakajte prosím..." },
@@ -146,6 +163,17 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_FASADA */                    { "FASADA", "FACADE", "FASSADE", "FAÇADE", "FACCIATA", "FACHADA", "ФАСАД", "ФАСАД", "FASADA", "FASÁDA", "FASÁDA" },
     /* TXT_STAZA */                     { "STAZA", "PATH", "WEG", "CHEMIN", "SENTIERO", "CAMINO", "ДОРОЖКА", "ДОРІЖКА", "ŚCIEŻKA", "CESTA", "CESTA" },
     /* TXT_REFLEKTOR */                 { "REFLEKTOR", "FLOODLIGHT", "SCHEINWERFER", "PROJECTEUR", "PROIETTORE", "REFLECTOR", "ПРОЖЕКТОР", "ПРОЖЕКТОР", "REFLEKTOR", "REFLEKTOR", "REFLEKTOR" },
+    /* TXT_SCENE_WIZZARD */             { "Dodaj Scenu", "Add Scene", "Szene hinzufügen", "Ajouter une scène", "Aggiungi scena", "Añadir escena", "Добавить сцену", "Додати сцену", "Dodaj scenę", "Přidat scénu", "Pridať scénu" },
+    /* TXT_SCENE_MORNING */             { "Jutro", "Morning", "Morgen", "Matin", "Mattina", "Mañana", "Утро", "Ранок", "Poranek", "Ráno", "Ráno" },
+    /* TXT_SCENE_SLEEP */               { "Spavanje", "Sleep", "Schlafen", "Dormir", "Sonno", "Dormir", "Сон", "Сон", "Sen", "Spánek", "Spánok" },
+    /* TXT_SCENE_LEAVING */             { "Odlazak", "Leaving", "Verlassen", "Départ", "Uscita", "Salida", "Уход", "Вихід", "Wyjście", "Odchod", "Odchod" },
+    /* TXT_SCENE_HOMECOMING */          { "Povratak", "Homecoming", "Heimkehr", "Retour", "Ritorno a casa", "Regreso a casa", "Возвращение", "Повернення", "Powrót do domu", "Návrat domů", "Návrat domov" },
+    /* TXT_SCENE_MOVIE */               { "Film", "Movie", "Film", "Film", "Film", "Película", "Фильм", "Фільм", "Film", "Film", "Film" },
+    /* TXT_SCENE_DINNER */              { "Večera", "Dinner", "Abendessen", "Dîner", "Cena", "Cena", "Ужин", "Вечеря", "Kolacja", "Večeře", "Večera" },
+    /* TXT_SCENE_READING */             { "Čitanje", "Reading", "Lesen", "Lecture", "Lettura", "Lectura", "Чтение", "Читання", "Czytanie", "Čtení", "Čítanie" },
+    /* TXT_SCENE_RELAXING */            { "Opuštanje", "Relaxing", "Entspannen", "Détente", "Rilassante", "Relajación", "Расслабление", "Розслаблення", "Relaks", "Odpočinek", "Oddych" },
+    /* TXT_SCENE_GATHERING */           { "Druženje", "Gathering", "Treffen", "Rassemblement", "Incontro", "Reunión", "Сбор", "Збори", "Spotkanie", "Setkání", "Stretnutie" },
+    /* TXT_SCENE_SECURITY */            { "Sigurnost", "Security", "Sicherheit", "Sécurité", "Sicurezza", "Seguridad", "Безопасность", "Безпека", "Bezpieczeństwo", "Bezpečnost", "Bezpečnosť" },
     /* TXT_GLAVNI_SECONDARY */          { "GLAVNI", "MAIN", "HAUPT", "PRINCIPAL", "PRINCIPALE", "PRINCIPAL", "ГЛАВНЫЙ", "ГОЛОВНИЙ", "GŁÓWNY", "HLAVNÍ", "HLAVNÝ" },
     /* TXT_AMBIJENT_SECONDARY */        { "AMBIJENT", "AMBIENT", "AMBIENTE", "AMBIANCE", "AMBIENTE", "AMBIENTE", "АТМОСФЕРА", "АТМОСФЕРА", "NASTRÓJ", "PROSTŘEDÍ", "PROSTREDIE" },
     /* TXT_TRPEZARIJA_SECONDARY */      { "TRPEZARIJA", "DINING", "ESSZIMMER", "SALLE À MANGER", "SALA DA PRANZO", "COMEDOR", "СТОЛОВАЯ", "ЇДАЛЬНЯ", "JADALNIA", "JÍDELNA", "JEDÁLEŇ" },
