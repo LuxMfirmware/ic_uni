@@ -566,11 +566,6 @@
               <FilePath>..\Src\Display\icons_language_eng.c</FilePath>
             </File>
             <File>
-              <FileName>icons_scena_homecoming.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\icons_scena_homecoming.c</FilePath>
-            </File>
-            <File>
               <FileName>icons_scene_dinner.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\icons_scene_dinner.c</FilePath>
@@ -629,6 +624,11 @@
               <FileName>icons_menu_timers.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\icons_menu_timers.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_scene_homecoming.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_scene_homecoming.c</FilePath>
             </File>
           </Files>
         </Group>

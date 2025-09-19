@@ -28,7 +28,16 @@
  * @brief Maksimalan broj scena koje sistem podržava.
  */
 #define SCENE_MAX_COUNT 6
+/*============================================================================*/
+/* DODATNE DEFINICIJE ZA SECURITY SCENE                                       */
+/*============================================================================*/
 
+/** @brief Bitmaske za definisanje koje particije alarmnog sistema su naoružane. */
+#define SECURITY_PARTITION_1    (1 << 0)    /**< Bit za particiju 1 (npr. Prizemlje) */
+#define SECURITY_PARTITION_2    (1 << 1)    /**< Bit za particiju 2 (npr. Sprat) */
+#define SECURITY_PARTITION_3    (1 << 2)    /**< Bit za particiju 3 (npr. Garaža) */
+#define SECURITY_PARTITION_4    (1 << 3)    /**< Bit za particiju 4 (npr. Perimetar) */
+#define SECURITY_ARM_ALL        (SECURITY_PARTITION_1 | SECURITY_PARTITION_2 | SECURITY_PARTITION_3 | SECURITY_PARTITION_4) /**< Maska za sve particije. */
 /**
  * @brief Definiše globalna stanja sistema, primarno za "Away" logiku.
  */
@@ -52,6 +61,17 @@ typedef struct {
     IconID icon_id;             /**< ID ikonice iz `display.h` koja predstavlja scenu. */
     TextID text_id;             /**< ID teksta iz `display.h` koji služi kao naziv scene. */
 } SceneAppearance_t;
+
+/**
+ * @brief Definiše tip scene, što utiče na logiku koja se izvršava pri aktivaciji.
+ */
+typedef enum {
+    SCENE_TYPE_STANDARD,      /**< Standardna scena, samo postavlja memorisana stanja uređaja. */
+    SCENE_TYPE_LEAVING,       /**< Specijalna scena koja aktivira SYSTEM_STATE_AWAY_ACTIVE. */
+    SCENE_TYPE_HOMECOMING,    /**< Specijalna scena koja deaktivira "Away" mod. */
+    SCENE_TYPE_SLEEP,         /**< Specijalna scena koja može imati povezan tajmer za buđenje. */
+    SCENE_TYPE_SECURITY       /**< Specijalna scena koja može aktivirati/deaktivirati alarm. */
+} SceneType_e;
 
 
 /*============================================================================*/
@@ -141,6 +161,48 @@ typedef struct
      */
     uint8_t  thermostat_setpoint;
 
+    /**
+     * @brief Tip scene koji određuje da li se izvršava dodatna logika.
+     * @note Vrijednost se postavlja u "čarobnjaku" na osnovu odabrane ikonice.
+     * Npr. odabir ikonice "Mjesec" automatski postavlja tip na SCENE_TYPE_SLEEP.
+     */
+    SceneType_e scene_type;
+
+    /**
+     * @brief Sat (0-23) za tajmer buđenja, koristi se samo ako je tip SCENE_TYPE_SLEEP.
+     * @note Vrijednost -1 označava da tajmer nije podešen za ovu scenu.
+     */
+    int8_t   wakeup_hour;
+
+    /**
+     * @brief Minuta (0-59) za tajmer buđenja.
+     */
+    uint8_t  wakeup_minute;
+
+     /**
+     * @brief Bitmaska koja određuje koje particije alarma se naoružavaju.
+     * @note Koristi se samo ako je tip SCENE_TYPE_SECURITY. Vrijednost 0
+     * znači da scena razoružava sistem. Kombinacijom bitova (npr.
+     * SECURITY_PARTITION_1 | SECURITY_PARTITION_2) definišu se
+     * parcijalna stanja.
+     */
+    uint8_t  security_partitions_to_arm;
+    /**
+     * @brief Fleg koji označava da li ova scena aktivira i scenu buđenja.
+     * @note Koristi se samo ako je tip SCENE_TYPE_SLEEP.
+     */
+    bool activate_wakeup_scene;
+
+    /**
+     * @brief Indeks scene (0-5) koja će biti aktivirana kao scena buđenja.
+     * @note Vrijednost -1 označava da nijedna scena nije odabrana.
+     */
+    int8_t wakeup_scene_index;
+
+    /**
+     * @brief Fleg koji označava da li treba aktivirati i zujalicu (buzzer) pri buđenju.
+     */
+    bool use_buzzer_alarm;
 } Scene_t;
 
 /**

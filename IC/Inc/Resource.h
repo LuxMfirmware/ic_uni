@@ -89,7 +89,7 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmicons_language_eng;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_gate;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_timers;
 
-extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scena_homecoming;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_homecoming;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_dinner;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_gathering;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_leaving;

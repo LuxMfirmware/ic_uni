@@ -121,7 +121,9 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
 
     /* TXT_ALL */                       { "SVE", "ALL", "ALLE", "TOUT", "TUTTI", "TODOS", "ВСЕ", "ВСІ", "WSZYSTKO", "VŠECHNY", "VŠETKY" },
     /* TXT_SETTINGS */                  { "POSTAVKE", "SETTINGS", "EINSTELLUNGEN", "RÉGLAGES", "IMPOSTAZIONI", "AJUSTES", "НАСТРОЙКИ", "НАЛАШТУВАННЯ", "USTAWIENIA", "NASTAVENÍ", "NASTAVENIA" },
+    /* TXT_GLOBAL_SETTINGS */           { "Globalno Podešavanje", "Global Settings", "Globale Einstellungen", "Réglages Globaux", "Impostazioni Globali", "Ajustes Globales", "Глобальные Настройки", "Глобальні Налаштування", "Ustawienia Globalne", "Globální Nastavení", "Globálne Nastavenia" },
     /* TXT_SAVE */                      { "SNIMI", "SAVE", "SPEICHERN", "SAUVEGARDER", "SALVA", "GUARDAR", "СОХРАНИТЬ", "ЗБЕРЕГТИ", "ZAPISZ", "ULOŽIT", "ULOŽIŤ" },
+    /* TXT_ENTER_NEW_NAME */            { "UNESITE NOVI NAZIV", "ENTER NEW NAME", "NEUEN NAMEN EINGEBEN", "ENTREZ LE NOUVEAU NOM", "INSERIRE NUOVO NOME", "INTRODUZCA NUEVO NOMBRE", "ВВЕДИТЕ НОВОЕ ИМЯ", "ВВЕДІТЬ НОВУ НАЗВУ", "WPROWADŹ NOWĄ NAZWĘ", "ZADEJTE NOVÝ NÁZEV", "ZADAJTE NOVÝ NÁZOV" },
     /* TXT_CANCEL */                    { "OTKAŽI", "CANCEL", "ABBRECHEN", "ANNULER", "ANNULLA", "CANCELAR", "ОТМЕНА", "СКАСУВАТИ", "ANULUJ", "ZRUŠIT", "ZRUŠIŤ" },
     /* TXT_DELETE */                    { "OBRIŠI", "DELETE", "LÖSCHEN", "SUPPRIMER", "ELIMINA", "ELIMINAR", "УДАЛИТЬ", "ВИДАЛИТИ", "USUŃ", "SMAZAT", "VYMAZAŤ" },
     /* TXT_CONFIGURE_DEVICE_MSG */      { "Uređaj nije konfigurisan.", "Device not configured.", "Gerät nicht konfiguriert.", "Appareil non configuré.", "Dispositivo non configurato.", "Dispositivo no configurado.", "Устройство не настроено.", "Пристрій не налаштовано.", "Urządzenie nie jest skonfigurowane.", "Zařízení není nakonfigurováno.", "Zariadenie nie je nakonfigurované." },

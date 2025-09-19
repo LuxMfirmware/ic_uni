@@ -64,13 +64,36 @@ static SystemState_e system_state = SYSTEM_STATE_HOME;
 /*============================================================================*/
 static void Scene_SetDefault(void);
 
-
 /*============================================================================*/
 /* IMPLEMENTACIJA JAVNOG API-JA                                               */
 /*============================================================================*/
+/**
+ ******************************************************************************
+ * @brief       Glavna servisna petlja za modul scena.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija se poziva periodično iz glavne `while(1)` petlje u `main.c`.
+ * Njena uloga je da izvršava dugotrajne ili periodične zadatke
+ * vezane za scene. Trenutno je placeholder za buduću logiku, kao
+ * što je "simulacija prisustva" (npr. nasumično paljenje i gašenje
+ * svjetala) kada je sistem u `SYSTEM_STATE_AWAY_ACTIVE` stanju.
+ * @param       None
+ * @retval      None
+ ******************************************************************************
+ */
 void Scene_Service(void)
 {
-    // TODO: Implementirati 
+    // Provjeri trenutno stanje sistema pozivom implementirane "getter" funkcije
+    if (Scene_GetSystemState() == SYSTEM_STATE_AWAY_ACTIVE)
+    {
+        // TODO: Implementirati logiku za simulaciju prisustva.
+        // Ovdje će se nalaziti tajmeri i logika koja će periodično pozivati
+        // LIGHT_Flip() za nasumično odabrana svjetla kako bi se stvorio
+        // utisak da je neko kod kuće.
+    }
+    else
+    {
+        // Ako sistem nije u "Away" modu, servisna funkcija trenutno nema šta da radi.
+    }
 }
 /**
  ******************************************************************************
@@ -87,15 +110,11 @@ void Scene_Service(void)
  */
 void Scene_Init(void)
 {
-    // Privremena struktura za čuvanje cijelog EEPROM bloka
-    struct {
-        uint16_t magic_number;
-        Scene_t  scene_data[SCENE_MAX_COUNT];
-        uint16_t crc;
-    } eeprom_block;
+    // KORISTIMO DIREKTNO DEFINISANI TIP IZ scene.h
+    Scene_EepromBlock_t eeprom_block;
 
     // Učitaj cijeli blok iz EEPROM-a
-    EE_ReadBuffer((uint8_t*)&eeprom_block, EE_SCENES, EE_SCENES_BLOCK_SIZE);
+    EE_ReadBuffer((uint8_t*)&eeprom_block, EE_SCENES, sizeof(Scene_EepromBlock_t));
 
     // Provjeri validnost podataka
     if (eeprom_block.magic_number != EEPROM_MAGIC_NUMBER)
@@ -108,7 +127,8 @@ void Scene_Init(void)
     {
         uint16_t received_crc = eeprom_block.crc;
         eeprom_block.crc = 0;
-        uint16_t calculated_crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&eeprom_block, EE_SCENES_BLOCK_SIZE);
+        // Koristimo sizeof(Scene_EepromBlock_t) za tačan proračun
+        uint16_t calculated_crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&eeprom_block, sizeof(Scene_EepromBlock_t));
 
         if (received_crc != calculated_crc)
         {
@@ -119,7 +139,7 @@ void Scene_Init(void)
         else
         {
             // Podaci su validni, prekopiraj ih u radnu memoriju (RAM)
-            memcpy(scenes, eeprom_block.scene_data, sizeof(scenes));
+            memcpy(scenes, eeprom_block.scenes, sizeof(scenes));
         }
     }
 }
@@ -129,53 +149,217 @@ void Scene_Init(void)
  * @brief       Snima trenutno stanje svih scena iz RAM-a u EEPROM.
  * @author      Gemini & [Vaše Ime]
  * @note        Ova funkcija se poziva nakon svake promjene u konfiguraciji
- * scena. Kreira kompletan memorijski blok sa magičnim brojem,
- * podacima i CRC-om, te ga upisuje u EEPROM.
+ * scena (npr. nakon poziva `Scene_Memorize`). Ona priprema kompletan
+ * memorijski blok tako što u lokalnu `Scene_EepromBlock_t` strukturu
+ * upiše magični broj, prekopira podatke iz `scenes` niza, izračuna
+ * CRC32 nad cijelim blokom i na kraju ga atomarno upiše u EEPROM.
+ * Ovaj proces osigurava integritet i validnost podataka.
  * @param       None
  * @retval      None
  ******************************************************************************
  */
 void Scene_Save(void)
 {
-    // TODO: Implementirati snimanje 'scenes' niza u EEPROM
+    // Kreiraj lokalnu instancu strukture koja odgovara EEPROM bloku.
+    Scene_EepromBlock_t block_to_save;
+
+    // KORAK 1: Postavi "potpis" (magični broj) za validaciju.
+    block_to_save.magic_number = EEPROM_MAGIC_NUMBER;
+
+    // KORAK 2: Prekopiraj trenutno stanje svih scena iz RAM-a u strukturu za snimanje.
+    memcpy(block_to_save.scenes, scenes, sizeof(scenes));
+
+    // KORAK 3: Pripremi za izračunavanje CRC-a tako što se CRC polje postavi na 0.
+    block_to_save.crc = 0;
+
+    // KORAK 4: Izračunaj CRC nad cijelim blokom (magični broj + podaci o scenama).
+    block_to_save.crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&block_to_save, sizeof(Scene_EepromBlock_t));
+
+    // KORAK 5: Snimi kompletan, pripremljen blok u EEPROM u jednoj operaciji.
+    EE_WriteBuffer((uint8_t*)&block_to_save, EE_SCENES, sizeof(Scene_EepromBlock_t));
 }
 
 /**
  ******************************************************************************
- * @brief       Aktivira odabranu scenu.
+ * @brief       Aktivira odabranu scenu primjenjujući memorisana stanja na uređaje.
  * @author      Gemini & [Vaše Ime]
- * @note        Ovo je placeholder funkcija. U punoj implementaciji, ova
- * funkcija će čitati sačuvana stanja iz `scenes[scene_index]`
- * i pozivati `setter` funkcije drugih modula (lights, curtain...)
- * kako bi postavila uređaje u željeno stanje.
+ * @note        Ova funkcija je "player" za scene. Prvo provjerava da li je scena
+ * uopšte konfigurisana. Ako jeste, prolazi kroz bitmaske za svaki
+ * tip uređaja (svjetla, roletne, itd.). Za svaki uređaj koji je
+ * označen u masci, funkcija poziva odgovarajuću 'setter' API funkciju
+ * tog modula kako bi postavila memorisano stanje. Nakon primjene
+ * stanja uređaja, provjerava `scene_type` i izvršava dodatnu
+ * specijalizovanu logiku (npr. promjenu globalnog stanja sistema).
  * @param       scene_index Indeks scene (0-5) koju treba aktivirati.
  * @retval      None
  ******************************************************************************
  */
 void Scene_Activate(uint8_t scene_index)
 {
-    // Placeholder da se izbjegne warning o neiskorištenom parametru
-    (void)scene_index;
-    // TODO: Implementirati logiku za aktiviranje scene
+    // Sigurnosna provjera da se ne čita izvan granica niza
+    if (scene_index >= SCENE_MAX_COUNT)
+    {
+        return;
+    }
+
+    // Dobijamo "handle" na scenu koju želimo aktivirati
+    Scene_t* target_scene = &scenes[scene_index];
+
+    // Ne radimo ništa ako scena nije prethodno konfigurisana
+    if (!target_scene->is_configured)
+    {
+        // Opciono: Ovdje se može pokrenuti "čarobnjak" za kreiranje scene
+        // Za sada, samo izlazimo iz funkcije.
+        return;
+    }
+
+    // --- Dio 1: Postavljanje stanja uređaja na osnovu maski i sačuvanih vrijednosti ---
+
+    // Postavljanje stanja za SVJETLA
+    for (uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
+    {
+        // Provjeri da li je i-ti bit u maski postavljen
+        if (target_scene->lights_mask & (1 << i))
+        {
+            LIGHT_Handle* light_handle = LIGHTS_GetInstance(i);
+            if (light_handle) // Dodatna provjera da je handle validan
+            {
+                // Postavi sačuvane vrijednosti koristeći API svjetala
+                LIGHT_SetState(light_handle, target_scene->light_values[i]);
+                LIGHT_SetBrightness(light_handle, target_scene->light_brightness[i]);
+                LIGHT_SetColor(light_handle, target_scene->light_colors[i]);
+            }
+        }
+    }
+
+    // Postavljanje stanja za ROLETNE
+    for (uint8_t i = 0; i < CURTAINS_SIZE; i++)
+    {
+        if (target_scene->curtains_mask & (1 << i))
+        {
+            Curtain_Handle* curtain_handle = Curtain_GetInstanceByIndex(i);
+            if (curtain_handle)
+            {
+                // Pokreni roletnu u memorisanom smjeru
+                Curtain_Move(curtain_handle, target_scene->curtain_states[i]);
+            }
+        }
+    }
+
+    // Postavljanje stanja za TERMOSTAT
+    if (target_scene->thermostat_mask) // Provjera da li je termostat uključen u scenu
+    {
+        THERMOSTAT_TypeDef* thst_handle = Thermostat_GetInstance();
+        if (thst_handle)
+        {
+            Thermostat_SP_Temp_Set(thst_handle, target_scene->thermostat_setpoint);
+        }
+    }
+
+    // --- Dio 2: Izvršavanje specijalne logike na osnovu tipa scene ---
+    switch (target_scene->scene_type)
+    {
+        case SCENE_TYPE_LEAVING:
+            // Nakon postavljanja uređaja, promijeni globalno stanje sistema u "odsutan"
+            Scene_SetSystemState(SYSTEM_STATE_AWAY_ACTIVE);
+            break;
+
+        case SCENE_TYPE_HOMECOMING:
+            // Vrati globalno stanje sistema u "prisutan"
+            Scene_SetSystemState(SYSTEM_STATE_HOME);
+            break;
+
+        case SCENE_TYPE_SLEEP:
+            if (target_scene->wakeup_hour != -1)
+            {
+                // TODO: Pozvati buduću funkciju iz Timer modula za postavljanje alarma
+                // Npr. Timer_SetWakeUp(target_scene->wakeup_hour, target_scene->wakeup_minute);
+            }
+            break;
+
+        case SCENE_TYPE_SECURITY:
+            // TODO: Pozvati buduću funkciju iz Security modula sa bitmaskom kao parametrom
+            // Npr. Security_SetArmedPartitions(target_scene->security_partitions_to_arm);
+            break;
+
+        case SCENE_TYPE_STANDARD:
+        default:
+            // Za standardne scene, ne izvršava se nikakva dodatna logika.
+            break;
+    }
 }
 
 /**
  ******************************************************************************
- * @brief       Memoriše trenutno stanje svih uređaja u odabranu scenu.
+ * @brief       Memoriše trenutno stanje svih relevantnih uređaja u odabranu scenu.
  * @author      Gemini & [Vaše Ime]
- * @note        Ovo je placeholder funkcija. U punoj implementaciji, ova
- * funkcija će pozivati `getter` funkcije svih ostalih modula
- * (lights, curtain, thermostat...) kako bi prikupila trenutno
- * stanje sistema i upisala ga u `scenes[scene_index]`.
+ * @note        Ova funkcija je srce "čarobnjaka" za kreiranje scena. Ona iterira
+ * kroz sve konfigurisane uređaje (svjetla, roletne, termostat),
+ * poziva njihove javne API funkcije (gettere) da bi prikupila
+ * njihovo trenutno stanje, i te vrijednosti upisuje u strukturu
+ * odabrane scene u RAM-u. Također postavlja 'is_configured' fleg
+ * na 'true', signalizirajući da scena više nije prazna.
  * @param       scene_index Indeks scene (0-5) u koju treba memorisati stanje.
  * @retval      None
  ******************************************************************************
  */
 void Scene_Memorize(uint8_t scene_index)
 {
-    // Placeholder
-    (void)scene_index;
-    // TODO: Implementirati logiku za memorisanje stanja
+    // Sigurnosna provjera da se ne piše izvan granica niza
+    if (scene_index >= SCENE_MAX_COUNT)
+    {
+        return;
+    }
+
+    // Dobijamo "handle" na scenu koju želimo modifikovati
+    Scene_t* target_scene = &scenes[scene_index];
+
+    // Resetujemo maske prije popunjavanja da osiguramo čisto stanje
+    target_scene->lights_mask = 0;
+    target_scene->curtains_mask = 0;
+    target_scene->thermostat_mask = 0;
+
+    // --- Memorisanje Stanja Svjetala ---
+    for (uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
+    {
+        LIGHT_Handle* light_handle = LIGHTS_GetInstance(i);
+        if (light_handle && LIGHT_GetRelay(light_handle) != 0) // Provjera da li je svjetlo konfigurisano
+        {
+            // Postavi odgovarajući bit u maski
+            target_scene->lights_mask |= (1 << i);
+            
+            // Sačuvaj trenutne vrijednosti koristeći API funkcije
+            target_scene->light_values[i] = LIGHT_isActive(light_handle);
+            target_scene->light_brightness[i] = LIGHT_GetBrightness(light_handle);
+            target_scene->light_colors[i] = LIGHT_GetColor(light_handle);
+        }
+    }
+
+    // --- Memorisanje Stanja Roletni ---
+    for (uint8_t i = 0; i < CURTAINS_SIZE; i++)
+    {
+        Curtain_Handle* curtain_handle = Curtain_GetInstanceByIndex(i);
+        if (curtain_handle && Curtain_hasRelays(curtain_handle)) // Provjera da li je roletna konfigurisana
+        {
+            // Postavi odgovarajući bit u maski
+            target_scene->curtains_mask |= (1 << i);
+            
+            // Sačuvaj trenutno stanje (STOP, UP, ili DOWN)
+            target_scene->curtain_states[i] = Curtain_getNewDirection(curtain_handle);
+        }
+    }
+
+    // --- Memorisanje Stanja Termostata ---
+    THERMOSTAT_TypeDef* thst_handle = Thermostat_GetInstance();
+    if (thst_handle)
+    {
+        // Za sada, pretpostavljamo da scena uvijek utiče na termostat ako je prisutan
+        target_scene->thermostat_mask = 1; 
+        target_scene->thermostat_setpoint = Thermostat_GetSetpoint(thst_handle);
+    }
+    
+    // Ključni korak: Označi scenu kao konfigurisanu
+    target_scene->is_configured = true;
 }
 
 /**
@@ -202,17 +386,31 @@ Scene_t* Scene_GetInstance(uint8_t scene_index)
  ******************************************************************************
  * @brief       Vraća broj trenutno konfigurisanih scena.
  * @author      Gemini & [Vaše Ime]
- * @note        Ova funkcija prolazi kroz niz scena i broji koliko njih ima
- * postavljen `is_configured` fleg na `true`. Defaultna,
- * nekonfigurisana scena se ne broji.
+ * @note        Ova funkcija prolazi kroz niz svih mogućih scena i broji koliko
+ * njih ima postavljen `is_configured` fleg na `true`. Scene koje
+ * korisnik još nije memorisao (prazni slotovi) se ne ubrajaju u
+ * rezultat. Ključna je za dinamičko iscrtavanje GUI-ja.
  * @param       None
- * @retval      uint8_t Broj aktivnih, korisnički konfigurisanih scena.
+ * @retval      uint8_t Broj aktivnih, korisnički konfigurisanih scena (0 do 6).
  ******************************************************************************
  */
 uint8_t Scene_GetCount(void)
 {
-    // TODO: Implementirati brojanje konfigurisanih scena
-    return 1; // Privremeno vraća 1 zbog defaultne scene
+    // Inicijalizuj brojač na nulu
+    uint8_t configured_count = 0;
+
+    // Prođi kroz sve slotove za scene
+    for (uint8_t i = 0; i < SCENE_MAX_COUNT; i++)
+    {
+        // Ako je fleg 'is_configured' postavljen na true, uvećaj brojač
+        if (scenes[i].is_configured)
+        {
+            configured_count++;
+        }
+    }
+
+    // Vrati ukupan broj pronađenih konfigurisanih scena
+    return configured_count;
 }
 
 /**

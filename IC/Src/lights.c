@@ -720,7 +720,6 @@ static void HandleLightNightTimer(void)
                 LIGHT_SetState(handle, false);
             }
         }
-        if(screen == SCREEN_RESET_MENU_SWITCHES) screen = SCREEN_MAIN;
         shouldDrawScreen = 1;
     }
 }

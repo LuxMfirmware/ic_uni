@@ -50,11 +50,12 @@ WIDGET( ID_CurtainsMoveTime,            0x8B2, "ID za Spinbox vremena kretanja z
 
 // --- Ekran 6: Opšte ---
 WIDGET( ID_DEV_ID,                      0x870, "ID za Spinbox ID-a uređaja" )
-WIDGET(ID_LanguageSelect,               0x900, "ID Dropdown za odabir jezika")
+WIDGET( ID_LanguageSelect,              0x900, "ID Dropdown za odabir jezika")
 WIDGET( ID_LEAVE_SCRNSVR_AFTER_TOUCH,   0x977, "ID za Checkbox ponašanja screensavera" )
 WIDGET( ID_LIGHT_NIGHT_TIMER,           0x978, "ID za Checkbox noćnog tajmera za svjetla" )
 WIDGET( ID_SET_DEFAULTS,                0x97E, "ID dugmeta za postavljanje podrazumijevanih vrednosti" )
 WIDGET( ID_SYSRESTART,                  0x976, "ID dugmeta za restart sistema" )
+WIDGET( ID_ENABLE_SCENES,               0x97F, "ID za Checkbox 'Omogući Scene'" )
 
 // --- Ekran 7: Odmrzivač ---
 WIDGET( ID_DEFROSTER_CYCLE_TIME,        0x97B, "ID za Spinbox vremena ciklusa odmrzivača" )
@@ -73,6 +74,9 @@ WIDGET( ID_GATE_FEEDBACK_CLOSE,         0x987, "ID za EDIT widget za adresu 'CLO
 WIDGET( ID_GATE_CYCLE_TIMER,            0x988, "ID za EDIT widget za vrijeme ciklusa" )
 WIDGET( ID_GATE_PED_TIMER,              0x989, "ID za EDIT widget za vrijeme pješačkog moda" )
 WIDGET( ID_GATE_PULSE_TIMER,            0x98A, "ID za EDIT widget za trajanje impulsa" )
+
+// --- Ekran 8: Scene ---
+WIDGET( ID_BUTTON_CHANGE_APPEARANCE,    0x9A0, "ID za dugme 'Promijeni Izgled' u čarobnjaku za scene" )
 
 // NAPOMENA: Dinamički ID-jevi kao što su ID_LightsModbusRelay i ID_CurtainsRelay
 // se ne stavljaju ovdje jer nisu statični.

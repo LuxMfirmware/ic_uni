@@ -87,7 +87,9 @@ typedef enum {
     // --- Opšti tekstovi ---
     TXT_ALL,
     TXT_SETTINGS,
+    TXT_GLOBAL_SETTINGS,
     TXT_SAVE,                       /**< Tekst za "Snimi" dugme u menijima za podešavanja. */
+    TXT_ENTER_NEW_NAME,             /**< Naslov za tastaturu pri izmjeni naziva. */
     TXT_CANCEL,                     /**< Tekst za "Otkaži" dugme u menijima za podešavanja. */
     TXT_DELETE,                     /**< Tekst za "Obriši" dugme u menijima za podešavanja. */
     TXT_CONFIGURE_DEVICE_MSG,       /**< Poruka koja se prikazuje ako uredaj nije uopšte konfigurisan. */
@@ -206,6 +208,7 @@ typedef struct
     uint8_t  rs485_baud_rate_index;     /**< Indeks odabrane brzine u nizu `bps[]` iz `common.c`. */
     uint8_t  selected_control_mode;     /**< Odabrani mod za dinamicku ikonu (Defroster/Ventilator/Off). */
     bool     light_night_timer_enabled; /**< Fleg za nocni tajmer svjetala. */
+    bool     scenes_enabled;            /**< Fleg (true/false) koji omogucava/onemogucava napredne funkcije (scene). */
     uint16_t crc;                       /**< CRC za provjeru integriteta. */
 } Display_EepromSettings_t;
 #pragma pack(pop)
@@ -245,6 +248,7 @@ typedef enum{
     SCREEN_SECURITY,                /**< NOVI EKRAN (placeholder): Prikaz i kontrola alarmnog sistema. */
     SCREEN_SCENE,                   /**< NOVI EKRAN: Prikaz i aktivacija korisnicki definisanih scena. */
     SCREEN_SCENE_EDIT,              /**< NOVI EKRAN ("Carobnjak"): Vodi korisnika kroz kreiranje/editovanje scene. */
+    SCREEN_SCENE_APPEARANCE,
     SCREEN_GATE_CONTROL_PANEL,      /**< NOVI EKRAN (pop-up): Prikazuje napredne, "custom" kontrole za kapiju. */
     SCREEN_LIGHT_SETTINGS,
     SCREEN_QR_CODE,
