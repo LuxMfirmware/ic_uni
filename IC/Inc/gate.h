@@ -25,11 +25,6 @@
 /*============================================================================*/
 
 /**
- * @brief Maksimalan broj kapija/garažnih vrata koje sistem podržava.
- */
-#define GATE_MAX_COUNT 6
-
-/**
  * @brief Definiše tip motorizovanog ulaza, što utiče na logiku i UI.
  */
 typedef enum {

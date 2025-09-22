@@ -93,8 +93,7 @@ static const SceneAppearance_t scene_appearance_table[] = {
     { ICON_SCENE_DINNER,      TXT_SCENE_DINNER      },
     { ICON_SCENE_READING,     TXT_SCENE_READING     },
     { ICON_SCENE_RELAXING,    TXT_SCENE_RELAXING    },
-    { ICON_SCENE_GATHERING,   TXT_SCENE_GATHERING   },
-    { ICON_SCENE_SECURITY,    TXT_SCENE_SECURITY    }
+    { ICON_SCENE_GATHERING,   TXT_SCENE_GATHERING   }
 };
 
 /**
@@ -175,7 +174,6 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_SCENE_READING */             { "Čitanje", "Reading", "Lesen", "Lecture", "Lettura", "Lectura", "Чтение", "Читання", "Czytanie", "Čtení", "Čítanie" },
     /* TXT_SCENE_RELAXING */            { "Opuštanje", "Relaxing", "Entspannen", "Détente", "Rilassante", "Relajación", "Расслабление", "Розслаблення", "Relaks", "Odpočinek", "Oddych" },
     /* TXT_SCENE_GATHERING */           { "Druženje", "Gathering", "Treffen", "Rassemblement", "Incontro", "Reunión", "Сбор", "Збори", "Spotkanie", "Setkání", "Stretnutie" },
-    /* TXT_SCENE_SECURITY */            { "Sigurnost", "Security", "Sicherheit", "Sécurité", "Sicurezza", "Seguridad", "Безопасность", "Безпека", "Bezpieczeństwo", "Bezpečnost", "Bezpečnosť" },
     /* TXT_GLAVNI_SECONDARY */          { "GLAVNI", "MAIN", "HAUPT", "PRINCIPAL", "PRINCIPALE", "PRINCIPAL", "ГЛАВНЫЙ", "ГОЛОВНИЙ", "GŁÓWNY", "HLAVNÍ", "HLAVNÝ" },
     /* TXT_AMBIJENT_SECONDARY */        { "AMBIJENT", "AMBIENT", "AMBIENTE", "AMBIANCE", "AMBIENTE", "AMBIENTE", "АТМОСФЕРА", "АТМОСФЕРА", "NASTRÓJ", "PROSTŘEDÍ", "PROSTREDIE" },
     /* TXT_TRPEZARIJA_SECONDARY */      { "TRPEZARIJA", "DINING", "ESSZIMMER", "SALLE À MANGER", "SALA DA PRANZO", "COMEDOR", "СТОЛОВАЯ", "ЇДАЛЬНЯ", "JADALNIA", "JÍDELNA", "JEDÁLEŇ" },

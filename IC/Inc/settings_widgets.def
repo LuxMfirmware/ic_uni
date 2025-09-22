@@ -77,6 +77,22 @@ WIDGET( ID_GATE_PULSE_TIMER,            0x98A, "ID za EDIT widget za trajanje im
 
 // --- Ekran 8: Scene ---
 WIDGET( ID_BUTTON_CHANGE_APPEARANCE,    0x9A0, "ID za dugme 'Promijeni Izgled' u čarobnjaku za scene" )
+WIDGET( ID_SCENE_TRIGGER_1,             0x9A1, "ID za Spinbox okidača 1 za 'Povratak' scenu" )
+WIDGET( ID_SCENE_TRIGGER_2,             0x9A2, "ID za Spinbox okidača 2 za 'Povratak' scenu" )
+WIDGET( ID_SCENE_TRIGGER_3,             0x9A3, "ID za Spinbox okidača 3 za 'Povratak' scenu" )
+WIDGET( ID_SCENE_TRIGGER_4,             0x9A4, "ID za Spinbox okidača 4 za 'Povratak' scenu" )
+WIDGET( ID_SCENE_TRIGGER_5,             0x9A5, "ID za Spinbox okidača 5 za 'Povratak' scenu" )
+WIDGET( ID_SCENE_TRIGGER_6,             0x9A6, "ID za Spinbox okidača 6 za 'Povratak' scenu" )
+WIDGET( ID_SCENE_TRIGGER_7,             0x9A7, "ID za Spinbox okidača 7 za 'Povratak' scenu" )
+WIDGET( ID_SCENE_TRIGGER_8,             0x9A8, "ID za Spinbox okidača 8 za 'Povratak' scenu" )
+WIDGET( ID_BUTTON_DETAILED_SETUP,       0x9A9, "ID za dugme 'Detaljna Podešavanja' u čarobnjaku za scene" )
+WIDGET( ID_WIZ_CHECKBOX_LIGHTS,         0x9B0, "ID za Checkbox 'Svjetla' u čarobnjaku" )
+WIDGET( ID_WIZ_CHECKBOX_CURTAINS,       0x9B1, "ID za Checkbox 'Roletne' u čarobnjaku" )
+WIDGET( ID_WIZ_CHECKBOX_THERMOSTAT,     0x9B2, "ID za Checkbox 'Termostat' u čarobnjaku" )
+WIDGET( ID_WIZ_NEXT,                    0x9B3, "ID za dugme 'Dalje' unutar čarobnjaka" )
+WIDGET( ID_WIZ_BACK,                    0x9B4, "ID za dugme 'Nazad' unutar čarobnjaka" )
+WIDGET( ID_WIZ_CANCEL,                  0x9B5, "ID za dugme 'Otkaži' unutar čarobnjaka" )
+WIDGET( ID_BUTTON_DELETE_SCENE,         0x9B6, "ID za dugme 'Obriši' u editoru scene" )
 
 // NAPOMENA: Dinamički ID-jevi kao što su ID_LightsModbusRelay i ID_CurtainsRelay
 // se ne stavljaju ovdje jer nisu statični.

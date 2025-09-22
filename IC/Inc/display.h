@@ -119,8 +119,7 @@ typedef enum {
     TXT_SCENE_DINNER,
     TXT_SCENE_READING,
     TXT_SCENE_RELAXING,
-    TXT_SCENE_GATHERING,
-    TXT_SCENE_SECURITY,
+    TXT_SCENE_GATHERING,   
     // --- Sekundarni tekstovi za ikonice (postojeci) ---
     TXT_GLAVNI_SECONDARY, TXT_AMBIJENT_SECONDARY, TXT_TRPEZARIJA_SECONDARY, TXT_DNEVNA_SOBA_SECONDARY,
     TXT_LIJEVI_SECONDARY, TXT_DESNI_SECONDARY, TXT_CENTRALNI_SECONDARY, TXT_PREDNJI_SECONDARY,
@@ -168,7 +167,6 @@ typedef enum {
     ICON_SCENE_READING,
     ICON_SCENE_RELAXING,
     ICON_SCENE_GATHERING,
-    ICON_SCENE_SECURITY,
     
     ICON_COUNT // Ukupan broj definisanih vizuelnih tipova ikonica
 } IconID;
@@ -209,6 +207,7 @@ typedef struct
     uint8_t  selected_control_mode;     /**< Odabrani mod za dinamicku ikonu (Defroster/Ventilator/Off). */
     bool     light_night_timer_enabled; /**< Fleg za nocni tajmer svjetala. */
     bool     scenes_enabled;            /**< Fleg (true/false) koji omogucava/onemogucava napredne funkcije (scene). */
+    uint16_t scene_homecoming_triggers[SCENE_MAX_TRIGGERS]; /**< Niz koji cuva adrese (npr. Modbus) za 8 logickih okidaca "Povratak" scene. */
     uint16_t crc;                       /**< CRC za provjeru integriteta. */
 } Display_EepromSettings_t;
 #pragma pack(pop)
@@ -249,6 +248,11 @@ typedef enum{
     SCREEN_SCENE,                   /**< NOVI EKRAN: Prikaz i aktivacija korisnicki definisanih scena. */
     SCREEN_SCENE_EDIT,              /**< NOVI EKRAN ("Carobnjak"): Vodi korisnika kroz kreiranje/editovanje scene. */
     SCREEN_SCENE_APPEARANCE,
+    SCREEN_SCENE_CONFIRM_DIALOG,      /**< NOVI EKRAN: Prikazuje genericki dijalog za potvrdu (Da/Ne) za akcije poput brisanja ili snimanja. */
+    SCREEN_SCENE_WIZ_DEVICES,         /**< NOVI EKRAN: Korak u carobnjaku za odabir grupa uredaja (svjetla, roletne...) koje scena obuhvata. */
+    SCREEN_SCENE_WIZ_LEAVING,         /**< NOVI EKRAN: Korak u carobnjaku sa specificnim podešavanjima za "Odlazak" scenu (odgoda, simulacija...). */
+    SCREEN_SCENE_WIZ_HOMECOMING,      /**< NOVI EKRAN: Korak u carobnjaku za konfiguraciju automatskih okidaca za "Povratak" scenu. */
+    SCREEN_SCENE_WIZ_SLEEP,           /**< NOVI EKRAN: Korak u carobnjaku sa specificnim podešavanjima za "Spavanje" scenu (alarm, budenje...). */
     SCREEN_GATE_CONTROL_PANEL,      /**< NOVI EKRAN (pop-up): Prikazuje napredne, "custom" kontrole za kapiju. */
     SCREEN_LIGHT_SETTINGS,
     SCREEN_QR_CODE,

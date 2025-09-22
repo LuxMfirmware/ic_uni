@@ -21,8 +21,6 @@
 /* JAVNE DEFINICIJE I KONSTANTE                                               */
 /*============================================================================*/
 
-#define CURTAINS_SIZE    16     /**< Maksimalan broj roletni koje sistem podržava. */
-
 // --- Definicije za smjer kretanja roletne ---
 #define CURTAIN_STOP     0
 #define CURTAIN_UP       1

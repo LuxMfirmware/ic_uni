@@ -1109,8 +1109,18 @@ typedef enum
 #define QR_CODE_GET                         0xE5
 #define QR_CODE_SET                         0xE6
 
-#define LIGHT_SEND_BRIGHTNESS_SET                0xE7
-#define LIGHT_SEND_COLOR_SET                     0xE8
+#define LIGHT_SEND_BRIGHTNESS_SET           0xE7
+#define LIGHT_SEND_COLOR_SET                0xE8
+
+
+/** ============================================================================*/
+/** S I S T E M S K I       K A P A C I T E T I                         */
+/** ============================================================================*/
+#define LIGHTS_MODBUS_SIZE                  6       /**< Maksimalan broj svjetala koje sistem može konfigurisati. */
+#define CURTAINS_SIZE                       16      /**< Maksimalan broj roletni koje sistem podržava. */
+#define GATE_MAX_COUNT                      6       /**< Maksimalan broj kapija/garažnih vrata koje sistem podržava. */
+#define SCENE_MAX_COUNT                     6       /**< Maksimalan broj scena koje sistem podržava. */
+#define SCENE_MAX_TRIGGERS                  8       /**< Maksimalan broj automatskih okidača za "Povratak" scenu. */
 
 /* Exported type  ----------------------------------------------------- */
 /* flash operation error code */

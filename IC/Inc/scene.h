@@ -24,10 +24,6 @@
 /* JAVNE DEFINICIJE I ENUMERATORI                                             */
 /*============================================================================*/
 
-/**
- * @brief Maksimalan broj scena koje sistem podržava.
- */
-#define SCENE_MAX_COUNT 6
 /*============================================================================*/
 /* DODATNE DEFINICIJE ZA SECURITY SCENE                                       */
 /*============================================================================*/
@@ -70,7 +66,6 @@ typedef enum {
     SCENE_TYPE_LEAVING,       /**< Specijalna scena koja aktivira SYSTEM_STATE_AWAY_ACTIVE. */
     SCENE_TYPE_HOMECOMING,    /**< Specijalna scena koja deaktivira "Away" mod. */
     SCENE_TYPE_SLEEP,         /**< Specijalna scena koja može imati povezan tajmer za buđenje. */
-    SCENE_TYPE_SECURITY       /**< Specijalna scena koja može aktivirati/deaktivirati alarm. */
 } SceneType_e;
 
 
@@ -203,6 +198,28 @@ typedef struct
      * @brief Fleg koji označava da li treba aktivirati i zujalicu (buzzer) pri buđenju.
      */
     bool use_buzzer_alarm;
+    
+    /**
+     * @brief Vrijeme odgode (u intervalima od 10 sekundi) za 'Odlazak' scenu.
+     * @note  Vrijednost 6 znači 60 sekundi odgode prije nego se akcije izvrše.
+     * Koristi se samo za `SCENE_TYPE_LEAVING`.
+     */
+    uint8_t  exit_delay_s;
+
+    /**
+     * @brief Fleg koji omogućava simulaciju prisustva za 'Odlazak' scenu.
+     * @note  Ako je `true`, `Scene_Service` će nasumično upravljati uređajima
+     * dok je sistem u `AWAY_ACTIVE` stanju.
+     */
+    bool     presence_simulation_enabled;
+    
+    /**
+     * @brief Niz adresa (npr. Modbus) koje služe kao okidači za 'Povratak' scenu.
+     * @note  Sistem će pratiti `DIGITAL_INPUT_EVENT` poruke i porediti adresu
+     * izvora sa adresama u ovom nizu. Vrijednost 0 označava prazan slot.
+     */
+    uint16_t homecoming_triggers[SCENE_MAX_TRIGGERS];
+
 } Scene_t;
 
 /**

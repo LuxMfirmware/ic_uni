@@ -38,10 +38,7 @@
 /*============================================================================*/
 /* DEFINICIJE I KONSTANTE                                                     */
 /*============================================================================*/
-/**
- * @brief Ukupan broj svjetala koje sistem može konfigurisati.
- */
-#define LIGHTS_MODBUS_SIZE                  6
+
 
 /**
  * @brief Trajanje tajmera (u sekundama) za automatsko gašenje nocnog svjetla.

@@ -58,11 +58,34 @@ static Scene_t scenes[SCENE_MAX_COUNT];
  */
 static SystemState_e system_state = SYSTEM_STATE_HOME;
 
+/**
+ * @brief Definicija runtime podataka za jednu scenu.
+ * @note  Ovi podaci se ne čuvaju u EEPROM-u i koriste se za praćenje
+ * dinamičkih stanja, kao što su aktivni tajmeri.
+ */
+typedef struct
+{
+    uint8_t  runtime_state; // Npr. STATE_IDLE, STATE_LEAVING_DELAY
+    uint32_t timer_start;   // Vrijeme početka tajmera (HAL_GetTick())
+} Scene_Runtime_t;
 
+/**
+ * @brief Stanja za runtime mašinu stanja jedne scene.
+ */
+enum {
+    SCENE_RUNTIME_STATE_IDLE,
+    SCENE_RUNTIME_STATE_LEAVING_DELAY
+};
+
+/**
+ * @brief Statički niz koji čuva runtime podatke za sve scene, paralelno sa `scenes` nizom.
+ */
+static Scene_Runtime_t scene_runtime_data[SCENE_MAX_COUNT];
 /*============================================================================*/
 /* PROTOTIPOVI PRIVATNIH POMOCNIH FUNKCIJA                                    */
 /*============================================================================*/
 static void Scene_SetDefault(void);
+static void Scene_ExecuteComfortActions(uint8_t scene_index);
 
 /*============================================================================*/
 /* IMPLEMENTACIJA JAVNOG API-JA                                               */
@@ -71,28 +94,58 @@ static void Scene_SetDefault(void);
  ******************************************************************************
  * @brief       Glavna servisna petlja za modul scena.
  * @author      Gemini & [Vaše Ime]
- * @note        Ova funkcija se poziva periodično iz glavne `while(1)` petlje u `main.c`.
- * Njena uloga je da izvršava dugotrajne ili periodične zadatke
- * vezane za scene. Trenutno je placeholder za buduću logiku, kao
- * što je "simulacija prisustva" (npr. nasumično paljenje i gašenje
- * svjetala) kada je sistem u `SYSTEM_STATE_AWAY_ACTIVE` stanju.
- * @param       None
- * @retval      None
+ * @note        Ova funkcija se poziva periodično iz `main.c`. Njena uloga je da
+ * izvršava dugotrajne ili periodične zadatke. Upravlja tajmerom za
+ * odgodu "Odlazak" scene i logikom za simulaciju prisustva kada je
+ * sistem u "Away" modu.
  ******************************************************************************
  */
 void Scene_Service(void)
 {
-    // Provjeri trenutno stanje sistema pozivom implementirane "getter" funkcije
+    // Prolazimo kroz sve scene da provjerimo da li neka ima aktivan tajmer
+    for (uint8_t i = 0; i < SCENE_MAX_COUNT; i++)
+    {
+        // Provjeravamo runtime stanje svake scene
+        switch (scene_runtime_data[i].runtime_state)
+        {
+            case SCENE_RUNTIME_STATE_LEAVING_DELAY:
+            {
+                Scene_t* target_scene = &scenes[i];
+                uint32_t delay_ms = (uint32_t)target_scene->exit_delay_s * 10000UL; // Vrijednost iz menija (npr. 6) * 10s
+
+                // Provjera da li je vrijeme odgode isteklo
+                if ((HAL_GetTick() - scene_runtime_data[i].timer_start) >= delay_ms)
+                {
+                    // Vrijeme je isteklo, izvrši "comfort" akcije (ugasi svjetla, itd.)
+                    Scene_ExecuteComfortActions(i);
+                    
+                    // Pošalji broadcast poruku da je pokrenut "Odlazak" događaj
+                    // TODO: Pozvati AddCommand za slanje SCENE_CONTROL poruke tipa SCENE_TYPE_LEAVING
+
+                    // Postavi globalno stanje sistema na "Away"
+                    Scene_SetSystemState(SYSTEM_STATE_AWAY_ACTIVE);
+                    
+                    // Vrati runtime stanje scene na IDLE
+                    scene_runtime_data[i].runtime_state = SCENE_RUNTIME_STATE_IDLE;
+                    scene_runtime_data[i].timer_start = 0;
+                }
+                break;
+            }
+
+            case SCENE_RUNTIME_STATE_IDLE:
+            default:
+                // Scena je neaktivna, ne radi ništa.
+                break;
+        }
+    }
+
+    // --- Logika za Simulaciju Prisustva ---
     if (Scene_GetSystemState() == SYSTEM_STATE_AWAY_ACTIVE)
     {
         // TODO: Implementirati logiku za simulaciju prisustva.
         // Ovdje će se nalaziti tajmeri i logika koja će periodično pozivati
-        // LIGHT_Flip() za nasumično odabrana svjetla kako bi se stvorio
-        // utisak da je neko kod kuće.
-    }
-    else
-    {
-        // Ako sistem nije u "Away" modu, servisna funkcija trenutno nema šta da radi.
+        // LIGHT_Flip() ili Curtain_Move() za nasumično odabrane uređaje
+        // iz maske aktivne "Odlazak" scene.
     }
 }
 /**
@@ -178,20 +231,14 @@ void Scene_Save(void)
     // KORAK 5: Snimi kompletan, pripremljen blok u EEPROM u jednoj operaciji.
     EE_WriteBuffer((uint8_t*)&block_to_save, EE_SCENES, sizeof(Scene_EepromBlock_t));
 }
-
 /**
  ******************************************************************************
  * @brief       Aktivira odabranu scenu primjenjujući memorisana stanja na uređaje.
  * @author      Gemini & [Vaše Ime]
- * @note        Ova funkcija je "player" za scene. Prvo provjerava da li je scena
- * uopšte konfigurisana. Ako jeste, prolazi kroz bitmaske za svaki
- * tip uređaja (svjetla, roletne, itd.). Za svaki uređaj koji je
- * označen u masci, funkcija poziva odgovarajuću 'setter' API funkciju
- * tog modula kako bi postavila memorisano stanje. Nakon primjene
- * stanja uređaja, provjerava `scene_type` i izvršava dodatnu
- * specijalizovanu logiku (npr. promjenu globalnog stanja sistema).
- * @param       scene_index Indeks scene (0-5) koju treba aktivirati.
- * @retval      None
+ * @note        Verzija 2.1: Prošireno da podržava asinhrono izvršavanje za scene
+ * sa odgodom (npr. "Odlazak"). Za takve scene, ova funkcija samo
+ * pokreće mašinu stanja, a `Scene_Service` izvršava stvarne akcije
+ * nakon isteka tajmera. Za ostale scene, akcija je trenutna.
  ******************************************************************************
  */
 void Scene_Activate(uint8_t scene_index)
@@ -208,23 +255,72 @@ void Scene_Activate(uint8_t scene_index)
     // Ne radimo ništa ako scena nije prethodno konfigurisana
     if (!target_scene->is_configured)
     {
-        // Opciono: Ovdje se može pokrenuti "čarobnjak" za kreiranje scene
-        // Za sada, samo izlazimo iz funkcije.
         return;
     }
 
-    // --- Dio 1: Postavljanje stanja uređaja na osnovu maski i sačuvanih vrijednosti ---
+    // --- Izvršavanje specijalne logike na osnovu tipa scene ---
+    switch (target_scene->scene_type)
+    {
+        case SCENE_TYPE_LEAVING:
+            // Za scenu "Odlazak", ne izvršavamo akcije odmah.
+            // Samo pokrećemo mašinu stanja i tajmer za odgodu.
+            scene_runtime_data[scene_index].runtime_state = SCENE_RUNTIME_STATE_LEAVING_DELAY;
+            scene_runtime_data[scene_index].timer_start = HAL_GetTick();
+            // Stvarne akcije će izvršiti `Scene_Service` nakon isteka vremena.
+            return; // Važno: Prekidamo izvršavanje ovdje!
+
+        case SCENE_TYPE_HOMECOMING:
+            // Prvo pošalji broadcast poruku da se sistem vraća u HOME mod.
+            // TODO: Pozvati AddCommand za slanje SCENE_CONTROL poruke tipa SCENE_TYPE_HOMECOMING
+            Scene_SetSystemState(SYSTEM_STATE_HOME);
+            break;
+
+        case SCENE_TYPE_SLEEP:
+            if (target_scene->wakeup_hour != -1)
+            {
+                // TODO: Pozvati buduću funkciju iz Timer modula za postavljanje alarma
+            }
+            // Integracija sa alarmom:
+            if (target_scene->security_partitions_to_arm > 0)
+            {
+                // TODO: Pozvati buduću funkciju iz Security modula za naoružavanje particija
+                // Npr. Security_ArmPartitions(target_scene->security_partitions_to_arm);
+            }
+            break;
+
+        case SCENE_TYPE_STANDARD:
+        default:
+            // Za standardne scene, akcije se izvršavaju odmah.
+            break;
+    }
+
+    // Izvršavanje "comfort" akcija za sve scene koje nisu prekinute (sve osim LEAVING)
+    Scene_ExecuteComfortActions(scene_index);
+}
+/**
+ ******************************************************************************
+ * @brief       Izvršava "comfort" akcije za datu scenu.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova pomoćna funkcija sadrži logiku za postavljanje stanja
+ * svjetala, roletni i termostata na osnovu memorisanih vrijednosti
+ * u strukturi scene. Kreirana je da bi se izbjeglo dupliranje koda
+ * između `Scene_Activate` i `Scene_Service` funkcija.
+ * @param       scene_index Indeks scene (0-5) čije akcije treba izvršiti.
+ ******************************************************************************
+ */
+static void Scene_ExecuteComfortActions(uint8_t scene_index)
+{
+    if (scene_index >= SCENE_MAX_COUNT) return;
+    Scene_t* target_scene = &scenes[scene_index];
 
     // Postavljanje stanja za SVJETLA
     for (uint8_t i = 0; i < LIGHTS_MODBUS_SIZE; i++)
     {
-        // Provjeri da li je i-ti bit u maski postavljen
         if (target_scene->lights_mask & (1 << i))
         {
             LIGHT_Handle* light_handle = LIGHTS_GetInstance(i);
-            if (light_handle) // Dodatna provjera da je handle validan
+            if (light_handle)
             {
-                // Postavi sačuvane vrijednosti koristeći API svjetala
                 LIGHT_SetState(light_handle, target_scene->light_values[i]);
                 LIGHT_SetBrightness(light_handle, target_scene->light_brightness[i]);
                 LIGHT_SetColor(light_handle, target_scene->light_colors[i]);
@@ -240,14 +336,13 @@ void Scene_Activate(uint8_t scene_index)
             Curtain_Handle* curtain_handle = Curtain_GetInstanceByIndex(i);
             if (curtain_handle)
             {
-                // Pokreni roletnu u memorisanom smjeru
                 Curtain_Move(curtain_handle, target_scene->curtain_states[i]);
             }
         }
     }
 
     // Postavljanje stanja za TERMOSTAT
-    if (target_scene->thermostat_mask) // Provjera da li je termostat uključen u scenu
+    if (target_scene->thermostat_mask)
     {
         THERMOSTAT_TypeDef* thst_handle = Thermostat_GetInstance();
         if (thst_handle)
@@ -255,40 +350,7 @@ void Scene_Activate(uint8_t scene_index)
             Thermostat_SP_Temp_Set(thst_handle, target_scene->thermostat_setpoint);
         }
     }
-
-    // --- Dio 2: Izvršavanje specijalne logike na osnovu tipa scene ---
-    switch (target_scene->scene_type)
-    {
-        case SCENE_TYPE_LEAVING:
-            // Nakon postavljanja uređaja, promijeni globalno stanje sistema u "odsutan"
-            Scene_SetSystemState(SYSTEM_STATE_AWAY_ACTIVE);
-            break;
-
-        case SCENE_TYPE_HOMECOMING:
-            // Vrati globalno stanje sistema u "prisutan"
-            Scene_SetSystemState(SYSTEM_STATE_HOME);
-            break;
-
-        case SCENE_TYPE_SLEEP:
-            if (target_scene->wakeup_hour != -1)
-            {
-                // TODO: Pozvati buduću funkciju iz Timer modula za postavljanje alarma
-                // Npr. Timer_SetWakeUp(target_scene->wakeup_hour, target_scene->wakeup_minute);
-            }
-            break;
-
-        case SCENE_TYPE_SECURITY:
-            // TODO: Pozvati buduću funkciju iz Security modula sa bitmaskom kao parametrom
-            // Npr. Security_SetArmedPartitions(target_scene->security_partitions_to_arm);
-            break;
-
-        case SCENE_TYPE_STANDARD:
-        default:
-            // Za standardne scene, ne izvršava se nikakva dodatna logika.
-            break;
-    }
 }
-
 /**
  ******************************************************************************
  * @brief       Memoriše trenutno stanje svih relevantnih uređaja u odabranu scenu.
