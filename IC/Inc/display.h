@@ -248,11 +248,12 @@ typedef enum{
     SCREEN_SCENE,                   /**< NOVI EKRAN: Prikaz i aktivacija korisnicki definisanih scena. */
     SCREEN_SCENE_EDIT,              /**< NOVI EKRAN ("Carobnjak"): Vodi korisnika kroz kreiranje/editovanje scene. */
     SCREEN_SCENE_APPEARANCE,
-    SCREEN_SCENE_CONFIRM_DIALOG,      /**< NOVI EKRAN: Prikazuje genericki dijalog za potvrdu (Da/Ne) za akcije poput brisanja ili snimanja. */
-    SCREEN_SCENE_WIZ_DEVICES,         /**< NOVI EKRAN: Korak u carobnjaku za odabir grupa uredaja (svjetla, roletne...) koje scena obuhvata. */
-    SCREEN_SCENE_WIZ_LEAVING,         /**< NOVI EKRAN: Korak u carobnjaku sa specificnim podešavanjima za "Odlazak" scenu (odgoda, simulacija...). */
-    SCREEN_SCENE_WIZ_HOMECOMING,      /**< NOVI EKRAN: Korak u carobnjaku za konfiguraciju automatskih okidaca za "Povratak" scenu. */
-    SCREEN_SCENE_WIZ_SLEEP,           /**< NOVI EKRAN: Korak u carobnjaku sa specificnim podešavanjima za "Spavanje" scenu (alarm, budenje...). */
+    SCREEN_SCENE_CONFIRM_DIALOG,    /**< NOVI EKRAN: Prikazuje genericki dijalog za potvrdu (Da/Ne) za akcije poput brisanja ili snimanja. */
+    SCREEN_SCENE_WIZ_DEVICES,       /**< NOVI EKRAN: Korak u carobnjaku za odabir grupa uredaja (svjetla, roletne...) koje scena obuhvata. */
+    SCREEN_SCENE_WIZ_LEAVING,       /**< NOVI EKRAN: Korak u carobnjaku sa specificnim podešavanjima za "Odlazak" scenu (odgoda, simulacija...). */
+    SCREEN_SCENE_WIZ_HOMECOMING,    /**< NOVI EKRAN: Korak u carobnjaku za konfiguraciju automatskih okidaca za "Povratak" scenu. */
+    SCREEN_SCENE_WIZ_SLEEP,         /**< NOVI EKRAN: Korak u carobnjaku sa specificnim podešavanjima za "Spavanje" scenu (alarm, budenje...). */
+    SCREEN_SCENE_WIZ_FINALIZE,      /**< NOVI EKRAN: Finalni ekran za potvrdu snimanja scene. */
     SCREEN_GATE_CONTROL_PANEL,      /**< NOVI EKRAN (pop-up): Prikazuje napredne, "custom" kontrole za kapiju. */
     SCREEN_LIGHT_SETTINGS,
     SCREEN_QR_CODE,

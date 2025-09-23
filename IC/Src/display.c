@@ -1350,6 +1350,15 @@ static int8_t scene_pressed_index = -1;
  * na jedan ekran. Vrijednost 0 je prva stranica.
  */
 static uint8_t scene_appearance_page = 0;
+/**
+ * @brief Globalni fleg unutar display modula koji prati da li je sistem u "Scene Wizard" modu.
+ * @note  Ovaj fleg je ključan za kontekstualnu promjenu ponašanja ekrana.
+ * Kada je `true`, ekrani kao što su SCREEN_LIGHTS ili SCREEN_THERMOSTAT
+ * će prikazati "Dalje" dugme umjesto standardnog interfejsa.
+ * Postavlja se na `true` pri ulasku u "anketni" čarobnjak, a na `false`
+ * pri izlasku (snimanje, otkazivanje, timeout).
+ */
+static bool is_in_scene_wizard_mode = false;
 /*============================================================================*/
 /*============================================================================*/
 /* PROTOTIPOVI PRIVATNIH (STATIC) FUNKCIJA                                    */
@@ -1385,6 +1394,12 @@ static void DSP_InitSceneWizDevicesScreen(void);
 static void DSP_KillSceneWizDevicesScreen(void);
 static void DSP_KillSceneAppearanceScreen(void);
 static void DSP_KillSceneScreen(void);
+static void DSP_KillSceneEditLightsScreen(void);
+static void DSP_KillSceneEditCurtainsScreen(void);
+static void DSP_KillSceneEditThermostatScreen(void);
+static void DSP_InitSceneWizFinalizeScreen(void);
+static void DSP_KillSceneWizFinalizeScreen(void);
+
 /** @} */
 
 /**
@@ -1420,6 +1435,9 @@ static void Service_MainScreenSwitch(void);
 static void Service_SceneAppearanceScreen(void);
 static void Service_SceneWizDevicesScreen(void);
 static void Service_SceneEditScreen(void);
+static void Service_SceneEditLightsScreen(void);
+static void Service_SceneEditThermostatScreen(void);
+static void Service_SceneWizFinalizeScreen(void);
 /** @} */
 
 /**
@@ -1839,10 +1857,11 @@ void PID_Hook(GUI_PID_STATE * pTS)
         // << IZMJENA: Provjera zone hamburger menija sada koristi `global_layout` strukturu >>
         if ((pTS->x >= global_layout.hamburger_menu_zone.x0) && (pTS->x < global_layout.hamburger_menu_zone.x1) &&
                 (pTS->y >= global_layout.hamburger_menu_zone.y0) && (pTS->y < global_layout.hamburger_menu_zone.y1) &&
-                (screen < SCREEN_SETTINGS_1 && screen != SCREEN_KEYBOARD_ALPHA && screen != SCREEN_SCENE_APPEARANCE))
+                (screen < SCREEN_SETTINGS_1 && screen != SCREEN_KEYBOARD_ALPHA && screen != SCREEN_SCENE_APPEARANCE) && 
+                !is_in_scene_wizard_mode)
         {
             touch_in_menu_zone = true; // Postavi fleg da je dodir počeo u zoni menija
-            click = 1;                 // Svaki dodir u ovoj zoni generiše zvučni signal
+            click = 1;                 // Svaki dodir u ovoj zoni generiše zvučni signako setuje l
 
             // << ISPRAVKA: Centralizovano brisanje ekrana prilikom svake navigacije >>
             // Ovo osigurava da je ekran uvijek čist prije iscrtavanja novog sadržaja.
@@ -2852,6 +2871,83 @@ static void Service_SelectScreenLast(void)
     }
 }
 /**
+ ******************************************************************************
+ * @brief       Servisira ekran sa termostatom ISKLJUČIVO unutar "Scene Wizard" moda.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija je kopija originalne `Service_ThermostatScreen`,
+ * modifikovana za rad unutar čarobnjaka. Uklonjeni su hamburger meni,
+ * vrijeme i status ON/OFF, a dodato je "[Next]" dugme.
+ ******************************************************************************
+ */
+static void Service_SceneEditThermostatScreen(void)
+{
+   
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
+
+    if (thermostatMenuState == 0) {
+        thermostatMenuState = 1;
+        GUI_MULTIBUF_BeginEx(0);
+        GUI_SelectLayer(0);
+        GUI_SetColor(GUI_BLACK);
+        GUI_Clear();
+        GUI_BMP_Draw(&thstat, 0, 0);
+        // Ne crtamo hamburger meni
+        GUI_MULTIBUF_EndEx(0);
+        GUI_SelectLayer(1);
+        GUI_SetBkColor(GUI_TRANSPARENT);
+        GUI_Clear();
+        
+        // Kreiraj "Next" dugme sa ikonicom
+        hButtonWizNext = BUTTON_CreateEx(390, 182, 80, 80, 0, WM_CF_SHOW, 0, ID_WIZ_NEXT);
+        BUTTON_SetBitmap(hButtonWizNext, BUTTON_CI_UNPRESSED, &bmnext);
+        BUTTON_SetBitmap(hButtonWizNext, BUTTON_CI_PRESSED, &bmnext);
+
+        DISPSetPoint();
+        MVUpdateSet();
+        menu_lc = 0;
+    } else if (thermostatMenuState == 1) {
+        // Logika za +/- dugmad ostaje ista
+        if (btninc && !_btninc) { _btninc = 1; Thermostat_SP_Temp_Increment(pThst); THSTAT_Save(pThst); DISPSetPoint(); }
+        else if (!btninc && _btninc) { _btninc = 0; }
+        if (btndec && !_btndec) { _btndec = 1; Thermostat_SP_Temp_Decrement(pThst); THSTAT_Save(pThst); DISPSetPoint(); }
+        else if (!btndec && _btndec) { _btndec = 0; }
+
+//            if (IsMVUpdateActiv()) {
+//                MVUpdateReset();
+//                GUI_MULTIBUF_BeginEx(1);
+//                // Obriši samo staru poziciju za MV Temp
+//                GUI_ClearRect(410, 185, 480, 235);
+//                
+//                // Iscrtaj Izmjerenu Temperaturu na novoj poziciji
+//                GUI_SetFont(GUI_FONT_24_1);
+//                GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+//                GUI_SetColor(GUI_WHITE);
+//                GUI_DispSDecAt(Thermostat_GetMeasuredTemp(pThst) / 10, 5, 245, 3);
+//                GUI_DispString("°c");
+//                
+//                GUI_MULTIBUF_EndEx(1);
+//            }
+    }
+
+    // Navigacija za "[Next]" dugme
+    if (BUTTON_IsPressed(hButtonWizNext))
+    {
+        GUI_SelectLayer(0);
+        GUI_SetColor(GUI_BLACK);
+        GUI_Clear();
+        GUI_SelectLayer(1);
+        GUI_SetBkColor(GUI_TRANSPARENT);
+        GUI_Clear();
+        DSP_KillSceneEditThermostatScreen();
+        is_in_scene_wizard_mode = false; // Završi wizard mod
+        // TODO: Prebaci na finalni ekran za snimanje
+        DSP_InitSceneEditScreen();
+        screen = SCREEN_SCENE_EDIT;
+        shouldDrawScreen = 0;
+        return;
+    }   
+}
+/**
  * @brief Servisira ekran termostata, uključujući iscrtavanje i obradu unosa.
  * @note Ova funkcija se poziva u petlji dok je `screen == SCREEN_THERMOSTAT`.
  * U njoj se upravlja prikazom zadane temperature, trenutne temperature, te se obrađuju
@@ -2859,138 +2955,145 @@ static void Service_SelectScreenLast(void)
  */
 static void Service_ThermostatScreen(void)
 {
-    // Dobijamo handle za termostat.
-    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
-
-    // Ažuriranje prikaza termostata se radi unutar jedne multibuffer transakcije.
-    GUI_MULTIBUF_BeginEx(1);
-
-    if (thermostatMenuState == 0) {
-        // Ako je ovo prvi put da ulazimo na ekran, iscrtavamo kompletnu pozadinu.
-        thermostatMenuState = 1;
-
-        GUI_MULTIBUF_BeginEx(0);
-        GUI_SelectLayer(0);
-        GUI_SetColor(GUI_BLACK);
-        GUI_Clear();
-        // Iscrtavanje pozadinske bitmap slike termostata.
-        GUI_BMP_Draw(&thstat, 0, 0);
-        GUI_ClearRect(380, 0, 480, 100);
-        // Iscrtavanje hamburger meni ikonice u gornjem desnom uglu.
-        DrawHamburgerMenu(1);
-
-        // Čišćenje specifičnih dijelova ekrana za dinamičke vrijednosti.
-        GUI_ClearRect(350, 80, 480, 180);
-        GUI_ClearRect(310, 180, 420, 205);
-        GUI_MULTIBUF_EndEx(0);
-
-        // Prebacivanje na drugi sloj za dinamičke elemente.
-        GUI_SelectLayer(1);
-        GUI_SetBkColor(GUI_TRANSPARENT);
-        GUI_Clear();
-
-        // Prikaz zadane temperature.
-        DISPSetPoint();
-        // Prikaz trenutnog vremena i datuma.
-        DISPDateTime();
-        // Postavi flag da treba ažurirati trenutnu temperaturu.
-        MVUpdateSet();
-        menu_lc = 0;
-    } else if (thermostatMenuState == 1) {
-        // Ako je ekran već iscrtan, obrađujemo samo promjene stanja.
-
-        // Logika za povećanje/smanjenje zadane temperature.
-        if (btninc && !_btninc) {
-            _btninc = 1;
-            Thermostat_SP_Temp_Increment(pThst);
-            THSTAT_Save(pThst);
-            DISPSetPoint();
-        } else if (!btninc && _btninc) {
-            _btninc = 0;
-        }
-
-        if (btndec && !_btndec) {
-            _btndec = 1;
-            Thermostat_SP_Temp_Decrement(pThst);
-            THSTAT_Save(pThst);
-            DISPSetPoint();
-        } else if (!btndec && _btndec) {
-            _btndec = 0;
-        }
-
-        // Ažuriranje prikaza trenutne temperature i statusa regulatora.
-        if (IsMVUpdateActiv()) {
-            MVUpdateReset();
-            char dbuf_mv[8]; // Lokalni bafer za prikaz MV_Temp
-            GUI_ClearRect(410, 185, 480, 235);
-            GUI_ClearRect(310, 230, 480, 255);
-
-            // Postavljanje boje na osnovu statusa regulatora.
-            if(Thermostat_IsActive(pThst)) {
-                GUI_SetColor(GUI_GREEN);
-            } else {
-                GUI_SetColor(GUI_RED);
-            }
-
-            GUI_SetFont(GUI_FONT_32B_1);
-            GUI_GotoXY(410, 170);
-            GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
-            if(Thermostat_IsActive(pThst)) {
-                GUI_DispString("ON");
-            } else {
-                GUI_DispString("OFF");
-            }
-
-            GUI_GotoXY(310, 242);
-            GUI_SetFont(GUI_FONT_20_1);
-            GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
-            GUI_SetColor(GUI_WHITE);
-            GUI_GotoXY(415, 220);
-            GUI_SetFont(GUI_FONT_24_1);
-            GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
-            GUI_DispSDec(Thermostat_GetMeasuredTemp(pThst) / 10, 3);
-            GUI_DispString("°c");
-        }
-
-        // Ažuriranje prikaza vremena.
-        if ((HAL_GetTick() - rtctmr) >= DATE_TIME_REFRESH_TIME) {
-            rtctmr = HAL_GetTick();
-            if(IsRtcTimeValid()) {
-                RTC_TimeTypeDef rtctm_local;
-                RTC_DateTypeDef rtcdt_local;
-                HAL_RTC_GetTime(&hrtc, &rtctm_local, RTC_FORMAT_BCD);
-                HAL_RTC_GetDate(&hrtc, &rtcdt_local, RTC_FORMAT_BCD);
-                char dbuf_time[8];
-                HEX2STR(dbuf_time, &rtctm_local.Hours);
-                dbuf_time[2] = ':';
-                HEX2STR(&dbuf_time[3], &rtctm_local.Minutes);
-                dbuf_time[5]  = '\0';
-                GUI_SetFont(GUI_FONT_32_1);
-                GUI_SetColor(GUI_WHITE);
-                GUI_SetTextMode(GUI_TM_TRANS);
-                GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
-                GUI_GotoXY(5, 245);
-                GUI_MULTIBUF_BeginEx(1);
-                GUI_ClearRect(0, 220, 100, 270);
-                GUI_DispString(dbuf_time);
-                GUI_MULTIBUF_EndEx(1);
-            }
-        }
+     if (is_in_scene_wizard_mode)
+    {
+        Service_SceneEditThermostatScreen();
     }
-    GUI_MULTIBUF_EndEx(1);
+    else
+    {
+        // Dobijamo handle za termostat.
+        THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
 
-    // Detekcija dugog pritiska za paljenje/gašenje termostata.
-    if(thermostatOnOffTouch_timer) {
-        DISPResetScrnsvr();
-        if((HAL_GetTick() - thermostatOnOffTouch_timer) > (2 * 1000)) {
-            thermostatOnOffTouch_timer = 0;
-            thermostatMenuState = 0;
-            if(Thermostat_IsActive(pThst)) {
-                Thermostat_TurnOff(pThst);
-            } else {
-                Thermostat_SetControlMode(pThst, THST_HEATING);
+        // Ažuriranje prikaza termostata se radi unutar jedne multibuffer transakcije.
+        GUI_MULTIBUF_BeginEx(1);
+
+        if (thermostatMenuState == 0) {
+            // Ako je ovo prvi put da ulazimo na ekran, iscrtavamo kompletnu pozadinu.
+            thermostatMenuState = 1;
+
+            GUI_MULTIBUF_BeginEx(0);
+            GUI_SelectLayer(0);
+            GUI_SetColor(GUI_BLACK);
+            GUI_Clear();
+            // Iscrtavanje pozadinske bitmap slike termostata.
+            GUI_BMP_Draw(&thstat, 0, 0);
+            GUI_ClearRect(380, 0, 480, 100);
+            // Iscrtavanje hamburger meni ikonice u gornjem desnom uglu.
+            DrawHamburgerMenu(1);
+
+            // Čišćenje specifičnih dijelova ekrana za dinamičke vrijednosti.
+            GUI_ClearRect(350, 80, 480, 180);
+            GUI_ClearRect(310, 180, 420, 205);
+            GUI_MULTIBUF_EndEx(0);
+
+            // Prebacivanje na drugi sloj za dinamičke elemente.
+            GUI_SelectLayer(1);
+            GUI_SetBkColor(GUI_TRANSPARENT);
+            GUI_Clear();
+
+            // Prikaz zadane temperature.
+            DISPSetPoint();
+            // Prikaz trenutnog vremena i datuma.
+            DISPDateTime();
+            // Postavi flag da treba ažurirati trenutnu temperaturu.
+            MVUpdateSet();
+            menu_lc = 0;
+        } else if (thermostatMenuState == 1) {
+            // Ako je ekran već iscrtan, obrađujemo samo promjene stanja.
+
+            // Logika za povećanje/smanjenje zadane temperature.
+            if (btninc && !_btninc) {
+                _btninc = 1;
+                Thermostat_SP_Temp_Increment(pThst);
+                THSTAT_Save(pThst);
+                DISPSetPoint();
+            } else if (!btninc && _btninc) {
+                _btninc = 0;
             }
-            THSTAT_Save(pThst);
+
+            if (btndec && !_btndec) {
+                _btndec = 1;
+                Thermostat_SP_Temp_Decrement(pThst);
+                THSTAT_Save(pThst);
+                DISPSetPoint();
+            } else if (!btndec && _btndec) {
+                _btndec = 0;
+            }
+
+            // Ažuriranje prikaza trenutne temperature i statusa regulatora.
+            if (IsMVUpdateActiv()) {
+                MVUpdateReset();
+                char dbuf_mv[8]; // Lokalni bafer za prikaz MV_Temp
+                GUI_ClearRect(410, 185, 480, 235);
+                GUI_ClearRect(310, 230, 480, 255);
+
+                // Postavljanje boje na osnovu statusa regulatora.
+                if(Thermostat_IsActive(pThst)) {
+                    GUI_SetColor(GUI_GREEN);
+                } else {
+                    GUI_SetColor(GUI_RED);
+                }
+
+                GUI_SetFont(GUI_FONT_32B_1);
+                GUI_GotoXY(410, 170);
+                GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+                if(Thermostat_IsActive(pThst)) {
+                    GUI_DispString("ON");
+                } else {
+                    GUI_DispString("OFF");
+                }
+
+                GUI_GotoXY(310, 242);
+                GUI_SetFont(GUI_FONT_20_1);
+                GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+                GUI_SetColor(GUI_WHITE);
+                GUI_GotoXY(415, 220);
+                GUI_SetFont(GUI_FONT_24_1);
+                GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+                GUI_DispSDec(Thermostat_GetMeasuredTemp(pThst) / 10, 3);
+                GUI_DispString("°c");
+            }
+
+            // Ažuriranje prikaza vremena.
+            if ((HAL_GetTick() - rtctmr) >= DATE_TIME_REFRESH_TIME) {
+                rtctmr = HAL_GetTick();
+                if(IsRtcTimeValid()) {
+                    RTC_TimeTypeDef rtctm_local;
+                    RTC_DateTypeDef rtcdt_local;
+                    HAL_RTC_GetTime(&hrtc, &rtctm_local, RTC_FORMAT_BCD);
+                    HAL_RTC_GetDate(&hrtc, &rtcdt_local, RTC_FORMAT_BCD);
+                    char dbuf_time[8];
+                    HEX2STR(dbuf_time, &rtctm_local.Hours);
+                    dbuf_time[2] = ':';
+                    HEX2STR(&dbuf_time[3], &rtctm_local.Minutes);
+                    dbuf_time[5]  = '\0';
+                    GUI_SetFont(GUI_FONT_32_1);
+                    GUI_SetColor(GUI_WHITE);
+                    GUI_SetTextMode(GUI_TM_TRANS);
+                    GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+                    GUI_GotoXY(5, 245);
+                    GUI_MULTIBUF_BeginEx(1);
+                    GUI_ClearRect(0, 220, 100, 270);
+                    GUI_DispString(dbuf_time);
+                    GUI_MULTIBUF_EndEx(1);
+                }
+            }
+        }
+        GUI_MULTIBUF_EndEx(1);
+
+        // Detekcija dugog pritiska za paljenje/gašenje termostata.
+        if(thermostatOnOffTouch_timer) {
+            DISPResetScrnsvr();
+            if((HAL_GetTick() - thermostatOnOffTouch_timer) > (2 * 1000)) {
+                thermostatOnOffTouch_timer = 0;
+                thermostatMenuState = 0;
+                if(Thermostat_IsActive(pThst)) {
+                    Thermostat_TurnOff(pThst);
+                } else {
+                    Thermostat_SetControlMode(pThst, THST_HEATING);
+                }
+                THSTAT_Save(pThst);
+            }
         }
     }
 }
@@ -3152,6 +3255,139 @@ static void Service_SceneScreen(void)
 }
 /**
  ******************************************************************************
+ * @brief       Servisira ekran sa svjetlima ISKLJUČIVO unutar "Scene Wizard" moda.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija je kopija originalne `Service_LightsScreen` funkcije,
+ * modifikovana za rad unutar čarobnjaka. Uklonjen je "hamburger" meni,
+ * a dodato je "[Next]" dugme sa ikonicom (80x80) i "pametnom"
+ * navigacijom na sljedeći korak u čarobnjaku.
+ ******************************************************************************
+ */
+static void Service_SceneEditLightsScreen(void)
+{
+    if(shouldDrawScreen) {
+        shouldDrawScreen = 0;
+
+        GUI_MULTIBUF_BeginEx(1);
+        GUI_Clear();
+        
+        // Kreiraj "Next" dugme sa ikonicom, bez teksta, 80x80
+        hButtonWizNext = BUTTON_CreateEx(400, 192, 80, 80, 0, WM_CF_SHOW, 0, ID_WIZ_NEXT);
+        BUTTON_SetBitmap(hButtonWizNext, BUTTON_CI_UNPRESSED, &bmnext);
+        BUTTON_SetBitmap(hButtonWizNext, BUTTON_CI_PRESSED, &bmnext);
+        
+        // Kompletan, neizmijenjen kod za iscrtavanje ikonica svjetala
+        const GUI_FONT* fontToUse = &GUI_FontVerdana20_LAT;
+        const int text_padding = 10;
+        bool downgrade_font = false;
+        for(uint8_t i = 0; i < LIGHTS_getCount(); ++i)
+        {
+            uint8_t lights_total = LIGHTS_getCount();
+            uint8_t lights_in_this_row = 0;
+            if (lights_total <= 3) lights_in_this_row = lights_total;
+            else if (lights_total == 4) lights_in_this_row = 2;
+            else if (lights_total == 5) lights_in_this_row = 3;
+            else lights_in_this_row = 3;
+            
+            int max_width_per_icon = (DRAWING_AREA_WIDTH / lights_in_this_row) - text_padding;
+
+            LIGHT_Handle* handle = LIGHTS_GetInstance(i);
+            if (handle) {
+                uint16_t selection_index = LIGHT_GetIconID(handle);
+                if (selection_index < (sizeof(icon_mapping_table) / sizeof(IconMapping_t)))
+                {
+                    const IconMapping_t* mapping = &icon_mapping_table[selection_index];
+                    GUI_SetFont(&GUI_FontVerdana20_LAT);
+                    
+                    if (GUI_GetStringDistX(lng(mapping->primary_text_id)) > max_width_per_icon || GUI_GetStringDistX(lng(mapping->secondary_text_id)) > max_width_per_icon)
+                    {
+                        downgrade_font = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (downgrade_font) {
+            fontToUse = &GUI_FontVerdana16_LAT;
+        }
+        int y_row_start = (LIGHTS_Rows_getCount() > 1) ? 10 : 86;
+        const int y_row_height = 130;
+        uint8_t lightsInRowSum = 0;
+        for(uint8_t row = 0; row < LIGHTS_Rows_getCount(); ++row) {
+            uint8_t lightsInRow = LIGHTS_getCount();
+            if(LIGHTS_getCount() > 3) {
+                if(LIGHTS_getCount() == 4) lightsInRow = 2;
+                else if(LIGHTS_getCount() == 5) lightsInRow = (row > 0) ? 2 : 3;
+                else lightsInRow = 3;
+            }
+            uint8_t currentLightsMenuSpaceBetween = (400 - (80 * lightsInRow)) / (lightsInRow - 1 + 2);
+            for(uint8_t idx_in_row = 0; idx_in_row < lightsInRow; ++idx_in_row) {
+                uint8_t absolute_light_index = lightsInRowSum + idx_in_row;
+                LIGHT_Handle* handle = LIGHTS_GetInstance(absolute_light_index);
+                if (handle) {
+                    uint16_t selection_index = LIGHT_GetIconID(handle);
+                    if (selection_index < (sizeof(icon_mapping_table) / sizeof(IconMapping_t)))
+                    {
+                        const IconMapping_t* mapping = &icon_mapping_table[selection_index];
+                        GUI_CONST_STORAGE GUI_BITMAP* icon_to_draw = light_modbus_images[(mapping->visual_icon_id * 2) + LIGHT_isActive(handle)];
+                        GUI_SetFont(fontToUse);
+                        const int font_height = GUI_GetFontDistY();
+                        const int icon_height = icon_to_draw->YSize;
+                        const int icon_width = icon_to_draw->XSize;
+                        const int padding = 2;
+                        const int total_block_height = font_height + padding + icon_height + padding + font_height;
+                        const int y_slot_center = y_row_start + (y_row_height / 2);
+                        const int y_block_start = y_slot_center - (total_block_height / 2);
+                        const int x_slot_start = (currentLightsMenuSpaceBetween * (idx_in_row + 1)) + (80 * idx_in_row);
+                        const int x_text_center = x_slot_start + 40;
+                        const int x_icon_pos = x_text_center - (icon_width / 2);
+                        const int y_primary_text_pos = y_block_start;
+                        const int y_icon_pos = y_primary_text_pos + font_height + padding;
+                        const int y_secondary_text_pos = y_icon_pos + icon_height + padding;
+                        GUI_SetTextMode(GUI_TM_TRANS);
+                        GUI_SetTextAlign(GUI_TA_HCENTER);
+                        GUI_SetColor(GUI_WHITE);
+                        GUI_DispStringAt(lng(mapping->primary_text_id), x_text_center, y_primary_text_pos);
+                        GUI_DrawBitmap(icon_to_draw, x_icon_pos, y_icon_pos);
+                        GUI_SetTextMode(GUI_TM_TRANS);
+                        GUI_SetTextAlign(GUI_TA_HCENTER);
+                        GUI_SetColor(GUI_ORANGE);
+                        GUI_DispStringAt(lng(mapping->secondary_text_id), x_text_center, y_secondary_text_pos);
+                    }
+                }
+            }
+            lightsInRowSum += lightsInRow;
+            y_row_start += y_row_height;
+        }
+        GUI_MULTIBUF_EndEx(1);
+    }
+
+    if (BUTTON_IsPressed(hButtonWizNext))
+    {
+        DSP_KillSceneEditLightsScreen();
+        
+        Scene_t* scene_handle = Scene_GetInstance(scene_edit_index);
+        if (scene_handle)
+        {
+            if (scene_handle->curtains_mask) {
+                screen = SCREEN_CURTAINS;
+            } 
+            else if (scene_handle->thermostat_mask) {
+                screen = SCREEN_THERMOSTAT;
+            } 
+            else {
+                is_in_scene_wizard_mode = false;
+                DSP_InitSceneEditScreen();
+                screen = SCREEN_SCENE_EDIT;
+                shouldDrawScreen = 0;
+                return;
+            }
+            shouldDrawScreen = 1;
+        }
+    }
+}
+/**
+ ******************************************************************************
  * @brief       Servisira ekran sa svjetlima, sa dinamičkim odabirom fonta.
  * @author      Gemini & [Vaše Ime]
  * @note        Ova funkcija dinamički iscrtava ikone svjetala. Sadrži "pametnu"
@@ -3166,7 +3402,12 @@ static void Service_SceneScreen(void)
  */
 static void Service_LightsScreen(void)
 {
-    if(shouldDrawScreen) {
+    if (is_in_scene_wizard_mode)
+    {
+        Service_SceneEditLightsScreen();
+    }
+    else if(shouldDrawScreen) 
+    {
         shouldDrawScreen = 0;
 
         GUI_MULTIBUF_BeginEx(1);
@@ -3283,6 +3524,127 @@ static void Service_LightsScreen(void)
 
 /**
  ******************************************************************************
+ * @brief       Servisira ekran sa roletnama ISKLJUČIVO unutar "Scene Wizard" moda.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija je kopija originalne `Service_CurtainsScreen` funkcije,
+ * modifikovana za rad unutar čarobnjaka. Uklonjen je "hamburger" meni,
+ * a dodato je "[Next]" dugme sa ikonicom (80x80) i "pametnom"
+ * navigacijom na sljedeći korak u čarobnjaku.
+ ******************************************************************************
+ */
+static void Service_SceneEditCurtainsScreen(void)
+{
+    if(shouldDrawScreen) {
+        shouldDrawScreen = 0;
+        GUI_MULTIBUF_BeginEx(1);
+        GUI_Clear();
+        
+        // Kreiraj "Next" dugme sa ikonicom, bez teksta, 80x80
+        hButtonWizNext = BUTTON_CreateEx(390, 182, 80, 80, 0, WM_CF_SHOW, 0, ID_WIZ_NEXT);
+        BUTTON_SetBitmap(hButtonWizNext, BUTTON_CI_UNPRESSED, &bmnext);
+        BUTTON_SetBitmap(hButtonWizNext, BUTTON_CI_PRESSED, &bmnext);
+        
+        // Kompletan, neizmijenjen kod za iscrtavanje kontrola za roletne iz originalne funkcije
+        GUI_SetColor(GUI_WHITE);
+        if(!Curtain_areAllSelected()) {
+            GUI_SetFont(GUI_FONT_D48);
+            uint8_t physical_index = 0;
+            uint8_t count = 0;
+            for (uint8_t i = 0; i < CURTAINS_SIZE; i++) {
+                Curtain_Handle* handle = Curtain_GetInstanceByIndex(i);
+                if (Curtain_hasRelays(handle)) {
+                    if (count == curtain_selected) {
+                        physical_index = i;
+                        break;
+                    }
+                    count++;
+                }
+            }
+            GUI_SetTextMode(GUI_TM_TRANS);
+            GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
+            GUI_DispDecAt(physical_index + 1, 50, 50, ((physical_index + 1) < 10) ? 1 : 2);
+        } else {
+            GUI_SetFont(&GUI_FontVerdana32_LAT);
+            GUI_SetTextMode(GUI_TM_TRANS);
+            GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
+            GUI_DispStringAt(lng(TXT_ALL), 75, 40);
+        }
+        
+        const uint16_t drawingAreaWidth = 380;
+        const uint8_t triangleBaseWidth = 180;
+        const uint8_t triangleHeight = 90;
+        const uint16_t horizontalOffset = (drawingAreaWidth - triangleBaseWidth) / 2;
+        const uint8_t yLinePosition = 136;
+        const uint8_t verticalGap = 20;
+        const uint8_t verticalOffsetUp = yLinePosition - triangleHeight - verticalGap;
+        const uint8_t verticalOffsetDown = yLinePosition + verticalGap;
+
+        GUI_SetColor(GUI_WHITE);
+        GUI_DrawLine(horizontalOffset, yLinePosition, horizontalOffset + triangleBaseWidth, yLinePosition);
+
+        const GUI_POINT aBlindsUp[] = { {0, triangleHeight}, {triangleBaseWidth, triangleHeight}, {triangleBaseWidth / 2, 0} };
+        const GUI_POINT aBlindsDown[] = { {0, 0}, {triangleBaseWidth, 0}, {triangleBaseWidth / 2, triangleHeight} };
+
+        bool isMovingUp, isMovingDown;
+        if(Curtain_areAllSelected()) {
+            isMovingUp = Curtains_isAnyCurtainMovingUp();
+            isMovingDown = Curtains_isAnyCurtainMovingDown();
+        } else {
+            Curtain_Handle* cur = Curtain_GetByLogicalIndex(curtain_selected);
+            if (cur) {
+                isMovingUp = Curtain_isMovingUp(cur);
+                isMovingDown = Curtain_isMovingDown(cur);
+            } else {
+                isMovingUp = false; isMovingDown = false;
+            }
+        }
+
+        if (isMovingUp) { GUI_SetColor(GUI_RED); GUI_FillPolygon(aBlindsUp, 3, horizontalOffset, verticalOffsetUp); } 
+        else { GUI_SetColor(GUI_RED); GUI_DrawPolygon(aBlindsUp, 3, horizontalOffset, verticalOffsetUp); }
+
+        if (isMovingDown) { GUI_SetColor(GUI_BLUE); GUI_FillPolygon(aBlindsDown, 3, horizontalOffset, verticalOffsetDown); } 
+        else { GUI_SetColor(GUI_BLUE); GUI_DrawPolygon(aBlindsDown, 3, horizontalOffset, verticalOffsetDown); }
+
+        if (Curtains_getCount() > 1) {
+            const uint8_t arrowSize = 50;
+            const uint16_t verticalArrowCenter = 192 + (80/2);
+            const uint16_t leftSpace = horizontalOffset;
+            const uint16_t rightSpace = drawingAreaWidth - (horizontalOffset + triangleBaseWidth);
+            const uint16_t xLeftArrow = leftSpace/2 - arrowSize/2;
+            const uint16_t xRightArrow = horizontalOffset + triangleBaseWidth + (rightSpace/2) - arrowSize/2;
+            const GUI_POINT leftArrow[] = { {xLeftArrow + arrowSize, verticalArrowCenter - arrowSize / 2}, {xLeftArrow, verticalArrowCenter}, {xLeftArrow + arrowSize, verticalArrowCenter + arrowSize / 2}, };
+            const GUI_POINT rightArrow[] = { {xRightArrow, verticalArrowCenter - arrowSize / 2}, {xRightArrow + arrowSize, verticalArrowCenter}, {xRightArrow, verticalArrowCenter + arrowSize / 2}, };
+            GUI_SetColor(GUI_WHITE);
+            GUI_DrawPolygon(leftArrow, 3, 0, 0);
+            GUI_DrawPolygon(rightArrow, 3, 0, 0);
+        }
+        GUI_MULTIBUF_EndEx(1);
+    }
+
+    // "Pametna" navigacija za "[Next]" dugme
+    if (BUTTON_IsPressed(hButtonWizNext))
+    {
+        DSP_KillSceneEditCurtainsScreen();
+        
+        Scene_t* scene_handle = Scene_GetInstance(scene_edit_index);
+        if (scene_handle)
+        {
+            if (scene_handle->thermostat_mask) {
+                screen = SCREEN_THERMOSTAT;
+            } 
+            else {
+                is_in_scene_wizard_mode = false; // Završi wizard mod
+                DSP_InitSceneEditScreen();
+                screen = SCREEN_SCENE_EDIT;
+                shouldDrawScreen = 0;
+                return;
+            }
+            shouldDrawScreen = 1;
+        }
+    }
+}
+/**
+ ******************************************************************************
  * @brief       Servisira ekran sa zavjesama.
  * @author      Gemini & [Vaše Ime]
  * @note        Ova funkcija dinamički iscrtava korisnički interfejs za kontrolu zavjesa.
@@ -3295,8 +3657,12 @@ static void Service_LightsScreen(void)
  */
 static void Service_CurtainsScreen(void)
 {
-    // Glavna provjera: ponovo iscrtavamo ekran samo ako je došlo do promjene stanja.
-    if(shouldDrawScreen) {
+    if (is_in_scene_wizard_mode)
+    {
+        Service_SceneEditCurtainsScreen();
+    }
+    else if(shouldDrawScreen) 
+    {
         shouldDrawScreen = 0;
 
         GUI_MULTIBUF_BeginEx(1);
@@ -4641,6 +5007,7 @@ static void Service_SceneEditScreen(void)
     // --- Obrada pritiska na dugme "DETALJNA PODEŠAVANJA" ---
     if (WM_IsWindow(hButtonDetailedSetup) && BUTTON_IsPressed(hButtonDetailedSetup))
     {
+        is_in_scene_wizard_mode = true; 
         DSP_KillSceneEditScreen();
         
         // Na osnovu tipa scene, pokreni prvi korak "anketnog" čarobnjaka
@@ -4663,73 +5030,116 @@ static void Service_SceneEditScreen(void)
  ******************************************************************************
  * @brief       Servisira ekran za odabir grupa uređaja u čarobnjaku.
  * @author      Gemini & [Vaše Ime]
- * @note        Ova funkcija se poziva u petlji. Odgovorna je za:
- * 1. Očitavanje stanja checkbox-ova i ažuriranje odgovarajućih bitmaski
- * u `Scene_t` strukturi u RAM-u.
- * 2. Obradu pritisaka na navigacione dugmiće ("Dalje", "Nazad", "Otkaži").
- * 3. Upravljanje navigacijom na sljedeći/prethodni korak u čarobnjaku.
+ * @note        FINALNA VERZIJA: Ova funkcija sada sadrži kompletnu logiku
+ * za ažuriranje bitmaski scene i "pametnu" navigaciju. Pritiskom na
+ * dugme "[Dalje]", sistem provjerava koje su grupe uređaja odabrane
+ * i vodi korisnika na sljedeći relevantan ekran.
  ******************************************************************************
  */
 static void Service_SceneWizDevicesScreen(void)
 {
     Scene_t* scene_handle = Scene_GetInstance(scene_edit_index);
-    if (!scene_handle) return; // Sigurnosna provjera
+    if (!scene_handle) return;
 
-    // --- 1. Očitavanje i Ažuriranje Stanja Checkbox-ova ---
-    // Provjeravamo da li se stanje na ekranu razlikuje od stanja u memoriji
+    // --- Ažuriranje Stanja Checkbox-ova ---
     bool lights_checked = (bool)CHECKBOX_GetState(hCheckboxSceneLights);
     bool lights_in_scene = (scene_handle->lights_mask != 0);
-
     if (lights_checked != lights_in_scene)
     {
-        // Ako korisnik označi, postavljamo masku na "sve uključeno".
-        // Ako odznači, brišemo masku. Kasnije se može dodati ekran za odabir pojedinačnih.
-        scene_handle->lights_mask = lights_checked ? 0xFF : 0;
-        settingsChanged = 1; // Fleg da postoje nesnimljene promjene
+        if (lights_checked) {
+            uint8_t temp_mask = 0;
+            for(int i=0; i < LIGHTS_MODBUS_SIZE; i++) {
+                LIGHT_Handle* l_handle = LIGHTS_GetInstance(i);
+                if (l_handle && LIGHT_GetRelay(l_handle) != 0) {
+                    temp_mask |= (1 << i);
+                }
+            }
+            scene_handle->lights_mask = temp_mask;
+        } else {
+            scene_handle->lights_mask = 0;
+        }
     }
 
     bool curtains_checked = (bool)CHECKBOX_GetState(hCheckboxSceneCurtains);
     bool curtains_in_scene = (scene_handle->curtains_mask != 0);
-
     if (curtains_checked != curtains_in_scene)
     {
-        scene_handle->curtains_mask = curtains_checked ? 0xFFFF : 0;
-        settingsChanged = 1;
+        if (curtains_checked) {
+            uint16_t temp_mask = 0;
+            for(int i=0; i < CURTAINS_SIZE; i++) {
+                Curtain_Handle* c_handle = Curtain_GetInstanceByIndex(i);
+                if (c_handle && Curtain_hasRelays(c_handle)) {
+                    temp_mask |= (1 << i);
+                }
+            }
+            scene_handle->curtains_mask = temp_mask;
+        } else {
+            scene_handle->curtains_mask = 0;
+        }
     }
 
     bool thermostat_checked = (bool)CHECKBOX_GetState(hCheckboxSceneThermostat);
     bool thermostat_in_scene = (scene_handle->thermostat_mask != 0);
-
     if (thermostat_checked != thermostat_in_scene)
     {
         scene_handle->thermostat_mask = thermostat_checked ? 1 : 0;
-        settingsChanged = 1;
     }
 
-
-    // --- 2. Obrada Navigacionih Dugmića ---
+    // --- Obrada Navigacionih Dugmića ---
     if (BUTTON_IsPressed(hButtonWizCancel))
     {
-        // Otkaži sve i vrati se na glavni pregled scena
+        is_in_scene_wizard_mode = false; // Resetuj fleg
         DSP_KillSceneWizDevicesScreen();
         screen = SCREEN_SCENE;
         shouldDrawScreen = 1;
     }
     else if (BUTTON_IsPressed(hButtonWizBack))
     {
-        // Vrati se korak unazad na glavni editor scene
         DSP_KillSceneWizDevicesScreen();
+        DSP_InitSceneEditScreen();
         screen = SCREEN_SCENE_EDIT;
-        shouldDrawScreen = 1;
+        shouldDrawScreen = 0;
     }
     else if (BUTTON_IsPressed(hButtonWizNext))
     {
-        // Pređi na sljedeći korak čarobnjaka
         DSP_KillSceneWizDevicesScreen();
         
-        // TODO: Ovdje će doći kompleksnija logika za navigaciju na osnovu tipa scene
-        // i odabranih uređaja. Za sada, prelazimo na placeholder.
-        screen = SCREEN_TIMER; // Privremeno, dok ne kreiramo sljedeće WIZ ekrane
+        // "Pametna" navigacija na osnovu tipa scene i odabira
+        switch (scene_handle->scene_type)
+        {
+            // Sistemske scene imaju svoj, fiksni tok
+            case SCENE_TYPE_LEAVING:
+                screen = SCREEN_SCENE_WIZ_LEAVING;
+                // TODO: DSP_InitSceneWizLeavingScreen();
+                break;
+            case SCENE_TYPE_HOMECOMING:
+                screen = SCREEN_SCENE_WIZ_HOMECOMING;
+                // TODO: DSP_InitSceneWizHomecomingScreen();
+                break;
+            case SCENE_TYPE_SLEEP:
+                 screen = SCREEN_SCENE_WIZ_SLEEP;
+                 // TODO: DSP_InitSceneWizSleepScreen();
+                 break;
+            
+            // "Komfor" scene idu na prvi odabrani uređaj
+            case SCENE_TYPE_STANDARD:
+            default:
+                if (scene_handle->lights_mask) {
+                    screen = SCREEN_LIGHTS;
+                } else if (scene_handle->curtains_mask) {
+                    screen = SCREEN_CURTAINS;
+                } else if (scene_handle->thermostat_mask) {
+                    screen = SCREEN_THERMOSTAT;
+                } else {
+                    // Ako ništa nije odabrano, idi na finalni ekran
+                    DSP_InitSceneWizFinalizeScreen();
+                    screen = SCREEN_SCENE_WIZ_FINALIZE;
+                    shouldDrawScreen = 0;
+                    return;
+                }
+                break;
+        }
+        
         shouldDrawScreen = 1;
     }
 }
@@ -4765,6 +5175,30 @@ static void Service_MainScreenSwitch(void)
     // =======================================================================
 }
 
+/**
+ ******************************************************************************
+ * @brief       Servisira finalni ekran čarobnjaka.
+ ******************************************************************************
+ */
+static void Service_SceneWizFinalizeScreen(void)
+{
+    if (BUTTON_IsPressed(hBUTTON_Ok)) // "Snimi Scenu"
+    {
+        Scene_Save();
+        is_in_scene_wizard_mode = false;
+        DSP_KillSceneWizFinalizeScreen();
+        screen = SCREEN_SCENE;
+        shouldDrawScreen = 1;
+    }
+    else if (BUTTON_IsPressed(hButtonWizCancel))
+    {
+        // Ne snimaj promjene u RAM-u, samo izađi
+        is_in_scene_wizard_mode = false;
+        DSP_KillSceneWizFinalizeScreen();
+        screen = SCREEN_SCENE;
+        shouldDrawScreen = 1;
+    }
+}
 /**
  * @brief Prikazuje datum i vrijeme na ekranu, i upravlja logikom screensavera.
  * @note Ažurira se svake sekunde i odgovorna je za aktivaciju/deaktivaciju
@@ -6219,22 +6653,22 @@ static void DSP_InitSceneAppearanceScreen(void)
  ******************************************************************************
  * @brief       Kreira i inicijalizuje GUI za prvi korak čarobnjaka: Odabir Uređaja.
  * @author      Gemini & [Vaše Ime]
- * @note        Ova funkcija iscrtava ekran na kojem korisnik bira koje grupe
- * uređaja (svjetla, roletne, termostat) želi da uključi u scenu.
- * Stanje checkbox-ova se inicijalizuje na osnovu trenutne konfiguracije
- * scene koja se mijenja (provjerom bitmaski).
+ * @note        FINALNA VERZIJA 2.0: Funkcija je sada "pametna". Prije iscrtavanja,
+ * provjerava koji moduli (svjetla, roletne, termostat) imaju
+ * konfigurisane uređaje i dinamički prikazuje checkbox-ove samo
+ * za dostupne opcije, čime se korisnički interfejs čini čistijim i
+ * relevantnijim.
  ******************************************************************************
  */
 static void DSP_InitSceneWizDevicesScreen(void)
 {
-    DSP_KillSceneEditScreen(); // Čistimo widgete sa prethodnog ekrana
+    DSP_KillSceneEditScreen();
     
     GUI_MULTIBUF_BeginEx(1);
     GUI_Clear();
 
     Scene_t* scene_handle = Scene_GetInstance(scene_edit_index);
     if (!scene_handle) {
-        // U slučaju greške, vrati se na prethodni ekran
         screen = SCREEN_SCENE_EDIT;
         shouldDrawScreen = 1;
         GUI_MULTIBUF_EndEx(1);
@@ -6247,34 +6681,56 @@ static void DSP_InitSceneWizDevicesScreen(void)
     GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_TOP);
     GUI_DispStringAt("Podesavanje Scene (Korak 1)", LCD_GetXSize() / 2, 10);
     
-    GUI_SetFont(GUI_FONT_16_1);
+    GUI_SetFont(&GUI_FontVerdana16_LAT);
+    GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_TOP); // Ponovni poziv radi pravila biblioteke
     GUI_DispStringAt("Odaberite koje uredjaje zelite ukljuciti:", LCD_GetXSize() / 2, 40);
 
-    // --- Kreiranje Checkbox-ova ---
+    // --- KORAK 1: Provjera dostupnosti grupa uređaja ---
+    bool lights_available = (LIGHTS_getCount() > 0);
+    bool curtains_available = (Curtains_getCount() > 0);
+    THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
+    bool thermostat_available = (Thermostat_GetGroup(pThst) > 0);
+
+    // --- KORAK 2: Dinamičko kreiranje i pozicioniranje Checkbox-ova ---
     const int chkbx_x = 50;
     const int chkbx_w = 200;
     const int chkbx_h = 30;
+    const int y_spacing = 40; // Razmak između checkbox-ova
+    int16_t current_y = 80;   // Početna Y pozicija
 
-    hCheckboxSceneLights = CHECKBOX_CreateEx(chkbx_x, 80, chkbx_w, chkbx_h, 0, WM_CF_SHOW, 0, ID_WIZ_CHECKBOX_LIGHTS);
-    CHECKBOX_SetText(hCheckboxSceneLights, lng(TXT_LIGHTS));
-    CHECKBOX_SetFont(hCheckboxSceneLights, GUI_FONT_20_1);
-    // Ako je bilo koji bit u masci postavljen, smatramo da je grupa uključena
-    if (scene_handle->lights_mask != 0) {
-        CHECKBOX_SetState(hCheckboxSceneLights, 1);
+    if (lights_available)
+    {
+        hCheckboxSceneLights = CHECKBOX_CreateEx(chkbx_x, current_y, chkbx_w, chkbx_h, 0, WM_CF_SHOW, 0, ID_WIZ_CHECKBOX_LIGHTS);
+        CHECKBOX_SetText(hCheckboxSceneLights, lng(TXT_LIGHTS));
+        CHECKBOX_SetFont(hCheckboxSceneLights, &GUI_FontVerdana20_LAT);
+        CHECKBOX_SetTextColor(hCheckboxSceneLights, GUI_WHITE);
+        if (scene_handle->lights_mask != 0) {
+            CHECKBOX_SetState(hCheckboxSceneLights, 1);
+        }
+        current_y += y_spacing; // Povećaj Y poziciju za sljedeći element
     }
 
-    hCheckboxSceneCurtains = CHECKBOX_CreateEx(chkbx_x, 120, chkbx_w, chkbx_h, 0, WM_CF_SHOW, 0, ID_WIZ_CHECKBOX_CURTAINS);
-    CHECKBOX_SetText(hCheckboxSceneCurtains, lng(TXT_BLINDS));
-    CHECKBOX_SetFont(hCheckboxSceneCurtains, GUI_FONT_20_1);
-    if (scene_handle->curtains_mask != 0) {
-        CHECKBOX_SetState(hCheckboxSceneCurtains, 1);
+    if (curtains_available)
+    {
+        hCheckboxSceneCurtains = CHECKBOX_CreateEx(chkbx_x, current_y, chkbx_w, chkbx_h, 0, WM_CF_SHOW, 0, ID_WIZ_CHECKBOX_CURTAINS);
+        CHECKBOX_SetText(hCheckboxSceneCurtains, lng(TXT_BLINDS));
+        CHECKBOX_SetFont(hCheckboxSceneCurtains, &GUI_FontVerdana20_LAT);
+        CHECKBOX_SetTextColor(hCheckboxSceneCurtains, GUI_WHITE);
+        if (scene_handle->curtains_mask != 0) {
+            CHECKBOX_SetState(hCheckboxSceneCurtains, 1);
+        }
+        current_y += y_spacing;
     }
 
-    hCheckboxSceneThermostat = CHECKBOX_CreateEx(chkbx_x, 160, chkbx_w, chkbx_h, 0, WM_CF_SHOW, 0, ID_WIZ_CHECKBOX_THERMOSTAT);
-    CHECKBOX_SetText(hCheckboxSceneThermostat, lng(TXT_THERMOSTAT));
-    CHECKBOX_SetFont(hCheckboxSceneThermostat, GUI_FONT_20_1);
-    if (scene_handle->thermostat_mask != 0) {
-        CHECKBOX_SetState(hCheckboxSceneThermostat, 1);
+    if (thermostat_available)
+    {
+        hCheckboxSceneThermostat = CHECKBOX_CreateEx(chkbx_x, current_y, chkbx_w, chkbx_h, 0, WM_CF_SHOW, 0, ID_WIZ_CHECKBOX_THERMOSTAT);
+        CHECKBOX_SetText(hCheckboxSceneThermostat, lng(TXT_THERMOSTAT));
+        CHECKBOX_SetFont(hCheckboxSceneThermostat, &GUI_FontVerdana20_LAT);
+        CHECKBOX_SetTextColor(hCheckboxSceneThermostat, GUI_WHITE);
+        if (scene_handle->thermostat_mask != 0) {
+            CHECKBOX_SetState(hCheckboxSceneThermostat, 1);
+        }
     }
 
     // --- Kreiranje Navigacionih Dugmadi ---
@@ -6391,6 +6847,89 @@ static void DSP_KillSceneScreen(void)
 static void DSP_KillSceneAppearanceScreen(void)
 {
     GUI_Clear(); // Briše kompletan sadržaj aktivnog sloja (layer-a)
+}
+/**
+ ******************************************************************************
+ * @brief       Uništava widgete kreirane od strane `Service_SceneEditLightsScreen`.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Specifično briše "[Next]" dugme kreirano za wizard mod.
+ ******************************************************************************
+ */
+static void DSP_KillSceneEditLightsScreen(void)
+{
+    if (WM_IsWindow(hButtonWizNext)) {
+        WM_DeleteWindow(hButtonWizNext);
+        hButtonWizNext = 0;
+    }
+}
+/**
+ ******************************************************************************
+ * @brief       Uništava widgete kreirane od strane `Service_SceneEditCurtainsScreen`.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Specifično briše "[Next]" dugme kreirano za wizard mod na ekranu
+ * za roletne, osiguravajući čistu navigaciju.
+ ******************************************************************************
+ */
+static void DSP_KillSceneEditCurtainsScreen(void)
+{
+    if (WM_IsWindow(hButtonWizNext)) {
+        WM_DeleteWindow(hButtonWizNext);
+        hButtonWizNext = 0;
+    }
+}
+/**
+ ******************************************************************************
+ * @brief       Uništava widgete kreirane od strane `Service_SceneEditThermostatScreen`.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Specifično briše "[Next]" dugme kreirano za wizard mod na ekranu
+ * za termostat.
+ ******************************************************************************
+ */
+static void DSP_KillSceneEditThermostatScreen(void)
+{
+    if (WM_IsWindow(hButtonWizNext)) {
+        WM_DeleteWindow(hButtonWizNext);
+        hButtonWizNext = 0;
+    }
+}
+/**
+ ******************************************************************************
+ * @brief       Kreira GUI za finalni ekran čarobnjaka.
+ * @note        Prikazuje poruku za potvrdu i dugmad "Snimi Scenu" i "Otkaži".
+ ******************************************************************************
+ */
+static void DSP_InitSceneWizFinalizeScreen(void)
+{
+    GUI_MULTIBUF_BeginEx(1);
+    GUI_Clear();
+    
+    char buffer[100];
+    Scene_t* scene_handle = Scene_GetInstance(scene_edit_index);
+    const SceneAppearance_t* appearance = &scene_appearance_table[scene_handle->appearance_id];
+
+    sprintf(buffer, "Scena '%s' je konfigurisana.", lng(appearance->text_id));
+
+//    DSP_DrawWizardScreenHeader("Zavrsetak Podesavanja", buffer);
+
+    // Kreiramo samo "Snimi" i "Otkaži" dugmad
+    hButtonWizCancel = BUTTON_CreateEx(10, 230, 120, 35, 0, WM_CF_SHOW, 0, ID_WIZ_CANCEL);
+    BUTTON_SetText(hButtonWizCancel, lng(TXT_CANCEL));
+
+    hBUTTON_Ok = BUTTON_CreateEx(350, 230, 120, 35, 0, WM_CF_SHOW, 0, ID_Ok);
+    BUTTON_SetText(hBUTTON_Ok, "Snimi Scenu");
+
+    GUI_MULTIBUF_EndEx(1);
+}
+
+/**
+ ******************************************************************************
+ * @brief       Uništava widgete sa finalnog ekrana čarobnjaka.
+ ******************************************************************************
+ */
+static void DSP_KillSceneWizFinalizeScreen(void)
+{
+    if (WM_IsWindow(hButtonWizCancel)) WM_DeleteWindow(hButtonWizCancel);
+    if (WM_IsWindow(hBUTTON_Ok)) WM_DeleteWindow(hBUTTON_Ok);
 }
 /**
  ******************************************************************************
@@ -6519,26 +7058,52 @@ static void Handle_PeriodicEvents(void)
     // === SCREENSAVER TAJMER ===
     if (!IsScrnsvrActiv()) {
         if ((HAL_GetTick() - scrnsvr_tmr) >= (uint32_t)(g_display_settings.scrnsvr_tout * 1000)) {
-            // Gašenje ekrana podešavanja
             // =======================================================================
-            // === ISPRAVKA: Uklonjeno skraćivanje koda. Sada su svi ekrani navedeni. ===
+            // ===          NOVI BLOK: Provjera i gašenje Čarobnjaka prvo         ===
             // =======================================================================
-            if (screen == SCREEN_SETTINGS_1)      DSP_KillSet1Scrn();
-            else if (screen == SCREEN_SETTINGS_2) DSP_KillSet2Scrn();
-            else if (screen == SCREEN_SETTINGS_3) DSP_KillSet3Scrn();
-            else if (screen == SCREEN_SETTINGS_4) DSP_KillSet4Scrn();
-            else if (screen == SCREEN_SETTINGS_5) DSP_KillSet5Scrn();
-            else if (screen == SCREEN_SETTINGS_6) DSP_KillSet6Scrn();
-            else if (screen == SCREEN_LIGHT_SETTINGS) DSP_KillLightSettingsScreen(); 
-            // Ovdje će se dodati Kill funkcije i za nove Settings ekrane kada budu implementirane
-
+            if (is_in_scene_wizard_mode)
+            {
+                // Uništi widgete sa bilo kog ekrana koji je dio čarobnjaka
+                switch (screen)
+                {
+                    case SCREEN_SCENE_EDIT:
+                        DSP_KillSceneEditScreen();
+                        break;
+                    case SCREEN_SCENE_APPEARANCE:
+                        DSP_KillSceneAppearanceScreen();
+                        break;
+                    case SCREEN_SCENE_WIZ_DEVICES:
+                        DSP_KillSceneWizDevicesScreen();
+                        break;
+                    case SCREEN_LIGHTS:
+                    case SCREEN_CURTAINS:
+                    case SCREEN_THERMOSTAT:
+                        // Za ove ekrane, dovoljno je obrisati [Next] dugme
+                        if (WM_IsWindow(hButtonWizNext)) {
+                            WM_DeleteWindow(hButtonWizNext);
+                            hButtonWizNext = 0;
+                        }
+                        break;
+                    // TODO: Dodati Kill funkcije za ostale WIZ ekrane kada budu kreirane
+                    default:
+                        break;
+                }
+            
+                // Ključni korak: Resetuj fleg za Wizard Mode
+                is_in_scene_wizard_mode = false;
+            }
             // =======================================================================
-            // === IZMJENA: Uklonjena logika za "pametno snimanje" ===
+            // ===        Originalna logika za ekrane podešavanja ostaje         ===
             // =======================================================================
-            // Stara logika sa `if(thsta)` i `if(lcsta)` je uklonjena.
-            // Odgovornost za snimanje je sada prebačena na `Service_SettingsScreen_...`
-            // funkcije, koje pozivaju `_Save()` funkcije modula kada korisnik
-            // pritisne "SAVE" ili "NEXT", što je arhitektonski ispravnije.
+            else if (screen == SCREEN_SETTINGS_1)      DSP_KillSet1Scrn();
+            else if (screen == SCREEN_SETTINGS_2)      DSP_KillSet2Scrn();
+            else if (screen == SCREEN_SETTINGS_3)      DSP_KillSet3Scrn();
+            else if (screen == SCREEN_SETTINGS_4)      DSP_KillSet4Scrn();
+            else if (screen == SCREEN_SETTINGS_5)      DSP_KillSet5Scrn();
+            else if (screen == SCREEN_SETTINGS_6)      DSP_KillSet6Scrn();
+            else if (screen == SCREEN_SETTINGS_7)      DSP_KillSet7Scrn();
+            else if (screen == SCREEN_SETTINGS_GATE)   DSP_KillSettingsGateScreen();
+            else if (screen == SCREEN_LIGHT_SETTINGS)  DSP_KillLightSettingsScreen();
 
             // Aktivacija screensaver-a (ostaje isto)
             DISPSetBrightnes(g_display_settings.low_bcklght);
