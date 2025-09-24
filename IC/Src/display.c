@@ -1077,6 +1077,34 @@ settings_screen_7_layout =
     .save_button_pos        = { 410, 230, 60, 30 }
 };
 /**
+ * @brief Struktura koja sadrži konstante za raspored elemenata (layout)
+ * na ekranu za podešavanje datuma i vremena.
+ */
+static const struct
+{
+    int16_t y_date_row;    /**< Y koordinata za red sa datumom. */
+    int16_t y_time_row;    /**< Y koordinata za red sa vremenom. */
+    int16_t x_first_col;   /**< X koordinata prve kolone. */
+    int16_t x_second_col;  /**< X koordinata druge kolone. */
+    int16_t x_third_col;   /**< X koordinata treće kolone. */
+    int16_t x_last_col;    /**< X koordinata za zadnja dugmad. */
+    int16_t btn_size;      /**< Dimenzija dugmeta. */
+    int16_t item_width;    /**< Širina jednog bloka (labela + vrijednost). */
+    int16_t value_offset;  /**< Vertikalni pomak teksta u odnosu na dugmad. */
+}
+datetime_settings_layout =
+{
+    .y_date_row    = 40,
+    .y_time_row    = 150,
+    .x_first_col   = 10,
+    .x_second_col  = 160,
+    .x_third_col   = 310,
+    .x_last_col    = 380,
+    .btn_size      = 50,
+    .item_width    = 140,
+    .value_offset  = 45
+};
+/**
  * @brief Niz sa pokazivačima na bitmape za ikonice svjetala.
  * @note  IZMIJENJENO: Redoslijed u ovom nizu sada MORA TAČNO ODGOVARATI
  * redoslijedu u `enum IconID` definisanom u `display.h`.
@@ -1213,9 +1241,23 @@ static CHECKBOX_Handle hCheckboxSceneThermostat;  /**< Checkbox za uključivanje
 static BUTTON_Handle hButtonWizNext;              /**< Dugme [Dalje] unutar čarobnjaka. */
 static BUTTON_Handle hButtonWizBack;              /**< Dugme [Nazad] unutar čarobnjaka. */
 static BUTTON_Handle hButtonWizCancel;            /**< Dugme [Otkaži] unutar čarobnjaka. */
+static TEXT_Handle   hTextDateTimeValue[5]; /**< Handle-ovi za TEXT widgete koji prikazuju vrijednosti (Dan, Mjesec, Godina, Sat, Minuta). */
+static BUTTON_Handle hButtonDateTimeUp[5];    /**< Handle-ovi za GORE dugmad. */
+static BUTTON_Handle hButtonDateTimeDown[5];  /**< Handle-ovi za DOLE dugmad. */
 /** @} */
 static SPINBOX_Handle  hSPNBX_SceneTriggers[SCENE_MAX_TRIGGERS];  /**< Handle-ovi za spinbox-ove za adrese okidača na ekranu za podešavanje scena. */
+// Novi handlovi za ekran za podešavanje alarma
+static BUTTON_Handle hButtonTimerHourUp, hButtonTimerHourDown;
+static BUTTON_Handle hButtonTimerMinuteUp, hButtonTimerMinuteDown;
+static TEXT_Handle   hTextTimerHour, hTextTimerMinute;
 
+static BUTTON_Handle hButtonTimerDay[7];
+static BUTTON_Handle hButtonTimerBuzzer;
+static BUTTON_Handle hButtonTimerSceneNext, hButtonTimerScenePrev;
+static TEXT_Handle   hTextTimerScene;
+
+static BUTTON_Handle hButtonTimerSave;
+static BUTTON_Handle hButtonTimerCancel;
 /*============================================================================*/
 /* GLOBALNE VARIJABLE NA NIVOU PROJEKTA                                       */
 /*============================================================================*/
@@ -1277,6 +1319,8 @@ static uint8_t qr_codes[QR_CODE_COUNT][QR_CODE_LENGTH] = {0}; // Bafer za čuvan
 static uint8_t qr_code_draw_id = 0;                         // ID QR koda koji treba iscrtati.
 static uint8_t clrtmr = 0;
 static GUI_PID_STATE last_press_state; 
+static int8_t timer_selected_scene_index = -1;
+static bool timer_screen_initialized = false;
 
 /** @name Statičke varijable za Alfanumeričku Tastaturu
  * @{
@@ -1399,6 +1443,10 @@ static void DSP_KillSceneEditCurtainsScreen(void);
 static void DSP_KillSceneEditThermostatScreen(void);
 static void DSP_InitSceneWizFinalizeScreen(void);
 static void DSP_KillSceneWizFinalizeScreen(void);
+static void DSP_InitSettingsDateTimeScreen(void);
+static void DSP_KillSettingsDateTimeScreen(void);
+static void DSP_InitSettingsTimerScreen(void);
+static void DSP_KillSettingsTimerScreen(void);
 
 /** @} */
 
@@ -1438,6 +1486,8 @@ static void Service_SceneEditScreen(void);
 static void Service_SceneEditLightsScreen(void);
 static void Service_SceneEditThermostatScreen(void);
 static void Service_SceneWizFinalizeScreen(void);
+static void Service_SettingsDateTimeScreen(void);
+static void Service_SettingsTimerScreen(void);
 /** @} */
 
 /**
@@ -1479,6 +1529,7 @@ static void HandlePress_MainScreenSwitch(GUI_PID_STATE * pTS);
 static void HandleRelease_MainScreenSwitch(GUI_PID_STATE * pTS);
 static void HandlePress_SceneAppearanceScreen(GUI_PID_STATE* pTS, uint8_t* click_flag);
 static void HandlePress_SceneScreen(GUI_PID_STATE * pTS, uint8_t *click_flag);
+static void HandlePress_TimerScreen(GUI_PID_STATE * pTS, uint8_t *click_flag);
 static void HandleRelease_SceneScreen(void);
 /** @} */
 /* Prototipovi novih funkcija za PIN tastaturu */
@@ -1730,6 +1781,12 @@ void DISP_Service(void)
         break;
     case SCREEN_TIMER:
         Service_TimerScreen();
+        break;
+    case SCREEN_SETTINGS_TIMER:
+        Service_SettingsTimerScreen();
+        break;
+    case SCREEN_SETTINGS_DATETIME:
+        Service_SettingsDateTimeScreen();
         break;
     case SCREEN_SECURITY:
         Service_SecurityScreen();
@@ -3955,21 +4012,176 @@ static void Service_CleanScreen(void)
  */
 static void Service_TimerScreen(void)
 {
+    static bool initialized = false;
+
     if (shouldDrawScreen) {
         shouldDrawScreen = 0;
-
+        
         GUI_MULTIBUF_BeginEx(1);
         GUI_Clear();
-        DrawHamburgerMenu(1); // Meni za povratak
+        DrawHamburgerMenu(1);
 
-        // Iscrtaj naslov kao placeholder
-        GUI_SetFont(&GUI_FontVerdana32_LAT);
-        GUI_SetColor(GUI_WHITE);
-        GUI_SetTextMode(GUI_TM_TRANS);
-        GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
-        GUI_DispStringAt("TAJMER", LCD_GetXSize() / 2, LCD_GetYSize() / 2);
+        // Provjeri status RTC-a
+        if (!IsRtcTimeValid()) {
+            // Ako vrijeme NIJE validno, prikaži upozorenje i dugme za podešavanje
+            GUI_SetFont(&GUI_FontVerdana20_LAT);
+            GUI_SetColor(GUI_RED);
+            GUI_SetTextMode(GUI_TM_TRANS);
+            GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
+            GUI_DispStringAt(lng(TXT_CONFIGURE_DEVICE_MSG), LCD_GetXSize() / 2, LCD_GetYSize() / 2 - 50);
+            
+            // Crtanje velikog dugmeta za postavljanje vremena
+            const GUI_BITMAP* datetime_icon = &bmicons_date_time;
+            int x_pos = (DRAWING_AREA_WIDTH / 2) - (datetime_icon->XSize / 2);
+            int y_pos = (LCD_GetYSize() / 2);
+            GUI_DrawBitmap(datetime_icon, x_pos, y_pos);
+
+            GUI_SetColor(GUI_WHITE);
+            GUI_SetTextAlign(GUI_TA_HCENTER);
+            GUI_DispStringAt(lng(TXT_DATETIME_SETUP_TITLE), x_pos + datetime_icon->XSize / 2, y_pos + datetime_icon->YSize + 5);
+        
+        } else {
+            // Ako vrijeme je validno, prikaži glavni interfejs alarma
+            
+            // Prikaz sata i minuta
+            char time_str[6];
+            sprintf(time_str, "%02d:%02d", Timer_GetHour(), Timer_GetMinute());
+            GUI_SetFont(GUI_FONT_D64);
+            GUI_SetColor(GUI_WHITE);
+            GUI_SetTextMode(GUI_TM_TRANS);
+            GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
+            GUI_DispStringAt(time_str, DRAWING_AREA_WIDTH / 2, 80);
+            
+            // Prikaz dana ponavljanja
+            GUI_SetFont(&GUI_FontVerdana20_LAT);
+            GUI_SetTextAlign(GUI_TA_HCENTER);
+            GUI_SetColor(GUI_ORANGE);
+            const char* days_short[] = {"PON", "UTO", "SRI", "ČET", "PET", "SUB", "NED"};
+            uint8_t repeat_mask = Timer_GetRepeatMask();
+            char days_str[30] = "";
+            for (int i = 0; i < 7; i++) {
+                if (repeat_mask & (1 << i)) {
+                    strcat(days_str, days_short[i]);
+                    strcat(days_str, " ");
+                }
+            }
+            if (strlen(days_str) > 0) {
+                GUI_DispStringAt(days_str, DRAWING_AREA_WIDTH / 2, 140);
+            } else {
+                 GUI_DispStringAt("Ponavljanje isključeno", DRAWING_AREA_WIDTH / 2, 140);
+            }
+
+            // Dugme za uključivanje/isključivanje alarma
+            GUI_CONST_STORAGE GUI_BITMAP* icon_to_draw = Timer_IsActive() ? &bmicons_toggle_on : &bmicons_toogle_off;
+            int toggle_x = (DRAWING_AREA_WIDTH / 2) - (icon_to_draw->XSize / 2);
+            GUI_DrawBitmap(icon_to_draw, toggle_x, 180);
+            
+            // Dugme za podešavanja
+            GUI_SetFont(&GUI_FontVerdana20_LAT);
+            GUI_SetColor(GUI_WHITE);
+            GUI_SetTextAlign(GUI_TA_HCENTER);
+            GUI_DispStringAt("Podesi", DRAWING_AREA_WIDTH / 2, 230);
+            
+        }
 
         GUI_MULTIBUF_EndEx(1);
+        initialized = true;
+    }
+}/**
+ * @brief Servisira ekran za podešavanje alarma.
+ * @note Ova funkcija implementira logiku za sve widgete na ekranu.
+ */
+static void Service_SettingsTimerScreen(void)
+{
+    static int current_hour, current_minute;
+    static uint8_t repeat_mask;
+    static bool buzzer_state;
+
+    // Prva inicijalizacija ekrana
+    if (!timer_screen_initialized) {
+        DSP_InitSettingsTimerScreen();
+
+        current_hour = Timer_GetHour();
+        current_minute = Timer_GetMinute();
+        repeat_mask = Timer_GetRepeatMask();
+        buzzer_state = Timer_GetActionBuzzer();
+        
+        // Postavi inicijalne vrijednosti na ekranu
+        char buffer[5];
+        sprintf(buffer, "%02d", current_hour);
+        TEXT_SetText(hTextTimerHour, buffer);
+        sprintf(buffer, "%02d", current_minute);
+        TEXT_SetText(hTextTimerMinute, buffer);
+
+        // Ažuriraj stanje dugmadi za dane
+        for (int i = 0; i < 7; i++) {
+            BUTTON_SetBitmap(hButtonTimerDay[i], BUTTON_CI_UNPRESSED, (repeat_mask & (1 << i)) ? &bmicons_toggle_on : &bmicons_toogle_off);
+        }
+        
+        // Ažuriraj stanje dugmeta za zujalicu
+        BUTTON_SetBitmap(hButtonTimerBuzzer, BUTTON_CI_UNPRESSED, buzzer_state ? &bmicons_toggle_on : &bmicons_toogle_off);
+        
+        timer_screen_initialized = true;
+    }
+
+    // Ovdje se obrađuje logika za promjenu vrijednosti
+    // Pritisak na dugme za sate
+    if (BUTTON_IsPressed(hButtonTimerHourUp)) {
+        current_hour = (current_hour + 1) % 24;
+        char buffer[5];
+        sprintf(buffer, "%02d", current_hour);
+        TEXT_SetText(hTextTimerHour, buffer);
+    }
+    else if (BUTTON_IsPressed(hButtonTimerHourDown)) {
+        current_hour = (current_hour - 1 + 24) % 24;
+        char buffer[5];
+        sprintf(buffer, "%02d", current_hour);
+        TEXT_SetText(hTextTimerHour, buffer);
+    }
+    // Pritisak na dugme za minute
+    else if (BUTTON_IsPressed(hButtonTimerMinuteUp)) {
+        current_minute = (current_minute + 1) % 60;
+        char buffer[5];
+        sprintf(buffer, "%02d", current_minute);
+        TEXT_SetText(hTextTimerMinute, buffer);
+    }
+    else if (BUTTON_IsPressed(hButtonTimerMinuteDown)) {
+        current_minute = (current_minute - 1 + 60) % 60;
+        char buffer[5];
+        sprintf(buffer, "%02d", current_minute);
+        TEXT_SetText(hTextTimerMinute, buffer);
+    }
+    
+    // Pritisak na dugmad za dane
+    for (int i = 0; i < 7; i++) {
+        if (BUTTON_IsPressed(hButtonTimerDay[i])) {
+            repeat_mask ^= (1 << i);
+            BUTTON_SetBitmap(hButtonTimerDay[i], BUTTON_CI_UNPRESSED, (repeat_mask & (1 << i)) ? &bmicons_toggle_on : &bmicons_toogle_off);
+        }
+    }
+    
+    // Pritisak na dugme za zujalicu
+    if (BUTTON_IsPressed(hButtonTimerBuzzer)) {
+        buzzer_state = !buzzer_state;
+        BUTTON_SetBitmap(hButtonTimerBuzzer, BUTTON_CI_UNPRESSED, buzzer_state ? &bmicons_toggle_on : &bmicons_toogle_off);
+    }
+
+    // Pritisak na dugme za spremanje
+    if (BUTTON_IsPressed(hButtonTimerSave)) {
+        Timer_SetHour(current_hour);
+        Timer_SetMinute(current_minute);
+        Timer_SetRepeatMask(repeat_mask);
+        Timer_SetActionBuzzer(buzzer_state);
+        Timer_Save();
+        DSP_KillSettingsTimerScreen();
+        screen = SCREEN_TIMER;
+        shouldDrawScreen = 1;
+    }
+    // Pritisak na dugme za otkazivanje
+    else if (BUTTON_IsPressed(hButtonTimerCancel)) {
+        DSP_KillSettingsTimerScreen();
+        screen = SCREEN_TIMER;
+        shouldDrawScreen = 1;
     }
 }
 /**
@@ -5200,6 +5412,219 @@ static void Service_SceneWizFinalizeScreen(void)
     }
 }
 /**
+ ******************************************************************************
+ * @brief       Izračunava dan u sedmici na osnovu datuma.
+ * @note        Funkcija koristi Zellerov algoritam. Nedjelja = 1, Ponedjeljak = 2, itd.
+ * @param       year Godina (npr. 2025).
+ * @param       month Mjesec (1-12).
+ * @param       day Dan u mjesecu (1-31).
+ * @retval      uint8_t Dan u sedmici (1-7).
+ ******************************************************************************
+ */
+static uint8_t getWeekday(int year, int month, int day)
+{
+    int y = year;
+    int m = month;
+    if (m < 3) {
+        m += 12;
+        y -= 1;
+    }
+    int K = y % 100;
+    int J = y / 100;
+    int day_of_week = (day + 13 * (m + 1) / 5 + K + K / 4 + J / 4 - 2 * J) % 7;
+    // Podesi rezultat da bude 1 (Ned) do 7 (Sub), umjesto 0-6
+    return (day_of_week + 1 == 0) ? 7 : (day_of_week + 1);
+}
+/**
+ ******************************************************************************
+ * @brief       Servisira ekran za podešavanje datuma i vremena.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija objedinjuje inicijalizaciju, crtanje i logiku
+ * obrade unosa u jednu petlju.
+ ******************************************************************************
+ */
+static void Service_SettingsDateTimeScreen(void)
+{
+    static bool initialized = false;
+    static int32_t values[5]; // 0:Dan, 1:Mjesec, 2:Godina, 3:Sat, 4:Minuta
+    static uint32_t last_press_time = 0;
+    char value_buffer[6];
+    
+    // --- Deklaracija konstanti na početku funkcije ---
+    const int16_t y_date_row = 40;
+    const int16_t y_time_row = 150;
+    const int16_t x_first_col = 10;
+    const int16_t x_second_col = 160;
+    const int16_t x_third_col = 310;
+    const int16_t x_last_col = 380;
+    const int16_t btn_size = 50; 
+    const int16_t text_box_w = 50;
+    const int ids_date_up[]   = { ID_DATETIME_DAY_UP, ID_DATETIME_MONTH_UP, ID_DATETIME_YEAR_UP };
+    const int ids_date_down[] = { ID_DATETIME_DAY_DOWN, ID_DATETIME_MONTH_DOWN, ID_DATETIME_YEAR_DOWN };
+    const int x_cols_date[]   = { x_first_col, x_second_col, x_third_col };
+    const TextID labels_date[] = { TXT_DAY, TXT_MONTH, TXT_YEAR };
+    const int ids_time_up[] = { ID_DATETIME_HOUR_UP, ID_DATETIME_MINUTE_UP };
+    const int ids_time_down[] = { ID_DATETIME_HOUR_DOWN, ID_DATETIME_MINUTE_DOWN };
+    const int x_cols_time[] = { x_first_col, x_second_col };
+    const TextID labels_time[] = { TXT_HOUR, TXT_MINUTE };
+
+    if (!initialized) {
+        // --- Inicijalizacija ekrana ---
+        RTC_TimeTypeDef temp_time;
+        RTC_DateTypeDef temp_date;
+        HAL_RTC_GetTime(&hrtc, &temp_time, RTC_FORMAT_BCD);
+        HAL_RTC_GetDate(&hrtc, &temp_date, RTC_FORMAT_BCD);
+
+        values[0] = Bcd2Dec(temp_date.Date);
+        values[1] = Bcd2Dec(temp_date.Month);
+        values[2] = Bcd2Dec(temp_date.Year) + 2000;
+        values[3] = Bcd2Dec(temp_time.Hours);
+        values[4] = Bcd2Dec(temp_time.Minutes);
+        
+        // Crtanje se obavlja samo jednom
+        GUI_MULTIBUF_BeginEx(1);
+        GUI_Clear();
+
+        // Iscrtavanje naslova ekrana
+        GUI_SetFont(&GUI_FontVerdana20_LAT);
+        GUI_SetColor(GUI_WHITE);
+        GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_TOP);
+        GUI_DispStringAt("Podesite vrijeme i datum", LCD_GetXSize() / 2, 0);
+        
+        for (int i = 0; i < 3; i++) {
+            int x = x_cols_date[i];
+            
+            GUI_SetFont(&GUI_FontVerdana20_LAT);
+            GUI_SetColor(GUI_WHITE);
+            GUI_SetTextAlign(GUI_TA_LEFT);
+            GUI_DispStringAt(lng(labels_date[i]), x, y_date_row);
+
+            sprintf(value_buffer, "%d", values[i]);
+            hTextDateTimeValue[i] = TEXT_CreateEx(x, y_date_row + 25, text_box_w, btn_size, 0, WM_CF_SHOW, TEXT_CF_HCENTER | TEXT_CF_VCENTER, GUI_ID_USER + i, value_buffer);
+            TEXT_SetFont(hTextDateTimeValue[i], GUI_FONT_24B_1);
+            TEXT_SetTextColor(hTextDateTimeValue[i], GUI_ORANGE);
+            
+            int buttons_x = x + text_box_w + 10;
+
+            hButtonDateTimeUp[i] = BUTTON_CreateEx(buttons_x, y_date_row, btn_size, btn_size, 0, WM_CF_SHOW, 0, ids_date_up[i]);
+            BUTTON_SetText(hButtonDateTimeUp[i], "UP");
+            
+            hButtonDateTimeDown[i] = BUTTON_CreateEx(buttons_x, y_date_row + btn_size + 5, btn_size, btn_size, 0, WM_CF_SHOW, 0, ids_date_down[i]);
+            BUTTON_SetText(hButtonDateTimeDown[i], "DN");
+        }
+        
+        for (int i = 0; i < 2; i++) {
+            int x = x_cols_time[i];
+            int index = i + 3; // Indexi 3 i 4 za sat i minutu
+            
+            GUI_SetFont(&GUI_FontVerdana20_LAT);
+            GUI_SetColor(GUI_WHITE);
+            GUI_SetTextAlign(GUI_TA_LEFT);
+            GUI_DispStringAt(lng(labels_time[i]), x, y_time_row);
+
+            sprintf(value_buffer, "%d", values[index]);
+            hTextDateTimeValue[index] = TEXT_CreateEx(x, y_time_row + 25, text_box_w, btn_size, 0, WM_CF_SHOW, TEXT_CF_HCENTER | TEXT_CF_VCENTER, GUI_ID_USER + index, value_buffer);
+            TEXT_SetFont(hTextDateTimeValue[index], GUI_FONT_24B_1);
+            TEXT_SetTextColor(hTextDateTimeValue[index], GUI_ORANGE);
+
+            int buttons_x = x + text_box_w + 10;
+
+            hButtonDateTimeUp[index] = BUTTON_CreateEx(buttons_x, y_time_row, btn_size, btn_size, 0, WM_CF_SHOW, 0, ids_time_up[i]);
+            BUTTON_SetText(hButtonDateTimeUp[index], "UP");
+
+            hButtonDateTimeDown[index] = BUTTON_CreateEx(buttons_x, y_time_row + btn_size + 5, btn_size, btn_size, 0, WM_CF_SHOW, 0, ids_time_down[i]);
+            BUTTON_SetText(hButtonDateTimeDown[index], "DN");
+        }
+
+        // --- DUGMAD ZA RESET I OK ---
+        hBUTTON_Ok = BUTTON_CreateEx(x_last_col, y_time_row, btn_size, btn_size, 0, WM_CF_SHOW, 0, ID_DATETIME_SAVE);
+        BUTTON_SetText(hBUTTON_Ok, "OK");
+        
+        hBUTTON_Next = BUTTON_CreateEx(x_last_col, y_time_row + btn_size + 5, btn_size, btn_size, 0, WM_CF_SHOW, 0, ID_DATETIME_CANCEL);
+        BUTTON_SetText(hBUTTON_Next, "RESET");
+        
+        GUI_MULTIBUF_EndEx(1);
+        initialized = true;
+    }
+
+    // --- Logika obrade pritisaka (nastavak) ---
+    const int32_t min_values[] = { 1, 1, 2000, 0, 0 };
+    const int32_t max_values[] = { 31, 12, 2099, 23, 59 };
+    
+    if (BUTTON_IsPressed(hBUTTON_Next)) { // RESET
+        initialized = false;
+        DSP_KillSettingsDateTimeScreen();
+        return;
+    }
+
+    // Provjera pritiska na +/- dugmad
+    for (int i = 0; i < 5; i++)
+    {
+        bool value_changed = false;
+        if (BUTTON_IsPressed(hButtonDateTimeUp[i])) {
+            if (HAL_GetTick() - last_press_time > 200) {
+                values[i]++;
+                value_changed = true;
+                last_press_time = HAL_GetTick();
+            }
+        }
+        else if (BUTTON_IsPressed(hButtonDateTimeDown[i])) {
+            if (HAL_GetTick() - last_press_time > 200) {
+                values[i]--;
+                value_changed = true;
+                last_press_time = HAL_GetTick();
+            }
+        }
+        // Ažuriranje teksta
+        if (value_changed) {
+            BuzzerOn(); HAL_Delay(1); BuzzerOff();
+
+            // Validacija dana u mjesecu, uključujući prestupne godine
+            if (i == 0) { // Ako mijenjamo dan
+                int year = values[2];
+                int month = values[1];
+                bool is_leap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+                int days_in_month[] = {31, (is_leap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+                if (values[0] > days_in_month[month - 1]) values[0] = 1;
+                if (values[0] < 1) values[0] = days_in_month[month - 1];
+            } else { // Validacija za ostale
+                if (values[i] > max_values[i]) values[i] = min_values[i];
+                if (values[i] < min_values[i]) values[i] = max_values[i];
+            }
+            
+            // Ispravno brisanje stare vrijednosti s ekrana
+            int text_x_pos = (i < 3) ? x_cols_date[i] : x_cols_time[i-3];
+            int text_y_pos = (i < 3) ? y_date_row + 25 : y_time_row + 25;
+            GUI_ClearRect(text_x_pos, text_y_pos, text_x_pos + text_box_w, text_y_pos + btn_size);
+            sprintf(value_buffer, "%d", values[i]);
+            TEXT_SetText(hTextDateTimeValue[i], value_buffer);
+        }
+    }
+    
+    if (BUTTON_IsPressed(hBUTTON_Ok)) { // OK
+        RTC_TimeTypeDef new_time = {0};
+        RTC_DateTypeDef new_date = {0};
+
+        new_date.Date    = Dec2Bcd(values[0]);
+        new_date.Month   = Dec2Bcd(values[1]);
+        new_date.Year    = Dec2Bcd(values[2] - 2000);
+        new_date.WeekDay = getWeekday(values[2], values[1], values[0]);
+
+        new_time.Hours   = Dec2Bcd(values[3]);
+        new_time.Minutes = Dec2Bcd(values[4]);
+        new_time.Seconds = 0x00;
+
+        HAL_RTC_SetTime(&hrtc, &new_time, RTC_FORMAT_BCD);
+        HAL_RTC_SetDate(&hrtc, &new_date, RTC_FORMAT_BCD);
+        RtcTimeValidSet();
+
+        initialized = false;
+        DSP_KillSettingsDateTimeScreen();
+        screen = SCREEN_TIMER;
+        shouldDrawScreen = 1;
+    }
+}
+/**
  * @brief Prikazuje datum i vrijeme na ekranu, i upravlja logikom screensavera.
  * @note Ažurira se svake sekunde i odgovorna je za aktivaciju/deaktivaciju
  * screensavera na osnovu postavljenih sati. Ova refaktorirana verzija koristi
@@ -6331,6 +6756,237 @@ static void DSP_KillSet7Scrn(void)
     WM_DeleteWindow(hBUTTON_Ok);
 }
 /**
+ * @brief Kreira i inicijalizuje sve GUI widgete za ekran za podešavanje alarma.
+ * @note Implementacija koristi dugmad s ikonama za unos vremena, dugmad za dane
+ * te toggle gumbe za zujalicu.
+ */
+static void DSP_InitSettingsTimerScreen(void)
+{
+    GUI_MULTIBUF_BeginEx(1);
+    GUI_Clear();
+
+    GUI_SetFont(&GUI_FontVerdana20_LAT);
+    GUI_SetColor(GUI_WHITE);
+    
+    // 1. Vrijeme alarma (sati i minute)
+    GUI_SetTextAlign(GUI_TA_LEFT);
+    GUI_DispStringAt("Vrijeme Alarma:", 20, 20);
+
+    // Sati
+    hTextTimerHour = TEXT_CreateEx(20, 50, 80, 80, 0, WM_CF_SHOW, TEXT_CF_HCENTER | TEXT_CF_VCENTER, GUI_ID_USER, "");
+    TEXT_SetFont(hTextTimerHour, GUI_FONT_D64);
+    hButtonTimerHourDown = BUTTON_CreateEx(110, 50, 80, 80, 0, WM_CF_SHOW, 0, ID_TIMER_HOUR_DOWN);
+    BUTTON_SetBitmap(hButtonTimerHourDown, BUTTON_CI_UNPRESSED, &bmicons_button_down);
+    hButtonTimerHourUp = BUTTON_CreateEx(200, 50, 80, 80, 0, WM_CF_SHOW, 0, ID_TIMER_HOUR_UP);
+    BUTTON_SetBitmap(hButtonTimerHourUp, BUTTON_CI_UNPRESSED, &bmicons_button_up);
+
+    // Minute
+    hTextTimerMinute = TEXT_CreateEx(20, 140, 80, 80, 0, WM_CF_SHOW, TEXT_CF_HCENTER | TEXT_CF_VCENTER, GUI_ID_USER + 1, "");
+    TEXT_SetFont(hTextTimerMinute, GUI_FONT_D64);
+    hButtonTimerMinuteDown = BUTTON_CreateEx(110, 140, 80, 80, 0, WM_CF_SHOW, 0, ID_TIMER_MINUTE_DOWN);
+    BUTTON_SetBitmap(hButtonTimerMinuteDown, BUTTON_CI_UNPRESSED, &bmicons_button_down);
+    hButtonTimerMinuteUp = BUTTON_CreateEx(200, 140, 80, 80, 0, WM_CF_SHOW, 0, ID_TIMER_MINUTE_UP);
+    BUTTON_SetBitmap(hButtonTimerMinuteUp, BUTTON_CI_UNPRESSED, &bmicons_button_up);
+
+    // 2. Ponavljanje (Dani u sedmici)
+    GUI_DispStringAt("Ponavljanje:", 300, 20);
+    const char* days_short[] = {"PON", "UTO", "SRI", "ČET", "PET", "SUB", "NED"};
+    for (int i = 0; i < 7; i++) {
+        hButtonTimerDay[i] = BUTTON_CreateEx(300 + (i * 50), 50, 40, 40, 0, WM_CF_SHOW, 0, ID_TIMER_DAY_MON + i);
+        BUTTON_SetText(hButtonTimerDay[i], days_short[i]);
+    }
+    
+    // 3. Akcije
+    GUI_DispStringAt("Akcije:", 300, 100);
+    hButtonTimerBuzzer = BUTTON_CreateEx(300, 130, 60, 36, 0, WM_CF_SHOW, 0, ID_TIMER_BUZZER_TOGGLE);
+    BUTTON_SetBitmap(hButtonTimerBuzzer, BUTTON_CI_UNPRESSED, &bmicons_toggle_on);
+
+    // 4. Navigacija i spremanje
+    hButtonTimerSave = BUTTON_CreateEx(380, 220, 80, 40, 0, WM_CF_SHOW, 0, ID_Ok);
+    BUTTON_SetBitmap(hButtonTimerSave, BUTTON_CI_UNPRESSED, &bmicons_button_ok);
+    hButtonTimerCancel = BUTTON_CreateEx(280, 220, 80, 40, 0, WM_CF_SHOW, 0, ID_TIMER_CANCEL);
+    BUTTON_SetBitmap(hButtonTimerCancel, BUTTON_CI_UNPRESSED, &bmicons_button_cancel);
+
+    GUI_MULTIBUF_EndEx(1);
+    timer_screen_initialized = true;
+}
+/**
+ * @brief Uništava sve GUI widgete sa ekrana za podešavanje alarma.
+ */
+static void DSP_KillSettingsTimerScreen(void)
+{
+    if (WM_IsWindow(hButtonTimerHourUp)) WM_DeleteWindow(hButtonTimerHourUp);
+    if (WM_IsWindow(hButtonTimerHourDown)) WM_DeleteWindow(hButtonTimerHourDown);
+    if (WM_IsWindow(hTextTimerHour)) WM_DeleteWindow(hTextTimerHour);
+    if (WM_IsWindow(hButtonTimerMinuteUp)) WM_DeleteWindow(hButtonTimerMinuteUp);
+    if (WM_IsWindow(hButtonTimerMinuteDown)) WM_DeleteWindow(hButtonTimerMinuteDown);
+    if (WM_IsWindow(hTextTimerMinute)) WM_DeleteWindow(hTextTimerMinute);
+    
+    for (int i = 0; i < 7; i++) {
+        if (WM_IsWindow(hButtonTimerDay[i])) {
+            WM_DeleteWindow(hButtonTimerDay[i]);
+        }
+    }
+    if (WM_IsWindow(hButtonTimerBuzzer)) WM_DeleteWindow(hButtonTimerBuzzer);
+    if (WM_IsWindow(hButtonTimerSave)) WM_DeleteWindow(hButtonTimerSave);
+    if (WM_IsWindow(hButtonTimerCancel)) WM_DeleteWindow(hButtonTimerCancel);
+
+    // Provjeri i uništi handlere za preglednik scena ako su kreirani
+    if (WM_IsWindow(hButtonTimerSceneNext)) WM_DeleteWindow(hButtonTimerSceneNext);
+    if (WM_IsWindow(hButtonTimerScenePrev)) WM_DeleteWindow(hButtonTimerScenePrev);
+    if (WM_IsWindow(hTextTimerScene)) WM_DeleteWindow(hTextTimerScene);
+    
+    timer_screen_initialized = false;
+}
+/**
+ ******************************************************************************
+ * @brief       Inicijalizuje i iscrtava ekran za podešavanje datuma i vremena.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija se poziva kada je potrebno prikazati SCREEN_SETTINGS_DATETIME.
+ * Kreira korisnički interfejs prema skici: datum u gornjem redu,
+ * vrijeme u donjem, sa dugmadima za promjenu vrijednosti.
+ ******************************************************************************
+ */
+static void DSP_InitSettingsDateTimeScreen(void)
+{
+    static int32_t values[5]; // 0:Dan, 1:Mjesec, 2:Godina, 3:Sat, 4:Minuta
+    char value_buffer[6];
+    RTC_TimeTypeDef temp_time;
+    RTC_DateTypeDef temp_date;
+
+    GUI_MULTIBUF_BeginEx(1);
+    GUI_Clear();
+
+    HAL_RTC_GetTime(&hrtc, &temp_time, RTC_FORMAT_BCD);
+    HAL_RTC_GetDate(&hrtc, &temp_date, RTC_FORMAT_BCD);
+
+    values[0] = Bcd2Dec(temp_date.Date);
+    values[1] = Bcd2Dec(temp_date.Month);
+    values[2] = Bcd2Dec(temp_date.Year) + 2000;
+    values[3] = Bcd2Dec(temp_time.Hours);
+    values[4] = Bcd2Dec(temp_time.Minutes);
+
+    // Iscrtavanje naslova ekrana
+    GUI_SetFont(&GUI_FontVerdana20_LAT);
+    GUI_SetColor(GUI_WHITE);
+    GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_TOP);
+    GUI_DispStringAt("Podesite vrijeme i datum", LCD_GetXSize() / 2, 5);
+
+    // --- Definisanje rasporeda iz strukture ---
+    const int16_t y_date_row = datetime_settings_layout.y_date_row;
+    const int16_t y_time_row = datetime_settings_layout.y_time_row;
+    const int16_t x_first_col = datetime_settings_layout.x_first_col;
+    const int16_t x_second_col = datetime_settings_layout.x_second_col;
+    const int16_t x_third_col = datetime_settings_layout.x_third_col;
+    const int16_t x_last_col = datetime_settings_layout.x_last_col;
+    const int16_t btn_size = 50; // Smanjena veličina dugmadi na 50x50
+    const int16_t text_box_w = 50; // Širina polja za tekst
+
+    // --- GORNJI RED: DAN, MJESEC, GODINA ---
+    const int ids_date_up[]   = { ID_DATETIME_DAY_UP, ID_DATETIME_MONTH_UP, ID_DATETIME_YEAR_UP };
+    const int ids_date_down[] = { ID_DATETIME_DAY_DOWN, ID_DATETIME_MONTH_DOWN, ID_DATETIME_YEAR_DOWN };
+    const int x_cols_date[]   = { x_first_col, x_second_col, x_third_col };
+    const TextID labels_date[] = { TXT_DAY, TXT_MONTH, TXT_YEAR };
+
+    for (int i = 0; i < 3; i++) {
+        int x = x_cols_date[i];
+        
+        GUI_SetFont(&GUI_FontVerdana20_LAT);
+        GUI_SetColor(GUI_WHITE);
+        GUI_SetTextAlign(GUI_TA_LEFT);
+        GUI_DispStringAt(lng(labels_date[i]), x, y_date_row);
+
+        sprintf(value_buffer, "%d", values[i]);
+        hTextDateTimeValue[i] = TEXT_CreateEx(x, y_date_row + 25, text_box_w, btn_size, 0, WM_CF_SHOW, TEXT_CF_HCENTER | TEXT_CF_VCENTER, GUI_ID_USER + i, value_buffer);
+        TEXT_SetFont(hTextDateTimeValue[i], GUI_FONT_24B_1);
+        TEXT_SetTextColor(hTextDateTimeValue[i], GUI_ORANGE);
+        
+        int buttons_x = x + text_box_w + 10;
+
+        hButtonDateTimeUp[i] = BUTTON_CreateEx(buttons_x, y_date_row, btn_size, btn_size, 0, WM_CF_SHOW, 0, ids_date_up[i]);
+        BUTTON_SetText(hButtonDateTimeUp[i], "UP");
+        
+        hButtonDateTimeDown[i] = BUTTON_CreateEx(buttons_x, y_date_row + btn_size + 5, btn_size, btn_size, 0, WM_CF_SHOW, 0, ids_date_down[i]);
+        BUTTON_SetText(hButtonDateTimeDown[i], "DN");
+    }
+    
+    // --- DONJI RED: SAT, MINUTA ---
+    const int ids_time_up[] = { ID_DATETIME_HOUR_UP, ID_DATETIME_MINUTE_UP };
+    const int ids_time_down[] = { ID_DATETIME_HOUR_DOWN, ID_DATETIME_MINUTE_DOWN };
+    const int x_cols_time[] = { x_first_col, x_second_col };
+    const TextID labels_time[] = { TXT_HOUR, TXT_MINUTE };
+
+    for (int i = 0; i < 2; i++) {
+        int x = x_cols_time[i];
+        int index = i + 3; // Indexi 3 i 4 za sat i minutu
+        
+        GUI_SetFont(&GUI_FontVerdana20_LAT);
+        GUI_SetColor(GUI_WHITE);
+        GUI_SetTextAlign(GUI_TA_LEFT);
+        GUI_DispStringAt(lng(labels_time[i]), x, y_time_row);
+
+        sprintf(value_buffer, "%d", values[index]);
+        hTextDateTimeValue[index] = TEXT_CreateEx(x, y_time_row + 25, text_box_w, btn_size, 0, WM_CF_SHOW, TEXT_CF_HCENTER | TEXT_CF_VCENTER, GUI_ID_USER + index, value_buffer);
+        TEXT_SetFont(hTextDateTimeValue[index], GUI_FONT_24B_1);
+        TEXT_SetTextColor(hTextDateTimeValue[index], GUI_ORANGE);
+
+        int buttons_x = x + text_box_w + 10;
+
+        hButtonDateTimeUp[index] = BUTTON_CreateEx(buttons_x, y_time_row, btn_size, btn_size, 0, WM_CF_SHOW, 0, ids_time_up[i]);
+        BUTTON_SetText(hButtonDateTimeUp[index], "UP");
+
+        hButtonDateTimeDown[index] = BUTTON_CreateEx(buttons_x, y_time_row + btn_size + 5, btn_size, btn_size, 0, WM_CF_SHOW, 0, ids_time_down[i]);
+        BUTTON_SetText(hButtonDateTimeDown[index], "DN");
+    }
+
+    // --- DUGMAD ZA RESET I OK ---
+    hBUTTON_Ok = BUTTON_CreateEx(x_last_col-10, y_time_row, 80, btn_size, 0, WM_CF_SHOW, 0, ID_DATETIME_SAVE);
+    BUTTON_SetText(hBUTTON_Ok, "OK");
+    
+    hBUTTON_Next = BUTTON_CreateEx(x_last_col-10, y_time_row + btn_size + 5, 80, btn_size, 0, WM_CF_SHOW, 0, ID_DATETIME_CANCEL);
+    BUTTON_SetText(hBUTTON_Next, "RESET");
+    
+    GUI_MULTIBUF_EndEx(1);
+}
+/**
+ ******************************************************************************
+ * @brief       Uništava sve GUI widgete kreirane za ekran podešavanja vremena.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija se poziva prilikom napuštanja ekrana
+ * SCREEN_SETTINGS_DATETIME. Prolazi kroz sve handle-ove
+ * widgeta kreiranih u DSP_InitSettingsDateTimeScreen i briše ih,
+ * oslobađajući memoriju i pripremajući GUI za sledeći ekran.
+ ******************************************************************************
+ */
+static void DSP_KillSettingsDateTimeScreen(void)
+{
+    // Petlja briše svih 5 TEXT widgeta i 10 BUTTON widgeta za +/-
+    for (int i = 0; i < 5; i++) {
+        if (WM_IsWindow(hTextDateTimeValue[i])) {
+            WM_DeleteWindow(hTextDateTimeValue[i]);
+            hTextDateTimeValue[i] = 0;
+        }
+        if (WM_IsWindow(hButtonDateTimeUp[i])) {
+            WM_DeleteWindow(hButtonDateTimeUp[i]);
+            hButtonDateTimeUp[i] = 0;
+        }
+        if (WM_IsWindow(hButtonDateTimeDown[i])) {
+            WM_DeleteWindow(hButtonDateTimeDown[i]);
+            hButtonDateTimeDown[i] = 0;
+        }
+    }
+
+    // Brisanje dugmadi "OK" i "RESET"
+    if (WM_IsWindow(hBUTTON_Ok)) {
+        WM_DeleteWindow(hBUTTON_Ok);
+        hBUTTON_Ok = 0;
+    }
+    if (WM_IsWindow(hBUTTON_Next)) {
+        WM_DeleteWindow(hBUTTON_Next);
+        hBUTTON_Next = 0;
+    }
+}
+/**
  ******************************************************************************
  * @brief       Inicijalizuje i iscrtava ekran za podešavanje kapija.
  * @author      Gemini & [Vaše Ime]
@@ -7196,6 +7852,9 @@ static void HandleTouchPressEvent(GUI_PID_STATE * pTS, uint8_t *click_flag)
     }
     else if(screen == SCREEN_SCENE_APPEARANCE) {
         HandlePress_SceneAppearanceScreen(pTS, click_flag);
+    }
+    else if(screen == SCREEN_TIMER) {
+        HandlePress_TimerScreen(pTS, click_flag);
     }
 }
 
@@ -8233,6 +8892,80 @@ static void HandleRelease_SceneScreen(void)
     scene_pressed_index = -1;
 }
 
+/**
+ ******************************************************************************
+ * @brief       Obrada događaja pritiska za ekran tajmera.
+ * @author      Gemini
+ * @note        Detektuje dodire na dugmad i prebacuje se na odgovarajući ekran
+ * za podešavanje.
+ ******************************************************************************
+ */
+static void HandlePress_TimerScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
+{
+    // Zona dodira za dugme "Podesi"
+    TouchZone_t settings_button_zone = {
+        .x0 = (DRAWING_AREA_WIDTH / 2) - 50,
+        .y0 = 210,
+        .x1 = (DRAWING_AREA_WIDTH / 2) + 50,
+        .y1 = 260
+    };
+
+    // Zona dodira za dugme za uključivanje/isključivanje
+    GUI_CONST_STORAGE GUI_BITMAP* toggle_icon = Timer_IsActive() ? &bmicons_toggle_on : &bmicons_toogle_off;
+    int toggle_x = (DRAWING_AREA_WIDTH / 2) - (toggle_icon->XSize / 2);
+    TouchZone_t toggle_button_zone = {
+        .x0 = toggle_x,
+        .y0 = 180,
+        .x1 = toggle_x + toggle_icon->XSize,
+        .y1 = 180 + toggle_icon->YSize
+    };
+    
+    // Provjeravamo da li RTC vrijeme nije validno. Ako nije, jedino aktivno dugme je ono za podešavanje datuma i vremena.
+    if (!IsRtcTimeValid()) {
+        const GUI_BITMAP* datetime_icon = &bmicons_date_time;
+        int x_pos = (DRAWING_AREA_WIDTH / 2) - (datetime_icon->XSize / 2);
+        int y_pos = (LCD_GetYSize() / 2);
+        TouchZone_t datetime_button_zone = {
+            .x0 = x_pos,
+            .y0 = y_pos,
+            .x1 = x_pos + datetime_icon->XSize,
+            .y1 = y_pos + datetime_icon->YSize
+        };
+        
+        if (pTS->x >= datetime_button_zone.x0 && pTS->x < datetime_button_zone.x1 &&
+            pTS->y >= datetime_button_zone.y0 && pTS->y < datetime_button_zone.y1)
+        {
+            *click_flag = 1;
+            DSP_InitSettingsDateTimeScreen();
+            screen = SCREEN_SETTINGS_DATETIME;
+            shouldDrawScreen = 0; // Inicijalizacija je već iscrtala ekran
+            return;
+        }
+    }
+    // Ako je RTC vrijeme validno, provjeravamo ostala dugmad.
+    else {
+        // Provjera pritiska na dugme "Podesi"
+        if (pTS->x >= settings_button_zone.x0 && pTS->x < settings_button_zone.x1 &&
+            pTS->y >= settings_button_zone.y0 && pTS->y < settings_button_zone.y1)
+        {
+            *click_flag = 1;
+            DSP_InitSettingsTimerScreen();
+            screen = SCREEN_SETTINGS_TIMER;
+            shouldDrawScreen = 0;
+            return;
+        }
+
+        // Provjera pritiska na dugme za uključivanje/isključivanje alarma
+        if (pTS->x >= toggle_button_zone.x0 && pTS->x < toggle_button_zone.x1 &&
+            pTS->y >= toggle_button_zone.y0 && pTS->y < toggle_button_zone.y1)
+        {
+            *click_flag = 1;
+            Timer_SetState(!Timer_IsActive());
+            Timer_Save();
+            shouldDrawScreen = 1;
+        }
+    }
+}
 /******************************************************************************
  * @brief       Kreira i inicijalizuje sve GUI widgete za univerzalni numpad.
  * @author      Gemini (po specifikaciji korisnika)

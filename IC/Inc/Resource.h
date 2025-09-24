@@ -66,6 +66,18 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOn;
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOff;
 extern GUI_CONST_STORAGE GUI_BITMAP bmTermometar;
 extern GUI_CONST_STORAGE GUI_BITMAP bmHome;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_up;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_down;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_right;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_left;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_fast_reverse;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_fast_forward;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_toggle_on;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_toogle_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_date_time;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_ok;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_reset;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_cancel;
 
 extern GUI_CONST_STORAGE GUI_BITMAP bmCLEAN;
 extern GUI_CONST_STORAGE GUI_BITMAP bmblindMedium;

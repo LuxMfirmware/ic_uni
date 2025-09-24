@@ -27,8 +27,10 @@
 #include "ventilator.h"
 #include "defroster.h"
 #include "curtain.h"
-#include "lights.h" // Iako je zadnji, ukljucujemo ga radi kompletnosti.
-     
+#include "lights.h"
+#include "scene.h"
+#include "timer.h"
+#include "gate.h"
      
 /* EEPROM hardware address and page size */
 #define EE_PGSIZE                           64
@@ -67,7 +69,8 @@
 #define EE_CURTAINS                         (EE_DEFROSTER + sizeof(Defroster_EepromConfig_t))
 #define EE_LIGHTS_MODBUS                    (EE_CURTAINS + sizeof(Curtains_EepromData_t))
 #define EE_SCENES                           (EE_LIGHTS_MODBUS + (sizeof(LIGHT_EepromConfig_t) * LIGHTS_MODBUS_SIZE))
-#define EE_GATES                            (EE_SCENES + sizeof(SceneEepromBlock_t)) // Koristit cemo wrapper strukturu kao za roletne
+#define EE_GATES                            (EE_SCENES + sizeof(Scene_EepromBlock_t))
+#define EE_TIMER                            (EE_GATES + (sizeof(Gate_EepromConfig_t) * GATE_MAX_COUNT))
 
 /**
  * @brief  Sekcija 3: Blokovi za Specijalne Namjene

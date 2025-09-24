@@ -106,6 +106,13 @@ typedef enum {
     TXT_MONTH_JUL, TXT_MONTH_AUG, TXT_MONTH_SEP, TXT_MONTH_OCT, TXT_MONTH_NOV, TXT_MONTH_DEC,
     // --- Nazivi jezika ---
     TXT_LANGUAGE_NAME,
+    // --- Tekstovi za ekran podesavanja vremena ---
+    TXT_DATETIME_SETUP_TITLE,
+    TXT_DAY,
+    TXT_MONTH,
+    TXT_YEAR,
+    TXT_HOUR,
+    TXT_MINUTE,
     // --- Primarni tekstovi za ikonice (postojeci) ---
     TXT_LUSTER, TXT_SPOT, TXT_VISILICA, TXT_PLAFONJERA, TXT_ZIDNA, TXT_SLIKA,
     TXT_PODNA, TXT_STOLNA, TXT_LED_TRAKA, TXT_VENTILATOR_IKONA, TXT_FASADA, TXT_STAZA, TXT_REFLEKTOR,
@@ -270,6 +277,8 @@ typedef enum{
     SCREEN_SETTINGS_6,
     SCREEN_SETTINGS_7,
     SCREEN_SETTINGS_GATE,           /**< NOVI EKRAN: Meni za detaljno podešavanje do 6 kapija/garažnih vrata. */
+    SCREEN_SETTINGS_TIMER,          /**< NOVI EKRAN: Meni za detaljno podešavanje parametara Pametnog Alarma. */
+    SCREEN_SETTINGS_DATETIME,       /**< NOVI EKRAN: Prikazuje se samo ako RTC vrijeme nije validno, za podešavanje datuma i vremena. */
     SCREEN_SETTINGS_HELP            /**< NOVI EKRAN: Prikazuje tekstualnu pomoc i uputstva za korištenje. */
 }eScreen;
 

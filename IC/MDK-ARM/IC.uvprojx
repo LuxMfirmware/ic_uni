@@ -630,6 +630,66 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Display\icons_scene_homecoming.c</FilePath>
             </File>
+            <File>
+              <FileName>icons_toggle_on.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_toggle_on.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_toogle_off.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_toogle_off.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_date_time.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_date_time.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_down.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_down.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_fast_forward.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_fast_forward.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_fast_reverse.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_fast_reverse.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_left.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_left.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_right.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_right.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_up.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_up.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_cancel.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_cancel.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_ok.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_ok.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_reset.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_reset.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1249,6 +1309,11 @@
               <FileName>rs485.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\rs485.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\timer.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>

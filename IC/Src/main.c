@@ -136,7 +136,7 @@ int main(void) {
     THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
     Ventilator_Handle* pVen = Ventilator_GetInstance();
     Defroster_Handle* pDef = Defroster_GetInstance();
-
+    
     SaveResetSrc();
     MPU_Config();
     CACHE_Config();
@@ -167,6 +167,7 @@ int main(void) {
     PCA9685_Init();
     if(pwminit) PCA9685_SetOutputFrequency(PWM_0_15_FREQUENCY_DEFAULT);
     Ventilator_Init(pVen);
+    Timer_Init();
 #ifdef	USE_WATCHDOG
     HAL_IWDG_Refresh(&hiwdg);
 #endif
@@ -181,6 +182,7 @@ int main(void) {
         Ventilator_Service(pVen);
         Gate_Service();
         Scene_Service();
+        Timer_Service();
         RS485_Service(); // prvo sve obradi pa šalji
         CheckRTC_Clock(); // provjera ispravnosti RTC oscilatora i prelazak na LSI
         FwUpdateAgent_Service();
