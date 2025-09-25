@@ -108,23 +108,26 @@ WIDGET( ID_DATETIME_MINUTE_DOWN,        0x9C9, "Dugme DOLE za Minutu" )
 WIDGET( ID_DATETIME_SAVE,               0x9CA, "Dugme SNIMI za ekran podesavanja vremena" )
 WIDGET( ID_DATETIME_CANCEL,             0x9CB, "Dugme OTKAZI za ekran podesavanja vremena" )
 
+// --- NOVO: Ekran za podesavanje tajmera (detaljno) ---
 WIDGET( ID_TIMER_HOUR_UP,               0x9D0, "Dugme GORE za sat tajmera" )
 WIDGET( ID_TIMER_HOUR_DOWN,             0x9D1, "Dugme DOLE za sat tajmera" )
 WIDGET( ID_TIMER_MINUTE_UP,             0x9D2, "Dugme GORE za minutu tajmera" )
 WIDGET( ID_TIMER_MINUTE_DOWN,           0x9D3, "Dugme DOLE za minutu tajmera" )
-WIDGET( ID_TIMER_REPEAT_RADIO,          0x9D4, "Radio dugme za ponavljanje tajmera" )
-WIDGET( ID_TIMER_DAY_MON,               0x9D5, "Dugme za ponedjeljak" )
-WIDGET( ID_TIMER_DAY_TUE,               0x9D6, "Dugme za utorak" )
-WIDGET( ID_TIMER_DAY_WED,               0x9D7, "Dugme za srijedu" )
-WIDGET( ID_TIMER_DAY_THU,               0x9D8, "Dugme za četvrtak" )
-WIDGET( ID_TIMER_DAY_FRI,               0x9D9, "Dugme za petak" )
-WIDGET( ID_TIMER_DAY_SAT,               0x9DA, "Dugme za subotu" )
-WIDGET( ID_TIMER_DAY_SUN,               0x9DB, "Dugme za nedjelju" )
+WIDGET( ID_TIMER_DAY_MON,               0x9D5, "Checkbox za ponedjeljak" )
+WIDGET( ID_TIMER_DAY_TUE,               0x9D6, "Checkbox za utorak" )
+WIDGET( ID_TIMER_DAY_WED,               0x9D7, "Checkbox za srijedu" )
+WIDGET( ID_TIMER_DAY_THU,               0x9D8, "Checkbox za četvrtak" )
+WIDGET( ID_TIMER_DAY_FRI,               0x9D9, "Checkbox za petak" )
+WIDGET( ID_TIMER_DAY_SAT,               0x9DA, "Checkbox za subotu" )
+WIDGET( ID_TIMER_DAY_SUN,               0x9DB, "Checkbox za nedjelju" )
 WIDGET( ID_TIMER_BUZZER_TOGGLE,         0x9DC, "Toggle dugme za zujalicu" )
-WIDGET( ID_TIMER_SCENE_NEXT,            0x9DD, "Dugme za sljedeću scenu" )
-WIDGET( ID_TIMER_SCENE_PREV,            0x9DE, "Dugme za prethodnu scenu" )
-WIDGET( ID_TIMER_SAVE,                  0x9DF, "Dugme za spremanje tajmera" )
-WIDGET( ID_TIMER_CANCEL,                0x9E0, "Dugme za otkazivanje tajmera" )
+WIDGET( ID_TIMER_SCENE_TOGGLE,          0x9DD, "Toggle dugme za pokretanje scene" )
+WIDGET( ID_TIMER_SCENE_SELECT,          0x9DE, "Dugme za ulazak u odabir scene" )
+WIDGET( ID_TIMER_SAVE,                  0x9DF, "Dugme SNIMI za ekran podesavanja tajmera" )
+WIDGET( ID_TIMER_CANCEL,                0x9E0, "Dugme OTKAZI za ekran podesavanja tajmera" )
+WIDGET( ID_SETTINGS_TIMER_BUTTON,       0x9E1, "Dugme na glavnom ekranu za ulazak u podesavanja tajmera" )
+
+
 
 // NAPOMENA: Dinamički ID-jevi kao što su ID_LightsModbusRelay i ID_CurtainsRelay
 // se ne stavljaju ovdje jer nisu statični.

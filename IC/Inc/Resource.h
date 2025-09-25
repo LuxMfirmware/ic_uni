@@ -61,6 +61,10 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_stairs_on;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_wall_off;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_wall_on;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_settings;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_toggle_on_50_square;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_toogle_off_50_square;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_up_50_square;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_down_50_square;
   
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOn;
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOff;

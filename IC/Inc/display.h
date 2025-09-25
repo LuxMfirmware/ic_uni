@@ -95,6 +95,14 @@ typedef enum {
     TXT_CONFIGURE_DEVICE_MSG,       /**< Poruka koja se prikazuje ako uredaj nije uopšte konfigurisan. */
     TXT_SCENE_SAVED_MSG,            /**< Poruka potvrde nakon snimanja scene. */
     TXT_PLEASE_CONFIGURE_SCENE_MSG, /**< Poruka koja poziva na konfigurisanje prve, defaultne scene. */
+    TXT_TIMER_ENABLED,              /**< Poruka "Tajmer je ukljucen" na glavnom ekranu tajmera. */
+    TXT_TIMER_DISABLED,             /**< Poruka "Tajmer je iskljucen" na glavnom ekranu tajmera. */
+    TXT_TIMER_EVERY_DAY,            /**< Tekst "Svaki dan" za ponavljanje tajmera. */
+    TXT_TIMER_WEEKDAYS,             /**< Tekst "Radnim danima" za ponavljanje tajmera. */
+    TXT_TIMER_WEEKEND,              /**< Tekst "Vikendom" za ponavljanje tajmera. */
+    TXT_TIMER_ONCE,                 /**< Tekst "Jednokratno" za ponavljanje tajmera. */
+    TXT_TIMER_USE_BUZZER,           /**< Tekst "Koristi buzzer" na ekranu za podešavanje tajmera. */
+    TXT_TIMER_TRIGGER_SCENE,        /**< Tekst "Pokreni scenu" na ekranu za podešavanje tajmera. */
     // --- Poruke i dugmad ---
     TXT_DISPLAY_CLEAN_TIME,
     TXT_FIRMWARE_UPDATE,
@@ -108,6 +116,7 @@ typedef enum {
     TXT_LANGUAGE_NAME,
     // --- Tekstovi za ekran podesavanja vremena ---
     TXT_DATETIME_SETUP_TITLE,
+    TXT_TIMER_SETTINGS_TITLE,
     TXT_DAY,
     TXT_MONTH,
     TXT_YEAR,

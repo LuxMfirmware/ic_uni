@@ -690,6 +690,26 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Display\icons_button_reset.c</FilePath>
             </File>
+            <File>
+              <FileName>icons_toggle_on_50_square.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_toggle_on_50_square.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_toogle_off_50_square.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_toogle_off_50_square.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_down_50_square.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_down_50_square.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_up_50_square.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_up_50_square.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
