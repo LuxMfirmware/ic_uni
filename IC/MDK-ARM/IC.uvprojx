@@ -710,6 +710,46 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Display\icons_button_up_50_square.c</FilePath>
             </File>
+            <File>
+              <FileName>icons_button_cancel_50_squared.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_cancel_50_squared.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_save_50_squared.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_save_50_squared.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_button_select_40_sqaured.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_button_select_40_sqaured.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_alarm_20.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_alarm_20.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_cooling_20.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_cooling_20.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_heating_20.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_heating_20.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_cooling_20_activ.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_cooling_20_activ.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_heating_20_activ.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_heating_20_activ.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1314,6 +1354,11 @@
               <FileName>display.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\display.c</FilePath>
+            </File>
+            <File>
+              <FileName>buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\buzzer.c</FilePath>
             </File>
             <File>
               <FileName>lights.c</FileName>

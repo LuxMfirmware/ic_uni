@@ -103,6 +103,7 @@ typedef enum {
     TXT_TIMER_ONCE,                 /**< Tekst "Jednokratno" za ponavljanje tajmera. */
     TXT_TIMER_USE_BUZZER,           /**< Tekst "Koristi buzzer" na ekranu za podešavanje tajmera. */
     TXT_TIMER_TRIGGER_SCENE,        /**< Tekst "Pokreni scenu" na ekranu za podešavanje tajmera. */
+    TXT_ALARM_WAKEUP,               /**< TEKST: Velika poruka za budenje. */
     // --- Poruke i dugmad ---
     TXT_DISPLAY_CLEAN_TIME,
     TXT_FIRMWARE_UPDATE,
@@ -288,7 +289,8 @@ typedef enum{
     SCREEN_SETTINGS_GATE,           /**< NOVI EKRAN: Meni za detaljno podešavanje do 6 kapija/garažnih vrata. */
     SCREEN_SETTINGS_TIMER,          /**< NOVI EKRAN: Meni za detaljno podešavanje parametara Pametnog Alarma. */
     SCREEN_SETTINGS_DATETIME,       /**< NOVI EKRAN: Prikazuje se samo ako RTC vrijeme nije validno, za podešavanje datuma i vremena. */
-    SCREEN_SETTINGS_HELP            /**< NOVI EKRAN: Prikazuje tekstualnu pomoc i uputstva za korištenje. */
+    SCREEN_SETTINGS_HELP,           /**< NOVI EKRAN: Prikazuje tekstualnu pomoc i uputstva za korištenje. */
+    SCREEN_ALARM_ACTIVE 
 }eScreen;
 
 typedef enum{

@@ -28,8 +28,9 @@
 #include "ventilator.h"
 #include "defroster.h"
 #include "curtain.h"
-#include "lights.h"
 #include "display.h"
+#include "lights.h"
+#include "buzzer.h"
 #include "rs485.h"
 #include "scene.h"
 #include "gate.h"
@@ -162,6 +163,7 @@ int main(void) {
     Scene_Init(); 
     Defroster_Init(pDef);
     DISP_Init();
+    Buzzer_Init();
     THSTAT_Init(pThst);
     PCA9685_Reset();
     PCA9685_Init();
@@ -175,6 +177,7 @@ int main(void) {
         ADC3_Read();
         TS_Service();
         DISP_Service();
+        Timer_Service();
         LIGHT_Service();
         Curtain_Service();
         THSTAT_Service(pThst);
@@ -184,6 +187,7 @@ int main(void) {
         Scene_Service();
         Timer_Service();
         RS485_Service(); // prvo sve obradi pa šalji
+        Buzzer_Service();
         CheckRTC_Clock(); // provjera ispravnosti RTC oscilatora i prelazak na LSI
         FwUpdateAgent_Service();
 #ifdef	USE_WATCHDOG

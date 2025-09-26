@@ -81,5 +81,7 @@ bool Timer_GetActionBuzzer(void);
 void Timer_SetSceneIndex(int8_t index);
 int8_t Timer_GetSceneIndex(void);
 
+void Timer_Suppress(void);
+void Timer_Unsuppress(void);
 
 #endif // __TIMER_H__

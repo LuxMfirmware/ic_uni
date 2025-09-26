@@ -22,6 +22,7 @@
 #include "main.h"
 #include "timer.h"
 #include "scene.h"
+#include "buzzer.h"
 #include "stm32746g_eeprom.h"
 
 /*============================================================================*/
@@ -59,6 +60,11 @@ typedef struct
  */
 static Timer_Runtime_t timer;
 
+/**
+ * @brief Fleg koji privremeno zaustavlja izvršavanje alarmne logike.
+ * @note  Postavlja se na `true` kada korisnik uđe u meni za podešavanje.
+ */
+static bool is_suppressed = false;
 /*============================================================================*/
 /* IMPLEMENTACIJA JAVNOG API-JA                                               */
 /*============================================================================*/
@@ -147,6 +153,10 @@ void Timer_Service(void)
 {
     static uint8_t last_checked_minute = 61;
 
+    if (is_suppressed) {
+        return; // Prekini izvršavanje ako je alarm pauziran
+    }
+    
     if (!timer.config.isActive || !IsRtcTimeValid()) {
         return;
     }
@@ -170,9 +180,9 @@ void Timer_Service(void)
                 timer.hasTriggeredThisMinute = true;
 
                 if (timer.config.actionBuzzer) {
-                    for (int i=0; i<3; i++) {
-                        BuzzerOn(); HAL_Delay(100); BuzzerOff(); HAL_Delay(100);
-                    }
+                    Buzzer_StartAlarm();
+                    screen = SCREEN_ALARM_ACTIVE;
+                    shouldDrawScreen = 1;
                 }
 
                 if (timer.config.sceneIndexToTrigger != -1) {
@@ -299,4 +309,16 @@ int8_t Timer_GetSceneIndex(void) {
     return timer.config.sceneIndexToTrigger;
 }
 
+/**
+ * @brief Pauzira izvršavanje alarmne logike u Timer_Service.
+ */
+void Timer_Suppress(void) {
+    is_suppressed = true;
+}
 
+/**
+ * @brief Nastavlja izvršavanje alarmne logike u Timer_Service.
+ */
+void Timer_Unsuppress(void) {
+    is_suppressed = false;
+}

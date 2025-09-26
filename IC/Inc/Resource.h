@@ -65,6 +65,14 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmicons_toggle_on_50_square;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_toogle_off_50_square;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_up_50_square;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_down_50_square;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_cancel_50_squared;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_save_50_squared;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_button_select_40_sqaured;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_alarm_20;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_heating_20;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_cooling_20;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_cooling_20_activ;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_heating_20_activ;
   
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOn;
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOff;
