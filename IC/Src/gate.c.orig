@@ -435,7 +435,7 @@ void Gate_SetCustomLabel(Gate_Handle* handle, const char* label)
 }
 
 const char* Gate_GetProfileNameByIndex(uint8_t index) 
-{
+    {
     if (index < (sizeof(g_ControlProfileLibrary) / sizeof(ProfilDeskriptor_t))) {
         return g_ControlProfileLibrary[index].profile_name;
     }
@@ -443,12 +443,12 @@ const char* Gate_GetProfileNameByIndex(uint8_t index)
 }
 
 uint8_t Gate_GetProfileCount(void) 
-{
+    {
     return (sizeof(g_ControlProfileLibrary) / sizeof(ProfilDeskriptor_t));
 }
 
 const ProfilDeskriptor_t* Gate_GetProfilDeskriptor(const Gate_Handle* handle) 
-{
+    {
     if (handle && handle->config.control_type < Gate_GetProfileCount()) {
         return &g_ControlProfileLibrary[handle->config.control_type];
     }
@@ -456,7 +456,7 @@ const ProfilDeskriptor_t* Gate_GetProfilDeskriptor(const Gate_Handle* handle)
 }
 
 uint16_t Gate_GetRelayAddr(const Gate_Handle* handle, uint8_t relay_index) 
-{
+    {
     if (!handle) return 0;
     switch(relay_index) {
         case 1: return handle->config.relay_cmd1.tf;
@@ -468,7 +468,7 @@ uint16_t Gate_GetRelayAddr(const Gate_Handle* handle, uint8_t relay_index)
 }
 
 uint16_t Gate_GetFeedbackAddr(const Gate_Handle* handle, uint8_t sensor_index) 
-{
+    {
     if (!handle) return 0;
     switch(sensor_index) {
         case 1: return handle->config.feedback_input1.tf;
@@ -478,30 +478,15 @@ uint16_t Gate_GetFeedbackAddr(const Gate_Handle* handle, uint8_t sensor_index)
     }
 }
 
-uint8_t Gate_GetCycleTimer(const Gate_Handle* handle) 
-{ 
-    return handle ? handle->config.cycle_timer_s : 0; 
-}
-uint8_t Gate_GetPedestrianTimer(const Gate_Handle* handle) 
-{ 
-    return handle ? handle->config.pedestrian_timer_s : 0; 
-}
-uint16_t Gate_GetPulseTimer(const Gate_Handle* handle) 
-{ 
-    return handle ? handle->config.pulse_timer_ms : 0; 
-}
+uint8_t Gate_GetCycleTimer(const Gate_Handle* handle) { return handle ? handle->config.cycle_timer_s : 0; }
+uint8_t Gate_GetPedestrianTimer(const Gate_Handle* handle) { return handle ? handle->config.pedestrian_timer_s : 0; }
+uint16_t Gate_GetPulseTimer(const Gate_Handle* handle) { return handle ? handle->config.pulse_timer_ms : 0; }
 
-void Gate_SetControlType(Gate_Handle* handle, GateControlType_e type) 
-{ 
-    if (handle) handle->config.control_type = type; 
-}
-void Gate_SetAppearanceId(Gate_Handle* handle, uint8_t id) 
-{ 
-    if (handle) handle->config.appearance_id = id; 
-}
+void Gate_SetControlType(Gate_Handle* handle, GateControlType_e type) { if (handle) handle->config.control_type = type; }
+void Gate_SetAppearanceId(Gate_Handle* handle, uint8_t id) { if (handle) handle->config.appearance_id = id; }
 
 void Gate_SetRelayAddr(Gate_Handle* handle, uint8_t relay_index, uint16_t addr) 
-{
+    {
     if (!handle) return;
     switch(relay_index) {
         case 1: handle->config.relay_cmd1.tf = addr; break;
@@ -512,7 +497,7 @@ void Gate_SetRelayAddr(Gate_Handle* handle, uint8_t relay_index, uint16_t addr)
 }
 
 void Gate_SetFeedbackAddr(Gate_Handle* handle, uint8_t sensor_index, uint16_t addr) 
-{
+    {
     if (!handle) return;
     switch(sensor_index) {
         case 1: handle->config.feedback_input1.tf = addr; break;
@@ -521,18 +506,9 @@ void Gate_SetFeedbackAddr(Gate_Handle* handle, uint8_t sensor_index, uint16_t ad
     }
 }
 
-void Gate_SetCycleTimer(Gate_Handle* handle, uint8_t seconds) 
-{ 
-    if (handle) handle->config.cycle_timer_s = seconds; 
-}
-void Gate_SetPedestrianTimer(Gate_Handle* handle, uint8_t seconds) 
-{ 
-    if (handle) handle->config.pedestrian_timer_s = seconds; 
-}
-void Gate_SetPulseTimer(Gate_Handle* handle, uint16_t ms) 
-{ 
-    if (handle) handle->config.pulse_timer_ms = ms; 
-}
+void Gate_SetCycleTimer(Gate_Handle* handle, uint8_t seconds) { if (handle) handle->config.cycle_timer_s = seconds; }
+void Gate_SetPedestrianTimer(Gate_Handle* handle, uint8_t seconds) { if (handle) handle->config.pedestrian_timer_s = seconds; }
+void Gate_SetPulseTimer(Gate_Handle* handle, uint16_t ms) { if (handle) handle->config.pulse_timer_ms = ms; }
 
 /*============================================================================*/
 /* IMPLEMENTACIJA PRIVATNIH FUNKCIJA                                          */

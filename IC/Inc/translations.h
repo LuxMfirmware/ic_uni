@@ -97,6 +97,19 @@ static const SceneAppearance_t scene_appearance_table[] = {
 };
 
 /**
+ * @brief Tabela koja povezuje ID izgleda kapije sa ikonicom i tekstovima.
+ * @note  KORISTI ISPRAVAN 'IconMapping_t' tip i IconID vrijednosti iz display.h.
+ */
+static const IconMapping_t gate_appearance_mapping_table[] = {
+    // Vrijednosti su sada iz centralnog IconID enuma i TextID enuma
+    { ICON_GATE_SWING,          TXT_GATE_SWING,             TXT_GATE_YARD_SECONDARY },
+    { ICON_GATE_SLIDING,        TXT_GATE_SLIDING,           TXT_GATE_MAIN_SECONDARY },
+    { ICON_GATE_GARAGE,         TXT_GATE_GARAGE,            TXT_GATE_ENTRANCE_SECONDARY },
+    { ICON_GATE_RAMP,           TXT_GATE_RAMP,              TXT_GATE_ENTRANCE_SECONDARY },
+    { ICON_GATE_PEDESTRIAN_LOCK,TXT_GATE_PEDESTRIAN_LOCK,   TXT_GATE_ENTRANCE_SECONDARY }
+};
+
+/**
  * @brief Glavna tabela sa prevodima.
  * @note  KONAČNA ISPRAVLJENA VERZIJA. Svaki red odgovara jednom ID-ju iz `TextID` enuma.
  * Dodati su redovi koji nedostaju da bi se redoslijed uskladio.
@@ -190,6 +203,22 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_SCENE_READING */             { "Čitanje", "Reading", "Lesen", "Lecture", "Lettura", "Lectura", "Чтение", "Читання", "Czytanie", "Čtení", "Čítanie" },
     /* TXT_SCENE_RELAXING */            { "Opuštanje", "Relaxing", "Entspannen", "Détente", "Rilassante", "Relajación", "Расслабление", "Розслаблення", "Relaks", "Odpočinek", "Oddych" },
     /* TXT_SCENE_GATHERING */           { "Druženje", "Gathering", "Treffen", "Rassemblement", "Incontro", "Reunión", "Сбор", "Збори", "Spotkanie", "Setkání", "Stretnutie" },
+    // << NOVO: Tekstovi za Gate modul >> 
+    /* TXT_GATE_SWING */                { "Krilna Kapija", "Swing Gate", "Flügeltor", "Portail Battant", "Cancello a Battente", "Puerta Batiente", "Распашные Ворота", "Розпашні Ворота", "Brama Skrzydłowa", "Křídlová Brána", "Krídlová Brána" },
+    /* TXT_GATE_SLIDING */              { "Klizna Kapija", "Sliding Gate", "Schiebetor", "Portail Coulissant", "Cancello Scorrevole", "Puerta Corredera", "Откатные Ворота", "Відкатні Ворота", "Brama Przesuwna", "Posuvná Brána", "Posuvná Brána" },
+    /* TXT_GATE_GARAGE */               { "Garaža", "Garage", "Garage", "Garage", "Garage", "Garaje", "Гараж", "Гараж", "Garaż", "Garáž", "Garáž" },
+    /* TXT_GATE_RAMP */                 { "Rampa", "Barrier", "Schranke", "Barrière", "Barriera", "Barrera", "Шлагбаум", "Шлагбаум", "Szlaban", "Závora", "Rampa" },
+    /* TXT_GATE_PEDESTRIAN_LOCK */      { "Brava", "Lock", "Schloss", "Serrure", "Serratura", "Cerradura", "Замок", "Замок", "Zamek", "Zámek", "Zámok" },
+    /* TXT_GATE_CONTROL_PROFILE */      { "Profil Kontrole", "Control Profile", "Steuerungsprofil", "Profil de Contrôle", "Profilo di Controllo", "Perfil de Control", "Профиль Управления", "Профіль Керування", "Profil Sterowania", "Profil Ovládání", "Profil Ovládania" },
+    /* TXT_GATE_APPEARANCE */           { "Izgled", "Appearance", "Erscheinungsbild", "Apparence", "Aspetto", "Apariencia", "Внешний Вид", "Зовнішній Вигляд", "Wygląd", "Vzhled", "Vzhľad" },
+    /* TXT_GATE_CMD_OPEN */             { "OTVORI", "OPEN", "ÖFFNEN", "OUVRIR", "APRI", "ABRIR", "ОТКРЫТЬ", "ВІДКРИТИ", "OTWÓRZ", "OTEVŘÍT", "OTVORIŤ" },
+    /* TXT_GATE_CMD_CLOSE */            { "ZATVORI", "CLOSE", "SCHLIESSEN", "FERMER", "CHIUDI", "CERRAR", "ЗАКРЫТЬ", "ЗАКРИТИ", "ZAMKNIJ", "ZAVŘÍT", "ZAVRIEŤ" },
+    /* TXT_GATE_CMD_STOP */             { "STOP", "STOP", "STOP", "STOP", "STOP", "PARAR", "СТОП", "СТОП", "STOP", "STOP", "STOP" },
+    /* TXT_GATE_CMD_PEDESTRIAN */       { "PJEŠAK", "PEDESTRIAN", "FUSSGÄNGER", "PIÉTON", "PEDONALE", "PEATÓN", "ПЕШЕХОД", "ПІШОХІД", "PIESZY", "CHODEC", "CHODEC" },
+    /* TXT_GATE_CMD_UNLOCK */           { "OTKLJUČAJ", "UNLOCK", "ENTSPERREN", "DÉVERROUILLER", "SBLOCCA", "DESBLOQUEAR", "ОТКРЫТЬ", "ВІДІМКНУТИ", "ODBLOKUJ", "ODEMKNOUT", "ODOMKNÚŤ" },
+    /* TXT_GATE_MAIN_SECONDARY */       { "GLAVNA", "MAIN", "HAUPT", "PRINCIPALE", "PRINCIPALE", "PRINCIPAL", "ГЛАВНАЯ", "ГОЛОВНА", "GŁÓWNA", "HLAVNÍ", "HLAVNÁ" },
+    /* TXT_GATE_YARD_SECONDARY */       { "DVORIŠTE", "YARD", "HOF", "COUR", "CORTILE", "PATIO", "ДВОР", "ДВІР", "PODWÓRKO", "DVŮR", "DVOR" },
+    /* TXT_GATE_ENTRANCE_SECONDARY */   { "ULAZ", "ENTRANCE", "EINGANG", "ENTRÉE", "INGRESSO", "ENTRADA", "ВХОД", "ВХІД", "WEJŚCIE", "VCHOD", "VCHOD" },
     /* TXT_GLAVNI_SECONDARY */          { "GLAVNI", "MAIN", "HAUPT", "PRINCIPAL", "PRINCIPALE", "PRINCIPAL", "ГЛАВНЫЙ", "ГОЛОВНИЙ", "GŁÓWNY", "HLAVNÍ", "HLAVNÝ" },
     /* TXT_AMBIJENT_SECONDARY */        { "AMBIJENT", "AMBIENT", "AMBIENTE", "AMBIANCE", "AMBIENTE", "AMBIENTE", "АТМОСФЕРА", "АТМОСФЕРА", "NASTRÓJ", "PROSTŘEDÍ", "PROSTREDIE" },
     /* TXT_TRPEZARIJA_SECONDARY */      { "TRPEZARIJA", "DINING", "ESSZIMMER", "SALLE À MANGER", "SALA DA PRANZO", "COMEDOR", "СТОЛОВАЯ", "ЇДАЛЬНЯ", "JADALNIA", "JÍDELNA", "JEDÁLEŇ" },

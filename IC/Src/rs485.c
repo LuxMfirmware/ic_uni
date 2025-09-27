@@ -25,6 +25,7 @@
 #include "stm32746g_eeprom.h" // Mapa ide nakon svih definicija
 #include "firmware_update_agent.h"
 #include "rs485.h"
+#include "gate.h"
 
 /* Imported Types  -----------------------------------------------------------*/
 /* Imported Variables --------------------------------------------------------*/
@@ -78,6 +79,29 @@ static inline void delay_us(uint32_t us) {
     while (cycles--) {
         __asm volatile("NOP");  // Izbegava optimizaciju
     }
+}
+/**
+ * @brief  Listener za dogadaje sa digitalnih ulaza (senzora).
+ * @note   Ovaj listener je "glup". On ne zna šta je kapija. Samo prima
+ * dogadaj i prosljeduje ga svim modulima koji bi mogli biti
+ * zainteresovani za promjenu stanja nekog binarnog ulaza.
+ */
+TF_Result DIGITAL_INPUT_EVENT_Listener(TinyFrame *tf, TF_Msg *msg)
+{
+    // Pretpostavka: msg->data[0] i msg->data[1] sadrže adresu senzora,
+    // a msg->data[2] sadrži novo stanje (0=OFF, 1=ON).
+    if (msg->len >= 3)
+    {
+        uint16_t address = (msg->data[0] << 8) | msg->data[1];
+        uint8_t state = msg->data[2];
+
+        // Obavijesti sve module o dogadaju
+        GATE_BusEvent(address, DIGITAL_INPUT_EVENT, &state, 1);
+//        LIGHTS_BusEvent(address, DIGITAL_INPUT_EVENT, &state, 1); // Svjetla mogu reagovati na PIR senzore
+        // ... poziv za svaki drugi modul ...
+    }
+    
+    return TF_STAY; // Slušaj dalje, ne odgovaraj
 }
 /**
  * @brief  Slušaoci (listener) za dolazne BINARY_SET komande sa RS485 bus-a.
@@ -486,7 +510,8 @@ TF_Result SET_RESPONSE_Listener(TinyFrame *tf, TF_Msg *msg)
 * @param :
 * @retval:  samouništenje bez odgovora za svaki pojedinacni tip komande za koji je registrovan u pozivima
 */
-TF_Result GET_RESPONSE_Listener(TinyFrame *tf, TF_Msg *msg) {
+TF_Result GET_RESPONSE_Listener(TinyFrame *tf, TF_Msg *msg) 
+{
     if (msg->len > sizeof(getResponseBuffer.data)) return TF_CLOSE; // Osigurajmo da ne prepunimo bafer
 
     getResponseBuffer.commandType = msg->type;
@@ -619,6 +644,7 @@ void RS485_Init(void)
         TF_AddTypeListener(&tfapp, THERMOSTAT_INFO, THERMOSTAT_INFO_Listener);
         TF_AddTypeListener(&tfapp, THERMOSTAT_SETUP, THERMOSTAT_SETUP_Listener);
         TF_AddTypeListener(&tfapp, FIRMWARE_UPDATE, FIRMWARE_UPDATE_Listener);
+        TF_AddTypeListener(&tfapp, DIGITAL_INPUT_EVENT, DIGITAL_INPUT_EVENT_Listener);
     }
     HAL_UART_Receive_IT(&huart1, &rec, 1);
 }

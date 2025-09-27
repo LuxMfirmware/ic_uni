@@ -4209,34 +4209,28 @@ static void DSP_KillSettingsDateTimeScreen(void)
         hBUTTON_Ok = 0; // Resetuj handle na nulu
     }
 }
-/**
- ******************************************************************************
- * @brief       Inicijalizuje i iscrtava ekran za podešavanje kapija.
+/******************************************************************************
+ * @brief       [VERZIJA 2.1 - ISPRAVLJENA] Inicijalizuje ekran za podešavanje kapija.
  * @author      Gemini & [Vaše Ime]
- * @note        Ova funkcija dinamički kreira sve GUI widgete za podešavanje
- * jedne kapije po ekranu, uključujući SPINBOX za odabir kapije,
- * DROPDOWN za tip kapije i dugmad za unos numeričkih vrijednosti.
- * Potpuno je refaktorisana da koristi isključivo javne API funkcije
- * iz `gate.h`, čime se poštuje princip enkapsulacije.
- * @param       None
- * @retval      None
- ******************************************************************************
- */
+ * @note        Ova verzija poziva isključivo validne API funkcije iz `gate.h`.
+ * Koristi `Gate_GetControlType` za odabir profila i `Gate_GetRelayAddr`
+ * i `Gate_GetFeedbackAddr` sa indeksom za popunjavanje vrijednosti.
+ *****************************************************************************/
 static void DSP_InitSettingsGateScreen(void)
 {
-    char buffer[20]; // Pomoćni bafer za ispis vrijednosti na dugmad
+    char buffer[20];
 
     GUI_MULTIBUF_BeginEx(1);
     GUI_Clear();
 
     Gate_Handle* handle = Gate_GetInstance(settings_gate_selected_index);
-    if (!handle) { // Sigurnosna provjera
+    if (!handle) {
         GUI_DispStringAt("GRESKA: Kapija nije dostupna!", 10, 60);
         GUI_MULTIBUF_EndEx(1);
         return;
     }
+    const ProfilDeskriptor_t* profil = Gate_GetProfilDeskriptor(handle);
 
-    // === 1. Odabir Kapije i Dohvatanje Podataka ===
     hGateSelect = SPINBOX_CreateEx(10, 5, 80, 40, 0, WM_CF_SHOW, ID_GATE_SELECT, 1, GATE_MAX_COUNT);
     SPINBOX_SetValue(hGateSelect, settings_gate_selected_index + 1);
 
@@ -4245,70 +4239,77 @@ static void DSP_InitSettingsGateScreen(void)
     GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
     GUI_DispStringAt("Podesavanje Kapije:", 100, 25);
 
-    // === 2. Kreiranje Osnovnih Widgeta (Tip Kapije) ===
-    hGateType = DROPDOWN_CreateEx(10, 60, 150, 100, 0, WM_CF_SHOW, DROPDOWN_CF_AUTOSCROLLBAR, ID_GATE_TYPE);
-    DROPDOWN_AddString(hGateType, "Nije Konfigurisano");
-    DROPDOWN_AddString(hGateType, "Krilna Kapija");
-    DROPDOWN_AddString(hGateType, "Klizna Kapija");
-    DROPDOWN_AddString(hGateType, "Garazna Vrata");
-    
-    // Ispravljen poziv: koristi se getter funkcija
-    DROPDOWN_SetSel(hGateType, Gate_GetType(handle));
+    hGateType = DROPDOWN_CreateEx(10, 60, 150, 120, 0, WM_CF_SHOW, DROPDOWN_CF_AUTOSCROLLBAR, ID_GATE_TYPE);
+    for(int i = 0; i < Gate_GetProfileCount(); i++) {
+        DROPDOWN_AddString(hGateType, Gate_GetProfileNameByIndex(i));
+    }
+    // ISPRAVKA: Poziva se Gate_GetControlType, što je ispravno.
+    DROPDOWN_SetSel(hGateType, Gate_GetControlType(handle));
 
-    // === 3. Kreiranje "EDIT" Dugmadi za numeričke vrijednosti ===
     const int x_col1 = 10, x_col2 = 170, x_col3 = 330;
     const int y_row1 = 100, y_row2 = 145, y_row3 = 190;
     const int btn_w = 140, btn_h = 35;
 
-    // Pomoćna struktura za lakše kreiranje dugmadi u petlji
-    struct {
-        int id;
-        int x, y;
-        const char* label;
-    } button_map[] = {
-        { ID_GATE_RELAY_OPEN,     x_col1, y_row1, "Relej OTVORI:" },
-        { ID_GATE_RELAY_CLOSE,    x_col1, y_row2, "Relej ZATVORI:" },
-        { ID_GATE_RELAY_PED,      x_col1, y_row3, "Relej PJESAK:" },
-        { ID_GATE_FEEDBACK_OPEN,  x_col2, y_row1, "Senzor OTVORENO:" },
-        { ID_GATE_FEEDBACK_CLOSE, x_col2, y_row2, "Senzor ZATVORENO:" },
-        { ID_GATE_RELAY_STOP,     x_col2, y_row3, "Relej STOP:" },
-        { ID_GATE_CYCLE_TIMER,    x_col3, y_row1, "Vrijeme Ciklusa:" },
-        { ID_GATE_PED_TIMER,      x_col3, y_row2, "Vrijeme Pjesak:" },
-        { ID_GATE_PULSE_TIMER,    x_col3, y_row3, "Trajanje Impulsa:" }
+    struct { int id; int x, y; const char* label; uint32_t mask; } button_map[] = {
+        { ID_GATE_RELAY_OPEN,     x_col1, y_row1, "Relej CMD1:", SETTING_VISIBLE_RELAY_CMD1 },
+        { ID_GATE_RELAY_CLOSE,    x_col1, y_row2, "Relej CMD2:", SETTING_VISIBLE_RELAY_CMD2 },
+        { ID_GATE_RELAY_PED,      x_col1, y_row3, "Relej CMD3:", SETTING_VISIBLE_RELAY_CMD3 },
+        { ID_GATE_FEEDBACK_OPEN,  x_col2, y_row1, "Senzor 1:",   SETTING_VISIBLE_FEEDBACK_1 },
+        { ID_GATE_FEEDBACK_CLOSE, x_col2, y_row2, "Senzor 2:",   SETTING_VISIBLE_FEEDBACK_2 },
+        { ID_GATE_RELAY_STOP,     x_col2, y_row3, "Relej CMD4:", SETTING_VISIBLE_RELAY_CMD4 },
+        { ID_GATE_CYCLE_TIMER,    x_col3, y_row1, "Vrijeme Ciklusa:", SETTING_VISIBLE_CYCLE_TIMER },
+        { ID_GATE_PED_TIMER,      x_col3, y_row2, "Vrijeme Pjesak:", SETTING_VISIBLE_PED_TIMER },
+        { ID_GATE_PULSE_TIMER,    x_col3, y_row3, "Trajanje Impulsa:", SETTING_VISIBLE_PULSE_TIMER }
     };
-    
+
     GUI_SetFont(GUI_FONT_13_1);
     for (int i = 0; i < 9; i++) {
-        GUI_DispStringAt(button_map[i].label, button_map[i].x, button_map[i].y - 13);
-        hGateEditButtons[i] = BUTTON_CreateEx(button_map[i].x, button_map[i].y, btn_w, btn_h, 0, WM_CF_SHOW, 0, button_map[i].id);
-        
-        // NOVO: Pozivanje gettera unutar switch bloka
-        // Ovo rješava grešku "incompatible pointer to integer conversion"
-        switch (button_map[i].id) {
-            case ID_GATE_RELAY_OPEN:     sprintf(buffer, "%d", Gate_GetRelayOpenAddr(handle)); break;
-            case ID_GATE_RELAY_CLOSE:    sprintf(buffer, "%d", Gate_GetRelayCloseAddr(handle)); break;
-            case ID_GATE_RELAY_PED:      sprintf(buffer, "%d", Gate_GetRelayPedAddr(handle)); break;
-            case ID_GATE_RELAY_STOP:     sprintf(buffer, "%d", Gate_GetRelayStopAddr(handle)); break;
-            case ID_GATE_FEEDBACK_OPEN:  sprintf(buffer, "%d", Gate_GetFeedbackOpenAddr(handle)); break;
-            case ID_GATE_FEEDBACK_CLOSE: sprintf(buffer, "%d", Gate_GetFeedbackCloseAddr(handle)); break;
-            case ID_GATE_CYCLE_TIMER:    sprintf(buffer, "%d", Gate_GetCycleTimer(handle)); break;
-            case ID_GATE_PED_TIMER:      sprintf(buffer, "%d", Gate_GetPedestrianTimer(handle)); break;
-            case ID_GATE_PULSE_TIMER:    sprintf(buffer, "%d", Gate_GetPulseTimer(handle)); break;
-            default: sprintf(buffer, "ERR"); break;
-        }
+        if (profil && (profil->visible_settings_mask & button_map[i].mask)) {
+            GUI_DispStringAt(button_map[i].label, button_map[i].x, button_map[i].y - 13);
+            hGateEditButtons[i] = BUTTON_CreateEx(button_map[i].x, button_map[i].y, btn_w, btn_h, 0, WM_CF_SHOW, 0, button_map[i].id);
 
-        BUTTON_SetText(hGateEditButtons[i], buffer);
-        BUTTON_SetFont(hGateEditButtons[i], GUI_FONT_20_1);
+            // **KLJUČNA ISPRAVKA**: Koristimo nove, generičke gettere sa indeksom.
+            switch (button_map[i].id) {
+                case ID_GATE_RELAY_OPEN:     sprintf(buffer, "%d", Gate_GetRelayAddr(handle, 1)); break;
+                case ID_GATE_RELAY_CLOSE:    sprintf(buffer, "%d", Gate_GetRelayAddr(handle, 2)); break;
+                case ID_GATE_RELAY_PED:      sprintf(buffer, "%d", Gate_GetRelayAddr(handle, 3)); break;
+                case ID_GATE_RELAY_STOP:     sprintf(buffer, "%d", Gate_GetRelayAddr(handle, 4)); break;
+                case ID_GATE_FEEDBACK_OPEN:  sprintf(buffer, "%d", Gate_GetFeedbackAddr(handle, 1)); break;
+                case ID_GATE_FEEDBACK_CLOSE: sprintf(buffer, "%d", Gate_GetFeedbackAddr(handle, 2)); break;
+                case ID_GATE_CYCLE_TIMER:    sprintf(buffer, "%d", Gate_GetCycleTimer(handle)); break;
+                case ID_GATE_PED_TIMER:      sprintf(buffer, "%d", Gate_GetPedestrianTimer(handle)); break;
+                case ID_GATE_PULSE_TIMER:    sprintf(buffer, "%d", Gate_GetPulseTimer(handle)); break;
+            }
+            BUTTON_SetText(hGateEditButtons[i], buffer);
+            BUTTON_SetFont(hGateEditButtons[i], GUI_FONT_20_1);
+        }
     }
-    
-    // === 4. Kreiranje Navigacionih Dugmadi ===
+
     hBUTTON_Ok = BUTTON_CreateEx(10, 235, 100, 30, 0, WM_CF_SHOW, 0, ID_Ok);
     BUTTON_SetText(hBUTTON_Ok, "SAVE");
-
     hBUTTON_Next = BUTTON_CreateEx(370, 235, 100, 30, 0, WM_CF_SHOW, 0, ID_Next);
     BUTTON_SetText(hBUTTON_Next, "NEXT");
 
     GUI_MULTIBUF_EndEx(1);
+}
+/**
+ * @brief       Uništava sve GUI widgete kreirane za ekran podešavanja kapija.
+ * @author      Gemini (po specifikaciji korisnika)
+ * @param       None
+ * @retval      None
+ */
+static void DSP_KillSettingsGateScreen(void)
+{
+    WM_DeleteWindow(hGateSelect);
+    WM_DeleteWindow(hGateType);
+    for (int i = 0; i < 9; i++) {
+        if (WM_IsWindow(hGateEditButtons[i])) {
+            WM_DeleteWindow(hGateEditButtons[i]);
+            hGateEditButtons[i] = 0;
+        }
+    }
+    WM_DeleteWindow(hBUTTON_Ok);
+    WM_DeleteWindow(hBUTTON_Next);
 }
 /**
  ******************************************************************************
@@ -4676,25 +4677,6 @@ static void DSP_KillSceneWizDevicesScreen(void)
         WM_DeleteWindow(hButtonWizNext);
         hButtonWizNext = 0;
     }
-}
-/**
- * @brief       Uništava sve GUI widgete kreirane za ekran podešavanja kapija.
- * @author      Gemini (po specifikaciji korisnika)
- * @param       None
- * @retval      None
- */
-static void DSP_KillSettingsGateScreen(void)
-{
-    WM_DeleteWindow(hGateSelect);
-    WM_DeleteWindow(hGateType);
-    for (int i = 0; i < 9; i++) {
-        if (WM_IsWindow(hGateEditButtons[i])) {
-            WM_DeleteWindow(hGateEditButtons[i]);
-            hGateEditButtons[i] = 0;
-        }
-    }
-    WM_DeleteWindow(hBUTTON_Ok);
-    WM_DeleteWindow(hBUTTON_Next);
 }
 
 /**
@@ -8964,65 +8946,41 @@ static void Service_SettingsScreen_7(void)
         screen = SCREEN_SETTINGS_1;
     }
 }
-/**
- * @brief       Servisna funkcija za ekran podešavanja kapija.
- * @author      Gemini (po specifikaciji korisnika)
- * @note        Ova funkcija upravlja kompletnom interakcijom na ekranu.
- * Prati promjenu odabrane kapije, detektuje pritiske na EDIT
- * dugmad, poziva Numpad sa specifičnim kontekstom, i obrađuje
- * vraćeni rezultat kako bi ažurirala konfiguraciju kapije u RAM-u.
- * Stvarno snimanje u EEPROM se dešava tek pritiskom na "SAVE".
- * @param       None
- * @retval      None
- */
+/******************************************************************************
+ * @brief       [VERZIJA 2.1 - ISPRAVLJENA] Servisira ekran za podešavanje kapija.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova verzija poziva isključivo validne API funkcije iz `gate.h`.
+ * Koristi `Gate_SetControlType` za postavljanje profila i
+ * `Gate_SetRelayAddr` i `Gate_SetFeedbackAddr` sa indeksom
+ * za upisivanje vrijednosti.
+ *****************************************************************************/
 static void Service_SettingsGateScreen(void)
 {
     Gate_Handle* handle = Gate_GetInstance(settings_gate_selected_index);
-    if (!handle) return; // Sigurnosna provjera
+    if (!handle) return;
 
-    // === 1. Obrada Rezultata sa Numpada ===
-    if (g_numpad_result.is_confirmed)
-    {
+    if (g_numpad_result.is_confirmed) {
         int value = atoi(g_numpad_result.value);
-        switch (active_gate_edit_button_id)
-        {
-        case ID_GATE_RELAY_OPEN:
-            Gate_SetRelayOpenAddr(handle, value);
-            break;
-        case ID_GATE_RELAY_CLOSE:
-            Gate_SetRelayCloseAddr(handle, value);
-            break;
-        case ID_GATE_RELAY_PED:
-            Gate_SetRelayPedAddr(handle, value);
-            break;
-        case ID_GATE_RELAY_STOP:
-            Gate_SetRelayStopAddr(handle, value);
-            break;
-        case ID_GATE_FEEDBACK_OPEN:
-            Gate_SetFeedbackOpenAddr(handle, value);
-            break;
-        case ID_GATE_FEEDBACK_CLOSE:
-            Gate_SetFeedbackCloseAddr(handle, value);
-            break;
-        case ID_GATE_CYCLE_TIMER:
-            Gate_SetCycleTimer(handle, value);
-            break;
-        case ID_GATE_PED_TIMER:
-            Gate_SetPedestrianTimer(handle, value);
-            break;
-        case ID_GATE_PULSE_TIMER:
-            Gate_SetPulseTimer(handle, value);
-            break;
+        // **KLJUČNA ISPRAVKA**: Koristimo nove, generičke settere sa indeksom.
+        switch (active_gate_edit_button_id) {
+            case ID_GATE_RELAY_OPEN:     Gate_SetRelayAddr(handle, 1, value); break;
+            case ID_GATE_RELAY_CLOSE:    Gate_SetRelayAddr(handle, 2, value); break;
+            case ID_GATE_RELAY_PED:      Gate_SetRelayAddr(handle, 3, value); break;
+            case ID_GATE_RELAY_STOP:     Gate_SetRelayAddr(handle, 4, value); break;
+            case ID_GATE_FEEDBACK_OPEN:  Gate_SetFeedbackAddr(handle, 1, value); break;
+            case ID_GATE_FEEDBACK_CLOSE: Gate_SetFeedbackAddr(handle, 2, value); break;
+            case ID_GATE_CYCLE_TIMER:    Gate_SetCycleTimer(handle, value); break;
+            case ID_GATE_PED_TIMER:      Gate_SetPedestrianTimer(handle, value); break;
+            case ID_GATE_PULSE_TIMER:    Gate_SetPulseTimer(handle, value); break;
         }
         settingsChanged = 1;
-        g_numpad_result.is_confirmed = false; // Resetuj fleg
-        shouldDrawScreen = 1; // Zatraži ponovno iscrtavanje da se vidi nova vrijednost
+        g_numpad_result.is_confirmed = false;
+        shouldDrawScreen = 1;
     }
     if (g_numpad_result.is_cancelled) {
-        g_numpad_result.is_cancelled = false; // Samo resetuj fleg
+        g_numpad_result.is_cancelled = false;
     }
 
-    // Ako je zatraženo ponovno iscrtavanje, odradi to i izađi
     if (shouldDrawScreen) {
         DSP_KillSettingsGateScreen();
         DSP_InitSettingsGateScreen();
@@ -9030,127 +8988,57 @@ static void Service_SettingsGateScreen(void)
         return;
     }
 
-    // === 2. Promjena Odabrane Kapije ===
-    if (SPINBOX_GetValue(hGateSelect) != (settings_gate_selected_index + 1))
-    {
+    if (SPINBOX_GetValue(hGateSelect) != (settings_gate_selected_index + 1)) {
+        if (settingsChanged) { Gate_Save(); settingsChanged = 0; }
         settings_gate_selected_index = SPINBOX_GetValue(hGateSelect) - 1;
         DSP_KillSettingsGateScreen();
         DSP_InitSettingsGateScreen();
-        return; // Prekini, jer je ekran ponovo iscrtan
+        return;
     }
 
-    // === 3. Pritisak na "EDIT" Dugmad i Pozivanje Numpada ===
-    for (int i = 0; i < 9; i++)
-    {
-        if (WM_IsWindow(hGateEditButtons[i]) && BUTTON_IsPressed(hGateEditButtons[i]))
-        {
-            BuzzerOn();
-            HAL_Delay(1);
-            BuzzerOff();
-            int button_id = WM_GetId(hGateEditButtons[i]);
-            active_gate_edit_button_id = button_id; // Sačuvaj ID pritisnutog dugmeta
+    if (DROPDOWN_GetSel(hGateType) != Gate_GetControlType(handle)) {
+        Gate_SetControlType(handle, DROPDOWN_GetSel(hGateType));
+        settingsChanged = 1;
+        DSP_KillSettingsGateScreen();
+        DSP_InitSettingsGateScreen();
+        return;
+    }
 
-            NumpadContext_t context = { .allow_decimal = false, .allow_minus_one = false };
+    for (int i = 0; i < 9; i++) {
+        if (WM_IsWindow(hGateEditButtons[i]) && BUTTON_IsPressed(hGateEditButtons[i])) {
+            BuzzerOn(); HAL_Delay(1); BuzzerOff();
+            active_gate_edit_button_id = WM_GetId(hGateEditButtons[i]);
 
-            // Konfiguriši kontekst za Numpad na osnovu pritisnutog dugmeta
-            switch (button_id)
-            {
-            case ID_GATE_RELAY_OPEN:
-                sprintf(context.initial_value, "%d", Gate_GetRelayOpenAddr(handle));
-                context.title = "Adresa Releja OTVORI";
-                context.min_val = 0;
-                context.max_val = 65535;
-                context.max_len = 5;
-                break;
-
-            case ID_GATE_RELAY_CLOSE:
-                sprintf(context.initial_value, "%d", Gate_GetRelayCloseAddr(handle));
-                context.title = "Adresa Releja ZATVORI";
-                context.min_val = 0;
-                context.max_val = 65535;
-                context.max_len = 5;
-                break;
-
-            case ID_GATE_RELAY_PED:
-                sprintf(context.initial_value, "%d", Gate_GetRelayPedAddr(handle));
-                context.title = "Adresa Releja PJESAK";
-                context.min_val = 0;
-                context.max_val = 65535;
-                context.max_len = 5;
-                break;
-
-            case ID_GATE_RELAY_STOP:
-                sprintf(context.initial_value, "%d", Gate_GetRelayStopAddr(handle));
-                context.title = "Adresa Releja STOP";
-                context.min_val = 0;
-                context.max_val = 65535;
-                context.max_len = 5;
-                break;
-
-            case ID_GATE_FEEDBACK_OPEN:
-                sprintf(context.initial_value, "%d", Gate_GetFeedbackOpenAddr(handle));
-                context.title = "Adresa Senzora OTVORENO";
-                context.min_val = 0;
-                context.max_val = 65535;
-                context.max_len = 5;
-                break;
-
-            case ID_GATE_FEEDBACK_CLOSE:
-                sprintf(context.initial_value, "%d", Gate_GetFeedbackCloseAddr(handle));
-                context.title = "Adresa Senzora ZATVORENO";
-                context.min_val = 0;
-                context.max_val = 65535;
-                context.max_len = 5;
-                break;
-
-            case ID_GATE_CYCLE_TIMER:
-                sprintf(context.initial_value, "%d", Gate_GetCycleTimer(handle));
-                context.title = "Vrijeme Ciklusa (s)";
-                context.min_val = 0;
-                context.max_val = 255;
-                context.max_len = 3;
-                break;
-
-            case ID_GATE_PED_TIMER:
-                sprintf(context.initial_value, "%d", Gate_GetPedestrianTimer(handle));
-                context.title = "Vrijeme Pjesak (s)";
-                context.min_val = 0;
-                context.max_val = 255;
-                context.max_len = 3;
-                break;
-
-            case ID_GATE_PULSE_TIMER:
-                sprintf(context.initial_value, "%d", Gate_GetPulseTimer(handle));
-                context.title = "Trajanje Impulsa (ms)";
-                context.min_val = 0;
-                context.max_val = 65535;
-                context.max_len = 5;
-                break;
+            NumpadContext_t context = { .allow_decimal = false, .allow_minus_one = false, .max_len = 5, .min_val = 0, .max_val = 65535 };
+            // **KLJUČNA ISPRAVKA**: Ovdje također koristimo ispravne gettere.
+            switch (active_gate_edit_button_id) {
+                case ID_GATE_RELAY_OPEN:     sprintf(context.initial_value, "%d", Gate_GetRelayAddr(handle, 1)); context.title = "Relay CMD1"; break;
+                case ID_GATE_RELAY_CLOSE:    sprintf(context.initial_value, "%d", Gate_GetRelayAddr(handle, 2)); context.title = "Relay CMD2"; break;
+                case ID_GATE_RELAY_PED:      sprintf(context.initial_value, "%d", Gate_GetRelayAddr(handle, 3)); context.title = "Relay CMD3"; break;
+                case ID_GATE_RELAY_STOP:     sprintf(context.initial_value, "%d", Gate_GetRelayAddr(handle, 4)); context.title = "Relay CMD4"; break;
+                case ID_GATE_FEEDBACK_OPEN:  sprintf(context.initial_value, "%d", Gate_GetFeedbackAddr(handle, 1)); context.title = "Feedback 1"; break;
+                case ID_GATE_FEEDBACK_CLOSE: sprintf(context.initial_value, "%d", Gate_GetFeedbackAddr(handle, 2)); context.title = "Feedback 2"; break;
+                case ID_GATE_CYCLE_TIMER:    sprintf(context.initial_value, "%d", Gate_GetCycleTimer(handle)); context.title = "Cycle time"; context.max_val=255; context.max_len=3; break;
+                case ID_GATE_PED_TIMER:      sprintf(context.initial_value, "%d", Gate_GetPedestrianTimer(handle)); context.title = "Pedestrian"; context.max_val=255; context.max_len=3; break;
+                case ID_GATE_PULSE_TIMER:    sprintf(context.initial_value, "%d", Gate_GetPulseTimer(handle)); context.title = "Pulse time"; break;
             }
             Display_ShowNumpad(&context);
-            return; // Izadji iz funkcije jer se ekran mijenja
+            return;
         }
     }
 
-    // === 4. Snimanje i Navigacija ===
     if (BUTTON_IsPressed(hBUTTON_Ok)) {
-        if (settingsChanged) {
-            Gate_Save(); // Ovdje treba implementirati Gate_Save() da snimi sve kapije
-            settingsChanged = 0;
-        }
+        if (settingsChanged) { Gate_Save(); settingsChanged = 0; }
         DSP_KillSettingsGateScreen();
         screen = SCREEN_RETURN_TO_FIRST;
     } else if (BUTTON_IsPressed(hBUTTON_Next)) {
-        if (settingsChanged) {
-            Gate_Save();
-            settingsChanged = 0;
-        }
+        if (settingsChanged) { Gate_Save(); settingsChanged = 0; }
         DSP_KillSettingsGateScreen();
-        // Ovdje ide prelaz na SCREEN_SETTINGS_HELP
-        screen = SCREEN_SETTINGS_HELP;
+        screen = SCREEN_SETTINGS_HELP; // Prelazak na sljedeci ekran podesavanja
         shouldDrawScreen = 1;
     }
 }
+
 /**
  ******************************************************************************
  * @brief       Servisira ekran za napredno podešavanje svjetla (dimmer i RGB).
