@@ -73,6 +73,21 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmicons_heating_20;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_cooling_20;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_cooling_20_activ;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_heating_20_activ;
+
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_garage_door_closed;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_garage_door_moving;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_garage_door_open;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_garage_door_partial_open;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_pedestrian_closed;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_pedestrian_open;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_ramp_closed;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_ramp_moving;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_ramp_open;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_ramp_partial_open;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_swing_gate_closed;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_swing_gate_moving;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_swing_gate_open;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_gate_swing_gate_partial_open;
   
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOn;
 extern GUI_CONST_STORAGE GUI_BITMAP bmSijalicaOff;

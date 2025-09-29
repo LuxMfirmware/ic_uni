@@ -750,6 +750,76 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Display\icons_heating_20_activ.c</FilePath>
             </File>
+            <File>
+              <FileName>icons_gate_garage_door_closed.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_garage_door_closed.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_garage_door_moving.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_garage_door_moving.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_garage_door_open.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_garage_door_open.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_garage_door_partial_open.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_garage_door_partial_open.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_pedestrian_closed.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_pedestrian_closed.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_pedestrian_open.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_pedestrian_open.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_ramp_closed.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_ramp_closed.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_ramp_moving.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_ramp_moving.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_ramp_open.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_ramp_open.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_ramp_partial_open.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_ramp_partial_open.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_swing_gate_closed.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_swing_gate_closed.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_swing_gate_moving.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_swing_gate_moving.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_swing_gate_open.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_swing_gate_open.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_gate_swing_gate_partial_open.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_gate_swing_gate_partial_open.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

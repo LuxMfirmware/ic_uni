@@ -52,7 +52,7 @@ typedef enum {
 } ProtocolType_e;
 
 
-#define TS_LAYER                        1       ///< Svrha: GUI "sloj" (layer) na kojem se obraduju dodiri. Vrijednost: 1 (sloj iznad pozadinskog).
+#define TS_LAYER    1       ///< Svrha: GUI "sloj" (layer) na kojem se obraduju dodiri. Vrijednost: 1 (sloj iznad pozadinskog).
 
 /**
  * @brief Definiše sve podržane jezike u sistemu.

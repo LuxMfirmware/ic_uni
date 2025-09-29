@@ -221,7 +221,7 @@ void Gate_TriggerUnlock(Gate_Handle* handle);
 
 // --- Obrada događaja ---
 void GATE_BusEvent(uint16_t address, uint8_t command, uint8_t* data, uint8_t len);
-
+void Gate_AcknowledgeFault(Gate_Handle* handle);
 
 /*============================================================================*/
 /* JAVNI API - GETTERI I SETTERI ZA KONFIGURACIJU                             */

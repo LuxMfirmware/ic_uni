@@ -370,7 +370,19 @@ void GATE_BusEvent(uint16_t address, uint8_t command, uint8_t* data, uint8_t len
 /*============================================================================*/
 /* IMPLEMENTACIJA GETTERA I SETTERA                                           */
 /*============================================================================*/
-
+/**
+ ******************************************************************************
+ * @brief       Potvrđuje grešku i prebacuje stanje u parcijalno otvoreno.
+ * @param[in]   handle Pokazivač na instancu uređaja.
+ ******************************************************************************
+ */
+void Gate_AcknowledgeFault(Gate_Handle* handle)
+{
+    if (handle && handle->current_state == GATE_STATE_FAULT)
+    {
+        handle->current_state = GATE_STATE_PARTIALLY_OPEN;
+    }
+}
 /**
  ******************************************************************************
  * @brief       Dohvata odabrani Profil Kontrole za uređaj.
