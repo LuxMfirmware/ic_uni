@@ -97,18 +97,103 @@ static const SceneAppearance_t scene_appearance_table[] = {
 };
 
 /**
- * @brief Tabela koja povezuje ID izgleda kapije sa ikonicom i tekstovima.
- * @note  KORISTI ISPRAVAN 'IconMapping_t' tip i IconID vrijednosti iz display.h.
+ ******************************************************************************
+ * @brief       Sveobuhvatna tabela koja mapira ID izgleda kapije na ikonicu i tekstove.
+ * @author      Gemini
+ * @note        Ovo je centralna biblioteka predefinisanih naziva za sve tipove
+ * uređaja za kontrolu pristupa. Korisnik u meniju za podešavanja
+ * (`SCREEN_SETTINGS_8`) bira jedan od ovih unosa preko `SPINBOX`
+ * kontrole. Svaki unos kombinuje jedan osnovni tip uređaja (npr. Krilna
+ * kapija) sa jednom sekundarnom odrednicom (npr. Glavni, Ulaz, 1).
+ * Ovakva struktura omogućava stotine logičkih i deskriptivnih
+ * kombinacija bez potrebe za izmjenom koda.
+ ******************************************************************************
  */
 static const IconMapping_t gate_appearance_mapping_table[] = {
-    // Vrijednosti su sada iz centralnog IconID enuma i TextID enuma
-    { ICON_GATE_SWING,          TXT_GATE_SWING,             TXT_GATE_YARD_SECONDARY },
-    { ICON_GATE_SLIDING,        TXT_GATE_SLIDING,           TXT_GATE_MAIN_SECONDARY },
-    { ICON_GATE_GARAGE,         TXT_GATE_GARAGE,            TXT_GATE_ENTRANCE_SECONDARY },
-    { ICON_GATE_RAMP,           TXT_GATE_RAMP,              TXT_GATE_ENTRANCE_SECONDARY },
-    { ICON_GATE_PEDESTRIAN_LOCK,TXT_GATE_PEDESTRIAN_LOCK,   TXT_GATE_ENTRANCE_SECONDARY }
+    // === 1. KRILNA KAPIJA (ICON_GATE_SWING) ===
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_GLAVNI },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_SPOREDNI },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_SERVISNI },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_KUCA_ZA_GOSTE  },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_ULAZ },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_IZLAZ },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_PROLAZ },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_PREDNJA },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_ZADNJA },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_LIJEVA },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_DESNA },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_SJEVER },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_JUG },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_ISTOK },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_ZAPAD },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_KOVANA },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_1 },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_2 },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_3 },
+    { ICON_GATE_SWING, TXT_GATE_SWING, TXT_GATE_SECONDARY_4 },
+    
+    // === 2. KLIZNA KAPIJA (ICON_GATE_SLIDING) ===
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_GLAVNI },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_SPOREDNI },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_SERVISNI },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_KUCA_ZA_GOSTE  },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_ULAZ },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_IZLAZ },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_PROLAZ },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_PREDNJA },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_ZADNJA },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_ISTOK },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_ZAPAD },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_KOVANA },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_MODERNA },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_1 },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_2 },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_3 },
+    { ICON_GATE_SLIDING, TXT_GATE_SLIDING, TXT_GATE_SECONDARY_4 },
+
+    // === 3. GARAŽA (ICON_GATE_GARAGE) ===
+    { ICON_GATE_GARAGE, TXT_GATE_GARAGE, TXT_GATE_SECONDARY_GLAVNI },
+    { ICON_GATE_GARAGE, TXT_GATE_GARAGE, TXT_GATE_SECONDARY_SPOREDNI },
+    { ICON_GATE_GARAGE, TXT_GATE_GARAGE, TXT_GATE_SECONDARY_LIJEVA },
+    { ICON_GATE_GARAGE, TXT_GATE_GARAGE, TXT_GATE_SECONDARY_DESNA },
+    { ICON_GATE_GARAGE, TXT_GATE_GARAGE, TXT_GATE_SECONDARY_GORNJA },
+    { ICON_GATE_GARAGE, TXT_GATE_GARAGE, TXT_GATE_SECONDARY_DONJA },
+    { ICON_GATE_GARAGE, TXT_GATE_GARAGE, TXT_GATE_SECONDARY_KUCA_ZA_GOSTE  },
+    { ICON_GATE_GARAGE, TXT_GATE_GARAGE, TXT_GATE_SECONDARY_SERVISNI },
+    { ICON_GATE_GARAGE, TXT_GATE_GARAGE, TXT_GATE_SECONDARY_1 },
+    { ICON_GATE_GARAGE, TXT_GATE_GARAGE, TXT_GATE_SECONDARY_2 },
+    { ICON_GATE_GARAGE, TXT_GATE_GARAGE, TXT_GATE_SECONDARY_3 },
+    { ICON_GATE_GARAGE, TXT_GATE_GARAGE, TXT_GATE_SECONDARY_4 },
+    
+    // === 4. RAMPA (ICON_GATE_RAMP) ===
+    { ICON_GATE_RAMP, TXT_GATE_RAMP, TXT_GATE_SECONDARY_ULAZ },
+    { ICON_GATE_RAMP, TXT_GATE_RAMP, TXT_GATE_SECONDARY_IZLAZ },
+    { ICON_GATE_RAMP, TXT_GATE_RAMP, TXT_GATE_SECONDARY_GLAVNI },
+    { ICON_GATE_RAMP, TXT_GATE_RAMP, TXT_GATE_SECONDARY_SPOREDNI },
+    { ICON_GATE_RAMP, TXT_GATE_RAMP, TXT_GATE_SECONDARY_KUCA_ZA_GOSTE  },
+    { ICON_GATE_RAMP, TXT_GATE_RAMP, TXT_GATE_SECONDARY_SERVISNI },
+    { ICON_GATE_RAMP, TXT_GATE_RAMP, TXT_GATE_SECONDARY_1 },
+    { ICON_GATE_RAMP, TXT_GATE_RAMP, TXT_GATE_SECONDARY_2 },
+    
+    // === 5. BRAVA (ICON_GATE_PEDESTRIAN_LOCK) ===
+    { ICON_GATE_PEDESTRIAN_LOCK, TXT_GATE_PEDESTRIAN_LOCK, TXT_GATE_SECONDARY_ULAZ },
+    { ICON_GATE_PEDESTRIAN_LOCK, TXT_GATE_PEDESTRIAN_LOCK, TXT_GATE_SECONDARY_SERVISNI },
+    { ICON_GATE_PEDESTRIAN_LOCK, TXT_GATE_PEDESTRIAN_LOCK, TXT_GATE_SECONDARY_BAZEN },
+    { ICON_GATE_PEDESTRIAN_LOCK, TXT_GATE_PEDESTRIAN_LOCK, TXT_GATE_SECONDARY_VRT },
+    { ICON_GATE_PEDESTRIAN_LOCK, TXT_GATE_PEDESTRIAN_LOCK, TXT_GATE_SECONDARY_VINARIJA },
+
+    // === 6. SIGURNOSNA VRATA (ICON_GATE_SECURITY_DOOR) ===
+    { ICON_GATE_SECURITY_DOOR, TXT_GATE_SECURITY_DOOR, TXT_GATE_SECONDARY_GLAVNI },
+    { ICON_GATE_SECURITY_DOOR, TXT_GATE_SECURITY_DOOR, TXT_GATE_SECONDARY_ULAZ },
+    
+    // === 7. PODZEMNA RAMPA (ICON_GATE_UNDERGROUND_RAMP) ===
+    { ICON_GATE_UNDERGROUND_RAMP, TXT_GATE_UNDERGROUND_RAMP, TXT_GATE_SECONDARY_ULAZ },
+    { ICON_GATE_UNDERGROUND_RAMP, TXT_GATE_UNDERGROUND_RAMP, TXT_GATE_SECONDARY_IZLAZ },
+    { ICON_GATE_UNDERGROUND_RAMP, TXT_GATE_UNDERGROUND_RAMP, TXT_GATE_SECONDARY_1 },
+    { ICON_GATE_UNDERGROUND_RAMP, TXT_GATE_UNDERGROUND_RAMP, TXT_GATE_SECONDARY_2 },
 };
 
+//__attribute__((section(".flash_rom")))
 /**
  * @brief Glavna tabela sa prevodima.
  * @note  KONAČNA ISPRAVLJENA VERZIJA. Svaki red odgovara jednom ID-ju iz `TextID` enuma.
@@ -203,7 +288,7 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_SCENE_READING */             { "Čitanje", "Reading", "Lesen", "Lecture", "Lettura", "Lectura", "Чтение", "Читання", "Czytanie", "Čtení", "Čítanie" },
     /* TXT_SCENE_RELAXING */            { "Opuštanje", "Relaxing", "Entspannen", "Détente", "Rilassante", "Relajación", "Расслабление", "Розслаблення", "Relaks", "Odpočinek", "Oddych" },
     /* TXT_SCENE_GATHERING */           { "Druženje", "Gathering", "Treffen", "Rassemblement", "Incontro", "Reunión", "Сбор", "Збори", "Spotkanie", "Setkání", "Stretnutie" },
-    // << NOVO: Tekstovi za Gate modul >> 
+    // << Tekstovi za Gate modul >> 
     /* TXT_GATE_SWING */                { "Krilna Kapija", "Swing Gate", "Flügeltor", "Portail Battant", "Cancello a Battente", "Puerta Batiente", "Распашные Ворота", "Розпашні Ворота", "Brama Skrzydłowa", "Křídlová Brána", "Krídlová Brána" },
     /* TXT_GATE_SLIDING */              { "Klizna Kapija", "Sliding Gate", "Schiebetor", "Portail Coulissant", "Cancello Scorrevole", "Puerta Corredera", "Откатные Ворота", "Відкатні Ворота", "Brama Przesuwna", "Posuvná Brána", "Posuvná Brána" },
     /* TXT_GATE_GARAGE */               { "Garaža", "Garage", "Garage", "Garage", "Garage", "Garaje", "Гараж", "Гараж", "Garaż", "Garáž", "Garáž" },
@@ -219,6 +304,52 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_GATE_MAIN_SECONDARY */       { "GLAVNA", "MAIN", "HAUPT", "PRINCIPALE", "PRINCIPALE", "PRINCIPAL", "ГЛАВНАЯ", "ГОЛОВНА", "GŁÓWNA", "HLAVNÍ", "HLAVNÁ" },
     /* TXT_GATE_YARD_SECONDARY */       { "DVORIŠTE", "YARD", "HOF", "COUR", "CORTILE", "PATIO", "ДВОР", "ДВІР", "PODWÓRKO", "DVŮR", "DVOR" },
     /* TXT_GATE_ENTRANCE_SECONDARY */   { "ULAZ", "ENTRANCE", "EINGANG", "ENTRÉE", "INGRESSO", "ENTRADA", "ВХОД", "ВХІД", "WEJŚCIE", "VCHOD", "VCHOD" },
+    /* TXT_GATE_STATUS_CLOSED */        { "ZATVORENO", "CLOSED", "GESCHLOSSEN", "FERMÉ", "CHIUSO", "CERRADO", "ЗАКРЫТО", "ЗАЧИНЕНО", "ZAMKNIĘTE", "ZAVŘENO", "ZATVORENÉ" },
+    /* TXT_GATE_STATUS_OPENING */       { "OTVARANJE...", "OPENING...", "ÖFFNEN...", "OUVERTURE...", "APERTURA...", "ABRIENDO...", "ОТКРЫТИЕ...", "ВІДКРИТТЯ...", "OTWIERANIE...", "OTEVÍRÁNÍ...", "OTVÁRANIE..." },
+    /* TXT_GATE_STATUS_OPEN */          { "OTVORENO", "OPEN", "OFFEN", "OUVERT", "APERTO", "ABIERTO", "ОТКРЫТО", "ВІДКРИТО", "OTWARTE", "OTEVŘENO", "OTVORENÉ" },
+    /* TXT_GATE_STATUS_CLOSING */       { "ZATVARANJE...", "CLOSING...", "SCHLIESSEN...", "FERMETURE...", "CHIUSURA...", "CERRANDO...", "ЗАКРЫТИЕ...", "ЗАЧИНЕННЯ...", "ZAMYKANIE...", "ZAVÍRÁNÍ...", "ZATVÁRANIE..." },
+    /* TXT_GATE_STATUS_PARTIAL */       { "DJELIMIČNO", "PARTIAL", "TEILWEISE", "PARTIEL", "PARZIALE", "PARCIAL", "ЧАСТИЧНО", "ЧАСТКОВО", "CZĘŚCIOWO", "ČÁSTEČNĚ", "ČIASTOČNE" },
+    /* TXT_GATE_STATUS_FAULT */         { "GREŠKA!", "FAULT!", "FEHLER!", "ERREUR!", "GUASTO!", "¡FALLO!", "ОШИБКА!", "ПОМИЛКА!", "BŁĄD!", "CHYBA!", "CHYBA!" },
+    /* TXT_GATE_STATUS_UNDEFINED */     { "NEPOZNATO", "UNKNOWN", "UNBEKANNT", "INCONNU", "SCONOSCIUTO", "DESCONOCIDO", "НЕИЗВЕСТНО", "НЕВІДОМО", "NIEZNANY", "NEZNÁMÝ", "NEZNÁMY" },
+    /* TXT_GATE_SECONDARY_1 */              { "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1" },
+    /* TXT_GATE_SECONDARY_2 */          { "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2" },
+    /* TXT_GATE_SECONDARY_3 */          { "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3" },
+    /* TXT_GATE_SECONDARY_4 */          { "4", "4", "4", "4", "4", "4", "4", "4", "4", "4", "4" },
+    /* TXT_GATE_SECONDARY_5 */          { "5", "5", "5", "5", "5", "5", "5", "5", "5", "5", "5" },
+    /* TXT_GATE_SECONDARY_6 */          { "6", "6", "6", "6", "6", "6", "6", "6", "6", "6", "6" },
+    /* TXT_GATE_SECONDARY_7 */          { "7", "7", "7", "7", "7", "7", "7", "7", "7", "7", "7" },
+    /* TXT_GATE_SECONDARY_8 */          { "8", "8", "8", "8", "8", "8", "8", "8", "8", "8", "8" },
+    /* TXT_GATE_SECONDARY_DONJA */      { "DONJA", "LOWER", "UNTERE", "INFÉRIEURE", "INFERIORE", "INFERIOR", "НИЖНЯЯ", "НИЖНЯ", "DOLNA", "SPODNÍ", "SPODNÁ" },
+    /* TXT_GATE_SECONDARY_SREDNJA */    { "SREDNJA", "MIDDLE", "MITTLERE", "MOYENNE", "CENTRALE", "CENTRAL", "СРЕДНЯЯ", "СЕРЕДНЯ", "ŚRODKOWA", "STŘEDNÍ", "STREDNÁ" },
+    /* TXT_GATE_SECONDARY_GORNJA */     { "GORNJA", "UPPER", "OBERE", "SUPÉRIEURE", "SUPERIORE", "SUPERIOR", "ВЕРХНЯЯ", "ВЕРХНЯ", "GÓRNA", "HORNÍ", "HORNÁ" },
+    /* TXT_GATE_SECONDARY_LIJEVA */     { "LIJEVA", "LEFT", "LINKE", "GAUCHE", "SINISTRA", "IZQUIERDA", "ЛЕВАЯ", "ЛІВА", "LEWA", "LEVÁ", "ĽAVÁ" },
+    /* TXT_GATE_SECONDARY_DESNA */      { "DESNA", "RIGHT", "RECHTE", "DROITE", "DESTRA", "DERECHA", "ПРАВАЯ", "ПРАВА", "PRAWA", "PRAVÁ", "PRAVÁ" },
+    /* TXT_GATE_SECONDARY_PREDNJA */    { "PREDNJA", "FRONT", "VORDERE", "AVANT", "ANTERIORE", "DELANTERA", "ПЕРЕДНЯЯ", "ПЕРЕДНЯ", "PRZEDNIA", "PŘEDNÍ", "PREDNÁ" },
+    /* TXT_GATE_SECONDARY_ZADNJA */     { "ZADNJA", "REAR", "HINTERE", "ARRIÈRE", "POSTERIORE", "TRASERA", "ЗАДНЯЯ", "ЗАДНЯ", "TYLNA", "ZADNÍ", "ZADNÁ" },
+    /* TXT_GATE_SECONDARY_ISTOK */      { "ISTOK", "EAST", "OST", "EST", "EST", "ESTE", "ВОСТОК", "СХІД", "WSCHÓD", "VÝCHOD", "VÝCHOD" },
+    /* TXT_GATE_SECONDARY_ZAPAD */      { "ZAPAD", "WEST", "WEST", "OUEST", "OVEST", "OESTE", "ЗАПАД", "ЗАХІД", "ZACHÓD", "ZÁPAD", "ZÁPAD" },
+    /* TXT_GATE_SECONDARY_SJEVER */     { "SJEVER", "NORTH", "NORD", "NORD", "NORD", "NORTE", "СЕВЕР", "ПІВНІЧ", "PÓŁNOC", "SEVER", "SEVER" },
+    /* TXT_GATE_SECONDARY_JUG */        { "JUG", "SOUTH", "SÜD", "SUD", "SUD", "SUR", "ЮГ", "ПІВДЕНЬ", "POŁUDNIE", "JIH", "JUH" },
+    /* TXT_GATE_SECONDARY_ULAZ */       { "ULAZ", "ENTRANCE", "EINGANG", "ENTRÉE", "INGRESSO", "ENTRADA", "ВХОД", "ВХІД", "WEJŚCIE", "VCHOD", "VCHOD" },
+    /* TXT_GATE_SECONDARY_IZLAZ */      { "IZLAZ", "EXIT", "AUSGANG", "SORTIE", "USCITA", "SALIDA", "ВЫХОД", "ВИХІД", "WYJŚCIE", "VÝCHOD", "VÝCHOD" },
+    /* TXT_GATE_SECONDARY_PROLAZ */     { "PROLAZ", "PASSAGE", "DURCHGANG", "PASSAGE", "PASSAGGIO", "PASAJE", "ПРОХОД", "ПРОХІД", "PRZEJŚCIE", "PRŮCHOD", "PRIECHOD" },
+    /* TXT_GATE_SECONDARY_GLAVNI */     { "GLAVNI", "MAIN", "HAUPT", "PRINCIPAL", "PRINCIPALE", "PRINCIPAL", "ГЛАВНЫЙ", "ГОЛОВНИЙ", "GŁÓWNY", "HLAVNÍ", "HLAVNÝ" },
+    /* TXT_GATE_SECONDARY_SPOREDNI */   { "SPOREDNI", "SIDE", "NEBEN", "SECONDAIRE", "SECONDARIO", "SECUNDARIO", "БОКОВОЙ", "БІЧНИЙ", "BOCZNY", "VEDLEJŠÍ", "VEDĽAJŠÍ" },
+    /* TXT_GATE_SECONDARY_SERVISNI */   { "SERVISNI", "SERVICE", "SERVICE", "SERVICE", "SERVIZIO", "SERVICIO", "СЛУЖЕБНЫЙ", "СЛУЖБОВИЙ", "SERWISOWY", "SERVISNÍ", "SERVISNÝ" },
+    /* TXT_GATE_SECONDARY_PRIVATNI */   { "PRIVATNI", "PRIVATE", "PRIVAT", "PRIVÉ", "PRIVATO", "PRIVADO", "ЧАСТНЫЙ", "ПРИВАТНИЙ", "PRYWATNY", "SOUKROMÝ", "SÚKROMNÝ" },
+    /* TXT_GATE_SECONDARY_DOSTAVA */    { "DOSTAVA", "DELIVERY", "LIEFERUNG", "LIVRAISON", "CONSEGNA", "ENTREGA", "ДОСТАВКА", "ДОСТАВКА", "DOSTAWA", "DORUČENÍ", "DORUČENIE" },
+    /* TXT_GATE_SECONDARY_KUCA_ZA_GOSTE */ { "KUĆA ZA GOSTE", "GUEST HOUSE", "GÄSTEHAUS", "MAISON D'AMIS", "CASA DEGLI OSPITI", "CASA DE HUÉSPEDES", "ГОСТЕВОЙ ДОМ", "ГОСТЬОВИЙ ДІМ", "DOM GOŚCINNY", "DŮM PRO HOSTY", "DOM PRE HOSTÍ" },
+    /* TXT_GATE_SECONDARY_BAZEN */      { "BAZEN", "POOL", "POOL", "PISCINE", "PISCINA", "PISCINA", "БАССЕЙН", "БАСЕЙН", "BASEN", "BAZÉN", "BAZÉN" },
+    /* TXT_GATE_SECONDARY_TENISKI_TEREN */{ "TENIS", "TENNIS", "TENNIS", "TENNIS", "TENNIS", "TENIS", "ТЕННИС", "ТЕНІС", "TENIS", "TENIS", "TENIS" },
+    /* TXT_GATE_SECONDARY_VINARIJA */   { "VINARIJA", "WINERY", "WEINKELLER", "CAVE À VIN", "CANTINA", "BODEGA", "ВИНОДЕЛЬНЯ", "ВИНОРОБНЯ", "WINIARNIA", "VINAŘSTVÍ", "VINÁRSTVO" },
+    /* TXT_GATE_SECONDARY_KONJUSNICA */ { "KONJUŠNICA", "STABLES", "STALLUNGEN", "ÉCURIES", "SCUDERIE", "ESTABLOS", "КОНЮШНЯ", "СТАЙНЯ", "STAJNIE", "STÁJE", "STAJNE" },
+    /* TXT_GATE_SECONDARY_VRT */        { "VRT", "GARDEN", "GARTEN", "JARDIN", "GIARDINO", "JARDÍN", "САД", "САД", "OGRÓD", "ZAHRADA", "ZÁHRADA" },
+    /* TXT_GATE_SECONDARY_PARK */       { "PARK", "PARK", "PARK", "PARC", "PARCO", "PARQUE", "ПАРК", "ПАРК", "PARK", "PARK", "PARK" },
+    /* TXT_GATE_SECONDARY_JEZERO */     { "JEZERO", "LAKE", "SEE", "LAC", "LAGO", "LAGO", "ОЗЕРО", "ОЗЕРО", "JEZIORO", "JEZERO", "JAZERO" },
+    /* TXT_GATE_SECONDARY_KOVANA */     { "KOVANA", "WROUGHT", "SCHMIEDEEIS.", "FER FORGÉ", "IN FERRO", "FORJADO", "КОВАНАЯ", "КОВАНА", "KUTA", "KOVANÁ", "KOVANÁ" },
+    /* TXT_GATE_SECONDARY_DRVENA */     { "DRVENA", "WOODEN", "HOLZ", "EN BOIS", "IN LEGNO", "DE MADERA", "ДЕРЕВЯННАЯ", "ДЕРЕВ'ЯНА", "DREWNIANA", "DŘEVĚNÁ", "DREVENÁ" },
+    /* TXT_GATE_SECONDARY_MODERNA */    { "MODERNA", "MODERN", "MODERN", "MODERNE", "MODERNO", "MODERNA", "СОВРЕМЕННАЯ", "СУЧАСНА", "NOWOCZESNA", "MODERNÍ", "MODERNÁ" },
+    /* TXT_GATE_SECONDARY_KAMENA */     { "KAMENA", "STONE", "STEIN", "EN PIERRE", "IN PIETRA", "DE PIEDRA", "КАМЕННАЯ", "КАМ'ЯНА", "KAMIENNA", "KAMENNÁ", "KAMENNÁ" },
     /* TXT_GLAVNI_SECONDARY */          { "GLAVNI", "MAIN", "HAUPT", "PRINCIPAL", "PRINCIPALE", "PRINCIPAL", "ГЛАВНЫЙ", "ГОЛОВНИЙ", "GŁÓWNY", "HLAVNÍ", "HLAVNÝ" },
     /* TXT_AMBIJENT_SECONDARY */        { "AMBIJENT", "AMBIENT", "AMBIENTE", "AMBIANCE", "AMBIENTE", "AMBIENTE", "АТМОСФЕРА", "АТМОСФЕРА", "NASTRÓJ", "PROSTŘEDÍ", "PROSTREDIE" },
     /* TXT_TRPEZARIJA_SECONDARY */      { "TRPEZARIJA", "DINING", "ESSZIMMER", "SALLE À MANGER", "SALA DA PRANZO", "COMEDOR", "СТОЛОВАЯ", "ЇДАЛЬНЯ", "JADALNIA", "JÍDELNA", "JEDÁLEŇ" },

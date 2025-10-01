@@ -138,22 +138,84 @@ typedef enum {
     TXT_SCENE_RELAXING,
     TXT_SCENE_GATHERING,
     
-    // --- NOVO: Tekstovi za Gate modul ---
+    // --- Tekstovi za Gate modul ---
+    // -- Primarni tipovi --
     TXT_GATE_SWING,
     TXT_GATE_SLIDING,
     TXT_GATE_GARAGE,
     TXT_GATE_RAMP,
     TXT_GATE_PEDESTRIAN_LOCK,
+    TXT_GATE_SECURITY_DOOR,         /**< NOVO: Primarni naziv za sigurnosna vrata. */
+    TXT_GATE_UNDERGROUND_RAMP,      /**< NOVO: Primarni naziv za podzemnu rampu. */
+    // -- Opšti tekstovi menija --
     TXT_GATE_CONTROL_PROFILE,
     TXT_GATE_APPEARANCE,
+    // -- Nazivi komandi (za UI) --
     TXT_GATE_CMD_OPEN,
     TXT_GATE_CMD_CLOSE,
     TXT_GATE_CMD_STOP,
     TXT_GATE_CMD_PEDESTRIAN,
     TXT_GATE_CMD_UNLOCK,
+    // -- Postojece sekundarne odrednice --
     TXT_GATE_MAIN_SECONDARY,
     TXT_GATE_YARD_SECONDARY,
     TXT_GATE_ENTRANCE_SECONDARY,
+
+    // NOVO: Tekstovi za status kapije
+    TXT_GATE_STATUS_CLOSED,
+    TXT_GATE_STATUS_OPENING,
+    TXT_GATE_STATUS_OPEN,
+    TXT_GATE_STATUS_CLOSING,
+    TXT_GATE_STATUS_PARTIAL,
+    TXT_GATE_STATUS_FAULT,
+    TXT_GATE_STATUS_UNDEFINED,
+    
+    // === NOVE SEKUNDARNE ODREDNICE ZA KAPIJE ===
+    // -- Numericke --
+    TXT_GATE_SECONDARY_1,
+    TXT_GATE_SECONDARY_2,
+    TXT_GATE_SECONDARY_3,
+    TXT_GATE_SECONDARY_4,
+    TXT_GATE_SECONDARY_5,
+    TXT_GATE_SECONDARY_6,
+    TXT_GATE_SECONDARY_7,
+    TXT_GATE_SECONDARY_8,
+    // -- Pozicijske --
+    TXT_GATE_SECONDARY_DONJA,
+    TXT_GATE_SECONDARY_SREDNJA,
+    TXT_GATE_SECONDARY_GORNJA,
+    TXT_GATE_SECONDARY_LIJEVA,
+    TXT_GATE_SECONDARY_DESNA,
+    TXT_GATE_SECONDARY_PREDNJA,
+    TXT_GATE_SECONDARY_ZADNJA,
+    TXT_GATE_SECONDARY_ISTOK,
+    TXT_GATE_SECONDARY_ZAPAD,
+    TXT_GATE_SECONDARY_SJEVER,
+    TXT_GATE_SECONDARY_JUG,
+    // -- Funkcionalne --
+    TXT_GATE_SECONDARY_ULAZ,
+    TXT_GATE_SECONDARY_IZLAZ,
+    TXT_GATE_SECONDARY_PROLAZ,
+    TXT_GATE_SECONDARY_GLAVNI,
+    TXT_GATE_SECONDARY_SPOREDNI,
+    TXT_GATE_SECONDARY_SERVISNI,
+    TXT_GATE_SECONDARY_PRIVATNI,
+    TXT_GATE_SECONDARY_DOSTAVA,
+    // -- Lokacijske (specificno za vile) --
+    TXT_GATE_SECONDARY_KUCA_ZA_GOSTE,
+    TXT_GATE_SECONDARY_BAZEN,
+    TXT_GATE_SECONDARY_TENISKI_TEREN,
+    TXT_GATE_SECONDARY_VINARIJA,
+    TXT_GATE_SECONDARY_KONJUSNICA,
+    TXT_GATE_SECONDARY_VRT,
+    TXT_GATE_SECONDARY_PARK,
+    TXT_GATE_SECONDARY_JEZERO,
+    // -- Stil/Materijal --
+    TXT_GATE_SECONDARY_KOVANA,
+    TXT_GATE_SECONDARY_DRVENA,
+    TXT_GATE_SECONDARY_MODERNA,
+    TXT_GATE_SECONDARY_KAMENA,
+    
     // --- Sekundarni tekstovi za ikonice (postojeci) ---
     TXT_GLAVNI_SECONDARY, TXT_AMBIJENT_SECONDARY, TXT_TRPEZARIJA_SECONDARY, TXT_DNEVNA_SOBA_SECONDARY,
     TXT_LIJEVI_SECONDARY, TXT_DESNI_SECONDARY, TXT_CENTRALNI_SECONDARY, TXT_PREDNJI_SECONDARY,
@@ -208,6 +270,8 @@ typedef enum {
     ICON_GATE_GARAGE,
     ICON_GATE_RAMP,
     ICON_GATE_PEDESTRIAN_LOCK,
+    ICON_GATE_SECURITY_DOOR,       /**< NOVO: Vizuelni ID za sigurnosna vrata. */
+    ICON_GATE_UNDERGROUND_RAMP,    /**< NOVO: Vizuelni ID za podzemnu rampu. */
     // Ovdje se mogu dodavati nove ikone za buduce module...
     
     ICON_COUNT // Ukupan broj definisanih vizuelnih tipova ikonica
@@ -285,6 +349,7 @@ typedef enum{
     SCREEN_LIGHTS,
     SCREEN_CURTAINS,
     SCREEN_GATE,                    /**< NOVI EKRAN (placeholder): Prikaz statusa i osnovne kontrole za kapije. */
+    SCREEN_GATE_SETTINGS,           /**< NOVI EKRAN: Detaljni kontrolni panel za jedan uredaj, poziva se dugim pritiskom. */
     SCREEN_TIMER,                   /**< NOVI EKRAN (placeholder): Prikaz i podešavanje tajmera. */
     SCREEN_SECURITY,                /**< NOVI EKRAN (placeholder): Prikaz i kontrola alarmnog sistema. */
     SCREEN_SCENE,                   /**< NOVI EKRAN: Prikaz i aktivacija korisnicki definisanih scena. */
@@ -311,7 +376,7 @@ typedef enum{
     SCREEN_SETTINGS_5,
     SCREEN_SETTINGS_6,
     SCREEN_SETTINGS_7,
-    SCREEN_SETTINGS_GATE,           /**< NOVI EKRAN: Meni za detaljno podešavanje do 6 kapija/garažnih vrata. */
+    SCREEN_SETTINGS_8,              /**< NOVI EKRAN: Meni za detaljno podešavanje do 6 kapija/garažnih vrata. */
     SCREEN_SETTINGS_TIMER,          /**< NOVI EKRAN: Meni za detaljno podešavanje parametara Pametnog Alarma. */
     SCREEN_SETTINGS_DATETIME,       /**< NOVI EKRAN: Prikazuje se samo ako RTC vrijeme nije validno, za podešavanje datuma i vremena. */
     SCREEN_SETTINGS_HELP,           /**< NOVI EKRAN: Prikazuje tekstualnu pomoc i uputstva za korištenje. */

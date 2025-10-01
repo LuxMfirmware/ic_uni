@@ -34,8 +34,10 @@ typedef enum {
     CONTROL_TYPE_NONE,                  /**< Profil nije odabran; uređaj je neaktivan. */
     CONTROL_TYPE_BFT_STEP_BY_STEP,      /**< Profil za BFT motore sa "Step-by-Step" logikom. */
     CONTROL_TYPE_NICE_SLIDING_PULSE,    /**< Profil za NICE klizne motore sa odvojenim pulsnim komandama. */
-    CONTROL_TYPE_NICE_SLIDING_MAINTAINED,/**< Profil za NICE motore sa kontinuiranim signalom. (Buduća implementacija) */
     CONTROL_TYPE_SIMPLE_LOCK,           /**< Profil za jednostavne pametne brave. */
+    CONTROL_TYPE_GENERIC_MAINTAINED,    /**< Profil za motore sa kontinuiranim signalom (ne-pulsni). */
+    CONTROL_TYPE_RAMP_PULSE,            /**< Profil za rampe sa odvojenim pulsnim komandama GORE/DOLE. */
+    CONTROL_TYPE_SIMPLE_STEP_BY_STEP,   /**< Profil za motore sa samo jednom S-S komandom (bez pješaka). */
 } GateControlType_e;
 
 
@@ -239,6 +241,18 @@ uint16_t          Gate_GetPulseTimer(const Gate_Handle* handle);
 
 // --- Getteri za runtime stanje ---
 GateState_e Gate_GetState(const Gate_Handle* handle);
+/**
+ ******************************************************************************
+ * @brief       Direktno postavlja interno stanje mašine stanja za dati handle.
+ * @author      Gemini
+ * @note        Ova funkcija je namijenjena za "optimistic UI update". Omogućava
+ * frontendu da trenutno promijeni stanje radi vizuelnog feedbacka,
+ * bez pokretanja backend logike.
+ * @param       handle Pokazivač na instancu uređaja.
+ * @param       new_state Novo stanje iz `GateState_e` enuma.
+ ******************************************************************************
+ */
+void Gate_SetState(Gate_Handle* handle, GateState_e new_state);
 
 // --- Getteri za pristup Biblioteci Profila (za UI) ---
 const ProfilDeskriptor_t* Gate_GetProfilDeskriptor(const Gate_Handle* handle);

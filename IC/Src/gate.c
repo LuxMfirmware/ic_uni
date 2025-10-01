@@ -80,6 +80,7 @@ static const ProfilDeskriptor_t g_ControlProfileLibrary[] = {
         .visible_settings_mask = 0,
         .command_map = {0},
     },
+    
     [CONTROL_TYPE_BFT_STEP_BY_STEP] = {
         .profile_id = CONTROL_TYPE_BFT_STEP_BY_STEP,
         .profile_name = "BFT S-S",
@@ -91,6 +92,7 @@ static const ProfilDeskriptor_t g_ControlProfileLibrary[] = {
             [UI_COMMAND_PEDESTRIAN] = { .target_relay_index = 2, .is_pulse = true },
         }
     },
+    
     [CONTROL_TYPE_NICE_SLIDING_PULSE] = {
         .profile_id = CONTROL_TYPE_NICE_SLIDING_PULSE,
         .profile_name = "NICE Klizna-Puls",
@@ -105,16 +107,52 @@ static const ProfilDeskriptor_t g_ControlProfileLibrary[] = {
             [UI_COMMAND_STOP]        = { .target_relay_index = 4, .is_pulse = true },
         }
     },
+    
     [CONTROL_TYPE_SIMPLE_LOCK] = {
         .profile_id = CONTROL_TYPE_SIMPLE_LOCK,
         .profile_name = "Pametna Brava",
-        .visible_settings_mask = SETTING_VISIBLE_RELAY_CMD1 | SETTING_VISIBLE_FEEDBACK_2 |
-                                 SETTING_VISIBLE_PULSE_TIMER,
+        .visible_settings_mask = SETTING_VISIBLE_RELAY_CMD1 | SETTING_VISIBLE_FEEDBACK_1 |
+                                 SETTING_VISIBLE_CYCLE_TIMER | SETTING_VISIBLE_PULSE_TIMER,
         .command_map = {
             [UI_COMMAND_UNLOCK] = { .target_relay_index = 1, .is_pulse = true },
         }
     },
-    // Ovdje se dodaju novi profili po potrebi...
+
+    [CONTROL_TYPE_GENERIC_MAINTAINED] = {
+        .profile_id = CONTROL_TYPE_GENERIC_MAINTAINED,
+        .profile_name = "Kontinuirani Signal",
+        .visible_settings_mask = SETTING_VISIBLE_RELAY_CMD1 | SETTING_VISIBLE_RELAY_CMD2 |
+                                 SETTING_VISIBLE_FEEDBACK_1 | SETTING_VISIBLE_FEEDBACK_2 |
+                                 SETTING_VISIBLE_CYCLE_TIMER, // Pulsni tajmer nije potreban
+        .command_map = {
+            [UI_COMMAND_OPEN_CYCLE]  = { .target_relay_index = 1, .is_pulse = false }, // Nije puls
+            [UI_COMMAND_CLOSE_CYCLE] = { .target_relay_index = 2, .is_pulse = false }, // Nije puls
+            [UI_COMMAND_STOP]        = { .target_relay_index = 0, .is_pulse = false }, // Stop se rješava gašenjem oba releja
+        }
+    },
+    
+    [CONTROL_TYPE_RAMP_PULSE] = {
+        .profile_id = CONTROL_TYPE_RAMP_PULSE,
+        .profile_name = "Rampa (Puls)",
+        .visible_settings_mask = SETTING_VISIBLE_RELAY_CMD1 | SETTING_VISIBLE_RELAY_CMD2 |
+                                 SETTING_VISIBLE_FEEDBACK_1 | SETTING_VISIBLE_FEEDBACK_2 |
+                                 SETTING_VISIBLE_CYCLE_TIMER | SETTING_VISIBLE_PULSE_TIMER,
+        .command_map = {
+            [UI_COMMAND_OPEN_CYCLE]  = { .target_relay_index = 1, .is_pulse = true },
+            [UI_COMMAND_CLOSE_CYCLE] = { .target_relay_index = 2, .is_pulse = true },
+        }
+    },
+    
+    [CONTROL_TYPE_SIMPLE_STEP_BY_STEP] = {
+        .profile_id = CONTROL_TYPE_SIMPLE_STEP_BY_STEP,
+        .profile_name = "Jednostavni S-S",
+        .visible_settings_mask = SETTING_VISIBLE_RELAY_CMD1 |
+                                 SETTING_VISIBLE_FEEDBACK_1 | SETTING_VISIBLE_FEEDBACK_2 |
+                                 SETTING_VISIBLE_CYCLE_TIMER | SETTING_VISIBLE_PULSE_TIMER,
+        .command_map = {
+            [UI_COMMAND_SMART_STEP] = { .target_relay_index = 1, .is_pulse = true },
+        }
+    },
 };
 
 
@@ -201,14 +239,35 @@ void Gate_Service(void)
             case GATE_TIMER_PULSE:
             {
                 uint16_t pulse_duration_ms = handle->config.pulse_timer_ms;
-                if (pulse_duration_ms == 0) pulse_duration_ms = 500; // Sigurnosni default
+                if (pulse_duration_ms == 0) pulse_duration_ms = 500;
+
                 if (elapsed_ms >= pulse_duration_ms) {
+                    // 1. UVIJEK ugasi relej nakon pulsa
                     uint16_t relay_addr = Gate_GetRelayAddressByIndex(handle, handle->pulse_relay_index);
                     uint8_t buff[3] = { (relay_addr >> 8) & 0xFF, relay_addr & 0xFF, BINARY_OFF };
                     AddCommand(&binaryQueue, BINARY_SET, buff, 3);
-                    handle->active_timer_type = GATE_TIMER_NONE;
-                    handle->timer_start_tick = 0;
                     handle->pulse_relay_index = 0;
+
+                    // 2. KONAČNA LOGIKA ZA BRAVU: VRAĆANJE NA ZATVORENO NAKON PULSA
+                    //    Ovaj blok ima najviši prioritet, rešavajući vizuelni povratak.
+                    if (handle->config.control_type == CONTROL_TYPE_SIMPLE_LOCK)
+                    {
+                        handle->current_state = GATE_STATE_CLOSED;
+                        handle->active_timer_type = GATE_TIMER_NONE;
+                        handle->timer_start_tick = 0;
+                        shouldDrawScreen = 1;
+                    }
+                    // 3. LOGIKA ZA RAMPU/KAPIJE (nastavi sa CYCLE tajmerom)
+                    else if (handle->current_state == GATE_STATE_OPENING || handle->current_state == GATE_STATE_CLOSING) 
+                    {
+                        handle->active_timer_type = GATE_TIMER_CYCLE; 
+                    }
+                    // 4. ZA SVE OSTALE SLUČAJEVE, ugasi tajmer
+                    else
+                    {
+                        handle->active_timer_type = GATE_TIMER_NONE;
+                        handle->timer_start_tick = 0;
+                    }
                 }
                 break;
             }
@@ -224,8 +283,24 @@ void Gate_Service(void)
             {
                 uint32_t cycle_duration_ms = (uint32_t)handle->config.cycle_timer_s * 1000UL;
                 if (cycle_duration_ms > 0 && elapsed_ms >= cycle_duration_ms) {
-                    Gate_StopAllRelays(handle);
-                    handle->current_state = GATE_STATE_FAULT;
+                    
+                    // NOVA LOGIKA: Provjera timeout-a za bravu sa senzorom
+                    if (handle->current_state == GATE_STATE_OPEN && handle->config.control_type == CONTROL_TYPE_SIMPLE_LOCK) {
+                        // Vrijeme je isteklo, a senzor nije javio da je zatvoreno. Proglasi grešku.
+                        handle->current_state = GATE_STATE_FAULT;
+                        handle->active_timer_type = GATE_TIMER_NONE;
+                        handle->timer_start_tick = 0;
+                        shouldDrawScreen = 1; 
+                        break;
+                    }
+
+                    // Postojeća logika za kapije u pokretu
+                    if (handle->current_state == GATE_STATE_OPENING) {
+                        handle->current_state = GATE_STATE_OPEN;
+                    } else if (handle->current_state == GATE_STATE_CLOSING) {
+                        handle->current_state = GATE_STATE_CLOSED;
+                    }
+                    
                     handle->active_timer_type = GATE_TIMER_NONE;
                     handle->timer_start_tick = 0;
                     shouldDrawScreen = 1;
@@ -238,7 +313,6 @@ void Gate_Service(void)
         }
     }
 }
-
 /**
  ******************************************************************************
  * @brief       Vraća "handle" (pokazivač) na instancu uređaja.
@@ -546,6 +620,12 @@ void Gate_SetPulseTimer(Gate_Handle* handle, uint16_t ms)
     if (handle) handle->config.pulse_timer_ms = ms; 
 }
 
+void Gate_SetState(Gate_Handle* handle, GateState_e new_state)
+{
+    if (handle) {
+        handle->current_state = new_state;
+    }
+}
 /*============================================================================*/
 /* IMPLEMENTACIJA PRIVATNIH FUNKCIJA                                          */
 /*============================================================================*/
@@ -569,14 +649,96 @@ static void Gate_SendAction(Gate_Handle* handle, UI_Command_e command)
     if (!handle || handle->config.control_type == CONTROL_TYPE_NONE) return;
 
     const ProfilDeskriptor_t* profil = &g_ControlProfileLibrary[handle->config.control_type];
-    GateAction_t akcija = profil->command_map[command];
+    const GateAction_t* akcija = &profil->command_map[command];
 
-    // TODO: Ovdje se može dodati specifična logika za kompleksnije profile,
-    // npr. slanje dva pulsa za BFT motore.
+    // Resetujemo prethodne tajmere prije pokretanja nove akcije
+    // Za kontinuirane komande, prvo zaustavljamo sve motore
+    if (akcija->is_pulse == false || command == UI_COMMAND_STOP) {
+         Gate_StopAllRelays(handle);
+    }
+    
+    handle->active_timer_type = GATE_TIMER_NONE;
+    handle->timer_start_tick = 0;
 
-    Gate_SendRawCommand(handle, akcija.target_relay_index, akcija.is_pulse);
+     // ====================================================================
+    // === KLJUČNA ISPRAVKA: Logika Brave je prva i nezavisna (BINARNA) ===
+    // ====================================================================
+
+    if (handle->config.control_type == CONTROL_TYPE_SIMPLE_LOCK)
+    {
+       
+            // STANJE BRAVE: Otključano (samo dok traje puls)
+            handle->current_state = GATE_STATE_OPEN;
+            handle->active_timer_type = GATE_TIMER_PULSE; // Koristi samo puls tajmer
+            handle->timer_start_tick = HAL_GetTick() ? HAL_GetTick() : 1;
+            shouldDrawScreen = 1;
+
+            Gate_SendRawCommand(handle, akcija->target_relay_index, akcija->is_pulse);
+            return; // Brava završava ovde, ne ide dalje u Smart Step ili Ciklus logiku!
+      
+       
+    }
+
+    // ====================================================================
+    // === Logika za KAPIJE/RAMPE (uključuje OPENING/CLOSING) ===
+    // ====================================================================
+    
+    // Postavljanje početnog stanja i pokretanje tajmera ciklusa
+    switch(command)
+    {
+        case UI_COMMAND_OPEN_CYCLE:
+        case UI_COMMAND_PEDESTRIAN:
+            Gate_SetState(handle, GATE_STATE_OPENING);
+            // ISPRAVKA: Pokretanje tajmera koji je nedostajao
+            handle->active_timer_type = GATE_TIMER_CYCLE;
+            handle->timer_start_tick = HAL_GetTick() ? HAL_GetTick() : 1;
+            break;
+
+        case UI_COMMAND_CLOSE_CYCLE:
+            Gate_SetState(handle, GATE_STATE_CLOSING);
+            // ISPRAVKA: Pokretanje tajmera koji je nedostajao
+            handle->active_timer_type = GATE_TIMER_CYCLE;
+            handle->timer_start_tick = HAL_GetTick() ? HAL_GetTick() : 1;
+            break;
+
+        case UI_COMMAND_SMART_STEP:
+            // ISPRAVKA: Kompletno ispravljena toggle logika
+            // Ako je kapija zatvorena -> pokreni otvaranje
+            if (handle->current_state == GATE_STATE_CLOSED) {
+                handle->current_state = GATE_STATE_OPENING;
+            } 
+            // Ako je kapija otvorena -> pokreni zatvaranje
+            else if (handle->current_state == GATE_STATE_OPEN) {
+                handle->current_state = GATE_STATE_CLOSING;
+            }
+            // Ako se kretala (bilo otvarala ili zatvarala) -> zaustavi je (slanjem iste komande)
+            else {
+                handle->current_state = GATE_STATE_PARTIALLY_OPEN;
+            }
+            // Za sve slučajeve S-S komande, pokreni tajmer ciklusa
+            handle->active_timer_type = GATE_TIMER_CYCLE;
+            handle->timer_start_tick = HAL_GetTick() ? HAL_GetTick() : 1;
+            break;
+            
+        case UI_COMMAND_STOP:
+            Gate_SetState(handle, GATE_STATE_PARTIALLY_OPEN);
+            shouldDrawScreen = 1;
+            return; // Izlazimo odmah jer STOP samo gasi releje
+
+         case UI_COMMAND_UNLOCK:
+            // KLJUČNA ISPRAVKA: Brava se vizuelno otvara samo DOK traje puls
+            handle->current_state = GATE_STATE_OPEN; // VIZUELNO: Otvoreno
+            shouldDrawScreen = 1;
+            // Ne prekidamo ovde, jer treba da pošaljemo sirovu komandu u nastavku
+            break;
+
+        default:
+            break;
+    }
+    
+    // Slanje stvarne komande na relej
+    Gate_SendRawCommand(handle, akcija->target_relay_index, akcija->is_pulse);
 }
-
 /**
  ******************************************************************************
  * @brief       Šalje sirovu komandu (pulsnu ili kontinuiranu) na relej.
