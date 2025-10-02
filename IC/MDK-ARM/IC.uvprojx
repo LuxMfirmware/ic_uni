@@ -401,11 +401,6 @@
               <FilePath>..\Src\Display\Termometar.c</FilePath>
             </File>
             <File>
-              <FileName>clean.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\clean.c</FilePath>
-            </File>
-            <File>
               <FileName>blindMedium.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\blindMedium.c</FilePath>
@@ -426,16 +421,6 @@
               <FilePath>..\Src\Display\previous.c</FilePath>
             </File>
             <File>
-              <FileName>ventilator_off.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\ventilator_off.c</FilePath>
-            </File>
-            <File>
-              <FileName>ventilator_on.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\ventilator_on.c</FilePath>
-            </File>
-            <File>
               <FileName>wifi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\wifi.c</FilePath>
@@ -454,16 +439,6 @@
               <FileName>blackWhiteGradient.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\blackWhiteGradient.c</FilePath>
-            </File>
-            <File>
-              <FileName>defrosterico.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\defrosterico.c</FilePath>
-            </File>
-            <File>
-              <FileName>defrosterOn.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Display\defrosterOn.c</FilePath>
             </File>
             <File>
               <FileName>icons_lights_ceiling_led_fixture_off.c</FileName>
@@ -879,6 +854,106 @@
               <FileName>icons_gate_swing_gate_opening.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Display\icons_gate_swing_gate_opening.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_language_bhsc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_language_bhsc.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_language_cze.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_language_cze.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_language_eng.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_language_eng.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_language_fra.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_language_fra.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_language_ger.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_language_ger.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_language_ita.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_language_ita.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_language_pol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_language_pol.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_language_rus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_language_rus.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_language_slo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_language_slo.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_language_spa.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_language_spa.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_language_ukr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_language_ukr.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_defroster_off.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_defroster_off.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_defroster_on.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_defroster_on.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_ventilator_off.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_ventilator_off.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_ventilator_on.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_ventilator_on.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_theme.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_theme.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_clean.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_clean.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_all_off.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_all_off.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_outdoor_lihts_off.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_outdoor_lihts_off.c</FilePath>
+            </File>
+            <File>
+              <FileName>icons_menu_outdoor_lihts_on.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Display\icons_menu_outdoor_lihts_on.c</FilePath>
             </File>
           </Files>
         </Group>

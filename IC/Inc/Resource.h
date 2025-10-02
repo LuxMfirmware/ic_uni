@@ -60,6 +60,30 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_stairs_off;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_stairs_on;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_wall_off;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_lights_wall_on;
+
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_gate;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_clean;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_theme;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_timers;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_all_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_outdoor_lihts_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_outdoor_lihts_on;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_defroster_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_defroster_on;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_ventilator_off;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_ventilator_on;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_language_bhsc; 
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_language_eng;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_language_ger;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_language_fra;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_language_ita;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_language_spa;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_language_rus;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_language_ukr;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_language_pol;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_language_cze;
+extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_language_slo;
+
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_settings;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_toggle_on_50_squared;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_toogle_off_50_squared;
@@ -126,20 +150,15 @@ extern GUI_CONST_STORAGE GUI_BITMAP bmengflag;
 extern GUI_CONST_STORAGE GUI_BITMAP bmnext;
 extern GUI_CONST_STORAGE GUI_BITMAP bmalHamliQR;
 extern GUI_CONST_STORAGE GUI_BITMAP bmprevious;
-extern GUI_CONST_STORAGE GUI_BITMAP bmVENTILATOR_OFF;
-extern GUI_CONST_STORAGE GUI_BITMAP bmVENTILATOR_ON;
+
 extern GUI_CONST_STORAGE GUI_BITMAP bmwifi;
 extern GUI_CONST_STORAGE GUI_BITMAP bmmobilePhone;
 extern GUI_CONST_STORAGE GUI_BITMAP bmcolorSpectrum;
 extern GUI_CONST_STORAGE GUI_BITMAP bmblackWhiteGradient;
-extern GUI_CONST_STORAGE GUI_BITMAP bmdefrosterico;
-extern GUI_CONST_STORAGE GUI_BITMAP bmdefrostericoOn;
+
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_security_sos;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_language_bos;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_language_eng;
-
-extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_gate;
-extern GUI_CONST_STORAGE GUI_BITMAP bmicons_menu_timers;
 
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_homecoming;
 extern GUI_CONST_STORAGE GUI_BITMAP bmicons_scene_dinner;

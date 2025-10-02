@@ -310,7 +310,8 @@ typedef struct
     uint8_t  language;                  /**< Odabrani jezik (BSHC = 0, ENG = 1, ...). */
     ProtocolType_e rs485_protocol;      /**< Globalno odabrani protokol za cijeli sistem (TinyFrame ili Modbus). */
     uint8_t  rs485_baud_rate_index;     /**< Indeks odabrane brzine u nizu `bps[]` iz `common.c`. */
-    uint8_t  selected_control_mode;     /**< Odabrani mod za dinamicku ikonu (Defroster/Ventilator/Off). */
+    uint8_t  selected_control_mode;     /**< Odabrani mod za dinamicku ikonu na SelectScreen1. */
+    uint8_t  selected_control_mode_2;   /**< NOVO: Odabrani mod za dinamicku ikonu na SelectScreen2. */
     bool     light_night_timer_enabled; /**< Fleg za nocni tajmer svjetala. */
     bool     scenes_enabled;            /**< Fleg (true/false) koji omogucava/onemogucava napredne funkcije (scene). */
     uint16_t scene_homecoming_triggers[SCENE_MAX_TRIGGERS]; /**< Niz koji cuva adrese (npr. Modbus) za 8 logickih okidaca "Povratak" scene. */
@@ -380,7 +381,11 @@ typedef enum{
     SCREEN_SETTINGS_TIMER,          /**< NOVI EKRAN: Meni za detaljno podešavanje parametara Pametnog Alarma. */
     SCREEN_SETTINGS_DATETIME,       /**< NOVI EKRAN: Prikazuje se samo ako RTC vrijeme nije validno, za podešavanje datuma i vremena. */
     SCREEN_SETTINGS_HELP,           /**< NOVI EKRAN: Prikazuje tekstualnu pomoc i uputstva za korištenje. */
-    SCREEN_ALARM_ACTIVE 
+    SCREEN_ALARM_ACTIVE,
+    SCREEN_LANGUAGE_SELECT,         // << NOVO
+    SCREEN_THEME_SELECT,            // << NOVO
+    SCREEN_OUTDOOR_TIMER,           // << NOVO
+    SCREEN_OUTDOOR_SETTINGS         // << NOVO (za adrese vanjske rasvjete)
 }eScreen;
 
 typedef enum{
@@ -394,6 +399,11 @@ typedef enum {
     MODE_OFF = 0,
     MODE_DEFROSTER,
     MODE_VENTILATOR,
+    MODE_LANGUAGE,
+    MODE_THEME,
+    MODE_SOS,
+    MODE_ALL_OFF,
+    MODE_OUTDOOR,
     MODE_COUNT
 } ControlMode;
 

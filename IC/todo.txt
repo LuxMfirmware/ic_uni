@@ -17,22 +17,4 @@ Zadatak											Prioritet	Status				Bilješke
 16. Meni Select Screen 2						Visok		Završeno			Dodati settings ikonu u meni i ovaj meni postaje stalno 2x2 matrica, dodati pin unos i u settings meniju mogućnost promjene pina
 17. Promjena RS485 protokola (modbus)			Nizak		Nije započeto		Dodati MODBUS kao opciju protokola za komunikaciju, ova opcija je bez update-a firmware-a
 18. Proširit menije podešavanja					Srednji		Nije započeto		Ugraditi cijelo tekstualno uputstvo svih postavki settings menija u poseban settings screeen, dodati postavke busa, promjenu pina, 
-19. Dodatne opcije 								Srednji		Nije započeto		Nadogradnja interfejsa sa kontrolama kapije, security, postavke timera za korisnika, ugasi sve opcija,	
-
-*-----------------------------------------------------------------------------------------------------------------------------------*
-				PRIJEDLOG NADOGRADNJE IKONICA SVJETLA SA OPISNIM TEKSTOVIMA POZICIJE I ORJENTACIJA
-*-----------------------------------------------------------------------------------------------------------------------------------*
-Kategorija				Ikona (Koncept)			Osnovni Tekst			Prijedlozi za dodatne tekstove (opis pozicije/namjene)				
-Plafonska rasvjeta		Luster					LUSTER					GLAVNI, AMBIJENT, TRPEZARIJA, DNEVNA SOBA				
-						Ugradbeno svjetlo		SPOT					LIJEVI, DESNI, CENTRALNI, PREDNJI, ZADNJI, HODNIK, KUHINJA				
-						Visilica				VISILICA				IZNAD ŠANKA, IZNAD STOLA, PORED KREVETA 1, PORED KREVETA 2				
-						Plafonjera				PLAFONJERA				GLAVNA, SOBA 1, SOBA 2, KUPATILO, HODNIK				
-Zidna rasvjeta			Zidna lampa				ZIDNA					LIJEVA, DESNA, GORE, DOLE, ČITANJE, AMBIJENT, OGLEDALO				
-						Svjetlo za slike		SLIKA					
-Podna/Stolna rasvjeta	Podna lampa				PODNA					UGAO, PORED FOTELJE				
-						Stolna lampa			STOLNA					RADNI STO, NOĆNA 1, NOĆNA 2				
-Specijalizovana			LED Traka				LED TRAKA				ISPOD ELEMENTA, IZNAD ELEMENTA, ORMAR, STEPENICE, TV, AMBIJENT				
-						Ventilator sa svjetlom	VENTILATOR					
-Vanjska rasvjeta		Vanjska zidna			FASADA					ULAZ, TERASA, BALKON, LIJEVA, DESNA, ZADNJA				
-						Vanjska podna/staza		STAZA					PRILAZ, DVORIŠTE				
-						Reflektor				REFLEKTOR				DRVO, DVORIŠTE				
+19. Dodatne opcije 								Srednji		Nije započeto		Nadogradnja interfejsa sa kontrolama kapije, security, postavke timera za korisnika, ugasi sve opcija, promjena skina i izgleda ikonica
