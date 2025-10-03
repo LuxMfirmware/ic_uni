@@ -22,7 +22,8 @@
 #include "curtain.h"
 #include "lights.h"
 #include "display.h"
-#include "stm32746g_eeprom.h" // Mapa ide nakon svih definicija
+#include "security.h"
+#include "stm32746g_eeprom.h"
 #include "firmware_update_agent.h"
 #include "rs485.h"
 #include "gate.h"
@@ -86,7 +87,7 @@ static inline void delay_us(uint32_t us) {
  * dogadaj i prosljeduje ga svim modulima koji bi mogli biti
  * zainteresovani za promjenu stanja nekog binarnog ulaza.
  */
-TF_Result DIGITAL_INPUT_EVENT_Listener(TinyFrame *tf, TF_Msg *msg)
+TF_Result DIN_EVENT_Listener(TinyFrame *tf, TF_Msg *msg)
 {
     // Pretpostavka: msg->data[0] i msg->data[1] sadrže adresu senzora,
     // a msg->data[2] sadrži novo stanje (0=OFF, 1=ON).
@@ -96,8 +97,9 @@ TF_Result DIGITAL_INPUT_EVENT_Listener(TinyFrame *tf, TF_Msg *msg)
         uint8_t state = msg->data[2];
 
         // Obavijesti sve module o dogadaju
-        GATE_BusEvent(address, DIGITAL_INPUT_EVENT, &state, 1);
-//        LIGHTS_BusEvent(address, DIGITAL_INPUT_EVENT, &state, 1); // Svjetla mogu reagovati na PIR senzore
+        GATE_BusEvent(address, DIN_EVENT, &state, 1);
+        SECURITY_BusEvent(address, DIN_EVENT, &state, 1);
+//        LIGHTS_BusEvent(address, DIN_EVENT, &state, 1); // Svjetla mogu reagovati na PIR senzore
         // ... poziv za svaki drugi modul ...
     }
     
@@ -644,7 +646,7 @@ void RS485_Init(void)
         TF_AddTypeListener(&tfapp, THERMOSTAT_INFO, THERMOSTAT_INFO_Listener);
         TF_AddTypeListener(&tfapp, THERMOSTAT_SETUP, THERMOSTAT_SETUP_Listener);
         TF_AddTypeListener(&tfapp, FIRMWARE_UPDATE, FIRMWARE_UPDATE_Listener);
-        TF_AddTypeListener(&tfapp, DIGITAL_INPUT_EVENT, DIGITAL_INPUT_EVENT_Listener);
+        TF_AddTypeListener(&tfapp, DIN_EVENT, DIN_EVENT_Listener);
     }
     HAL_UART_Receive_IT(&huart1, &rec, 1);
 }

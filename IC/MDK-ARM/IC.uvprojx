@@ -1551,6 +1551,11 @@
               <FilePath>..\Src\defroster.c</FilePath>
             </File>
             <File>
+              <FileName>security.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\security.c</FilePath>
+            </File>
+            <File>
               <FileName>curtain.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\curtain.c</FilePath>

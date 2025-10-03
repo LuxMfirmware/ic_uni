@@ -74,9 +74,9 @@ WIDGET( ID_LanguageSelect,              0x871, "DROPDOWN za odabir jezika korisn
 WIDGET( ID_LEAVE_SCRNSVR_AFTER_TOUCH,   0x872, "CHECKBOX za promjenu ponašanja screensavera pri dodiru" )
 WIDGET( ID_LIGHT_NIGHT_TIMER,           0x873, "CHECKBOX za omogućavanje noćnog tajmera za svjetla" )
 WIDGET( ID_ENABLE_SCENES,               0x874, "CHECKBOX za globalno omogućavanje/onemogućavanje sistema scena" )
-// ID_SET_DEFAULTS i ID_SYSRESTART su definisani u zajedničkoj sekciji
 WIDGET( ID_SELECT_CONTROL_1,            0x875, "DROPDOWN za odabir funkcije dinamičke ikonice 1 (na SelectScreen1)" )
 WIDGET( ID_SELECT_CONTROL_2,            0x876, "DROPDOWN za odabir funkcije dinamičke ikonice 2 (na SelectScreen2)" )
+WIDGET( ID_ENABLE_SECURITY_MODULE,      0x877, "CHECKBOX za globalno omogućavanje/onemogućavanje security modula" )
 
 // ===================================================================================
 // === 0x900 - 0x94F: EKRAN 8 - PODEŠAVANJA KAPIJA ===
@@ -155,6 +155,19 @@ WIDGET( ID_TIMER_SCENE_SELECT,          0x9AD, "Dugme za ulazak u ekran za odabi
 WIDGET( ID_TIMER_SAVE,                  0x9AE, "Dugme 'SNIMI' za ekran podešavanja tajmera" )
 WIDGET( ID_TIMER_CANCEL,                0x9AF, "Dugme 'OTKAŽI' za ekran podešavanja tajmera" )
 WIDGET( ID_SETTINGS_TIMER_BUTTON,       0x9B0, "Dugme na glavnom ekranu tajmera za ulazak u podešavanja" )
+
+// ===================================================================================
+// === 0x9C0 - 0x9DF: EKRAN 9 - PODEŠAVANJA ALARMA ===
+// ===================================================================================
+WIDGET( ID_ALARM_RELAY_P1,              0x9C0, "SPINBOX za adresu releja - Particija 1" )
+WIDGET( ID_ALARM_RELAY_P2,              0x9C1, "SPINBOX za adresu releja - Particija 2" )
+WIDGET( ID_ALARM_RELAY_P3,              0x9C2, "SPINBOX za adresu releja - Particija 3" )
+WIDGET( ID_ALARM_FB_P1,                 0x9C3, "SPINBOX za adresu feedback ulaza - Particija 1" )
+WIDGET( ID_ALARM_FB_P2,                 0x9C4, "SPINBOX za adresu feedback ulaza - Particija 2" )
+WIDGET( ID_ALARM_FB_P3,                 0x9C5, "SPINBOX za adresu feedback ulaza - Particija 3" )
+WIDGET( ID_ALARM_PULSE_LENGTH,          0x9C6, "SPINBOX za zajedničku dužinu pulsa (0=Latched, >0 Momentary u ms)" )
+WIDGET( ID_ALARM_FB_SYSTEM_STATUS,      0x9D0, "SPINBOX za adresu feedback ulaza - Status Alarma sistema" )
+WIDGET( ID_ALARM_RELAY_SILENT,          0x9D1, "SPINBOX za adresu releja - Tihi alarm (SOS)" )
 
 
 // NAPOMENA: Dinamički ID-jevi (ID_LightsModbusRelay, ID_CurtainsRelay) se ne stavljaju ovdje.

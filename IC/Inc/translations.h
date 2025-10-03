@@ -392,6 +392,24 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_PRILAZ_SECONDARY */          { "PRILAZ", "DRIVEWAY", "AUFFAHRT", "ALLÉE", "VIALE", "ENTRADA", "ПОДЪЕЗД", "ПІД'ЇЗД", "PODJAZD", "PŘÍJEZDOVÁ CESTA", "PRÍJAZDOVÁ CESTA" },
     /* TXT_DVORISTE_SECONDARY */        { "DVORIŠTE", "YARD", "HOF", "COUR", "CORTILE", "PATIO", "ДВОР", "ДВІР", "PODWÓRKO", "DVŮR", "DVOR" },
     /* TXT_DRVO_SECONDARY */            { "DRVO", "TREE", "BAUM", "ARBRE", "ALBERO", "ÁRBOL", "ДЕРЕВО", "ДЕРЕВО", "DRZEWO", "STROM", "STROM" },
+
+    // === NOVI TEKSTOVI ZA ALARM MODUL ===
+    /* TXT_ALARM_SETTINGS_TITLE */      { "Podešavanje Alarma", "Alarm Settings", "Alarmeinstellungen", "Réglages de l'alarme", "Impostazioni Allarme", "Ajustes de Alarma", "Настройки Сигнализации", "Налаштування Сигналізації", "Ustawienia Alarmu", "Nastavení Alarmu", "Nastavenia Alarmu" },
+    /* TXT_ALARM_SYSTEM_ARM_DISARM */   { "Sistem (Sve Particije)", "System (All Partitions)", "System (Alle Bereiche)", "Système (Toutes partitions)", "Sistema (Tutte le partizioni)", "Sistema (Todas las particiones)", "Система (Все разделы)", "Система (Всі розділи)", "System (Wszystkie strefy)", "Systém (Všechny sekce)", "Systém (Všetky sekcie)" },
+    /* TXT_ALARM_PARTITION_1 */         { "Particija 1", "Partition 1", "Bereich 1", "Partition 1", "Partizione 1", "Partición 1", "Раздел 1", "Розділ 1", "Strefa 1", "Sekce 1", "Sekcia 1" },
+    /* TXT_ALARM_PARTITION_2 */         { "Particija 2", "Partition 2", "Bereich 2", "Partition 2", "Partizione 2", "Partición 2", "Раздел 2", "Розділ 2", "Strefa 2", "Sekce 2", "Sekcia 2" },
+    /* TXT_ALARM_PARTITION_3 */         { "Particija 3", "Partition 3", "Bereich 3", "Partition 3", "Partizione 3", "Partición 3", "Раздел 3", "Розділ 3", "Strefa 3", "Sekce 3", "Sekcia 3" },
+    /* TXT_ALARM_RELAY_ADDRESS */       { "Adresa Releja", "Relay Address", "Relaisadresse", "Adresse du relais", "Indirizzo Relè", "Dirección del Relé", "Адрес реле", "Адреса реле", "Adres przekaźnika", "Adresa Relé", "Adresa Relé" },
+    /* TXT_ALARM_FEEDBACK_ADDRESS */    { "Adresa Feedback-a", "Feedback Address", "Rückmeldeadresse", "Adresse de retour", "Indirizzo Feedback", "Dirección de Feedback", "Адрес обр. связи", "Адреса зворотного зв'язку", "Adres zwrotny", "Adresa Zpětné Vazby", "Adresa Spätnej Väzby" },
+    /* TXT_ALARM_SYSTEM_STATUS_FB */    { "Feedback Statusa Alarma", "Alarm Status Feedback", "Alarmstatus Rückmeldung", "Retour d'état d'alarme", "Feedback Stato Allarme", "Feedback de Estado de Alarma", "Обр. связь статуса", "Зворотний зв'язок статусу", "Sygnał zwrotny stanu", "Zpětná vazba stavu", "Spätná väzba stavu" },
+    /* TXT_ALARM_PULSE_LENGTH */        { "Dužina Pulsa (ms)", "Pulse Length (ms)", "Impulsdauer (ms)", "Durée de l'impulsion (ms)", "Durata Impulso (ms)", "Duración del Pulso (ms)", "Длит. импульса (мс)", "Тривалість імпульсу (мс)", "Długość impulsu (ms)", "Délka pulzu (ms)", "Dĺžka pulzu (ms)" },
+    /* TXT_ALARM_SILENT_ALARM */        { "Tihi Alarm (SOS)", "Silent Alarm (SOS)", "Stiller Alarm (SOS)", "Alarme Silencieuse (SOS)", "Allarme Silenzioso (SOS)", "Alarma Silenciosa (SOS)", "Тихая тревога (SOS)", "Тиха тривога (SOS)", "Cichy Alarm (SOS)", "Tichý Poplach (SOS)", "Tichý Poplach (SOS)" },
+    /* TXT_ALARM_STATE_ARMED */         { "NAORUŽANO", "ARMED", "SCHARF", "ARMÉ", "INSERITO", "ARMADO", "ПОД ОХРАНОЙ", "ПІД ОХОРОНОЮ", "UZBROJONY", "ZAPNUTO", "ZAPNUTÉ" },
+    /* TXT_ALARM_STATE_DISARMED */      { "RAZORUŽANO", "DISARMED", "UNSCHARF", "DÉSARMÉ", "DISINSERITO", "DESARMADO", "СНЯТО С ОХРАНЫ", "ЗНЯТО З ОХОРОНИ", "ROZBROJONY", "VYPNUTO", "VYPNUTÉ" },
+    /* TXT_ALARM_CMD_ARM */             { "NAORUŽAJ", "ARM", "SCHARF", "ARMER", "INSERIRE", "ARMAR", "ПОСТАВИТЬ", "ПОСТАВИТИ", "UZBRÓJ", "ZAPNOUT", "ZAPNÚŤ" },
+    /* TXT_ALARM_CMD_DISARM */          { "RAZORUŽAJ", "DISARM", "UNSCHARF", "DÉSARMER", "DISINSERIRE", "DESARMAR", "СНЯТЬ", "ЗНЯТИ", "ROZBRÓJ", "VYPNOUT", "VYPNÚŤ" },
+    /* TXT_ALARM_ENTER_PIN */           { "UNESITE PIN", "ENTER PIN", "PIN EINGEBEN", "ENTREZ PIN", "INSERIRE PIN", "INTRODUZCA PIN", "ВВЕДИТЕ PIN", "ВВЕДІТЬ PIN", "WPROWADŹ PIN", "ZADEJTE PIN", "ZADAJTE PIN" },
+
 };
 
 static const char* _acContent[LANGUAGE_COUNT][7] = {

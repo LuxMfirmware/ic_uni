@@ -27,6 +27,7 @@
 #include "thermostat.h"
 #include "ventilator.h"
 #include "defroster.h"
+#include "security.h"
 #include "curtain.h"
 #include "display.h"
 #include "lights.h"
@@ -133,7 +134,8 @@ static void PCA9685_SetOutputFrequency(uint16_t frequency);
   * @param
   * @retval
   */
-int main(void) {
+int main(void) 
+{
     THERMOSTAT_TypeDef* pThst = Thermostat_GetInstance();
     Ventilator_Handle* pVen = Ventilator_GetInstance();
     Defroster_Handle* pDef = Defroster_GetInstance();
@@ -170,6 +172,7 @@ int main(void) {
     if(pwminit) PCA9685_SetOutputFrequency(PWM_0_15_FREQUENCY_DEFAULT);
     Ventilator_Init(pVen);
     Timer_Init();
+    Security_Init();
 #ifdef	USE_WATCHDOG
     HAL_IWDG_Refresh(&hiwdg);
 #endif
@@ -200,7 +203,8 @@ int main(void) {
   * @param
   * @retval
   */
-void SYSRestart(void) {
+void SYSRestart(void) 
+{
     MX_GPIO_DeInit();
     MX_ADC3_DeInit();
     MX_I2C3_DeInit();
@@ -221,7 +225,8 @@ void SYSRestart(void) {
   * @param
   * @retval
   */
-void ErrorHandler(uint8_t function, uint8_t driver) {
+void ErrorHandler(uint8_t function, uint8_t driver) 
+{
 //    LogEvent.log_type = driver;
 //    LogEvent.log_group = function;
 //    LogEvent.log_event = FUNC_OR_DRV_FAIL;
@@ -393,7 +398,8 @@ void TS_Service(void) {
   * @param  None
   * @retval None
   */
-static void RAM_Init(void) {
+static void RAM_Init(void) 
+{
     // Ucitaj sistemski fleg
     EE_ReadBuffer(&sysfl, EE_SYS_STATE, 1);
 

@@ -215,7 +215,7 @@ typedef struct
     
     /**
      * @brief Niz adresa (npr. Modbus) koje služe kao okidači za 'Povratak' scenu.
-     * @note  Sistem će pratiti `DIGITAL_INPUT_EVENT` poruke i porediti adresu
+     * @note  Sistem će pratiti `DIN_EVENT` poruke i porediti adresu
      * izvora sa adresama u ovom nizu. Vrijednost 0 označava prazan slot.
      */
     uint16_t homecoming_triggers[SCENE_MAX_TRIGGERS];

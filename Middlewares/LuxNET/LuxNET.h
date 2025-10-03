@@ -48,5 +48,8 @@ typedef enum {
     CONTEROLLER_GET     = 53,   // uzmi cijelu strukturu kontrolera sve pinove sve registre
     CONTROLLER_SET      = 54,   // upiši cijelu strukturu kontrolera i reinicijalizuj 
     SCENE_CONTROL       = 55,   // Poruka za sinhronizaciju aktivacije scena između displeja.
-    DIGITAL_INPUT_EVENT = 56    // Poruka koju šalje modul sa ulazima kada detektuje promjenu stanja.
+    // ostavi prostora za dopune
+    DIN_GET             = 60,   // expliicitan upit stanja digitalnog ulaza
+    DIN_EVENT           = 61    // Poruka koju šalje modul sa ulazima kada detektuje promjenu stanja.
+    
 } tf_types_t;

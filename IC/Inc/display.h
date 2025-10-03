@@ -137,7 +137,6 @@ typedef enum {
     TXT_SCENE_READING,
     TXT_SCENE_RELAXING,
     TXT_SCENE_GATHERING,
-    
     // --- Tekstovi za Gate modul ---
     // -- Primarni tipovi --
     TXT_GATE_SWING,
@@ -229,6 +228,24 @@ typedef enum {
     TXT_STEPENICE_SECONDARY, TXT_TV_SECONDARY, TXT_ULAZ_SECONDARY, TXT_TERASA_SECONDARY,
     TXT_BALKON_SECONDARY, TXT_ZADNJA_SECONDARY, TXT_PRILAZ_SECONDARY, TXT_DVORISTE_SECONDARY,
     TXT_DRVO_SECONDARY,
+    
+    // === NOVI TEKSTOVI ZA ALARM MODUL ===
+    TXT_ALARM_SETTINGS_TITLE,
+    TXT_ALARM_SYSTEM_ARM_DISARM,
+    TXT_ALARM_PARTITION_1,
+    TXT_ALARM_PARTITION_2,
+    TXT_ALARM_PARTITION_3,
+    TXT_ALARM_RELAY_ADDRESS,
+    TXT_ALARM_FEEDBACK_ADDRESS,
+    TXT_ALARM_SYSTEM_STATUS_FB,
+    TXT_ALARM_PULSE_LENGTH,
+    TXT_ALARM_SILENT_ALARM,
+    TXT_ALARM_STATE_ARMED,
+    TXT_ALARM_STATE_DISARMED,
+    TXT_ALARM_CMD_ARM,
+    TXT_ALARM_CMD_DISARM,
+    TXT_ALARM_ENTER_PIN,
+    
     TEXT_COUNT // Uvijek na kraju!
 } TextID;
 
@@ -314,6 +331,7 @@ typedef struct
     uint8_t  selected_control_mode_2;   /**< NOVO: Odabrani mod za dinamicku ikonu na SelectScreen2. */
     bool     light_night_timer_enabled; /**< Fleg za nocni tajmer svjetala. */
     bool     scenes_enabled;            /**< Fleg (true/false) koji omogucava/onemogucava napredne funkcije (scene). */
+    bool     security_module_enabled;   /**< Fleg (true/false) koji omogucava/onemogucava security modul. */
     uint16_t scene_homecoming_triggers[SCENE_MAX_TRIGGERS]; /**< Niz koji cuva adrese (npr. Modbus) za 8 logickih okidaca "Povratak" scene. */
     uint16_t crc;                       /**< CRC za provjeru integriteta. */
 } Display_EepromSettings_t;
@@ -378,6 +396,7 @@ typedef enum{
     SCREEN_SETTINGS_6,
     SCREEN_SETTINGS_7,
     SCREEN_SETTINGS_8,              /**< NOVI EKRAN: Meni za detaljno podešavanje do 6 kapija/garažnih vrata. */
+    SCREEN_SETTINGS_9,
     SCREEN_SETTINGS_TIMER,          /**< NOVI EKRAN: Meni za detaljno podešavanje parametara Pametnog Alarma. */
     SCREEN_SETTINGS_DATETIME,       /**< NOVI EKRAN: Prikazuje se samo ako RTC vrijeme nije validno, za podešavanje datuma i vremena. */
     SCREEN_SETTINGS_HELP,           /**< NOVI EKRAN: Prikazuje tekstualnu pomoc i uputstva za korištenje. */

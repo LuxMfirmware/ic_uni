@@ -71,6 +71,8 @@
 #define EE_SCENES                           (EE_LIGHTS_MODBUS + (sizeof(LIGHT_EepromConfig_t) * LIGHTS_MODBUS_SIZE))
 #define EE_GATES                            (EE_SCENES + sizeof(Scene_EepromBlock_t))
 #define EE_TIMER                            (EE_GATES + (sizeof(Gate_EepromConfig_t) * GATE_MAX_COUNT))
+#define EE_SECURITY                         (EE_TIMER + sizeof(Timer_EepromConfig_t))
+#define EE_USERS                            (EE_SECURITY + sizeof(Security_Settings_t))
 
 /**
  * @brief  Sekcija 3: Blokovi za Specijalne Namjene
