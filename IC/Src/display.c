@@ -212,7 +212,20 @@ typedef struct
  */
 static NumpadResult_t g_numpad_result;
 
-
+/**
+ * @brief Definiše moguće vizuelne statuse za UI alarma.
+ */
+typedef enum {
+    ALARM_UI_STATE_DISARMED,
+    ALARM_UI_STATE_ARMED,
+    ALARM_UI_STATE_ARMING,
+    ALARM_UI_STATE_DISARMING
+} AlarmUIState_e;
+/**
+ * @brief Niz koji čuva TRENUTNO VIZUELNO stanje za svaku komponentu alarma.
+ * @note Index 0 = Sistem, Index 1-3 = Particije 1-3.
+ */
+static AlarmUIState_e alarm_ui_state[SECURITY_PARTITION_COUNT + 1];
 /******************************************************************************
  * @brief       Struktura koja definiše kontekst za univerzalnu alfanumeričku tastaturu.
  * @author      Gemini (po specifikaciji korisnika)
@@ -1142,6 +1155,26 @@ settings_screen_8_layout =
 };
 
 /**
+ ******************************************************************************
+ * @brief       Struktura koja sadrži konstante za raspored elemenata na
+ * ekranu za podešavanje alarma (`SCREEN_SETTINGS_9`).
+ ******************************************************************************
+ */
+static const struct
+{
+    GUI_POINT    start_pos;         /**< @brief Početna gornja-lijeva pozicija za prvu grupu kontrola. */
+    WidgetRect_t spinbox_size;      /**< @brief Dimenzije za svaki SPINBOX. */
+    int16_t      y_group_spacing;   /**< @brief Vertikalni razmak između grupa (particija). */
+    int16_t      x_col_spacing;     /**< @brief Horizontalni razmak između kolona. */
+}
+settings_screen_9_layout =
+{
+    .start_pos         = { 10, 20 },
+    .spinbox_size      = { 0, 0, 110, 40 },
+    .y_group_spacing   = 50,
+    .x_col_spacing     = 190
+};
+/**
  * @brief Struktura koja sadrži konstante za raspored elemenata (layout)
  * na ekranu za podešavanje datuma i vremena.
  */
@@ -1320,9 +1353,9 @@ static const struct
 }
 security_screen_layout =
 {
-    .start_pos   = { 20, 30 },
+    .start_pos   = { 20, 5 },
     .button_size = { 0, 0, 200, 50 },
-    .y_spacing   = 15
+    .y_spacing   = 60
 };
 // =======================================================================
 // ===        Automatsko generisanje `const` niza za "Skener"          ===
@@ -1829,7 +1862,13 @@ static int8_t timer_selected_scene_index = -1;
  * widgeta unutar `Service_SettingsTimerScreen` funkcije.
  */
 static bool timer_screen_initialized = false;
-
+/**
+ * @brief       Čuva odabranu akciju (0=System, 1-3=Particija) sa ekrana alarma.
+ * @note        Vrijednost se postavlja u `Service_SecurityScreen` kada korisnik
+ * pritisne dugme, a zatim se čita u `Service_NumpadScreen` nakon
+ * uspješne provjere PIN-a kako bi se izvršila odgovarajuća komanda.
+ */
+static int8_t selected_action = -1;
 /** @name Statičke varijable za Alfanumeričku Tastaturu */
 /** @{ */
 
@@ -2073,7 +2112,7 @@ static void DSP_KillAlarmActiveScreen(void);
 static void DSP_InitGateSettingsScreen(void);
 static void DSP_KillGateSettingsScreen(void);
 static void DSP_KillGateScreen(void);
-
+static void DSP_KillSecurityScreen(void);
 
 /** @} */
 
@@ -2268,7 +2307,7 @@ void DISP_Init(void)
     GUI_SelectLayer(1);
     GUI_SetBkColor(GUI_TRANSPARENT);
     GUI_Clear();
-    DISP_Animation();
+    //DISP_Animation();
     // =======================================================================
     // === KRAJ NOVE LOGIKE ===
     // =======================================================================
@@ -2622,11 +2661,16 @@ void PID_Hook(GUI_PID_STATE * pTS)
             case SCREEN_TIMER:
                 DSP_KillTimerScreen();
 
-            case SCREEN_GATE:
-            case SCREEN_SECURITY:
+             case SCREEN_GATE:
+                DSP_KillGateScreen();
                 screen = SCREEN_SELECT_2;
                 break;
 
+            case SCREEN_SECURITY:
+                DSP_KillSecurityScreen(); // <<< OBAVEZNO UNIŠTI DUGMAD PRIJE IZLASKA
+                screen = SCREEN_SELECT_2;
+                break;
+             
             // Pravilo: Sa pod-menija trećeg nivoa, hamburger vodi na SELECT_LAST
             case SCREEN_QR_CODE:
                 menu_lc = 0; // Resetuj parametar
@@ -2650,11 +2694,13 @@ void PID_Hook(GUI_PID_STATE * pTS)
                 break;
 
             case SCREEN_NUMPAD:
+                DSP_KillNumpadScreen(); 
                 g_numpad_result.is_cancelled = true;
                 screen = numpad_return_screen;
                 break;
 
             case SCREEN_KEYBOARD_ALPHA:
+                DSP_KillKeyboardScreen();
                 g_keyboard_result.is_cancelled = true;
                 screen = keyboard_return_screen;
                 break;
@@ -4363,13 +4409,6 @@ static void DSP_InitSet6Scrn(void)
     CHECKBOX_SetText(hCHKBX_LIGHT_NIGHT_TIMER, "LIGHT OFF TIMER AFTER 20h");
     CHECKBOX_SetState(hCHKBX_LIGHT_NIGHT_TIMER, g_display_settings.light_night_timer_enabled);
 
-    // << ISPRAVLJENI CHECKBOX ZA SECURITY MODUL >>
-    const WidgetRect_t* security_cb_pos = &settings_screen_6_layout.enable_security_checkbox_pos;
-    hCHKBX_EnableSecurity = CHECKBOX_CreateEx(security_cb_pos->x, security_cb_pos->y, security_cb_pos->w, security_cb_pos->h, 0, WM_CF_SHOW, 0, ID_ENABLE_SECURITY_MODULE);
-    CHECKBOX_SetTextColor(hCHKBX_EnableSecurity, GUI_GREEN);
-    CHECKBOX_SetText(hCHKBX_EnableSecurity, "Enable Security Module");
-    CHECKBOX_SetState(hCHKBX_EnableSecurity, g_display_settings.security_module_enabled);
-    
     // ... ostatak funkcije ostaje nepromijenjen ...
     const WidgetRect_t* lang_pos = &settings_screen_6_layout.language_dropdown_pos;
     hDRPDN_Language = DROPDOWN_CreateEx(lang_pos->x, lang_pos->y, lang_pos->w, lang_pos->h, 0, WM_CF_SHOW, DROPDOWN_CF_AUTOSCROLLBAR, ID_LanguageSelect);
@@ -4445,7 +4484,6 @@ static void DSP_KillSet6Scrn(void)
     if (WM_IsWindow(hSelectControl_2)) WM_DeleteWindow(hSelectControl_2);
     WM_DeleteWindow(hDEV_ID);
     WM_DeleteWindow(hCurtainsMoveTime);
-    WM_DeleteWindow(hCHKBX_EnableSecurity); 
     WM_DeleteWindow(hCHKBX_ONLY_LEAVE_SCRNSVR_AFTER_TOUCH);
     WM_DeleteWindow(hCHKBX_LIGHT_NIGHT_TIMER);
     WM_DeleteWindow(hBUTTON_SET_DEFAULTS);
@@ -4727,6 +4765,143 @@ static void DSP_KillSet8Scrn(void)
     if (WM_IsWindow(hBUTTON_Next)) WM_DeleteWindow(hBUTTON_Next);
     if (WM_IsWindow(hBUTTON_Ok))   WM_DeleteWindow(hBUTTON_Ok);
 }
+/**
+ ******************************************************************************
+ * @brief       Inicijalizuje deveti ekran za podešavanja (Alarm).
+ * @author      Gemini & [Vaše Ime]
+ * @note        FINALNA KORIGOVANA VERZIJA: Layout sada striktno koristi
+ * `y_group_spacing` konstantu za vertikalni razmak između SVIH
+ * redova kontrola, uključujući i zajedničke postavke ispod
+ * bloka za particije, kako bi se osigurao apsolutno jednak
+ * i konzistentan raspored.
+ ******************************************************************************
+ */
+static void DSP_InitSet9Scrn(void)
+{
+    GUI_MULTIBUF_BeginEx(1);
+    GUI_Clear();
+
+    // Korištenje konstanti iz layout strukture
+    const int16_t col1_x = settings_screen_9_layout.start_pos.x;
+    const int16_t y_start = settings_screen_9_layout.start_pos.y;
+    const int16_t col2_x = col1_x + settings_screen_9_layout.x_col_spacing;
+    const int16_t spin_w = settings_screen_9_layout.spinbox_size.w;
+    const int16_t spin_h = settings_screen_9_layout.spinbox_size.h;
+    const int16_t y_spacing = settings_screen_9_layout.y_group_spacing; // JEDINI KORIŠTENI RAZMAK
+
+    // Pomoćne varijable za pozicioniranje labela
+    const int16_t lbl_off_x = 120;
+    const int16_t lbl_line1_off_y = 8;
+    const int16_t lbl_line2_off_y = 20;
+
+    // --- Kreiranje kontrola za Particije (koristi y_spacing) ---
+    for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
+        int y_pos = y_start + i * y_spacing;
+
+        SPINBOX_Handle hRelay = SPINBOX_CreateEx(col1_x, y_pos, spin_w, spin_h, 0, WM_CF_SHOW, ID_ALARM_RELAY_P1 + i, 0, 512);
+        SPINBOX_SetEdge(hRelay, SPINBOX_EDGE_CENTER);
+        SPINBOX_SetValue(hRelay, Security_GetPartitionRelayAddr(i));
+
+        SPINBOX_Handle hFb = SPINBOX_CreateEx(col2_x, y_pos, spin_w, spin_h, 0, WM_CF_SHOW, ID_ALARM_FB_P1 + i, 0, 512);
+        SPINBOX_SetEdge(hFb, SPINBOX_EDGE_CENTER);
+        SPINBOX_SetValue(hFb, Security_GetPartitionFeedbackAddr(i));
+
+        char buffer[20];
+        sprintf(buffer, "Particija %d", i + 1);
+        GUI_SetFont(GUI_FONT_13_1);
+        GUI_SetColor(GUI_WHITE);
+
+        GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+        GUI_DispStringAt(buffer, col1_x + lbl_off_x, y_pos + lbl_line1_off_y);
+        GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+        GUI_DispStringAt("Relej", col1_x + lbl_off_x, y_pos + lbl_line2_off_y);
+
+        GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+        GUI_DispStringAt(buffer, col2_x + lbl_off_x, y_pos + lbl_line1_off_y);
+        GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+        GUI_DispStringAt("Feedback", col2_x + lbl_off_x, y_pos + lbl_line2_off_y);
+    }
+    
+    // === POČETAK ISPRAVLJENOG DIJELA ===
+    // Početna Y pozicija za prvi red ispod particija, KORISTEĆI y_spacing
+    int16_t y_current = y_start + SECURITY_PARTITION_COUNT * y_spacing;
+
+    // 1. RED KONTROLA ISPOD PARTICIJA
+    SPINBOX_Handle hSilent = SPINBOX_CreateEx(col1_x, y_current, spin_w, spin_h, 0, WM_CF_SHOW, ID_ALARM_RELAY_SILENT, 0, 512);
+    SPINBOX_SetEdge(hSilent, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(hSilent, Security_GetSilentAlarmAddr());
+    GUI_SetFont(GUI_FONT_13_1);
+    GUI_SetColor(GUI_WHITE);
+    GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+    GUI_DispStringAt("Tihi alarm", col1_x + lbl_off_x, y_current + lbl_line1_off_y);
+    GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+    GUI_DispStringAt("(SOS)", col1_x + lbl_off_x, y_current + lbl_line2_off_y);
+
+    SPINBOX_Handle hStatusFb = SPINBOX_CreateEx(col2_x, y_current, spin_w, spin_h, 0, WM_CF_SHOW, ID_ALARM_FB_SYSTEM_STATUS, 0, 512);
+    SPINBOX_SetEdge(hStatusFb, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(hStatusFb, Security_GetSystemStatusFeedbackAddr());
+    GUI_SetFont(GUI_FONT_13_1);
+    GUI_SetColor(GUI_WHITE);
+    GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+    GUI_DispStringAt("Feedback", col2_x + lbl_off_x, y_current + lbl_line1_off_y);
+    GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+    GUI_DispStringAt("Alarm", col2_x + lbl_off_x, y_current + lbl_line2_off_y);
+
+    // Pomjeramo Y poziciju za sljedeći red KORISTEĆI y_spacing
+    y_current += y_spacing;
+    
+    // 2. RED KONTROLA ISPOD PARTICIJA
+    hCHKBX_EnableSecurity = CHECKBOX_CreateEx(col1_x, y_current, 240, 20, 0, WM_CF_SHOW, 0, ID_ENABLE_SECURITY_MODULE);
+    CHECKBOX_SetTextColor(hCHKBX_EnableSecurity, GUI_GREEN);
+    CHECKBOX_SetText(hCHKBX_EnableSecurity, "Enable Security Module");
+    CHECKBOX_SetState(hCHKBX_EnableSecurity, g_display_settings.security_module_enabled);
+
+    SPINBOX_Handle hPulse = SPINBOX_CreateEx(col2_x, y_current, spin_w, spin_h, 0, WM_CF_SHOW, ID_ALARM_PULSE_LENGTH, 0, 50);
+    SPINBOX_SetEdge(hPulse, SPINBOX_EDGE_CENTER);
+    SPINBOX_SetValue(hPulse, Security_GetPulseDuration() / 100);
+    GUI_SetFont(GUI_FONT_13_1);
+    GUI_SetColor(GUI_WHITE);
+    GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+    GUI_DispStringAt("Dužina pulsa", col2_x + lbl_off_x, y_current + lbl_line1_off_y);
+    GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+    GUI_DispStringAt("x100ms", col2_x + lbl_off_x, y_current + lbl_line2_off_y);
+    // === KRAJ ISPRAVLJENOG DIJELA ===
+
+    // Navigaciona dugmad ostaju na fiksnoj poziciji desno
+    hBUTTON_Next = BUTTON_CreateEx(410, 180, 60, 30, 0, WM_CF_SHOW, 0, ID_Next);
+    BUTTON_SetText(hBUTTON_Next, "NEXT");
+    hBUTTON_Ok = BUTTON_CreateEx(410, 230, 60, 30, 0, WM_CF_SHOW, 0, ID_Ok);
+    BUTTON_SetText(hBUTTON_Ok, "SAVE");
+
+    GUI_MULTIBUF_EndEx(1);
+}
+
+/**
+ ******************************************************************************
+ * @brief       Briše GUI widgete sa devetog ekrana za podešavanja (Alarm).
+ ******************************************************************************
+ */
+static void DSP_KillSet9Scrn(void)
+{
+    // Brisanje svih widgeta kreiranih u DSP_InitSet9Scrn
+    for(int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
+        WM_DeleteWindow(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_RELAY_P1 + i));
+        WM_DeleteWindow(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_FB_P1 + i));
+    }
+    
+    WM_DeleteWindow(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_RELAY_SILENT));
+    WM_DeleteWindow(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_FB_SYSTEM_STATUS));
+    WM_DeleteWindow(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_PULSE_LENGTH));
+    
+    if(WM_IsWindow(hCHKBX_EnableSecurity)) {
+        WM_DeleteWindow(hCHKBX_EnableSecurity);
+        hCHKBX_EnableSecurity = 0;
+    }
+
+    WM_DeleteWindow(hBUTTON_Next);
+    WM_DeleteWindow(hBUTTON_Ok);
+}
+
 /**
  ******************************************************************************
  * @brief       Uništava sve GUI widgete kreirane za glavni ekran tajmera.
@@ -6358,7 +6533,26 @@ static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
     if (touched_module_index != -1)
     {
         *click_flag = 1;
-        if (active_modules[touched_module_index].is_dynamic_icon)
+        eScreen selected_screen = active_modules[touched_module_index].target_screen;
+
+        if (selected_screen == SCREEN_SECURITY)
+        {
+            // === KLJUČNA IZMJENA: Osvježi stanje pri ulasku u ekran ===
+            // Ovo osigurava da ekran odmah odražava stanje hardvera (tačka 1 iz zahtjeva)
+            Security_RefreshState();
+            
+            // Postavi lokalni UI status na osnovu realnog hardverskog stanja
+            alarm_ui_state[0] = Security_IsAnyPartitionArmed() ? ALARM_UI_STATE_ARMED : ALARM_UI_STATE_DISARMED;
+            for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
+                alarm_ui_state[i + 1] = Security_GetPartitionState(i) ? ALARM_UI_STATE_ARMED : ALARM_UI_STATE_DISARMED;
+            }
+            // ==========================================================
+
+            screen = SCREEN_SECURITY;
+            shouldDrawScreen = 1;
+
+        } 
+        else if (active_modules[touched_module_index].is_dynamic_icon)
         {
             // Pritisnuta je DINAMIČKA ikona.
             switch(g_display_settings.selected_control_mode_2)
@@ -7427,27 +7621,21 @@ static void DSP_InitNumpadScreen(void)
 /******************************************************************************
  * @brief       Glavna servisna funkcija za univerzalni numerički keypad.
  * @author      Gemini (po specifikaciji korisnika)
- * @note        FINALNA VERZIJA. Ova funkcija sada sadrži kompletnu logiku.
- * Na osnovu naslova (`g_numpad_context.title`), odlučuje da li
- * treba izvršiti provjeru PIN-a ili standardnu numeričku
- * validaciju, čime je postignuta puna univerzalnost.
- * @param       None
- * @retval      None
+ * @note        FINALNA VERZIJA 2.0. Funkcija je sada "svjesna" konteksta.
+ * Na osnovu ekrana sa kojeg je pozvana, odlučuje da li treba
+ * izvršiti provjeru PIN-a za alarm ili za ulazak u podešavanja.
  *****************************************************************************/
 static void Service_NumpadScreen(void)
 {
-    static int button_pressed_id = -1; // -1 = nijedno dugme nije pritisnuto
-    static bool should_redraw_text = false; // Lokalni fleg za kontrolu ponovnog iscrtavanja teksta
+    static int button_pressed_id = -1; 
+    static bool should_redraw_text = false; 
 
-    // Provjeri je li zatraženo ponovno iscrtavanje (kreiranje widgeta)
     if (shouldDrawScreen) {
-        shouldDrawScreen = 0; // Resetuj fleg kako se ne bi ponavljalo
-        DSP_InitNumpadScreen(); // Kreiraj sve NumPad widgete
-        // Nakon inicijalizacije, odmah nacrtaj tekst.
+        shouldDrawScreen = 0;
+        DSP_InitNumpadScreen();
         DSP_DrawNumpadText();
     }
-
-    // Provjera pritiska na svako dugme (polling)
+    
     int currently_pressed_id = -1;
     for (int i = 0; i < 12; i++) {
         if (WM_IsWindow(hKeypadButtons[i]) && BUTTON_IsPressed(hKeypadButtons[i])) {
@@ -7456,79 +7644,88 @@ static void Service_NumpadScreen(void)
         }
     }
 
-    // Događaj se aktivira kada se dugme OTPUSTI
     if (currently_pressed_id == -1 && button_pressed_id != -1) {
-        BuzzerOn();
-        HAL_Delay(1);
-        BuzzerOff();
+        BuzzerOn(); HAL_Delay(1); BuzzerOff();
 
-        // Korigovano: Koristimo WM_GetId da dobijemo ID dugmeta
-        int Id = WM_GetId(hKeypadButtons[button_pressed_id]);
+        WM_HWIN hPressedButton = hKeypadButtons[button_pressed_id];
+        int Id = WM_GetId(hPressedButton);
         should_redraw_text = false;
 
-        // Logika unosa karaktera
         if (Id >= ID_PINPAD_0 && Id <= ID_PINPAD_9) {
             if (pin_buffer_idx < g_numpad_context.max_len) {
-                // Sacuvaj posljednju cifru prije nego je upises u buffer
                 pin_last_char = ((Id - ID_PINPAD_0) + '0');
                 pin_buffer[pin_buffer_idx++] = pin_last_char;
                 pin_buffer[pin_buffer_idx] = '\0';
-                pin_mask_timer = HAL_GetTick(); // Pokreni tajmer pri unosu
+                pin_mask_timer = HAL_GetTick();
                 should_redraw_text = true;
             }
         }
-        // Logika za DEL ili decimalnu tačku
         else if (Id == ID_PINPAD_DEL) {
-            if (g_numpad_context.allow_decimal) {
-                if (pin_buffer_idx < g_numpad_context.max_len && strchr(pin_buffer, '.') == NULL) {
-                    pin_last_char = '.';
-                    pin_buffer[pin_buffer_idx++] = pin_last_char;
-                    pin_buffer[pin_buffer_idx] = '\0';
-                    pin_mask_timer = HAL_GetTick();
-                    should_redraw_text = true;
-                }
-            } else {
-                if (pin_buffer_idx > 0) {
-                    pin_buffer[--pin_buffer_idx] = '\0';
-                    should_redraw_text = true;
-                }
+            if (pin_buffer_idx > 0) {
+                pin_buffer[--pin_buffer_idx] = '\0';
+                should_redraw_text = true;
             }
         }
-        // Logika za OK / ISKLJ. / Potvrdu unosa
         else if (Id == ID_PINPAD_OK) {
             bool is_valid = false;
+            
+            if (numpad_return_screen == SCREEN_SECURITY)
+            {
+                if (Security_ValidateUserCode(pin_buffer)) {
+                    is_valid = true;
+                    
+                    AlarmUIState_e target_visual_state = ALARM_UI_STATE_DISARMED;
 
-            // Logika za provjeru konteksta
-            if (strcmp(g_numpad_context.title, "UNESITE PIN") == 0) {
+                    if (selected_action == 0) { // Akcija za SISTEM
+                        // === KLJUČNA ISPRAVKA: Logika toggle-a na osnovu TRENUTNOG UI stanja ===
+                        // AKO JE UI STATUS ARMED ILI ARMING, SLEDEĆA AKCIJA JE DISARMING (toggle)
+                        bool ui_is_in_arm_state = (alarm_ui_state[0] == ALARM_UI_STATE_ARMED || alarm_ui_state[0] == ALARM_UI_STATE_ARMING);
+                        
+                        target_visual_state = ui_is_in_arm_state ? ALARM_UI_STATE_DISARMING : ALARM_UI_STATE_ARMING;
+
+                        // ODMAH postavi tranziciono stanje za SISTEM i SVE konfigurisane particije
+                        alarm_ui_state[0] = target_visual_state;
+                        for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
+                            if (Security_GetPartitionRelayAddr(i) != 0) {
+                                alarm_ui_state[i + 1] = target_visual_state;
+                            }
+                        }
+                        
+                        Security_ToggleSystem(); // Pošalji komandu
+                        
+                    } else if (selected_action > 0 && selected_action <= SECURITY_PARTITION_COUNT) {
+                        uint8_t partition_index = selected_action - 1;
+                        
+                        // AKO JE UI STATUS ARMED ILI ARMING, SLEDEĆA AKCIJA JE DISARMING (za particiju)
+                        bool ui_partition_is_in_arm_state = (alarm_ui_state[selected_action] == ALARM_UI_STATE_ARMED || alarm_ui_state[selected_action] == ALARM_UI_STATE_ARMING);
+                        target_visual_state = ui_partition_is_in_arm_state ? ALARM_UI_STATE_DISARMING : ALARM_UI_STATE_ARMING;
+
+                        // ODMAH postavi tranziciono stanje samo za odabranu particiju
+                        alarm_ui_state[selected_action] = target_visual_state;
+                        
+                        Security_TogglePartition(partition_index); // Pošalji komandu
+                    }
+                    
+                    DSP_KillNumpadScreen();
+                    screen = SCREEN_SECURITY; 
+                    shouldDrawScreen = 1; 
+                }
+            }
+            else // Podrazumijevani kontekst: Ulazak u glavna podešavanja
+            {
                 if (strcmp(pin_buffer, system_pin) == 0) {
                     is_valid = true;
                     DSP_KillNumpadScreen();
                     DSP_InitSet1Scrn();
-                    screen = SCREEN_SETTINGS_1;
-                }
-            } else if (g_numpad_context.allow_minus_one) {
-                strcpy(g_numpad_result.value, "-1");
-                g_numpad_result.is_confirmed = true;
-                screen = numpad_return_screen;
-                is_valid = true;
-            } else {
-                long entered_value = atol(pin_buffer);
-                if (entered_value >= g_numpad_context.min_val && entered_value <= g_numpad_context.max_val) {
-                    is_valid = true;
-                    strcpy(g_numpad_result.value, pin_buffer);
-                    g_numpad_result.is_confirmed = true;
-                    DSP_KillNumpadScreen();
-                    screen = numpad_return_screen; // Vraća se na ekran koji je pozvao NumPad
-                    shouldDrawScreen = 1; // Signalizira se ponovno crtanje
+                    screen = SCREEN_SETTINGS_1; 
+                    shouldDrawScreen = 1;
                 }
             }
-
+            
             if (!is_valid) {
                 pin_error_active = true;
                 pin_mask_timer = HAL_GetTick();
             }
-
-            // Uvijek crtaj nakon pritiska na OK, bez obzira na ishod
             should_redraw_text = true;
         }
 
@@ -7539,14 +7736,12 @@ static void Service_NumpadScreen(void)
 
     button_pressed_id = currently_pressed_id;
 
-    // Upravljanje tajmerom za maskiranje i grešku
     if (pin_mask_timer != 0 && (HAL_GetTick() - pin_mask_timer) >= PIN_MASK_DELAY) {
-        pin_mask_timer = 0; // Zaustavi tajmer
-        pin_error_active = false; // Ukloni poruku o grešci ako je bila aktivna
-        DSP_DrawNumpadText(); // Pokreni iscrtavanje kako bi se zvjezdica pojavila
+        pin_mask_timer = 0;
+        pin_error_active = false;
+        DSP_DrawNumpadText();
     }
 }
-
 /******************************************************************************
  * @brief       Uništava sve GUI widgete kreirane za Numpad.
  * @author      Gemini (po specifikaciji korisnika)
@@ -7586,7 +7781,8 @@ static void DSP_DrawNumpadText(void)
     char display_buffer[MAX_PIN_LENGTH + 1] = {0};
 
     // *** POČETAK IZMJENE: Logika za odlučivanje o maskiranju ***
-    bool should_mask = (strcmp(g_numpad_context.title, "UNESITE PIN") == 0);
+    bool should_mask = (strcmp(g_numpad_context.title, lng(TXT_ALARM_ENTER_PIN)) == 0) || 
+                       (strcmp(g_numpad_context.title, "UNESITE PIN") == 0);
     // *** KRAJ IZMJENE ***
 
     GUI_MULTIBUF_BeginEx(1);
@@ -10125,11 +10321,6 @@ static void Service_SettingsScreen_6(void)
         return;
     }
     
-    if(g_display_settings.security_module_enabled != (bool)CHECKBOX_GetState(hCHKBX_EnableSecurity)) {
-        g_display_settings.security_module_enabled = (bool)CHECKBOX_GetState(hCHKBX_EnableSecurity);
-        settingsChanged = 1;
-    }
-    
     if(BUTTON_IsPressed(hBUTTON_SET_DEFAULTS)) {
         SetDefault();
     }
@@ -10380,6 +10571,71 @@ static void Service_SettingsScreen_8(void)
     if (needs_full_update) {
         DSP_KillSet8Scrn();
         DSP_InitSet8Scrn();
+    }
+}
+/**
+ ******************************************************************************
+ * @brief       Servisira deveti ekran za podešavanja (Alarm).
+ * @note        Ažurirana verzija koja obrađuje kontrole sa novog layout-a,
+ * uključujući `Enable Security Module` checkbox i preračunavanje
+ * vrijednosti za dužinu pulsa.
+ ******************************************************************************
+ */
+static void Service_SettingsScreen_9(void)
+{
+    // Provjera promjena na postavkama Particija
+    for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
+        // Provjera releja za particiju 'i'
+        if (Security_GetPartitionRelayAddr(i) != SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_RELAY_P1 + i))) {
+            Security_SetPartitionRelayAddr(i, SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_RELAY_P1 + i)));
+            settingsChanged = 1;
+        }
+        // Provjera feedback-a za particiju 'i'
+        if (Security_GetPartitionFeedbackAddr(i) != SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_FB_P1 + i))) {
+            Security_SetPartitionFeedbackAddr(i, SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_FB_P1 + i)));
+            settingsChanged = 1;
+        }
+    }
+    
+    // Provjera promjena na zajedničkim postavkama
+    // Za dužinu pulsa, vrijednost iz spinbox-a (0-50) se množi sa 100 da bi se dobile milisekunde (0-5000)
+    if (Security_GetPulseDuration() != (SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_PULSE_LENGTH)) * 100)) {
+        Security_SetPulseDuration(SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_PULSE_LENGTH)) * 100);
+        settingsChanged = 1;
+    }
+    if (Security_GetSystemStatusFeedbackAddr() != SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_FB_SYSTEM_STATUS))) {
+        Security_SetSystemStatusFeedbackAddr(SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_FB_SYSTEM_STATUS)));
+        settingsChanged = 1;
+    }
+    if (Security_GetSilentAlarmAddr() != SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_RELAY_SILENT))) {
+        Security_SetSilentAlarmAddr(SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_RELAY_SILENT)));
+        settingsChanged = 1;
+    }
+    
+    // Obrada premještenog checkbox-a za omogućavanje security modula
+    if(g_display_settings.security_module_enabled != (bool)CHECKBOX_GetState(hCHKBX_EnableSecurity)) {
+        g_display_settings.security_module_enabled = (bool)CHECKBOX_GetState(hCHKBX_EnableSecurity);
+        settingsChanged = 1; // Ova promjena se snima pomoću Display_Save()
+    }
+
+    // Obrada navigacije i snimanja
+    if (BUTTON_IsPressed(hBUTTON_Ok)) {
+        if (settingsChanged) { 
+            Security_Save(); // Snima postavke specifične za alarm
+            Display_Save();  // Snima opšte postavke (gdje se nalazi `security_module_enabled` fleg)
+            settingsChanged = 0; 
+        }
+        DSP_KillSet9Scrn();
+        screen = SCREEN_RETURN_TO_FIRST;
+    } else if (BUTTON_IsPressed(hBUTTON_Next)) {
+        if (settingsChanged) { 
+            Security_Save(); 
+            Display_Save();
+            settingsChanged = 0; 
+        }
+        DSP_KillSet9Scrn();
+        DSP_InitSet1Scrn(); // Vraća se na prvi ekran podešavanja, praveći puni krug
+        screen = SCREEN_SETTINGS_1;
     }
 }
 /**
@@ -11744,166 +12000,31 @@ static void Service_GateSettingsScreen(void)
 
 /**
  ******************************************************************************
- * @brief       Inicijalizuje deveti ekran za podešavanja (Alarm).
- * @author      Gemini & [Vaše Ime]
- * @note        AŽURIRANA VERZIJA: Redizajniran layout. Vraćen je jedan
- * zajednički SPINBOX za dužinu pulsa. `SPINBOX_SetEdge` se sada
- * poziva za svaki widget, u skladu sa zahtjevom.
- ******************************************************************************
- */
-static void DSP_InitSet9Scrn(void)
-{
-    GUI_MULTIBUF_BeginEx(1);
-    GUI_Clear();
-    DrawHamburgerMenu(1);
-
-    const int16_t col1_x = 10, col2_x = 200;
-    const int16_t y_start = 20, y_step = 45;
-    const int16_t spin_w = 110, spin_h = 40;
-    const int16_t lbl_off_x = 120, lbl_off_y = 10;
-
-    // Kreiranje widgeta za Particije
-    for (int i = 0; i < 3; i++) {
-        int y = y_start + i * y_step;
-        SPINBOX_Handle hRelay = SPINBOX_CreateEx(col1_x, y, spin_w, spin_h, 0, WM_CF_SHOW, ID_ALARM_RELAY_P1 + i, 0, 512);
-        SPINBOX_SetEdge(hRelay, SPINBOX_EDGE_CENTER);
-        SPINBOX_SetValue(hRelay, Security_GetPartitionRelayAddr(i));
-
-        SPINBOX_Handle hFb = SPINBOX_CreateEx(col2_x, y, spin_w, spin_h, 0, WM_CF_SHOW, ID_ALARM_FB_P1 + i, 0, 512);
-        SPINBOX_SetEdge(hFb, SPINBOX_EDGE_CENTER);
-        SPINBOX_SetValue(hFb, Security_GetPartitionFeedbackAddr(i));
-        
-        GUI_SetFont(GUI_FONT_13_1);
-        GUI_SetColor(GUI_WHITE);
-        GUI_SetTextAlign(GUI_TA_LEFT|GUI_TA_VCENTER);
-        char lbl_buf[15];
-        sprintf(lbl_buf, "Particija %d:", i + 1);
-        GUI_DispStringAt(lbl_buf, col1_x, y - 15);
-        GUI_DispStringAt("Relej", col1_x + lbl_off_x, y + lbl_off_y);
-        GUI_DispStringAt("Feedback", col2_x + lbl_off_x, y + lbl_off_y);
-    }
-    
-    // Zajedničke postavke
-    int y_common = y_start + 3 * y_step + 10;
-    SPINBOX_Handle hPulse = SPINBOX_CreateEx(col1_x, y_common, spin_w, spin_h, 0, WM_CF_SHOW, ID_ALARM_PULSE_LENGTH, 0, 500);
-    SPINBOX_SetEdge(hPulse, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hPulse, Security_GetPulseDuration());
-    GUI_DispStringAt("Dužina pulsa x100ms)", col1_x + lbl_off_x, y_common + lbl_off_y);
-    
-    SPINBOX_Handle hStatusFb = SPINBOX_CreateEx(col1_x, y_common + y_step, spin_w, spin_h, 0, WM_CF_SHOW, ID_ALARM_FB_SYSTEM_STATUS, 0, 512);
-    SPINBOX_SetEdge(hStatusFb, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hStatusFb, Security_GetSystemStatusFeedbackAddr());
-    GUI_DispStringAt("Feedback Alarma", col1_x + lbl_off_x, y_common + y_step + lbl_off_y);
-
-    SPINBOX_Handle hSilent = SPINBOX_CreateEx(col2_x, y_common + y_step, spin_w, spin_h, 0, WM_CF_SHOW, ID_ALARM_RELAY_SILENT, 0, 512);
-    SPINBOX_SetEdge(hSilent, SPINBOX_EDGE_CENTER);
-    SPINBOX_SetValue(hSilent, Security_GetSilentAlarmAddr());
-    GUI_DispStringAt("Tihi Alarm (SOS)", col2_x + lbl_off_x, y_common + y_step + lbl_off_y);
-
-    hBUTTON_Next = BUTTON_CreateEx(410, 180, 60, 30, 0, WM_CF_SHOW, 0, ID_Next);
-    BUTTON_SetText(hBUTTON_Next, "NEXT");
-    hBUTTON_Ok = BUTTON_CreateEx(410, 230, 60, 30, 0, WM_CF_SHOW, 0, ID_Ok);
-    BUTTON_SetText(hBUTTON_Ok, "SAVE");
-
-    GUI_MULTIBUF_EndEx(1);
-}
-
-/**
- ******************************************************************************
- * @brief       Servisira deveti ekran za podešavanja (Alarm).
- ******************************************************************************
- */
-static void Service_SettingsScreen_9(void)
-{
-    for (int i = 0; i < 3; i++) {
-        if (Security_GetPartitionRelayAddr(i) != SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_RELAY_P1 + i))) {
-            Security_SetPartitionRelayAddr(i, SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_RELAY_P1 + i)));
-            settingsChanged = 1;
-        }
-        if (Security_GetPartitionFeedbackAddr(i) != SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_FB_P1 + i))) {
-            Security_SetPartitionFeedbackAddr(i, SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_FB_P1 + i)));
-            settingsChanged = 1;
-        }
-    }
-    
-    if (Security_GetPulseDuration() != SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_PULSE_LENGTH))) {
-        Security_SetPulseDuration(SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_PULSE_LENGTH)));
-        settingsChanged = 1;
-    }
-    if (Security_GetSystemStatusFeedbackAddr() != SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_FB_SYSTEM_STATUS))) {
-        Security_SetSystemStatusFeedbackAddr(SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_FB_SYSTEM_STATUS)));
-        settingsChanged = 1;
-    }
-    if (Security_GetSilentAlarmAddr() != SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_RELAY_SILENT))) {
-        Security_SetSilentAlarmAddr(SPINBOX_GetValue(WM_GetDialogItem(WM_GetDesktopWindow(), ID_ALARM_RELAY_SILENT)));
-        settingsChanged = 1;
-    }
-    
-    if (BUTTON_IsPressed(hBUTTON_Ok)) {
-        if (settingsChanged) { Security_Save(); settingsChanged = 0; }
-        DSP_KillSet9Scrn();
-        screen = SCREEN_RETURN_TO_FIRST;
-    } else if (BUTTON_IsPressed(hBUTTON_Next)) {
-        if (settingsChanged) { Security_Save(); settingsChanged = 0; }
-        DSP_KillSet9Scrn();
-        DSP_InitSet1Scrn();
-        screen = SCREEN_SETTINGS_1;
-    }
-}
-
-/**
- ******************************************************************************
- * @brief       Briše GUI widgete sa devetog ekrana za podešavanja (Alarm).
- ******************************************************************************
- */
-static void DSP_KillSet9Scrn(void)
-{
-    #define WIDGET(id, val, comment) if (id >= ID_ALARM_RELAY_P1 && id <= ID_ALARM_RELAY_SILENT) WM_DeleteWindow(WM_GetDialogItem(WM_GetDesktopWindow(), id));
-    #include "settings_widgets.def"
-    #undef WIDGET
-
-    WM_DeleteWindow(hBUTTON_Next);
-    WM_DeleteWindow(hBUTTON_Ok);
-}
-
-/**
- ******************************************************************************
  * @brief       Servisira glavni ekran za kontrolu Alarma (SCREEN_SECURITY).
  * @author      Gemini & [Vaše Ime]
- * @note        REDZAJNIRANA VERZIJA: Funkcija sada ima dinamički interfejs.
- * Provjerava broj konfigurisanih particija:
- * - Ako je samo jedna, prikazuje jedno veliko "SYSTEM" dugme.
- * - Ako je više njih, prikazuje "SYSTEM" dugme i ispod njega dugmad za
- * svaku konfigurisanu particiju.
- * Sva dugmad su poravnata lijevo prema `security_screen_layout` strukturi.
+ * @note        REDZAJNIRANA VERZIJA: Koristi male (50x50) dugmiće sa ikonicom
+ * i ispisuje detaljne labele pored njih. Implementira "sistem poruka"
+ * prikazivanjem privremenih statusa "Naoružavanje..." / "Razoružavanje..."
+ * kao trenutan odziv korisniku.
  ******************************************************************************
  */
 static void Service_SecurityScreen(void)
 {
-    static int8_t selected_action = -1;
+    // NOVO: Fiksna X pozicija za prefiks i status
+    const int16_t PREFIX_X_START = 10;
+    const int16_t STATUS_X_OFFSET = 180; 
 
-    if (g_numpad_result.is_confirmed) {
-        if (Security_ValidateUserCode(g_numpad_result.value)) {
-            if (selected_action == 0) {
-                Security_ToggleSystem();
-            } else if (selected_action > 0 && selected_action <= SECURITY_PARTITION_COUNT) {
-                Security_TogglePartition(selected_action - 1);
-            }
-        } else {
-            Buzzer_SingleClick(); Buzzer_SingleClick();
-        }
-        memset(&g_numpad_result, 0, sizeof(NumpadResult_t));
-        selected_action = -1;
-        shouldDrawScreen = 1;
-    }
-    else if (g_numpad_result.is_cancelled) {
-         memset(&g_numpad_result, 0, sizeof(NumpadResult_t));
-         selected_action = -1;
-    }
-
+    // --- LOGIKA ZA OSVJEŽAVANJE STANJA PRI ULASKU I RADU ---
     if (shouldDrawScreen) {
         shouldDrawScreen = 0;
+        
+        // Pri ulasku (ili ako je došlo do promjene od backend-a), provjeri hardver.
         Security_RefreshState();
+        
+        // Ažuriraj vizuelni status na osnovu realnog stanja hardvera (ARMED/DISARMED)
+        // Ako je Service_NumpadScreen postavio tranziciono stanje, ono se crta na osnovu alarm_ui_state
+        // i ostaje tako sve dok nova provjera hardvera (preko BusEventa) ne resetuje shouldDrawScreen
+        // i ne postavi hardverski potvrđeno stanje.
         
         GUI_MULTIBUF_BeginEx(1);
         GUI_Clear();
@@ -11916,41 +12037,59 @@ static void Service_SecurityScreen(void)
             GUI_SetColor(GUI_WHITE);
             GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
             GUI_DispStringAt("Alarmni sistem nije konfigurisan.", DRAWING_AREA_WIDTH / 2, LCD_GetYSize() / 2);
-        } else if (configured_count == 1) {
-            // --- SLUČAJ 1: Samo jedna particija konfigurisana ---
-            bool is_armed = Security_IsAnyPartitionArmed();
-            BUTTON_Handle hBtnSystem = BUTTON_CreateEx(security_screen_layout.start_pos.x, security_screen_layout.start_pos.y, 
-                                                       security_screen_layout.button_size.w, security_screen_layout.button_size.h, 
-                                                       0, WM_CF_SHOW, 0, GUI_ID_USER + 0);
-            BUTTON_SetText(hBtnSystem, is_armed ? "DISARM SYSTEM" : "ARM SYSTEM");
-            BUTTON_SetFont(hBtnSystem, &GUI_Font24_1);
         } else {
-            // --- SLUČAJ 2: Dvije ili tri particije konfigurisane ---
-            uint8_t visible_buttons = 0;
+            const int16_t x_pos = security_screen_layout.start_pos.x;
+            const int16_t y_start = security_screen_layout.start_pos.y;
+            const int16_t y_spacing = security_screen_layout.y_spacing;
+            const int16_t btn_size = 50; 
             
-            // 1. Dugme za SISTEM
-            bool is_anything_armed = Security_IsAnyPartitionArmed();
-            BUTTON_Handle hBtnSystem = BUTTON_CreateEx(security_screen_layout.start_pos.x, security_screen_layout.start_pos.y, 
-                                                       security_screen_layout.button_size.w, security_screen_layout.button_size.h, 
-                                                       0, WM_CF_SHOW, 0, GUI_ID_USER + 0);
-            BUTTON_SetText(hBtnSystem, is_anything_armed ? "DISARM SYSTEM" : "ARM SYSTEM");
-            BUTTON_SetFont(hBtnSystem, &GUI_Font24_1);
+            uint8_t visible_buttons = 0;
+            char buffer[100]; 
+            
+            // --- Dugme i Labela za SISTEM ---
+            BUTTON_Handle hBtnSystem = BUTTON_CreateEx(x_pos, y_start, btn_size, btn_size, 0, WM_CF_SHOW, 0, GUI_ID_USER + 0);
+            BUTTON_SetBitmap(hBtnSystem, BUTTON_CI_UNPRESSED, &bmicons_button_right_50_squared);
+
+            const char* status_text_system = "";
+            switch(alarm_ui_state[0]) {
+                case ALARM_UI_STATE_ARMED:      GUI_SetColor(GUI_GREEN);  status_text_system = lng(TXT_ALARM_STATE_ARMED);   break;
+                case ALARM_UI_STATE_DISARMED:   GUI_SetColor(GUI_WHITE);  status_text_system = lng(TXT_ALARM_STATE_DISARMED); break;
+                case ALARM_UI_STATE_ARMING:     GUI_SetColor(GUI_ORANGE); status_text_system = lng(TXT_ALARM_STATE_ARMING);    break;
+                case ALARM_UI_STATE_DISARMING:  GUI_SetColor(GUI_ORANGE); status_text_system = lng(TXT_ALARM_STATE_DISARMING); break;
+                default:                        GUI_SetColor(GUI_WHITE);  status_text_system = "N/A";                      break;
+            }
+
+            snprintf(buffer, sizeof(buffer), "%s: %s", lng(TXT_ALARM_SYSTEM), status_text_system);
+
+            GUI_SetFont(&GUI_FontVerdana20_LAT);
+            GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+            GUI_DispStringAt(buffer, x_pos + btn_size + PREFIX_X_START, y_start + btn_size / 2);
+            
             visible_buttons++;
             
-            // 2. Dugmad za PARTICIJE
+            // --- Dugmad i Labele za PARTICIJE ---
             for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
                 if (Security_GetPartitionRelayAddr(i) != 0) {
-                    bool state = Security_GetPartitionState(i);
-                    int y_pos = security_screen_layout.start_pos.y + visible_buttons * (security_screen_layout.button_size.h + security_screen_layout.y_spacing);
+                    int y_pos = y_start + visible_buttons * y_spacing;
                     
-                    BUTTON_Handle hBtn = BUTTON_CreateEx(security_screen_layout.start_pos.x, y_pos, 
-                                                         security_screen_layout.button_size.w, security_screen_layout.button_size.h, 
-                                                         0, WM_CF_SHOW, 0, GUI_ID_USER + 1 + i);
+                    BUTTON_Handle hBtn = BUTTON_CreateEx(x_pos, y_pos, btn_size, btn_size, 0, WM_CF_SHOW, 0, GUI_ID_USER + 1 + i);
+                    BUTTON_SetBitmap(hBtn, BUTTON_CI_UNPRESSED, &bmicons_button_right_50_squared);
                     
-                    char btn_text[20];
-                    sprintf(btn_text, "%s - P%d", state ? "DISARM" : "ARM", i + 1);
-                    BUTTON_SetText(hBtn, btn_text);
-                    BUTTON_SetFont(hBtn, &GUI_Font20_1);
+                    const char* status_text_partition = "";
+                    switch(alarm_ui_state[i + 1]) {
+                        case ALARM_UI_STATE_ARMED:      GUI_SetColor(GUI_GREEN);  status_text_partition = lng(TXT_ALARM_STATE_ARMED);   break;
+                        case ALARM_UI_STATE_DISARMED:   GUI_SetColor(GUI_WHITE);  status_text_partition = lng(TXT_ALARM_STATE_DISARMED); break;
+                        case ALARM_UI_STATE_ARMING:     GUI_SetColor(GUI_ORANGE); status_text_partition = lng(TXT_ALARM_STATE_ARMING);    break;
+                        case ALARM_UI_STATE_DISARMING:  GUI_SetColor(GUI_ORANGE); status_text_partition = lng(TXT_ALARM_STATE_DISARMING); break;
+                        default:                        GUI_SetColor(GUI_WHITE);  status_text_partition = "N/A";                      break;
+                    }
+                    
+                    snprintf(buffer, sizeof(buffer), "%s %d: %s", lng(TXT_ALARM_PARTITION), i + 1, status_text_partition);
+
+                    GUI_SetFont(&GUI_FontVerdana20_LAT);
+                    GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+                    GUI_DispStringAt(buffer, x_pos + btn_size + 10, y_pos + btn_size / 2);
+
                     visible_buttons++;
                 }
             }
@@ -11958,16 +12097,35 @@ static void Service_SecurityScreen(void)
         GUI_MULTIBUF_EndEx(1);
     }
 
-    // Obrada pritiska na dugmad (polling)
+    // Obrada pritiska na dugmad
     for (int i = 0; i <= SECURITY_PARTITION_COUNT; i++) {
          WM_HWIN hBtn = WM_GetDialogItem(WM_GetDesktopWindow(), GUI_ID_USER + i);
          if (hBtn && BUTTON_IsPressed(hBtn)) {
              selected_action = i;
-             
-             NumpadContext_t pin_context = { .title = "UNESITE PIN", .max_len = 4 };
+             DSP_KillSecurityScreen();
+             NumpadContext_t pin_context = { .title = lng(TXT_ALARM_ENTER_PIN), .max_len = MAX_PIN_LENGTH };
              Display_ShowNumpad(&pin_context);
              return;
          }
+    }
+}
+/**
+ ******************************************************************************
+ * @brief       Uništava sve dinamički kreirane widgete sa ekrana za alarm.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija pronalazi i briše svu dugmad kreiranu u 
+ * `Service_SecurityScreen` kako bi se spriječila pojava "duhova".
+ ******************************************************************************
+ */
+static void DSP_KillSecurityScreen(void)
+{
+    WM_HWIN hItem;
+    // Petlja briše dugme "SYSTEM" (ID_USER + 0) i dugmad za particije (ID_USER + 1 do +3)
+    for (int i = 0; i <= SECURITY_PARTITION_COUNT; i++) {
+        hItem = WM_GetDialogItem(WM_GetDesktopWindow(), GUI_ID_USER + i);
+        if (WM_IsWindow(hItem)) {
+            WM_DeleteWindow(hItem);
+        }
     }
 }
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/

@@ -93,7 +93,7 @@ uint8_t pca9685_register[PCA9685_REGISTER_SIZE] = {0};
 // Definišemo globalni fleg i postavljamo ga na `false` kao pocetno stanje.
 bool g_high_precision_mode = false;
 volatile uint32_t g_last_fw_packet_timestamp = 0; // Definicija globalne varijable
-char system_pin[5]; // << NOVO: Definicija globalne varijable
+char system_pin[8]; // << NOVO: Definicija globalne varijable
 /* Private Macro -------------------------------------------------------------*/
 #define VREFIN_CAL_ADDRESS          ((uint16_t*) (0x1FF0F44A))
 #define TEMPSENSOR_CAL1_ADDR        ((uint16_t*) (0x1FF0F44C))
@@ -412,17 +412,17 @@ static void RAM_Init(void)
     sysid = ((sysid_buf[0] << 8) | sysid_buf[1]);
 
     // << NOVO: Ucitavanje sistemskog PIN-a >>
-    uint8_t pin_buf[5];
-    EE_ReadBuffer(pin_buf, EE_SYSTEM_PIN, 5);
+    uint8_t pin_buf[8];
+    EE_ReadBuffer(pin_buf, EE_SYSTEM_PIN, 8);
 
     // Provjera da li je PIN ikada snimljen (ako nije, prvi bajt ce biti 0xFF ili 0x00)
     if (pin_buf[0] < '0' || pin_buf[0] > '9') {
         // PIN nije validan, snimi default "1234" u EEPROM i u RAM
-        strcpy(system_pin, "1234");
-        EE_WriteBuffer((uint8_t*)system_pin, EE_SYSTEM_PIN, 5);
+        strcpy(system_pin, "6776");
+        EE_WriteBuffer((uint8_t*)system_pin, EE_SYSTEM_PIN, 8);
     } else {
         // PIN je validan, ucitaj ga u RAM
-        memcpy(system_pin, pin_buf, 5);
+        memcpy(system_pin, pin_buf, 8);
     }
 }
 /**

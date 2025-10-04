@@ -80,7 +80,6 @@ static void Security_Users_SetDefault(void);
  */
 void Security_Init(void)
 {
-    Security_Users_Init();
     EE_ReadBuffer((uint8_t*)&g_security_settings, EE_SECURITY, sizeof(Security_Settings_t));
 
     if (g_security_settings.magic_number != EEPROM_MAGIC_NUMBER) {
@@ -89,8 +88,7 @@ void Security_Init(void)
     } else {
         uint16_t crc = g_security_settings.crc;
         g_security_settings.crc = 0;
-        uint16_t calculated_crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&g_security_settings, sizeof(Security_Settings_t));
-        if (crc != calculated_crc) {
+        if (crc != HAL_CRC_Calculate(&hcrc, (uint32_t*)&g_security_settings, sizeof(Security_Settings_t))) {
             Security_SetDefault();
             Security_Save();
         }
@@ -110,7 +108,6 @@ void Security_Save(void)
     g_security_settings.crc = 0;
     g_security_settings.crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&g_security_settings, sizeof(Security_Settings_t));
     EE_WriteBuffer((uint8_t*)&g_security_settings, EE_SECURITY, sizeof(Security_Settings_t));
-    Security_Users_Save();
 }
 
 /**
@@ -126,36 +123,16 @@ void Security_SetDefault(void)
 }
 
 // --- Geteri i Seteri za konfiguraciju alarma ---
-uint16_t Security_GetPartitionRelayAddr(uint8_t p) {
-    return (p < SECURITY_PARTITION_COUNT) ? g_security_settings.partition_relay_addr[p] : 0;
-}
-void Security_SetPartitionRelayAddr(uint8_t p, uint16_t addr) {
-    if (p < SECURITY_PARTITION_COUNT) g_security_settings.partition_relay_addr[p] = addr;
-}
-uint16_t Security_GetPartitionFeedbackAddr(uint8_t p) {
-    return (p < SECURITY_PARTITION_COUNT) ? g_security_settings.partition_feedback_addr[p] : 0;
-}
-void Security_SetPartitionFeedbackAddr(uint8_t p, uint16_t addr) {
-    if (p < SECURITY_PARTITION_COUNT) g_security_settings.partition_feedback_addr[p] = addr;
-}
-uint16_t Security_GetSystemStatusFeedbackAddr(void) {
-    return g_security_settings.system_status_feedback_addr;
-}
-void Security_SetSystemStatusFeedbackAddr(uint16_t addr) {
-    g_security_settings.system_status_feedback_addr = addr;
-}
-uint16_t Security_GetSilentAlarmAddr(void) {
-    return g_security_settings.silent_alarm_addr;
-}
-void Security_SetSilentAlarmAddr(uint16_t addr) {
-    g_security_settings.silent_alarm_addr = addr;
-}
-uint16_t Security_GetPulseDuration(void) {
-    return g_security_settings.pulse_duration_ms;
-}
-void Security_SetPulseDuration(uint16_t duration) {
-    g_security_settings.pulse_duration_ms = duration;
-}
+uint16_t Security_GetPartitionRelayAddr(uint8_t p) { return (p < SECURITY_PARTITION_COUNT) ? g_security_settings.partition_relay_addr[p] : 0; }
+void Security_SetPartitionRelayAddr(uint8_t p, uint16_t addr) { if (p < SECURITY_PARTITION_COUNT) g_security_settings.partition_relay_addr[p] = addr; }
+uint16_t Security_GetPartitionFeedbackAddr(uint8_t p) { return (p < SECURITY_PARTITION_COUNT) ? g_security_settings.partition_feedback_addr[p] : 0; }
+void Security_SetPartitionFeedbackAddr(uint8_t p, uint16_t addr) { if (p < SECURITY_PARTITION_COUNT) g_security_settings.partition_feedback_addr[p] = addr; }
+uint16_t Security_GetSystemStatusFeedbackAddr(void) { return g_security_settings.system_status_feedback_addr; }
+void Security_SetSystemStatusFeedbackAddr(uint16_t addr) { g_security_settings.system_status_feedback_addr = addr; }
+uint16_t Security_GetSilentAlarmAddr(void) { return g_security_settings.silent_alarm_addr; }
+void Security_SetSilentAlarmAddr(uint16_t addr) { g_security_settings.silent_alarm_addr = addr; }
+uint16_t Security_GetPulseDuration(void) { return g_security_settings.pulse_duration_ms; }
+void Security_SetPulseDuration(uint16_t duration) { g_security_settings.pulse_duration_ms = duration; }
 
 /*============================================================================*/
 /* IMPLEMENTACIJA - USER PINS                                                 */
@@ -175,10 +152,8 @@ void Security_Users_Init(void) {
         Security_Users_SetDefault();
         Security_Users_Save();
     } else {
-        uint16_t crc = g_security_users.crc;
-        g_security_users.crc = 0;
-        uint16_t calculated_crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&g_security_users, sizeof(Security_Users_t));
-        if (crc != calculated_crc) {
+        uint16_t crc = g_security_users.crc; g_security_users.crc = 0;
+        if (crc != HAL_CRC_Calculate(&hcrc, (uint32_t*)&g_security_users, sizeof(Security_Users_t))) {
             Security_Users_SetDefault();
             Security_Users_Save();
         }
@@ -192,8 +167,7 @@ void Security_Users_Init(void) {
  ******************************************************************************
  */
 void Security_Users_Save(void) {
-    g_security_users.magic_number = EEPROM_MAGIC_NUMBER;
-    g_security_users.crc = 0;
+    g_security_users.magic_number = EEPROM_MAGIC_NUMBER; g_security_users.crc = 0;
     g_security_users.crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&g_security_users, sizeof(Security_Users_t));
     EE_WriteBuffer((uint8_t*)&g_security_users, EE_USERS, sizeof(Security_Users_t));
 }
@@ -287,8 +261,7 @@ void Security_ToggleSystem(void) {
  ******************************************************************************
  */
 void Security_TriggerSilentAlarm(void) {
-    uint16_t address = g_security_settings.silent_alarm_addr;
-    if (address == 0) return;
+    uint16_t address = g_security_settings.silent_alarm_addr; if (address == 0) return;
     uint8_t data_buff[3] = { (address >> 8) & 0xFF, address & 0xFF, BINARY_ON };
     AddCommand(&binaryQueue, BINARY_SET, data_buff, 3);
 }
@@ -334,12 +307,7 @@ void SECURITY_BusEvent(uint16_t address, uint8_t command, uint8_t* data, uint8_t
     if (command != DIN_EVENT || address == 0) return;
     bool is_relevant = false;
     if (address == g_security_settings.system_status_feedback_addr) is_relevant = true;
-    else {
-        for (uint8_t i = 0; i < SECURITY_PARTITION_COUNT; i++) if (address == g_security_settings.partition_feedback_addr[i]) {
-                is_relevant = true;
-                break;
-            }
-    }
+    else { for (uint8_t i = 0; i < SECURITY_PARTITION_COUNT; i++) if (address == g_security_settings.partition_feedback_addr[i]) { is_relevant = true; break; } }
     if (is_relevant) HandleSensorEvent(address, (len > 0) ? data[0] : 0);
 }
 
@@ -419,17 +387,8 @@ bool Security_ValidateUserCode(const char* code) {
  */
 static void HandleSensorEvent(uint16_t sensor_addr, uint8_t state) {
     bool state_changed = false;
-    for(int i = 0; i < SECURITY_PARTITION_COUNT; ++i) if (g_security_settings.partition_feedback_addr[i] == sensor_addr) {
-            if (partition_is_armed[i] != (bool)state) {
-                partition_is_armed[i] = (bool)state;
-                state_changed = true;
-            }
-            break;
-        }
-    if (g_security_settings.system_status_feedback_addr == sensor_addr) if (system_is_in_alarm != (bool)state) {
-            system_is_in_alarm = (bool)state;
-            state_changed = true;
-        }
+    for(int i = 0; i < SECURITY_PARTITION_COUNT; ++i) if (g_security_settings.partition_feedback_addr[i] == sensor_addr) { if (partition_is_armed[i] != (bool)state) { partition_is_armed[i] = (bool)state; state_changed = true; } break; }
+    if (g_security_settings.system_status_feedback_addr == sensor_addr) if (system_is_in_alarm != (bool)state) { system_is_in_alarm = (bool)state; state_changed = true; }
     if (state_changed && (screen == SCREEN_SECURITY)) shouldDrawScreen = 1;
 }
 
@@ -444,8 +403,7 @@ static void HandleSensorEvent(uint16_t sensor_addr, uint8_t state) {
  ******************************************************************************
  */
 static void Execute_Command(uint8_t partition_index) {
-    uint16_t address = g_security_settings.partition_relay_addr[partition_index];
-    if (address == 0) return;
+    uint16_t address = g_security_settings.partition_relay_addr[partition_index]; if (address == 0) return;
     uint8_t data_buff[3] = { (address >> 8) & 0xFF, address & 0xFF, 0 };
     if (g_security_settings.pulse_duration_ms > 0) {
         data_buff[2] = BINARY_ON;

@@ -23,7 +23,7 @@
  */
 #define SECURITY_PARTITION_COUNT 3
 #define SECURITY_USER_COUNT 3
-#define SECURITY_PIN_LENGTH 5
+#define SECURITY_PIN_LENGTH 9
 
 #pragma pack(push, 1)
 /**
@@ -109,6 +109,28 @@ void     Security_SetSilentAlarmAddr(uint16_t addr);
 uint16_t Security_GetPulseDuration(void);
 void     Security_SetPulseDuration(uint16_t duration);
 
+/******************************************************************************
+ * @brief       Dohvata PIN kod za određenog korisnika.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Funkcija vraća pokazivač na string sa PIN kodom iz
+ * `g_security_users` strukture koja se nalazi u RAM-u.
+ * @param       user_index Indeks korisnika (0-2).
+ * @retval      const char* Pokazivač na NUL-terminirani string sa PIN kodom.
+ ******************************************************************************/
+const char* Security_GetUserPin(uint8_t user_index);
+
+/******************************************************************************
+ * @brief       Postavlja novi PIN kod za određenog korisnika u RAM.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Funkcija mijenja PIN kod u `g_security_users` strukturi u RAM-u.
+ * Nakon poziva ove funkcije, potrebno je pozvati
+ * `Security_Users_Save()` da bi promjena bila trajno
+ * sačuvana u EEPROM.
+ * @param       user_index Indeks korisnika (0-2) čiji se PIN mijenja.
+ * @param       new_pin    Pokazivač na NUL-terminirani string sa novim PIN-om.
+ * @retval      None
+ ******************************************************************************/
+void     Security_SetUserPin(uint8_t user_index, const char* new_pin);
 /******************************************************************************
  * @brief       Šalje komandu za promjenu stanja (ARM/DISARM) za jednu particiju.
  * @author      Gemini & [Vaše Ime]

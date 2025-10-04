@@ -196,8 +196,8 @@ static const IconMapping_t gate_appearance_mapping_table[] = {
 //__attribute__((section(".flash_rom")))
 /**
  * @brief Glavna tabela sa prevodima.
- * @note  KONAČNA ISPRAVLJENA VERZIJA. Svaki red odgovara jednom ID-ju iz `TextID` enuma.
- * Dodati su redovi koji nedostaju da bi se redoslijed uskladio.
+ * @note  ISPRAVLJENA VERZIJA: Dodan nedostajući red prevoda za TXT_GATE_SECURITY_DOOR
+ * kako bi se svi TextID-jevi i stringovi ponovo uskladili.
  */
 static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_DUMMY */                     { "", "", "","", "", "", "", "", "", "", "" },
@@ -209,13 +209,11 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_CLEAN */                     { "ČIŠĆENJE", "CLEAN", "REINIGEN", "NETTOYER", "PULIRE", "LIMPIAR", "ЧИСТКА", "ЧИЩЕННЯ", "CZYŚĆ", "ČISTIT", "ČISTIŤ" },
     /* TXT_WIFI */                      { "Wi-Fi", "Wi-Fi", "WLAN", "WI-FI", "WI-FI", "WI-FI", "WI-FI", "WI-FI", "WI-FI", "WI-FI", "WI-FI" },
     /* TXT_APP */                       { "APP", "APP", "APP", "APPLI", "APP", "APP", "ПРИЛ.", "ДОДАТОК", "APLIKACJA", "APLIKACE", "APLIKÁCIA" },
-    
     /* TXT_GATE */                      { "KAPIJA", "GATE", "TOR", "PORTAIL", "CANCELLO", "PUERTA", "ВОРОТА", "ВОРОТА", "BRAMA", "BRÁNA", "BRÁNA" },
     /* TXT_TIMER */                     { "TAJMER", "TIMER", "TIMER", "MINUTERIE", "TIMER", "TEMPORIZADOR", "ТАЙМЕР", "ТАЙМЕР", "MINUTNIK", "ČASOVAČ", "ČASOVAČ" },
     /* TXT_SECURITY */                  { "ALARM", "SECURITY", "SICHERHEIT", "SÉCURITÉ", "SICUREZZA", "SEGURIDAD", "ОХРАНА", "ОХОРОНА", "ALARM", "ZABEZPEČENÍ", "ZABEZPEČENIE" },
     /* TXT_SCENES */                    { "SCENE", "SCENES", "SZENEN", "SCÈNES", "SCENE", "ESCENAS", "СЦЕНЫ", "СЦЕНИ", "SCENY", "SCÉNY", "SCÉNY" },
     /* TXT_LANGUAGE_SOS_ALL_OFF */      { "SOS", "SOS", "SOS", "SOS", "SOS", "SOS", "SOS", "SOS", "SOS", "SOS", "SOS" },
-
     /* TXT_ALL */                       { "SVE", "ALL", "ALLE", "TOUT", "TUTTI", "TODOS", "ВСЕ", "ВСІ", "WSZYSTKO", "VŠECHNY", "VŠETKY" },
     /* TXT_SETTINGS */                  { "POSTAVKE", "SETTINGS", "EINSTELLUNGEN", "RÉGLAGES", "IMPOSTAZIONI", "AJUSTES", "НАСТРОЙКИ", "НАЛАШТУВАННЯ", "USTAWIENIA", "NASTAVENÍ", "NASTAVENIA" },
     /* TXT_GLOBAL_SETTINGS */           { "Globalno Podešavanje", "Global Settings", "Globale Einstellungen", "Réglages Globaux", "Impostazioni Globali", "Ajustes Globales", "Глобальные Настройки", "Глобальні Налаштування", "Ustawienia Globalne", "Globální Nastavení", "Globálne Nastavenia" },
@@ -259,12 +257,12 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_MONTH_DEC */                 { "Decembar", "December", "Dezember", "Décembre", "Dicembre", "Diciembre", "Декабрь", "Грудень", "Grudzień", "Prosinec", "December" },
     /* TXT_LANGUAGE_NAME */             { "Bos/Cro/Srb/Mon", "English", "Deutsch", "Français", "Italiano", "Español", "Русский", "Українська", "Polski", "Čeština", "Slovenčina" },
     /* TXT_DATETIME_SETUP_TITLE */      { "Podesite Datum i Vrijeme", "Set Date and Time", "Datum und Uhrzeit einstellen", "Régler la date et l'heure", "Imposta data e ora", "Configurar fecha y hora", "Установить дату и время", "Встановити дату та час", "Ustaw datę i godzinę", "Nastavte datum a čas", "Nastavte dátum a čas" },
-    /* TXT_TIMER_SETTINGS_TITLE */      { "Podešavanje tajmera", "Timer Settings", "Timer-Einstellungen", "Réglages de la minuterie", "Impostazioni timer", "Configuración del temporizador", "Настройки таймера", "Налаштування таймера", "Ustawienia timera", "Nastavení časovače", "Nastavenia časovača" }, // DODAJTE OVAJ RED
+    /* TXT_TIMER_SETTINGS_TITLE */      { "Podešavanje tajmera", "Timer Settings", "Timer-Einstellungen", "Réglages de la minuterie", "Impostazioni timer", "Configuración del temporizador", "Настройки таймера", "Налаштування таймера", "Ustawienia timera", "Nastavení časovače", "Nastavenia časovača" },
     /* TXT_DAY */                       { "Dan", "Day", "Tag", "Jour", "Giorno", "Día", "День", "День", "Dzień", "Den", "Deň" },
     /* TXT_MONTH */                     { "Mjesec", "Month", "Monat", "Mois", "Mese", "Mes", "Месяц", "Місяць", "Miesiąc", "Měsíc", "Mesiac" },
     /* TXT_YEAR */                      { "Godina", "Year", "Jahr", "Année", "Anno", "Año", "Год", "Рік", "Rok", "Rok", "Rok" },
     /* TXT_HOUR */                      { "Sat", "Hour", "Stunde", "Heure", "Ora", "Hora", "Час", "Година", "Godzina", "Hodina", "Hodina" },
-    /* TXT_MINUTE */                    { "Minuta", "Minute", "Minute", "Minute", "Minuto", "Minuto", "Минута", "Хвилина", "Minuta", "Minuta", "Minúta" },
+    /* TXT_MINUTE */                    { "Minuta", "Minute", "Minute", "Minuto", "Minuto", "Минута", "Хвилина", "Minuta", "Minuta", "Minúta" },
     /* TXT_LUSTER */                    { "LUSTER", "CHANDELIER", "KRONLEUCHTER", "LUSTRE", "LAMPADARIO", "ARAÑA", "ЛЮСТРА", "ЛЮСТРА", "ŻYRANDOL", "LUSTR", "LUSTER" },
     /* TXT_SPOT */                      { "SPOT", "SPOT", "STRAHLER", "SPOT", "FARETTO", "FOCO", "ТОЧЕЧНЫЙ", "ТОЧКОВИЙ", "PUNKTOWE", "BODOVÉ", "BODOVÉ" },
     /* TXT_VISILICA */                  { "VISILICA", "PENDANT", "HÄNGELEUCHTE", "SUSPENSION", "SOSPENSIONE", "COLGANTE", "ПОДВЕС", "ПІДВІС", "WISZĄCA", "ZÁVĚSNÉ", "ZÁVESNÉ" },
@@ -288,12 +286,14 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_SCENE_READING */             { "Čitanje", "Reading", "Lesen", "Lecture", "Lettura", "Lectura", "Чтение", "Читання", "Czytanie", "Čtení", "Čítanie" },
     /* TXT_SCENE_RELAXING */            { "Opuštanje", "Relaxing", "Entspannen", "Détente", "Rilassante", "Relajación", "Расслабление", "Розслаблення", "Relaks", "Odpočinek", "Oddych" },
     /* TXT_SCENE_GATHERING */           { "Druženje", "Gathering", "Treffen", "Rassemblement", "Incontro", "Reunión", "Сбор", "Збори", "Spotkanie", "Setkání", "Stretnutie" },
-    // << Tekstovi za Gate modul >> 
     /* TXT_GATE_SWING */                { "Krilna Kapija", "Swing Gate", "Flügeltor", "Portail Battant", "Cancello a Battente", "Puerta Batiente", "Распашные Ворота", "Розпашні Ворота", "Brama Skrzydłowa", "Křídlová Brána", "Krídlová Brána" },
     /* TXT_GATE_SLIDING */              { "Klizna Kapija", "Sliding Gate", "Schiebetor", "Portail Coulissant", "Cancello Scorrevole", "Puerta Corredera", "Откатные Ворота", "Відкатні Ворота", "Brama Przesuwna", "Posuvná Brána", "Posuvná Brána" },
     /* TXT_GATE_GARAGE */               { "Garaža", "Garage", "Garage", "Garage", "Garage", "Garaje", "Гараж", "Гараж", "Garaż", "Garáž", "Garáž" },
     /* TXT_GATE_RAMP */                 { "Rampa", "Barrier", "Schranke", "Barrière", "Barriera", "Barrera", "Шлагбаум", "Шлагбаум", "Szlaban", "Závora", "Rampa" },
     /* TXT_GATE_PEDESTRIAN_LOCK */      { "Brava", "Lock", "Schloss", "Serrure", "Serratura", "Cerradura", "Замок", "Замок", "Zamek", "Zámek", "Zámok" },
+    // ISPRAVKA: Dodan nedostajući prevod za TXT_GATE_SECURITY_DOOR
+    /* TXT_GATE_SECURITY_DOOR */        { "Sigurnosna Vrata", "Security Door", "Sicherheitstür", "Porte de Sécurité", "Porta Blindata", "Puerta de Seguridad", "Бронированная Дверь", "Броньовані Двері", "Drzwi Bezpieczeństwa", "Bezpečnostní Dveře", "Bezpečnostné Dvere" },
+    /* TXT_GATE_UNDERGROUND_RAMP */     { "Podzemna Rampa", "Underground Ramp", "Tiefgarage Rampe", "Rampe Souterraine", "Rampa Sotterranea", "Rampa Subterránea", "Подземный Пандус", "Підземний Пандус", "Rampa Podziemna", "Podzemní Rampa", "Podzemná Rampa" },
     /* TXT_GATE_CONTROL_PROFILE */      { "Profil Kontrole", "Control Profile", "Steuerungsprofil", "Profil de Contrôle", "Profilo di Controllo", "Perfil de Control", "Профиль Управления", "Профіль Керування", "Profil Sterowania", "Profil Ovládání", "Profil Ovládania" },
     /* TXT_GATE_APPEARANCE */           { "Izgled", "Appearance", "Erscheinungsbild", "Apparence", "Aspetto", "Apariencia", "Внешний Вид", "Зовнішній Вигляд", "Wygląd", "Vzhled", "Vzhľad" },
     /* TXT_GATE_CMD_OPEN */             { "OTVORI", "OPEN", "ÖFFNEN", "OUVRIR", "APRI", "ABRIR", "ОТКРЫТЬ", "ВІДКРИТИ", "OTWÓRZ", "OTEVŘÍT", "OTVORIŤ" },
@@ -311,7 +311,7 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_GATE_STATUS_PARTIAL */       { "DJELIMIČNO", "PARTIAL", "TEILWEISE", "PARTIEL", "PARZIALE", "PARCIAL", "ЧАСТИЧНО", "ЧАСТКОВО", "CZĘŚCIOWO", "ČÁSTEČNĚ", "ČIASTOČNE" },
     /* TXT_GATE_STATUS_FAULT */         { "GREŠKA!", "FAULT!", "FEHLER!", "ERREUR!", "GUASTO!", "¡FALLO!", "ОШИБКА!", "ПОМИЛКА!", "BŁĄD!", "CHYBA!", "CHYBA!" },
     /* TXT_GATE_STATUS_UNDEFINED */     { "NEPOZNATO", "UNKNOWN", "UNBEKANNT", "INCONNU", "SCONOSCIUTO", "DESCONOCIDO", "НЕИЗВЕСТНО", "НЕВІДОМО", "NIEZNANY", "NEZNÁMÝ", "NEZNÁMY" },
-    /* TXT_GATE_SECONDARY_1 */              { "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1" },
+    /* TXT_GATE_SECONDARY_1 */          { "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1" },
     /* TXT_GATE_SECONDARY_2 */          { "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2" },
     /* TXT_GATE_SECONDARY_3 */          { "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3" },
     /* TXT_GATE_SECONDARY_4 */          { "4", "4", "4", "4", "4", "4", "4", "4", "4", "4", "4" },
@@ -392,20 +392,22 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_PRILAZ_SECONDARY */          { "PRILAZ", "DRIVEWAY", "AUFFAHRT", "ALLÉE", "VIALE", "ENTRADA", "ПОДЪЕЗД", "ПІД'ЇЗД", "PODJAZD", "PŘÍJEZDOVÁ CESTA", "PRÍJAZDOVÁ CESTA" },
     /* TXT_DVORISTE_SECONDARY */        { "DVORIŠTE", "YARD", "HOF", "COUR", "CORTILE", "PATIO", "ДВОР", "ДВІР", "PODWÓRKO", "DVŮR", "DVOR" },
     /* TXT_DRVO_SECONDARY */            { "DRVO", "TREE", "BAUM", "ARBRE", "ALBERO", "ÁRBOL", "ДЕРЕВО", "ДЕРЕВО", "DRZEWO", "STROM", "STROM" },
-
-    // === NOVI TEKSTOVI ZA ALARM MODUL ===
     /* TXT_ALARM_SETTINGS_TITLE */      { "Podešavanje Alarma", "Alarm Settings", "Alarmeinstellungen", "Réglages de l'alarme", "Impostazioni Allarme", "Ajustes de Alarma", "Настройки Сигнализации", "Налаштування Сигналізації", "Ustawienia Alarmu", "Nastavení Alarmu", "Nastavenia Alarmu" },
-    /* TXT_ALARM_SYSTEM_ARM_DISARM */   { "Sistem (Sve Particije)", "System (All Partitions)", "System (Alle Bereiche)", "Système (Toutes partitions)", "Sistema (Tutte le partizioni)", "Sistema (Todas las particiones)", "Система (Все разделы)", "Система (Всі розділи)", "System (Wszystkie strefy)", "Systém (Všechny sekce)", "Systém (Všetky sekcie)" },
+    /* TXT_ALARM_SYSTEM_ARM_DISARM */   { "Sistem (Sve Particije)", "System (All Partitions)", "System (Alle Bereiche)", "Système (Toutes partitions)", "Sistema (Tutte le partizioni)", "Sistema (Todas las particiones)", "Система (Все разделы)", "Система (Всі розділи)", "Strefa 1", "Sekce 1", "Sekcia 1" },
     /* TXT_ALARM_PARTITION_1 */         { "Particija 1", "Partition 1", "Bereich 1", "Partition 1", "Partizione 1", "Partición 1", "Раздел 1", "Розділ 1", "Strefa 1", "Sekce 1", "Sekcia 1" },
     /* TXT_ALARM_PARTITION_2 */         { "Particija 2", "Partition 2", "Bereich 2", "Partition 2", "Partizione 2", "Partición 2", "Раздел 2", "Розділ 2", "Strefa 2", "Sekce 2", "Sekcia 2" },
     /* TXT_ALARM_PARTITION_3 */         { "Particija 3", "Partition 3", "Bereich 3", "Partition 3", "Partizione 3", "Partición 3", "Раздел 3", "Розділ 3", "Strefa 3", "Sekce 3", "Sekcia 3" },
     /* TXT_ALARM_RELAY_ADDRESS */       { "Adresa Releja", "Relay Address", "Relaisadresse", "Adresse du relais", "Indirizzo Relè", "Dirección del Relé", "Адрес реле", "Адреса реле", "Adres przekaźnika", "Adresa Relé", "Adresa Relé" },
     /* TXT_ALARM_FEEDBACK_ADDRESS */    { "Adresa Feedback-a", "Feedback Address", "Rückmeldeadresse", "Adresse de retour", "Indirizzo Feedback", "Dirección de Feedback", "Адрес обр. связи", "Адреса зворотного зв'язку", "Adres zwrotny", "Adresa Zpětné Vazby", "Adresa Spätnej Väzby" },
     /* TXT_ALARM_SYSTEM_STATUS_FB */    { "Feedback Statusa Alarma", "Alarm Status Feedback", "Alarmstatus Rückmeldung", "Retour d'état d'alarme", "Feedback Stato Allarme", "Feedback de Estado de Alarma", "Обр. связь статуса", "Зворотний зв'язок статусу", "Sygnał zwrotny stanu", "Zpětná vazba stavu", "Spätná väzba stavu" },
-    /* TXT_ALARM_PULSE_LENGTH */        { "Dužina Pulsa (ms)", "Pulse Length (ms)", "Impulsdauer (ms)", "Durée de l'impulsion (ms)", "Durata Impulso (ms)", "Duración del Pulso (ms)", "Длит. импульса (мс)", "Тривалість імпульсу (мс)", "Długość impulsu (ms)", "Délka pulzu (ms)", "Dĺžka pulzu (ms)" },
+    /* TXT_ALARM_PULSE_LENGTH */        { "Dužina Pulsa (ms)", "Pulse Length (ms)", "Impulsdauer (ms)", "Durée de l'impulsion (ms)", "Durata Impulso (ms)", "Duración del Pulso (ms)", "Длит. импульса (мс)", "Тривалість імпульсу (ms)", "Długość impulsu (ms)", "Délka pulzu (ms)", "Dĺžka pulzu (ms)" },
     /* TXT_ALARM_SILENT_ALARM */        { "Tihi Alarm (SOS)", "Silent Alarm (SOS)", "Stiller Alarm (SOS)", "Alarme Silencieuse (SOS)", "Allarme Silenzioso (SOS)", "Alarma Silenciosa (SOS)", "Тихая тревога (SOS)", "Тиха тривога (SOS)", "Cichy Alarm (SOS)", "Tichý Poplach (SOS)", "Tichý Poplach (SOS)" },
     /* TXT_ALARM_STATE_ARMED */         { "NAORUŽANO", "ARMED", "SCHARF", "ARMÉ", "INSERITO", "ARMADO", "ПОД ОХРАНОЙ", "ПІД ОХОРОНОЮ", "UZBROJONY", "ZAPNUTO", "ZAPNUTÉ" },
     /* TXT_ALARM_STATE_DISARMED */      { "RAZORUŽANO", "DISARMED", "UNSCHARF", "DÉSARMÉ", "DISINSERITO", "DESARMADO", "СНЯТО С ОХРАНЫ", "ЗНЯТО З ОХОРОНИ", "ROZBROJONY", "VYPNUTO", "VYPNUTÉ" },
+    /* TXT_ALARM_STATE_ARMING */        { "Naoružavanje...", "Arming...", "Schärfung...", "Armement...", "Inserimento...", "Armando...", "Вооружение...", "Озброєння...", "Uzbrajanie...", "Aktivace...", "Vklapljanje..." },
+    /* TXT_ALARM_STATE_DISARMING */     { "Razoružavanje...", "Disarming...", "Entschärfung...", "Désarmement...", "Disinserimento...", "Desarmando...", "Снятие с охраны...", "Зняття з охорони...", "Rozbrajanie...", "Deaktivace...", "Izklapljanje..." },
+    /* TXT_ALARM_SYSTEM */              { "SISTEM", "SYSTEM", "SYSTEM", "SYSTÈME", "SISTEMA", "SISTEMA", "СИСТЕМА", "СИСТЕМА", "SYSTEM", "SYSTÉM", "SISTEM" },
+    /* TXT_ALARM_PARTITION */           { "PARTICIJA", "PARTITION", "BEREICH", "PARTITION", "PARTIZIONE", "PARTICIÓN", "РАЗДЕЛ", "РОЗДІЛ", "PARTYCJA", "SEKCE", "PARTICIJA" },
     /* TXT_ALARM_CMD_ARM */             { "NAORUŽAJ", "ARM", "SCHARF", "ARMER", "INSERIRE", "ARMAR", "ПОСТАВИТЬ", "ПОСТАВИТИ", "UZBRÓJ", "ZAPNOUT", "ZAPNÚŤ" },
     /* TXT_ALARM_CMD_DISARM */          { "RAZORUŽAJ", "DISARM", "UNSCHARF", "DÉSARMER", "DISINSERIRE", "DESARMAR", "СНЯТЬ", "ЗНЯТИ", "ROZBRÓJ", "VYPNOUT", "VYPNÚŤ" },
     /* TXT_ALARM_ENTER_PIN */           { "UNESITE PIN", "ENTER PIN", "PIN EINGEBEN", "ENTREZ PIN", "INSERIRE PIN", "INTRODUZCA PIN", "ВВЕДИТЕ PIN", "ВВЕДІТЬ PIN", "WPROWADŹ PIN", "ZADEJTE PIN", "ZADAJTE PIN" },

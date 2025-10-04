@@ -242,6 +242,10 @@ typedef enum {
     TXT_ALARM_SILENT_ALARM,
     TXT_ALARM_STATE_ARMED,
     TXT_ALARM_STATE_DISARMED,
+    TXT_ALARM_STATE_ARMING,         /**< Tekst: Naoružavanje... */
+    TXT_ALARM_STATE_DISARMING,      /**< Tekst: Razoružavanje... */
+    TXT_ALARM_SYSTEM,               /**< Tekst: SISTEM */
+    TXT_ALARM_PARTITION,
     TXT_ALARM_CMD_ARM,
     TXT_ALARM_CMD_DISARM,
     TXT_ALARM_ENTER_PIN,

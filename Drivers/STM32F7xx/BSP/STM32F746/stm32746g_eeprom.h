@@ -26,6 +26,7 @@
 #include "thermostat.h"
 #include "ventilator.h"
 #include "defroster.h"
+#include "security.h"
 #include "curtain.h"
 #include "lights.h"
 #include "scene.h"
