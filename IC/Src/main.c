@@ -418,7 +418,7 @@ static void RAM_Init(void)
     // Provjera da li je PIN ikada snimljen (ako nije, prvi bajt ce biti 0xFF ili 0x00)
     if (pin_buf[0] < '0' || pin_buf[0] > '9') {
         // PIN nije validan, snimi default "1234" u EEPROM i u RAM
-        strcpy(system_pin, "6776");
+        strcpy(system_pin, DEF_SRVC_PSWRD);
         EE_WriteBuffer((uint8_t*)system_pin, EE_SYSTEM_PIN, 8);
     } else {
         // PIN je validan, ucitaj ga u RAM

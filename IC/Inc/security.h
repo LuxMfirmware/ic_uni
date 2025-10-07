@@ -27,35 +27,29 @@
 
 #pragma pack(push, 1)
 /**
+ ******************************************************************************
  * @brief Struktura koja sadrži sve konfiguracione podatke za alarmni modul
  * koji se trajno čuvaju u EEPROM-u.
+ * @author      Gemini & [Vaše Ime]
  * @note  Ova definicija je javna kako bi `stm32746g_eeprom.h` (EEPROM mapa)
- * mogao da koristi `sizeof()` za automatsko izračunavanje adresa[cite: 49, 50].
+ * mogao da koristi `sizeof()` za automatsko izračunavanje adresa.
  * Zahvaljujući `#pragma pack`, raspored u memoriji je kompaktan i
  * pouzdan za EEPROM operacije.
+ ******************************************************************************
  */
 typedef struct
 {
-    uint16_t magic_number;              /**< "Magični broj" (0xABCD) koji služi kao potpis za validaciju ispravnosti podataka pročitanih iz EEPROM-a[cite: 52]. */
-    uint16_t partition_relay_addr[SECURITY_PARTITION_COUNT]; /**< Niz adresa za releje koji kontrolišu pojedinačne particije (1, 2 i 3)[cite: 1]. */
-    uint16_t partition_feedback_addr[SECURITY_PARTITION_COUNT]; /**< Niz adresa digitalnih ulaza sa kojih se čita status (naoružana/razoružana) za svaku particiju[cite: 1]. */
-    uint16_t system_status_feedback_addr; /**< Adresa digitalnog ulaza koji javlja da li je kompletan sistem u stanju alarma (npr. aktivirana sirena)[cite: 1]. */
-    uint16_t silent_alarm_addr;         /**< Adresa releja za tihi alarm, koji se aktivira putem SOS funkcije[cite: 2]. */
-    uint16_t pulse_duration_ms;         /**< Trajanje impulsa u milisekundama za "Momentary (toggle)" tip kontrole. Vrijednost 0 označava "Maintained (latched)" tip kontrole[cite: 1]. */
-    uint16_t crc;                       /**< CRC (Cyclic Redundancy Check) suma izračunata preko cijele strukture radi provjere integriteta podataka[cite: 60]. */
+    uint16_t magic_number;              /**< "Magični broj" (0xABCD) za validaciju ispravnosti podataka pročitanih iz EEPROM-a. */
+    char system_name[21];               /**< Korisnički definisan naziv za cijeli alarmni sistem (npr. "Glavni Alarm"). Dužina 20 karaktera + NULL. */
+    char partition_names[SECURITY_PARTITION_COUNT][21]; /**< Niz korisnički definisanih naziva za svaku particiju (npr. "Prizemlje", "Garaža"). */
+    char pin[SECURITY_PIN_LENGTH];      /**< Jedinstveni PIN kod za upravljanje alarmnim sistemom. */
+    uint16_t partition_relay_addr[SECURITY_PARTITION_COUNT]; /**< Niz adresa za releje koji kontrolišu pojedinačne particije (1, 2 i 3). */
+    uint16_t partition_feedback_addr[SECURITY_PARTITION_COUNT]; /**< Niz adresa digitalnih ulaza sa kojih se čita status (naoružana/razoružana) za svaku particiju. */
+    uint16_t system_status_feedback_addr; /**< Adresa digitalnog ulaza koji javlja da li je kompletan sistem u stanju alarma. */
+    uint16_t silent_alarm_addr;         /**< Adresa releja za tihi alarm (SOS). */
+    uint16_t pulse_duration_ms;         /**< Trajanje impulsa (0 = trajno, >0 u ms). */
+    uint16_t crc;                       /**< CRC suma za provjeru integriteta podataka. */
 } Security_Settings_t;
-
-/**
- * @brief Struktura koja sadrži korisničke PIN kodove za alarmni sistem.
- * @note  Ova struktura se čuva u posebnom bloku u EEPROM-u kako bi se
- * odvojila od hardverske konfiguracije sistema.
- */
-typedef struct
-{
-    uint16_t magic_number;                  /**< "Magični broj" (0xABCD) za validaciju podataka. */
-    char pins[SECURITY_USER_COUNT][SECURITY_PIN_LENGTH]; /**< Dvodimenzionalni niz koji čuva do 3 korisnička PIN koda, svaki dužine 4 karaktera. */
-    uint16_t crc;                           /**< CRC suma za provjeru integriteta podataka o korisnicima. */
-} Security_Users_t;
 #pragma pack(pop)
 
 /******************************************************************************
@@ -130,7 +124,7 @@ const char* Security_GetUserPin(uint8_t user_index);
  * @param       new_pin    Pokazivač na NUL-terminirani string sa novim PIN-om.
  * @retval      None
  ******************************************************************************/
-void     Security_SetUserPin(uint8_t user_index, const char* new_pin);
+void Security_SetUserPin(uint8_t user_index, const char* new_pin);
 /******************************************************************************
  * @brief       Šalje komandu za promjenu stanja (ARM/DISARM) za jednu particiju.
  * @author      Gemini & [Vaše Ime]
@@ -237,5 +231,70 @@ uint8_t Security_GetConfiguredPartitionsCount(void);
  * inače `false`.
  ******************************************************************************/
 bool Security_IsAnyPartitionArmed(void);
+
+
+/**
+ ******************************************************************************
+ * @brief       Dohvata korisnički definisan naziv za cijeli alarmni sistem.
+ * @author      Gemini & [Vaše Ime]
+ * @retval      const char* Pokazivač na NUL-terminirani string sa nazivom sistema.
+ ******************************************************************************
+ */
+const char* Security_GetSystemName(void);
+
+/**
+ ******************************************************************************
+ * @brief       Postavlja novi korisnički definisan naziv za alarmni sistem.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Funkcija koristi `strncpy` radi sigurnosti, kako bi spriječila
+ * buffer overflow u slučaju da je ulazni string predugačak.
+ * @param[in]   name Pokazivač na NUL-terminirani string sa novim nazivom.
+ * @retval      None
+ ******************************************************************************
+ */
+void Security_SetSystemName(const char* name);
+
+/**
+ ******************************************************************************
+ * @brief       Dohvata korisnički definisan naziv za specificiranu particiju.
+ * @author      Gemini & [Vaše Ime]
+ * @param[in]   partition_index Indeks particije (0-2).
+ * @retval      const char* Pokazivač na NUL-terminirani string sa nazivom,
+ * ili prazan string ako je indeks nevažeći.
+ ******************************************************************************
+ */
+const char* Security_GetPartitionName(uint8_t partition_index);
+
+/**
+ ******************************************************************************
+ * @brief       Postavlja novi korisnički definisan naziv za specificiranu particiju.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Funkcija koristi `strncpy` radi sigurnosti od buffer overflow-a.
+ * @param[in]   partition_index Indeks particije (0-2) čiji se naziv mijenja.
+ * @param[in]   name Pokazivač na NUL-terminirani string sa novim nazivom.
+ * @retval      None
+ ******************************************************************************
+ */
+void Security_SetPartitionName(uint8_t partition_index, const char* name);
+
+/**
+ ******************************************************************************
+ * @brief       Dohvata jedinstveni PIN kod alarmnog sistema.
+ * @author      Gemini & [Vaše Ime]
+ * @retval      const char* Pokazivač na NUL-terminirani string sa PIN-om.
+ ******************************************************************************
+ */
+const char* Security_GetPin(void);
+
+/**
+ ******************************************************************************
+ * @brief       Postavlja novi jedinstveni PIN kod za alarmni sistem.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Funkcija koristi `strncpy` radi sigurnosti od buffer overflow-a.
+ * @param[in]   new_pin Pokazivač na NUL-terminirani string sa novim PIN-om.
+ * @retval      None
+ ******************************************************************************
+ */
+void Security_SetPin(const char* new_pin);
 
 #endif // __SECURITY_H__

@@ -21,6 +21,53 @@
  * Fajl takođe sadrži logiku za internacionalizaciju (prevođenje tekstova)
  * i upravljanje pozadinskim procesima kao što je screensaver.
  *
+ * --- Vodič za dodavanje novog ekrana ---
+ *
+ * Dodavanje novog ekrana u ovaj framework prati preciznu proceduru kako bi se
+ * osigurala stabilnost i pravilno upravljanje resursima.
+ *
+ * 1.  **Definicija Ekrana (display.h):**
+ * - U fajlu `display.h`, unutar `eScreen` enumeratora, dodajte
+ * jedinstveni naziv za Vaš novi ekran (npr. `SCREEN_NOVI_EKRAN`).
+ *
+ * 2.  **Kreiranje Osnovnih Funkcija (display.c):**
+ * - Za svaki novi ekran, neophodno je kreirati tri `static` funkcije
+ * koje prate "Init-Service-Kill" obrazac:
+ * - `DSP_InitNoviEkranScreen(void)`: Kreira sve widgete (dugmad, tekst)
+ * i iscrtava statičke elemente ekrana. Poziva se samo jednom pri ulasku.
+ * - `Service_NoviEkranScreen(void)`: Glavna petlja za ekran. Poziva se
+ * kontinuirano. Ovdje se provjerava stanje widgeta (npr. `BUTTON_IsPressed`).
+ * - `DSP_KillNoviEkranScreen(void)`: Uništava sve widgete kreirane u `Init`
+ * funkciji. Ključna je za sprječavanje curenja memorije.
+ * - Prototipove za ove tri funkcije dodajte u sekciju "PROTOTIPOVI PRIVATNIH
+ * (STATIC) FUNKCIJA" na vrhu `display.c`.
+ *
+ * 3.  **Integracija u Glavnu Petlju (display.c):**
+ * - U funkciji `DISP_Service()`, unutar `switch (screen)` bloka, dodajte
+ * novi `case` za Vaš ekran koji poziva njegovu `Service` funkciju:
+ * `case SCREEN_NOVI_EKRAN: Service_NoviEkranScreen(); break;`
+ *
+ * 4.  **Upravljanje Unosom (Touch Events) (display.c):**
+ * - Ako Vaš ekran ima interaktivne zone koje nisu widgeti (npr. crtani
+ * oblici), kreirajte `HandlePress_...` funkciju:
+ * - `static void HandlePress_NoviEkranScreen(GUI_PID_STATE *pTS, uint8_t *click_flag);`
+ * - Poziv za nju dodajte u `if/else if` lanac unutar `HandleTouchPressEvent()`.
+ * - Funkciju za obradu otpuštanja (`HandleRelease_...`) potrebno je
+ * implementirati samo u specifičnim slučajevima:
+ * a) Kada treba razlikovati kratak od dugog pritiska.
+ * b) Za "drag-and-drop" logiku.
+ * c) Za akcije koje se izvršavaju tek nakon otpuštanja prsta.
+ *
+ * 5.  **Pravilno "Čišćenje" Ekrana (display.c):**
+ * - Da bi se Vaš ekran pravilno ugasio i oslobodio resurse, poziv za
+ * njegovu `Kill` funkciju morate dodati na dva mjesta:
+ * a) U `PID_Hook()`: Unutar `switch` bloka koji obrađuje pritisak na
+ * hamburger meni, dodajte `case SCREEN_NOVI_EKRAN:` koji poziva
+ * `DSP_KillNoviEkranScreen()`.
+ * b) U `Handle_PeriodicEvents()`: Unutar `if/else if` lanca koji
+ * obrađuje istek screensaver tajmera, dodajte
+ * `else if (screen == SCREEN_NOVI_EKRAN) DSP_KillNoviEkranScreen();`.
+ *
  ******************************************************************************
  * @attention
  *
@@ -64,14 +111,15 @@
 /** @name Vremenske konstante za GUI
  * @{
  */
-#define GUI_REFRESH_TIME                50U    ///< Svrha: Period osvježavanja GUI-ja. Vrijednost: 100 milisekundi (10 puta u sekundi).
+#define GUI_REFRESH_TIME                50U     ///< Svrha: Period osvježavanja GUI-ja. Vrijednost: 100 milisekundi (10 puta u sekundi).
 #define DATE_TIME_REFRESH_TIME          1000U   ///< Svrha: Period osvježavanja prikaza datuma i vremena. Vrijednost: 1000 milisekundi (svake sekunde).
 #define SETTINGS_MENU_ENABLE_TIME       3456U   ///< Svrha: Vrijeme držanja pritiska za ulazak u meni. Vrijednost: 3456 milisekundi (~3.5 sekunde).
 #define SETTINGS_MENU_TIMEOUT           59000U  ///< Svrha: Timeout za automatski izlazak iz menija. Vrijednost: 59000 milisekundi (59 sekundi).
 #define EVENT_ONOFF_TOUT                500     ///< Svrha: Maksimalno vrijeme za "kratak dodir". Vrijednost: 500 milisekundi.
 #define VALUE_STEP_TOUT                 15      ///< Svrha: Brzina promjene vrijednosti kod držanja dugmeta (npr. dimovanje). Vrijednost: 15 milisekundi.
 #define GHOST_WIDGET_SCAN_INTERVAL      2000    ///< Svrha: Period za skeniranje i brisanje "duhova" (zaostalih widgeta). Vrijednost: 2000 milisekundi.
-#define FW_UPDATE_BUS_TIMEOUT           15000U   ///< Svrha: Vrijeme (u ms) nakon kojeg smatramo da je FW update na busu završen ako nema novih paketa.
+#define FW_UPDATE_BUS_TIMEOUT           15000U  ///< Svrha: Vrijeme (u ms) nakon kojeg smatramo da je FW update na busu završen ako nema novih paketa.
+#define LONG_PRESS_DURATION             1000    ///< Prag za dugi pritisak u ms (1 sekunda)
 /** @} */
 
 /** @name Konfiguracija ekrana i prikaza
@@ -169,8 +217,27 @@
 /*============================================================================*/
 /* PRIVATNE STRUKTURE I DEKLARACIJE VARIJABLI                                 */
 /*============================================================================*/
-// DODATI OVAJ BLOK KODA NA VRH FAJLA display.c, NAKON #include SEKCIJE
-
+/**
+ * @brief Definiše stanja za state-machine unutar Numpad-a prilikom promjene PIN-a.
+ */
+typedef enum {
+    PIN_CHANGE_IDLE,            /**< Numpad se koristi za standardne operacije (ne za promjenu PIN-a). */
+    PIN_CHANGE_WAIT_CURRENT,    /**< Čeka se unos trenutnog (starog) PIN-a. */
+    PIN_CHANGE_WAIT_NEW,        /**< Čeka se unos novog PIN-a. */
+    PIN_CHANGE_WAIT_CONFIRM     /**< Čeka se ponovni unos novog PIN-a radi potvrde. */
+} PinChangeState_e;
+/**
+ ******************************************************************************
+ * @brief       Definiše modove rada za višenamjenski ekran za odabir scene.
+ * @note        Ovaj enum omogućava da se isti ekran (`SCREEN_SCENE_APPEARANCE`)
+ * koristi u različitim kontekstima unutar aplikacije.
+ ******************************************************************************
+ */
+typedef enum 
+{
+    SCENE_PICKER_MODE_WIZARD,   /**< Mod za "čarobnjaka": prikazuje samo neiskorištene izglede za kreiranje nove scene. */
+    SCENE_PICKER_MODE_TIMER     /**< Mod za tajmer: prikazuje sve konfigurisane scene radi odabira akcije za alarm. */
+} eScenePickerMode;
 /******************************************************************************
  * @brief       Struktura koja definiše kontekst za univerzalni numerički keypad.
  * @author      Gemini (po specifikaciji korisnika)
@@ -211,7 +278,6 @@ typedef struct
  * ekrana koji ga je pozvao (npr. SCREEN_SETTINGS_GATE).
  */
 static NumpadResult_t g_numpad_result;
-
 /**
  * @brief Definiše moguće vizuelne statuse za UI alarma.
  */
@@ -1235,7 +1301,6 @@ static const struct
     GUI_POINT   days_pos;               /**< Pozicija za ispis dana ponavljanja. */
     GUI_POINT   toggle_icon_pos;        /**< Pozicija za ON/OFF toggle ikonicu. */
     GUI_POINT   status_text_pos;        /**< Pozicija za ispis statusa (uključen/isključen). */
-    GUI_POINT   settings_button_pos;    /**< Tačna x0, y0 pozicija za novo dugme za ulazak u podešavanja. */
 }
 timer_screen_layout =
 {
@@ -1245,8 +1310,7 @@ timer_screen_layout =
     .time_pos           = { DRAWING_AREA_WIDTH / 2, 80 },
     .days_pos           = { DRAWING_AREA_WIDTH / 2, 140 },
     .toggle_icon_pos    = { 0, 180 }, // X se računa dinamički
-    .status_text_pos    = { DRAWING_AREA_WIDTH / 2, 235 },
-    .settings_button_pos = { 400, 159 } // Top-left pozicija dugmeta
+    .status_text_pos    = { DRAWING_AREA_WIDTH / 2, 235 }
 };
 static const struct
 {
@@ -1347,15 +1411,17 @@ lights_and_gates_grid_layout =
  */
 static const struct
 {
-    GUI_POINT    start_pos;     /**< @brief Početna gornja-lijeva pozicija za prvo dugme. */
-    WidgetRect_t button_size;   /**< @brief Dimenzije za svako dugme. */
-    int16_t      y_spacing;     /**< @brief Vertikalni razmak između dugmadi. */
+    GUI_POINT    start_pos;         /**< @brief Početna gornja-lijeva pozicija za prvo dugme. */
+    int16_t      button_size;       /**< @brief Veličina (širina i visina) kvadratnog dugmeta. */
+    int16_t      y_spacing;         /**< @brief Vertikalni razmak između redova. */
+    int16_t      label_x_offset;    /**< @brief Horizontalni razmak od dugmeta do početka teksta labele. */
 }
 security_screen_layout =
 {
-    .start_pos   = { 20, 5 },
-    .button_size = { 0, 0, 200, 50 },
-    .y_spacing   = 60
+    .start_pos      = { 20, 5 },
+    .button_size    = 50,
+    .y_spacing      = 60,
+    .label_x_offset = 10
 };
 // =======================================================================
 // ===        Automatsko generisanje `const` niza za "Skener"          ===
@@ -1645,6 +1711,14 @@ static BUTTON_Handle   hButtonTimerSceneSelect;        /**< @brief Handle za dug
 static BUTTON_Handle   hButtonTimerSave;               /**< @brief Handle za dugme "Snimi" na ekranu za podešavanje tajmera. */
 static BUTTON_Handle   hButtonTimerCancel;             /**< @brief Handle za dugme "Otkaži" na ekranu za podešavanje tajmera. */
 /** @} */
+
+/** @name Handle-ovi za Podešavanja Alarma (SCREEN_SETTINGS_ALARM)
+ * @{
+ */
+static BUTTON_Handle hButtonChangePin;         /**< @brief Dugme za pokretanje procedure promjene glavnog PIN-a. */
+static BUTTON_Handle hButtonSystemName;        /**< @brief Dugme za promjenu naziva kompletnog alarmnog sistema. */
+static BUTTON_Handle hButtonPartitionName[3];  /**< @brief Niz handle-ova za dugmad za promjenu naziva particija. */
+/** @} */
 /*============================================================================*/
 /* GLOBALNE VARIJABLE NA NIVOU PROJEKTA                                       */
 /*============================================================================*/
@@ -1869,8 +1943,9 @@ static bool timer_screen_initialized = false;
  * uspješne provjere PIN-a kako bi se izvršila odgovarajuća komanda.
  */
 static int8_t selected_action = -1;
-/** @name Statičke varijable za Alfanumeričku Tastaturu */
 /** @{ */
+
+/** @name Statičke varijable za Alfanumeričku Tastaturu */
 
 /**
  * @brief Niz handle-ova za sve dinamički kreirane tastere sa karakterima na alfanumeričkoj tastaturi.
@@ -2034,19 +2109,6 @@ static bool gate_settings_initialized = false;
  */
 static uint8_t gate_control_panel_index = 0;
 /**
- ******************************************************************************
- * @brief       Definiše modove rada za višenamjenski ekran za odabir scene.
- * @note        Ovaj enum omogućava da se isti ekran (`SCREEN_SCENE_APPEARANCE`)
- * koristi u različitim kontekstima unutar aplikacije.
- ******************************************************************************
- */
-typedef enum 
-{
-    SCENE_PICKER_MODE_WIZARD,   /**< Mod za "čarobnjaka": prikazuje samo neiskorištene izglede za kreiranje nove scene. */
-    SCENE_PICKER_MODE_TIMER     /**< Mod za tajmer: prikazuje sve konfigurisane scene radi odabira akcije za alarm. */
-} eScenePickerMode;
-
-/**
  * @brief Čuva trenutni mod rada za ekran za odabir scene.
  * @note  Ovu varijablu postavljaju funkcije koje pozivaju ekran (npr. iz `Service_SettingsTimerScreen`)
  * kako bi definisale njegovo ponašanje. Inicijalno je postavljen na WIZARD mod.
@@ -2058,10 +2120,35 @@ static eScenePickerMode current_scene_picker_mode = SCENE_PICKER_MODE_WIZARD;
  * i da se uvijek osigura ispravan povratak.
  */
 static eScreen scene_picker_return_screen = SCREEN_SCENE_EDIT;
-/** @brief Tajmer za detekciju dugog pritiska na dinamičkoj ikonici na SelectScreen1. */
+/** 
+ * @brief Tajmer za detekciju dugog pritiska na dinamičkoj ikonici na SelectScreen1. 
+ */
 static uint32_t dynamic_icon1_press_timer = 0;
-/** @brief Tajmer za detekciju dugog pritiska na dinamičkoj ikonici na SelectScreen2. */
+/** 
+ * @brief Tajmer za detekciju dugog pritiska na dinamičkoj ikonici na SelectScreen2. 
+ */
 static uint32_t dynamic_icon2_press_timer = 0;
+/**
+ * @brief Čuva indeks particije (0-2) koja je odabrana za promjenu naziva.
+ * @note  Vrijednost -1 označava da nijedna nije odabrana.
+ */
+static int8_t selected_partition_for_rename = -1;
+/**
+ * @brief Prati trenutno stanje u procesu promjene PIN-a.
+ */
+static PinChangeState_e pin_change_state = PIN_CHANGE_IDLE;
+/**
+ * @brief Tajmer za detekciju dugog pritiska na ikonicu Alarma na SelectScreen2. 
+ */
+static uint32_t dynamic_icon_alarm_press_timer = 0;
+/** 
+ * @brief Tajmer za detekciju dugog pritiska na ikonicu Tajmera na SelectScreen2. 
+ */
+static uint32_t dynamic_icon_timer_press_timer = 0;
+/**
+ * @brief Privremeni bafer za čuvanje novog PIN-a tokom procedure promjene.
+ */
+static char new_pin_buffer[SECURITY_PIN_LENGTH];
 /*============================================================================*/
 /* PROTOTIPOVI PRIVATNIH (STATIC) FUNKCIJA                                    */
 /*============================================================================*/
@@ -2113,6 +2200,8 @@ static void DSP_InitGateSettingsScreen(void);
 static void DSP_KillGateSettingsScreen(void);
 static void DSP_KillGateScreen(void);
 static void DSP_KillSecurityScreen(void);
+static void DSP_InitSettingsAlarmScreen(void);
+static void DSP_KillSettingsAlarmScreen(void);
 
 /** @} */
 
@@ -2158,6 +2247,7 @@ static void Service_SettingsDateTimeScreen(void);
 static void Service_SettingsTimerScreen(void);
 static void Service_AlarmActiveScreen(void);
 static void Service_GateSettingsScreen(void);
+static void Service_SettingsAlarmScreen(void);
 
 /** @} */
 
@@ -2182,12 +2272,6 @@ static void Handle_PeriodicEvents(void);
  * @param click_flag Pokazivač na fleg koji se postavlja ako treba generisati zvučni signal.
  */
 static void HandleTouchPressEvent(GUI_PID_STATE * pTS, uint8_t *click_flag);
-/**
- * @brief Dispečer za događaje otpuštanja dodira sa ekrana.
- * @note Poziva se iz `PID_Hook` kada korisnik otpusti prst sa ekrana.
- * @param pTS Pokazivač na strukturu sa stanjem dodira.
- */
-static void HandleTouchReleaseEvent(GUI_PID_STATE * pTS);
 
 static void HandlePress_SelectScreen1(GUI_PID_STATE * pTS, uint8_t *click_flag);
 static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag);
@@ -2197,13 +2281,23 @@ static void HandlePress_CurtainsScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
 static void HandlePress_SelectScreenLast(GUI_PID_STATE * pTS, uint8_t *click_flag);
 static void HandlePress_LightSettingsScreen(GUI_PID_STATE * pTS);
 static void HandlePress_MainScreenSwitch(GUI_PID_STATE * pTS);
-static void HandleRelease_MainScreenSwitch(GUI_PID_STATE * pTS);
 static void HandlePress_SceneAppearanceScreen(GUI_PID_STATE* pTS, uint8_t* click_flag);
 static void HandlePress_SceneScreen(GUI_PID_STATE * pTS, uint8_t *click_flag);
 static void HandlePress_TimerScreen(GUI_PID_STATE * pTS, uint8_t *click_flag);
-static void HandleRelease_SceneScreen(void);
 static void HandlePress_GateScreen(GUI_PID_STATE * pTS, uint8_t *click_flag);
 static void HandlePress_GateSettingsScreen(GUI_PID_STATE* pTS, uint8_t* click_flag);
+
+/**
+ * @brief Dispečer za događaje otpuštanja dodira sa ekrana.
+ * @note Poziva se iz `PID_Hook` kada korisnik otpusti prst sa ekrana.
+ * @param pTS Pokazivač na strukturu sa stanjem dodira.
+ */
+static void HandleTouchReleaseEvent(GUI_PID_STATE * pTS);
+
+static void HandleRelease_MainScreenSwitch(GUI_PID_STATE * pTS);
+static void HandleRelease_SceneScreen(void);
+static void HandleRelease_AlarmIcon(void);
+static void HandleRelease_TimerIcon(void);
 /** @} */
 /* Prototipovi novih funkcija za PIN tastaturu */
 static void DSP_DrawNumpadText(void);
@@ -2450,6 +2544,9 @@ void DISP_Service(void)
     case SCREEN_SETTINGS_9:
         Service_SettingsScreen_9();
         break;
+    case SCREEN_SETTINGS_ALARM:
+        Service_SettingsAlarmScreen();
+        break;
     case SCREEN_CLEAN:
         Service_CleanScreen();
         break;
@@ -2670,7 +2767,10 @@ void PID_Hook(GUI_PID_STATE * pTS)
                 DSP_KillSecurityScreen(); // <<< OBAVEZNO UNIŠTI DUGMAD PRIJE IZLASKA
                 screen = SCREEN_SELECT_2;
                 break;
-             
+            case SCREEN_SETTINGS_ALARM:
+                DSP_KillSettingsAlarmScreen();
+                screen = SCREEN_SELECT_2;
+                break;
             // Pravilo: Sa pod-menija trećeg nivoa, hamburger vodi na SELECT_LAST
             case SCREEN_QR_CODE:
                 menu_lc = 0; // Resetuj parametar
@@ -2694,7 +2794,8 @@ void PID_Hook(GUI_PID_STATE * pTS)
                 break;
 
             case SCREEN_NUMPAD:
-                DSP_KillNumpadScreen(); 
+                DSP_KillNumpadScreen();
+                pin_change_state = PIN_CHANGE_IDLE;
                 g_numpad_result.is_cancelled = true;
                 screen = numpad_return_screen;
                 break;
@@ -5878,7 +5979,7 @@ static void DSP_KillGateScreen(void)
  */
 static void Handle_PeriodicEvents(void)
 {
-#define LONG_PRESS_DURATION 1000 // Prag za dugi pritisak u ms (1 sekunda)
+    
     if (scene_press_timer_start != 0 && (HAL_GetTick() - scene_press_timer_start) > LONG_PRESS_DURATION)
     {
         uint8_t configured_scenes_count = Scene_GetCount();
@@ -5910,9 +6011,9 @@ static void Handle_PeriodicEvents(void)
             scene_pressed_index = -1;
         }
     }
+    
     // === AŽURIRANI BLOK: DETEKCIJA DUGOG PRITISKA ZA KAPIJE ===
-#define GATE_LONG_PRESS_DURATION 1000 // Prag za dugi pritisak u ms (1 sekunda)
-    if (gate_press_timer_start != 0 && (HAL_GetTick() - gate_press_timer_start) > GATE_LONG_PRESS_DURATION)
+    if (gate_press_timer_start != 0 && (HAL_GetTick() - gate_press_timer_start) > LONG_PRESS_DURATION)
     {
         // Dugi pritisak je detektovan.
 
@@ -6010,6 +6111,35 @@ static void Handle_PeriodicEvents(void)
         shouldDrawScreen = 1;
     }
 
+    
+    // =======================================================================
+    // ===          FINALNI BLOK: Detekcija dugog pritiska za Alarm        ===
+    // =======================================================================
+    if (dynamic_icon_alarm_press_timer != 0 && (HAL_GetTick() - dynamic_icon_alarm_press_timer) > LONG_PRESS_DURATION)
+    {
+        // Dugi pritisak je detektovan.
+        dynamic_icon_alarm_press_timer = 0; // Resetuj tajmer da se akcija ne ponovi.
+        
+        // Pokreni tranziciju na ekran za PODEŠAVANJA alarma.
+        // DSP_Kill... se ne poziva ovdje jer prelazimo sa SELECT ekrana koji nema widgete.
+        DSP_InitSettingsAlarmScreen();
+        screen = SCREEN_SETTINGS_ALARM;
+        shouldDrawScreen = 0;
+    }
+
+    // =======================================================================
+    // ===          FINALNI BLOK: Detekcija dugog pritiska za Timer        ===
+    // =======================================================================
+    if (dynamic_icon_timer_press_timer != 0 && (HAL_GetTick() - dynamic_icon_timer_press_timer) > LONG_PRESS_DURATION)
+    {
+        // Dugi pritisak je detektovan.
+        dynamic_icon_timer_press_timer = 0; // Resetuj tajmer.
+        
+        // Pokreni tranziciju na ekran za PODEŠAVANJA tajmera.
+        Timer_Suppress();
+        screen = SCREEN_SETTINGS_TIMER;
+        shouldDrawScreen = 1;
+    }
     // === SCREENSAVER TAJMER ===
     if (!IsScrnsvrActiv()) {
         if ((HAL_GetTick() - scrnsvr_tmr) >= (uint32_t)(g_display_settings.scrnsvr_tout * 1000)) {
@@ -6046,6 +6176,10 @@ static void Handle_PeriodicEvents(void)
 
                 // Ključni korak: Resetuj fleg za Wizard Mode
                 is_in_scene_wizard_mode = false;
+            }
+            else if (screen == SCREEN_NUMPAD) {
+                pin_change_state = PIN_CHANGE_IDLE; // Resetuj stanje promjene PIN-a
+                DSP_KillNumpadScreen();
             }
             // =======================================================================
             // ===        Originalna logika za ekrane podešavanja ostaje         ===
@@ -6151,6 +6285,10 @@ static void HandleTouchPressEvent(GUI_PID_STATE * pTS, uint8_t *click_flag)
     else if(screen == SCREEN_GATE_SETTINGS) {
         HandlePress_GateSettingsScreen(pTS, click_flag);
     }
+    else if(screen == SCREEN_SETTINGS_ALARM)
+    {
+        *click_flag = 1;
+    }
     else if(screen == SCREEN_SCENE) {
         HandlePress_SceneScreen(pTS, click_flag);
     }
@@ -6198,7 +6336,8 @@ static void HandleTouchReleaseEvent(GUI_PID_STATE * pTS)
     // =======================================================================
     // === POČETAK IZMJENE: Logika za MAIN_SCREEN sa provjerom zone ===
     // =======================================================================
-    if(screen == SCREEN_MAIN && !touch_in_menu_zone) {
+    if(screen == SCREEN_MAIN && !touch_in_menu_zone) 
+    {
         // Provjerava se da li je POČETNI PRITISAK bio unutar zone
         // definisane u strukturi `reset_menu_switches_layout`.
         if (last_press_state.x >= reset_menu_switches_layout.main_switch_zone.x0 &&
@@ -6212,7 +6351,8 @@ static void HandleTouchReleaseEvent(GUI_PID_STATE * pTS)
     // =======================================================================
     // === KRAJ IZMJENE (Ostatak funkcije je Vaš originalni, sačuvani kod) ===
     // =======================================================================
-    else if(screen == SCREEN_LIGHTS) {
+    else if(screen == SCREEN_LIGHTS) 
+    {
         if(light_selectedIndex < LIGHTS_MODBUS_SIZE) {
             LIGHT_Handle* handle = LIGHTS_GetInstance(light_selectedIndex);
             if (handle) {
@@ -6229,7 +6369,8 @@ static void HandleTouchReleaseEvent(GUI_PID_STATE * pTS)
         light_selectedIndex = LIGHTS_MODBUS_SIZE + 1;
     }
     // === POČETAK BLOKA ZA ZAMJENU: LOGIKA ZA KRATAK PRITISAK NA KAPIJU ===
-    else if (screen == SCREEN_GATE) {
+    else if (screen == SCREEN_GATE) 
+    {
         // Provjeravamo da li je tajmer bio aktivan. Ako je dugi pritisak obrađen,
         // on bi postavio gate_press_timer_start na 0. Ako nije nula, bio je kratak klik.
         if (gate_press_timer_start != 0) {
@@ -6295,18 +6436,30 @@ static void HandleTouchReleaseEvent(GUI_PID_STATE * pTS)
         gate_pressed_index = -1;
     }
     // === KRAJ BLOKA ZA ZAMJENU ===
-    else if(screen == SCREEN_RESET_MENU_SWITCHES) {
+    else if(screen == SCREEN_RESET_MENU_SWITCHES) 
+    {
         HandleRelease_MainScreenSwitch(pTS);
     }
-    else if(screen == SCREEN_SCENE) {
+    else if(screen == SCREEN_SCENE) 
+    {
         HandleRelease_SceneScreen();
     }
+    // =======================================================================
+    // ===       ISPRAVLJENI BLOK: Obrada kratkog pritiska za Alarm i Timer    ===
+    // =======================================================================
+    // Logika se izvršava ISKLJUČIVO ako smo na ekranu SCREEN_SELECT_2
+    else if (screen == SCREEN_SELECT_2)
+    {
+        HandleRelease_AlarmIcon();
+        HandleRelease_TimerIcon();
+    }
+    // =======================================================================
     // Resetovanje svih opštih kontrolnih flegova.
     btnset = 0;
     btndec = 0U;
     btninc = 0U;
     thermostatOnOffTouch_timer = 0;
-
+    
     // Resetovanje `last_press_state` da se izbjegne ponovna aktivacija
     memset(&last_press_state, 0, sizeof(GUI_PID_STATE));
 }
@@ -6443,18 +6596,26 @@ static void HandlePress_SelectScreen1(GUI_PID_STATE * pTS, uint8_t *click_flag)
  ******************************************************************************
  * @brief       Obrađuje događaj pritiska za drugi ekran za odabir (SCREEN_SELECT_2).
  * @author      Gemini & [Vaše Ime]
- * @note        KONAČNA ISPRAVLJENA VERZIJA. Funkcija sada ispravno koristi
- * dostupne API-je iz `defroster.h` i `ventilator.h` za 'toggle'
- * akciju. Logika za detekciju dodira i pokretanje tajmera za
- * dugi pritisak ostaje ista.
+ * @note        Ova funkcija dinamički izračunava koja je ikonica pritisnuta na osnovu
+ * aktivnih modula. Za ikonice Alarma i Tajmera, ova funkcija sada
+ * pokreće tajmere (`dynamic_icon_alarm_press_timer`, `dynamic_icon_timer_press_timer`)
+ * kako bi se omogućila detekcija dugog pritiska. Za sve ostale ikonice,
+ * ponašanje ostaje nepromijenjeno.
+ * @param[in]   pTS Pokazivač na strukturu sa stanjem dodira (`GUI_PID_STATE`).
+ * @param[out]  click_flag Pokazivač na fleg koji signalizira potrebu za zvučnim signalom.
+ * @retval      None
  ******************************************************************************
  */
 static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
 {
-    // === KORAK 1: Ponovna detekcija aktivnih modula (mora odgovarati logici iscrtavanja) ===
+    // Resetuj tajmere na početku svake obrade pritiska
+    dynamic_icon_alarm_press_timer = 0;
+    dynamic_icon_timer_press_timer = 0;
+
+    // --- Logika za detekciju aktivnih modula (nepromijenjena) ---
     typedef struct {
         eScreen target_screen;
-        bool is_dynamic_icon; // Fleg da znamo da li je ovo dinamička ikona
+        bool is_dynamic_icon;
     } DynamicMenuItemPress;
 
     DynamicMenuItemPress active_modules[4];
@@ -6466,38 +6627,28 @@ static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
     active_modules[active_modules_count++] = (DynamicMenuItemPress) {
         SCREEN_TIMER, false
     };
-    
-
-    // << Provjera fleg-a prije dodavanja ikonice >>
     if (g_display_settings.security_module_enabled) {
         active_modules[active_modules_count++] = (DynamicMenuItemPress){ SCREEN_SECURITY, false };
     }
-    
-    // Provjera da li je dinamička ikona uopšte aktivna
     if (g_display_settings.selected_control_mode_2 != MODE_OFF) {
         active_modules[active_modules_count++] = (DynamicMenuItemPress) {
             SCREEN_SELECT_2, true
         };
     }
 
-    // === KORAK 2: Dinamičko računanje zona dodira i provjera ===
+    // --- Dinamičko računanje zona dodira (nepromijenjeno) ---
     TouchZone_t zone;
     int8_t touched_module_index = -1;
 
     switch (active_modules_count)
     {
-    // ... (case blokovi za 1, 2, 3, 4 su nepromijenjeni i ostaju isti) ...
     case 1:
-        zone = (TouchZone_t) {
-            .x0 = 0, .y0 = 0, .x1 = DRAWING_AREA_WIDTH, .y1 = LCD_GetYSize()
-        };
+        zone = (TouchZone_t) { .x0 = 0, .y0 = 0, .x1 = DRAWING_AREA_WIDTH, .y1 = LCD_GetYSize() };
         if (pTS->x >= zone.x0 && pTS->x < zone.x1 && pTS->y >= zone.y0 && pTS->y < zone.y1) touched_module_index = 0;
         break;
     case 2:
         for (int i = 0; i < 2; i++) {
-            zone = (TouchZone_t) {
-                .x0 = (DRAWING_AREA_WIDTH / 2) * i, .y0 = 0, .x1 = (DRAWING_AREA_WIDTH / 2) * (i + 1), .y1 = LCD_GetYSize()
-            };
+            zone = (TouchZone_t) { .x0 = (DRAWING_AREA_WIDTH / 2) * i, .y0 = 0, .x1 = (DRAWING_AREA_WIDTH / 2) * (i + 1), .y1 = LCD_GetYSize() };
             if (pTS->x >= zone.x0 && pTS->x < zone.x1 && pTS->y >= zone.y0 && pTS->y < zone.y1) {
                 touched_module_index = i;
                 break;
@@ -6506,9 +6657,7 @@ static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
         break;
     case 3:
         for (int i = 0; i < 3; i++) {
-            zone = (TouchZone_t) {
-                .x0 = (DRAWING_AREA_WIDTH / 3) * i, .y0 = 0, .x1 = (DRAWING_AREA_WIDTH / 3) * (i + 1), .y1 = LCD_GetYSize()
-            };
+            zone = (TouchZone_t) { .x0 = (DRAWING_AREA_WIDTH / 3) * i, .y0 = 0, .x1 = (DRAWING_AREA_WIDTH / 3) * (i + 1), .y1 = LCD_GetYSize() };
             if (pTS->x >= zone.x0 && pTS->x < zone.x1 && pTS->y >= zone.y0 && pTS->y < zone.y1) {
                 touched_module_index = i;
                 break;
@@ -6518,9 +6667,7 @@ static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
     case 4:
     default:
         for (int i = 0; i < 4; i++) {
-            zone = (TouchZone_t) {
-                .x0 = (i % 2 == 0) ? 0 : DRAWING_AREA_WIDTH / 2, .y0 = (i < 2) ? 0 : LCD_GetYSize() / 2, .x1 = (i % 2 == 0) ? DRAWING_AREA_WIDTH / 2 : DRAWING_AREA_WIDTH, .y1 = (i < 2) ? LCD_GetYSize() / 2 : LCD_GetYSize()
-            };
+            zone = (TouchZone_t) { .x0 = (i % 2 == 0) ? 0 : DRAWING_AREA_WIDTH / 2, .y0 = (i < 2) ? 0 : LCD_GetYSize() / 2, .x1 = (i % 2 == 0) ? DRAWING_AREA_WIDTH / 2 : DRAWING_AREA_WIDTH, .y1 = (i < 2) ? LCD_GetYSize() / 2 : LCD_GetYSize() };
             if (pTS->x >= zone.x0 && pTS->x < zone.x1 && pTS->y >= zone.y0 && pTS->y < zone.y1) {
                 touched_module_index = i;
                 break;
@@ -6529,7 +6676,7 @@ static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
         break;
     }
 
-    // --- Obrada rezultata dodira ---
+    // --- Obrada rezultata dodira (AŽURIRANA LOGIKA) ---
     if (touched_module_index != -1)
     {
         *click_flag = 1;
@@ -6537,28 +6684,20 @@ static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
 
         if (selected_screen == SCREEN_SECURITY)
         {
-            // === KLJUČNA IZMJENA: Osvježi stanje pri ulasku u ekran ===
-            // Ovo osigurava da ekran odmah odražava stanje hardvera (tačka 1 iz zahtjeva)
-            Security_RefreshState();
-            
-            // Postavi lokalni UI status na osnovu realnog hardverskog stanja
-            alarm_ui_state[0] = Security_IsAnyPartitionArmed() ? ALARM_UI_STATE_ARMED : ALARM_UI_STATE_DISARMED;
-            for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
-                alarm_ui_state[i + 1] = Security_GetPartitionState(i) ? ALARM_UI_STATE_ARMED : ALARM_UI_STATE_DISARMED;
-            }
-            // ==========================================================
-
-            screen = SCREEN_SECURITY;
-            shouldDrawScreen = 1;
-
+            // Za ikonicu ALARMA, pokreni tajmer za dugi pritisak
+            dynamic_icon_alarm_press_timer = HAL_GetTick() ? HAL_GetTick() : 1;
         } 
+        else if (selected_screen == SCREEN_TIMER)
+        {
+            // Za ikonicu TAJMERA, pokreni tajmer za dugi pritisak
+            dynamic_icon_timer_press_timer = HAL_GetTick() ? HAL_GetTick() : 1;
+        }
         else if (active_modules[touched_module_index].is_dynamic_icon)
         {
-            // Pritisnuta je DINAMIČKA ikona.
+            // Postojeća logika za ostale dinamičke ikonice ostaje nepromijenjena
             switch(g_display_settings.selected_control_mode_2)
             {
             case MODE_DEFROSTER: {
-                // << ISPRAVLJENA LOGIKA >>
                 Defroster_Handle* defHandle = Defroster_GetInstance();
                 if (Defroster_isActive(defHandle)) {
                     Defroster_Off(defHandle);
@@ -6569,7 +6708,6 @@ static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
                 break;
             }
             case MODE_VENTILATOR: {
-                // << ISPRAVLJENA LOGIKA >>
                 Ventilator_Handle* ventHandle = Ventilator_GetInstance();
                 if (Ventilator_isActive(ventHandle)) {
                     Ventilator_Off(ventHandle);
@@ -6583,11 +6721,9 @@ static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
             case MODE_THEME:
             case MODE_SOS:
             case MODE_OUTDOOR:
-                // Pokrećemo tajmer za detekciju dugog pritiska
                 dynamic_icon2_press_timer = HAL_GetTick() ? HAL_GetTick() : 1;
                 break;
             case MODE_ALL_OFF:
-                // Akcija za kratak pritisak
                 break;
             default:
                 break;
@@ -6595,12 +6731,12 @@ static void HandlePress_SelectScreen2(GUI_PID_STATE * pTS, uint8_t *click_flag)
         }
         else
         {
-            // Pritisnuta je STATIČKA ikona. Mijenjamo ekran.
+            // Za sve ostale statičke ikonice (npr. Gate), odmah mijenjaj ekran
             screen = active_modules[touched_module_index].target_screen;
             shouldDrawScreen = 1;
         }
     }
-    // Provjera dodira na "NEXT" dugme
+    // Logika za "NEXT" dugme ostaje nepromijenjena
     else if (pTS->x >= select_screen1_drawing_layout.next_button_zone.x0)
     {
         *click_flag = 1;
@@ -7509,14 +7645,6 @@ static void HandlePress_TimerScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
         int toggle_x = (DRAWING_AREA_WIDTH / 2) - (toggle_icon->XSize / 2);
         TouchZone_t toggle_button_zone = { .x0 = toggle_x, .y0 = 180, .x1 = toggle_x + toggle_icon->XSize, .y1 = 180 + toggle_icon->YSize };
 
-        // Dinamičko računanje zone dodira za ikonicu za podešavanja
-        const GUI_BITMAP* icon_settings = &bmicons_settings;
-        TouchZone_t settings_icon_zone = {
-            .x0 = timer_screen_layout.settings_button_pos.x,
-            .y0 = timer_screen_layout.settings_button_pos.y,
-            .x1 = timer_screen_layout.settings_button_pos.x + icon_settings->XSize,
-            .y1 = timer_screen_layout.settings_button_pos.y + icon_settings->YSize
-        };
 
         // Provjera pritiska na 'toggle' dugme
         if (pTS->x >= toggle_button_zone.x0 && pTS->x < toggle_button_zone.x1 &&
@@ -7526,17 +7654,6 @@ static void HandlePress_TimerScreen(GUI_PID_STATE * pTS, uint8_t *click_flag)
             Timer_SetState(!Timer_IsActive());
             Timer_Save();
             shouldDrawScreen = 1;
-        }
-        // Provjera pritiska na zonu ikonice za podešavanja
-        else if (pTS->x >= settings_icon_zone.x0 && pTS->x < settings_icon_zone.x1 &&
-                 pTS->y >= settings_icon_zone.y0 && pTS->y < settings_icon_zone.y1)
-        {
-            *click_flag = 1;
-            Timer_Suppress();
-            DSP_KillTimerScreen();
-            screen = SCREEN_SETTINGS_TIMER;
-//            DSP_InitSettingsTimerScreen();
-            shouldDrawScreen = 0;
         }
     }
 }
@@ -7618,17 +7735,21 @@ static void DSP_InitNumpadScreen(void)
 
     GUI_MULTIBUF_EndEx(1);
 }
-/******************************************************************************
- * @brief       Glavna servisna funkcija za univerzalni numerički keypad.
- * @author      Gemini (po specifikaciji korisnika)
- * @note        FINALNA VERZIJA 2.0. Funkcija je sada "svjesna" konteksta.
- * Na osnovu ekrana sa kojeg je pozvana, odlučuje da li treba
- * izvršiti provjeru PIN-a za alarm ili za ulazak u podešavanja.
- *****************************************************************************/
+/**
+ ******************************************************************************
+ * @brief       Servisira univerzalni numerički keypad (KONAČNA ISPRAVLJENA VERZIJA).
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova verzija je bazirana na originalnoj, ispravnoj logici koju ste
+ * priložili. Vraćena je "Optimistic UI" funkcionalnost gdje se status
+ * "Naoružavanje/Razoružavanje" prikazuje ODMAH nakon unosa ispravnog PIN-a.
+ * Pažljivo je integrisana nova state-machine (`pin_change_state`) za
+ * trostupanjsku promjenu PIN-a, bez narušavanja postojećih funkcionalnosti.
+ ******************************************************************************
+ */
 static void Service_NumpadScreen(void)
 {
-    static int button_pressed_id = -1; 
-    static bool should_redraw_text = false; 
+    static int button_pressed_id = -1;
+    static bool should_redraw_text = false;
 
     if (shouldDrawScreen) {
         shouldDrawScreen = 0;
@@ -7667,66 +7788,108 @@ static void Service_NumpadScreen(void)
             }
         }
         else if (Id == ID_PINPAD_OK) {
-            bool is_valid = false;
-            
-            if (numpad_return_screen == SCREEN_SECURITY)
+
+            // ====================================================================
+            // === JEDINA IZMJENA: Provjera da li je aktivan proces promjene PIN-a ===
+            // ====================================================================
+            if (pin_change_state != PIN_CHANGE_IDLE)
             {
-                if (Security_ValidateUserCode(pin_buffer)) {
-                    is_valid = true;
-                    
-                    AlarmUIState_e target_visual_state = ALARM_UI_STATE_DISARMED;
-
-                    if (selected_action == 0) { // Akcija za SISTEM
-                        // === KLJUČNA ISPRAVKA: Logika toggle-a na osnovu TRENUTNOG UI stanja ===
-                        // AKO JE UI STATUS ARMED ILI ARMING, SLEDEĆA AKCIJA JE DISARMING (toggle)
-                        bool ui_is_in_arm_state = (alarm_ui_state[0] == ALARM_UI_STATE_ARMED || alarm_ui_state[0] == ALARM_UI_STATE_ARMING);
+                // Ako jeste, izvrši se samo nova logika za promjenu PIN-a
+                switch (pin_change_state)
+                {
+                    case PIN_CHANGE_WAIT_CURRENT:
+                        if (Security_ValidateUserCode(pin_buffer)) {
+                            pin_change_state = PIN_CHANGE_WAIT_NEW;
+                            NumpadContext_t next_context = { .title = lng(TXT_PIN_ENTER_NEW), .max_len = 8 };
+                            Display_ShowNumpad(&next_context);
+                        } else {
+                            pin_error_active = true;
+                            pin_mask_timer = HAL_GetTick();
+                        }
+                        break;
+                    case PIN_CHANGE_WAIT_NEW:
+                        if (strlen(pin_buffer) >= 4) {
+                            strcpy(new_pin_buffer, pin_buffer);
+                            pin_change_state = PIN_CHANGE_WAIT_CONFIRM;
+                            NumpadContext_t next_context = { .title = lng(TXT_PIN_CONFIRM_NEW), .max_len = 8 };
+                            Display_ShowNumpad(&next_context);
+                        } else {
+                            pin_error_active = true;
+                            pin_mask_timer = HAL_GetTick();
+                        }
+                        break;
+                    case PIN_CHANGE_WAIT_CONFIRM:
+                        if (strcmp(pin_buffer, new_pin_buffer) == 0) {
+                            Security_SetPin(new_pin_buffer);
+                            Security_Save();
+                            pin_change_state = PIN_CHANGE_IDLE;
+                            NumpadContext_t success_context = { .title = lng(TXT_PIN_CHANGE_SUCCESS), .max_len = 0 };
+                            Display_ShowNumpad(&success_context);
+                            HAL_Delay(2000);
+                            DSP_KillNumpadScreen();
+                            screen = numpad_return_screen;
+                            shouldDrawScreen = 1;
+                        } else {
+                            pin_error_active = true;
+                            pin_mask_timer = HAL_GetTick();
+                            DSP_KillNumpadScreen();
+                            NumpadContext_t retry_context = { .title = lng(TXT_PINS_DONT_MATCH), .max_len = 8 };
+                            Display_ShowNumpad(&retry_context);
+                        }
+                        break;
+                    default: 
+                        pin_change_state = PIN_CHANGE_IDLE;
+                        break;
+                }
+                should_redraw_text = true;
+            }
+            else // Ako NIJE aktivan proces promjene PIN-a, izvršava se VAŠ ORIGINALNI KOD
+            {
+                bool is_valid = false;
+                
+                if (numpad_return_screen == SCREEN_SECURITY)
+                {
+                    if (Security_ValidateUserCode(pin_buffer)) {
+                        is_valid = true;
                         
-                        target_visual_state = ui_is_in_arm_state ? ALARM_UI_STATE_DISARMING : ALARM_UI_STATE_ARMING;
-
-                        // ODMAH postavi tranziciono stanje za SISTEM i SVE konfigurisane particije
-                        alarm_ui_state[0] = target_visual_state;
-                        for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
-                            if (Security_GetPartitionRelayAddr(i) != 0) {
-                                alarm_ui_state[i + 1] = target_visual_state;
+                        if (selected_action == 0) { // Akcija za SISTEM
+                            bool ui_is_in_arm_state = (alarm_ui_state[0] == ALARM_UI_STATE_ARMED || alarm_ui_state[0] == ALARM_UI_STATE_ARMING);
+                            alarm_ui_state[0] = ui_is_in_arm_state ? ALARM_UI_STATE_DISARMING : ALARM_UI_STATE_ARMING;
+                            for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
+                                if (Security_GetPartitionRelayAddr(i) != 0) {
+                                    alarm_ui_state[i + 1] = alarm_ui_state[0];
+                                }
                             }
+                            Security_ToggleSystem();
+                        } else if (selected_action > 0 && selected_action <= SECURITY_PARTITION_COUNT) {
+                            uint8_t partition_index = selected_action - 1;
+                            bool ui_partition_is_in_arm_state = (alarm_ui_state[selected_action] == ALARM_UI_STATE_ARMED || alarm_ui_state[selected_action] == ALARM_UI_STATE_ARMING);
+                            alarm_ui_state[selected_action] = ui_partition_is_in_arm_state ? ALARM_UI_STATE_DISARMING : ALARM_UI_STATE_ARMING;
+                            Security_TogglePartition(partition_index);
                         }
                         
-                        Security_ToggleSystem(); // Pošalji komandu
-                        
-                    } else if (selected_action > 0 && selected_action <= SECURITY_PARTITION_COUNT) {
-                        uint8_t partition_index = selected_action - 1;
-                        
-                        // AKO JE UI STATUS ARMED ILI ARMING, SLEDEĆA AKCIJA JE DISARMING (za particiju)
-                        bool ui_partition_is_in_arm_state = (alarm_ui_state[selected_action] == ALARM_UI_STATE_ARMED || alarm_ui_state[selected_action] == ALARM_UI_STATE_ARMING);
-                        target_visual_state = ui_partition_is_in_arm_state ? ALARM_UI_STATE_DISARMING : ALARM_UI_STATE_ARMING;
-
-                        // ODMAH postavi tranziciono stanje samo za odabranu particiju
-                        alarm_ui_state[selected_action] = target_visual_state;
-                        
-                        Security_TogglePartition(partition_index); // Pošalji komandu
+                        DSP_KillNumpadScreen();
+                        screen = SCREEN_SECURITY; 
+                        shouldDrawScreen = 1; 
                     }
-                    
-                    DSP_KillNumpadScreen();
-                    screen = SCREEN_SECURITY; 
-                    shouldDrawScreen = 1; 
                 }
-            }
-            else // Podrazumijevani kontekst: Ulazak u glavna podešavanja
-            {
-                if (strcmp(pin_buffer, system_pin) == 0) {
-                    is_valid = true;
-                    DSP_KillNumpadScreen();
-                    DSP_InitSet1Scrn();
-                    screen = SCREEN_SETTINGS_1; 
-                    shouldDrawScreen = 1;
+                else // Podrazumijevani kontekst: Ulazak u glavna podešavanja
+                {
+                    if (strcmp(pin_buffer, system_pin) == 0) {
+                        is_valid = true;
+                        DSP_KillNumpadScreen();
+                        DSP_InitSet1Scrn();
+                        screen = SCREEN_SETTINGS_1; 
+                        shouldDrawScreen = 1;
+                    }
                 }
+                
+                if (!is_valid) {
+                    pin_error_active = true;
+                    pin_mask_timer = HAL_GetTick();
+                }
+                should_redraw_text = true;
             }
-            
-            if (!is_valid) {
-                pin_error_active = true;
-                pin_mask_timer = HAL_GetTick();
-            }
-            should_redraw_text = true;
         }
 
         if (should_redraw_text) {
@@ -7945,20 +8108,18 @@ static void DSP_InitKeyboardScreen(void)
 }
 /**
  ******************************************************************************
- * @brief       Servisna funkcija za alfanumeričku tastaturu.
+ * @brief       Servisira univerzalnu alfanumeričku tastaturu.
  * @author      Gemini & [Vaše Ime]
- * @note        Ova funkcija obrađuje pritiske na sve tastere. Upravlja unosom
- * karaktera u bafer, specijalnim funkcijama kao što su Shift i
- * Backspace, te potvrdom unosa. Nakon potvrde, rezultat se
- * sprema u `g_keyboard_result` i kontrola se vraća na ekran
- * koji je pozvao tastaturu.
- * @param       None
- * @retval      None
+ * @note        Funkcija obrađuje pritiske na sve tastere, upravlja unosom,
+ * brisanjem i shift stanjem.
+ * Ključna logika se nalazi u obradi "OK" dugmeta, gdje se na osnovu
+ * konteksta (`keyboard_return_screen` i `selected_partition_for_rename`)
+ * odlučuje koja `setter` funkcija će biti pozvana za snimanje podatka.
  ******************************************************************************
  */
 static void Service_KeyboardScreen(void)
 {
-    static int button_pressed_idx = -1; // -1 = nijedan taster nije pritisnut
+    static int button_pressed_idx = -1;
     int current_pressed_idx = -1;
     WM_HWIN hPressedButton = 0;
 
@@ -7974,7 +8135,6 @@ static void Service_KeyboardScreen(void)
     if (!hPressedButton) {
         for (int i = 0; i < 5; i++) {
             if (WM_IsWindow(hKeyboardSpecialButtons[i]) && BUTTON_IsPressed(hKeyboardSpecialButtons[i])) {
-                // Koristimo negativan indeks da razlikujemo specijalne tastere
                 current_pressed_idx = -(i + 1);
                 hPressedButton = hKeyboardSpecialButtons[i];
                 break;
@@ -7984,31 +8144,32 @@ static void Service_KeyboardScreen(void)
 
     // Događaj se aktivira kada se taster OTPUSTI
     if (current_pressed_idx == -1 && button_pressed_idx != -1) {
-        BuzzerOn();
-        HAL_Delay(1);
-        BuzzerOff();
+        BuzzerOn(); HAL_Delay(1); BuzzerOff();
+
+        // U prethodnom ciklusu je bio pritisnut taster sa indeksom `button_pressed_idx`
+        // Sada radimo sa njegovim handle-om
+        if (button_pressed_idx >= 0) {
+            hPressedButton = hKeyboardButtons[button_pressed_idx];
+        } else {
+            hPressedButton = hKeyboardSpecialButtons[(-button_pressed_idx) - 1];
+        }
 
         int Id = WM_GetId(hPressedButton);
 
         if (Id >= GUI_ID_USER && Id < (GUI_ID_USER + (KEY_ROWS * KEYS_PER_ROW))) {
-            // Pritisnut je taster sa karakterom
             if (keyboard_buffer_idx < g_keyboard_context.max_len) {
-
-                // ISPRAVLJENI POZIV: Sva tri argumenta su prisutna
-                char key_text[10]; // Privremeni bafer dovoljno velik za jedan karakter
+                char key_text[10];
                 BUTTON_GetText(hPressedButton, key_text, sizeof(key_text));
-
                 strcat(keyboard_buffer, key_text);
                 keyboard_buffer_idx = strlen(keyboard_buffer);
             }
         } else {
-            // Pritisnut je specijalni taster
             switch(Id) {
             case GUI_ID_SHIFT:
                 keyboard_shift_active = !keyboard_shift_active;
-                DSP_KillKeyboardScreen(); // Obriši stare tastere
-                DSP_InitKeyboardScreen(); // Iscrtaj nove (mala/velika slova)
-                return; // Prekini dalje izvršavanje jer je ekran ponovo iscrtan
+                DSP_KillKeyboardScreen();
+                DSP_InitKeyboardScreen();
+                return;
 
             case GUI_ID_BACKSPACE:
                 if (keyboard_buffer_idx > 0) {
@@ -8024,20 +8185,41 @@ static void Service_KeyboardScreen(void)
                 break;
 
             case GUI_ID_OKAY:
+                // Pripremi rezultat
                 strncpy(g_keyboard_result.value, keyboard_buffer, sizeof(g_keyboard_result.value));
-                g_keyboard_result.value[sizeof(g_keyboard_result.value) - 1] = '\0'; // Osiguraj NULL terminator
+                g_keyboard_result.value[sizeof(g_keyboard_result.value) - 1] = '\0';
                 g_keyboard_result.is_confirmed = true;
-                DSP_KillKeyboardScreen(); // Obriši tastaturu prije povratka
+                
+                // ===============================================================
+                // ===          NOVA LOGIKA ZA SNIMANJE NAZIVA ALARMA          ===
+                // ===============================================================
+                if (keyboard_return_screen == SCREEN_SETTINGS_ALARM)
+                {
+                    if (selected_partition_for_rename == -1)
+                    {
+                        // Mijenjamo naziv cijelog sistema
+                        Security_SetSystemName(g_keyboard_result.value);
+                    }
+                    else if (selected_partition_for_rename >= 0 && selected_partition_for_rename < SECURITY_PARTITION_COUNT)
+                    {
+                        // Mijenjamo naziv specifične particije
+                        Security_SetPartitionName(selected_partition_for_rename, g_keyboard_result.value);
+                    }
+                    Security_Save(); // Snimi promjene u EEPROM
+                }
+                // ===============================================================
+
+                DSP_KillKeyboardScreen();
                 screen = keyboard_return_screen;
-                return; // Prekini dalje izvršavanje
+                shouldDrawScreen = 1; // Zatraži ponovno iscrtavanje prethodnog ekrana
+                return;
             }
         }
 
-        // Ažuriraj prikaz teksta, osim ako se ekran već mijenja
         if (screen == SCREEN_KEYBOARD_ALPHA) {
             GUI_MULTIBUF_BeginEx(1);
-            const int x_start = (LCD_GetXSize() - (10 * 42 + 9 * 5)) / 2; // Ponovo izracunaj x_start
-            GUI_ClearRect(x_start, 35, x_start + 42 * 10 + 5 * 9, 55); // Očisti samo područje teksta
+            const int x_start = (LCD_GetXSize() - (10 * 42 + 9 * 5)) / 2;
+            GUI_ClearRect(x_start, 35, x_start + 42 * 10 + 5 * 9, 55);
             GUI_SetColor(GUI_ORANGE);
             GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
             GUI_DispStringAt(keyboard_buffer, x_start, 40);
@@ -8048,13 +8230,15 @@ static void Service_KeyboardScreen(void)
     button_pressed_idx = current_pressed_idx;
 }
 
-/******************************************************************************
+/**
+ ******************************************************************************
  * @brief       Uništava sve GUI widgete kreirane za alfanumeričku tastaturu.
  * @author      Gemini (po specifikaciji korisnika)
  * @note        Poziva se prilikom napuštanja `SCREEN_KEYBOARD_ALPHA` ekrana.
  * @param       None
  * @retval      None
- *****************************************************************************/
+ ******************************************************************************
+ */
 static void DSP_KillKeyboardScreen(void)
 {
     // Brisanje tastera sa karakterima
@@ -8072,13 +8256,15 @@ static void DSP_KillKeyboardScreen(void)
         }
     }
 }
-/******************************************************************************
+/**
+ ******************************************************************************
  * @brief       Priprema i prebacuje sistem na ekran alfanumeričke tastature.
  * @author      Gemini (po specifikaciji korisnika)
  * @note        Pamti ekran sa kojeg je pozvana radi povratka.
  * @param       context Pokazivač na KeyboardContext_t strukturu.
  * @retval      None
- *****************************************************************************/
+ ******************************************************************************
+ */
 static void Display_ShowKeyboard(const KeyboardContext_t* context)
 {
     keyboard_return_screen = screen;
@@ -11150,10 +11336,6 @@ static void Service_TimerScreen(void)
             GUI_SetTextAlign(GUI_TA_HCENTER);
             TextID status_text_id = Timer_IsActive() ? TXT_TIMER_ENABLED : TXT_TIMER_DISABLED;
             GUI_DispStringAt(lng(status_text_id), timer_screen_layout.status_text_pos.x, timer_screen_layout.status_text_pos.y);
-
-            // Iscrtavanje ikonice za podešavanja
-            const GUI_BITMAP* icon_settings = &bmicons_settings;
-            GUI_DrawBitmap(icon_settings, timer_screen_layout.settings_button_pos.x, timer_screen_layout.settings_button_pos.y);
         }
 
         GUI_MULTIBUF_EndEx(1);
@@ -11997,34 +12179,27 @@ static void Service_GateSettingsScreen(void)
     }
 }
 
-
 /**
  ******************************************************************************
  * @brief       Servisira glavni ekran za kontrolu Alarma (SCREEN_SECURITY).
  * @author      Gemini & [Vaše Ime]
- * @note        REDZAJNIRANA VERZIJA: Koristi male (50x50) dugmiće sa ikonicom
- * i ispisuje detaljne labele pored njih. Implementira "sistem poruka"
- * prikazivanjem privremenih statusa "Naoružavanje..." / "Razoružavanje..."
- * kao trenutan odziv korisniku.
+ * @note        ISPRAVLJENA VERZIJA: Koristi mala (50x50) dugmad sa ikonicom
+ * i ispisuje detaljne labele pored njih, u skladu sa ostatkom UI-ja.
+ * Takođe koristi "pametnu logiku" za prikaz korisnički definisanih naziva.
  ******************************************************************************
  */
 static void Service_SecurityScreen(void)
 {
-    // NOVO: Fiksna X pozicija za prefiks i status
-    const int16_t PREFIX_X_START = 10;
-    const int16_t STATUS_X_OFFSET = 180; 
-
-    // --- LOGIKA ZA OSVJEŽAVANJE STANJA PRI ULASKU I RADU ---
+    // Crtanje se izvršava samo ako je zatraženo
     if (shouldDrawScreen) {
         shouldDrawScreen = 0;
         
-        // Pri ulasku (ili ako je došlo do promjene od backend-a), provjeri hardver.
         Security_RefreshState();
         
-        // Ažuriraj vizuelni status na osnovu realnog stanja hardvera (ARMED/DISARMED)
-        // Ako je Service_NumpadScreen postavio tranziciono stanje, ono se crta na osnovu alarm_ui_state
-        // i ostaje tako sve dok nova provjera hardvera (preko BusEventa) ne resetuje shouldDrawScreen
-        // i ne postavi hardverski potvrđeno stanje.
+//        alarm_ui_state[0] = Security_IsAnyPartitionArmed() ? ALARM_UI_STATE_ARMED : ALARM_UI_STATE_DISARMED;
+//        for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
+//            alarm_ui_state[i + 1] = Security_GetPartitionState(i) ? ALARM_UI_STATE_ARMED : ALARM_UI_STATE_DISARMED;
+//        }
         
         GUI_MULTIBUF_BeginEx(1);
         GUI_Clear();
@@ -12036,19 +12211,24 @@ static void Service_SecurityScreen(void)
             GUI_SetFont(&GUI_FontVerdana20_LAT);
             GUI_SetColor(GUI_WHITE);
             GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
-            GUI_DispStringAt("Alarmni sistem nije konfigurisan.", DRAWING_AREA_WIDTH / 2, LCD_GetYSize() / 2);
+            GUI_DispStringAt(lng(TXT_ALARM_NOT_CONFIGURED), DRAWING_AREA_WIDTH / 2, LCD_GetYSize() / 2);
         } else {
+            // Korištenje konstanti iz layout strukture
             const int16_t x_pos = security_screen_layout.start_pos.x;
             const int16_t y_start = security_screen_layout.start_pos.y;
             const int16_t y_spacing = security_screen_layout.y_spacing;
-            const int16_t btn_size = 50; 
+            const int16_t btn_size = security_screen_layout.button_size;
+            const int16_t lbl_offset = security_screen_layout.label_x_offset;
             
+            char buffer[100];
             uint8_t visible_buttons = 0;
-            char buffer[100]; 
             
             // --- Dugme i Labela za SISTEM ---
             BUTTON_Handle hBtnSystem = BUTTON_CreateEx(x_pos, y_start, btn_size, btn_size, 0, WM_CF_SHOW, 0, GUI_ID_USER + 0);
             BUTTON_SetBitmap(hBtnSystem, BUTTON_CI_UNPRESSED, &bmicons_button_right_50_squared);
+
+            const char* system_name = Security_GetSystemName();
+            const char* display_system_name = (system_name[0] == '\0') ? lng(TXT_ALARM_SYSTEM) : system_name;
 
             const char* status_text_system = "";
             switch(alarm_ui_state[0]) {
@@ -12058,12 +12238,10 @@ static void Service_SecurityScreen(void)
                 case ALARM_UI_STATE_DISARMING:  GUI_SetColor(GUI_ORANGE); status_text_system = lng(TXT_ALARM_STATE_DISARMING); break;
                 default:                        GUI_SetColor(GUI_WHITE);  status_text_system = "N/A";                      break;
             }
-
-            snprintf(buffer, sizeof(buffer), "%s: %s", lng(TXT_ALARM_SYSTEM), status_text_system);
-
+            snprintf(buffer, sizeof(buffer), "%s: %s", display_system_name, status_text_system);
             GUI_SetFont(&GUI_FontVerdana20_LAT);
             GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
-            GUI_DispStringAt(buffer, x_pos + btn_size + PREFIX_X_START, y_start + btn_size / 2);
+            GUI_DispStringAt(buffer, x_pos + btn_size + lbl_offset, y_start + btn_size / 2);
             
             visible_buttons++;
             
@@ -12075,6 +12253,13 @@ static void Service_SecurityScreen(void)
                     BUTTON_Handle hBtn = BUTTON_CreateEx(x_pos, y_pos, btn_size, btn_size, 0, WM_CF_SHOW, 0, GUI_ID_USER + 1 + i);
                     BUTTON_SetBitmap(hBtn, BUTTON_CI_UNPRESSED, &bmicons_button_right_50_squared);
                     
+                    const char* partition_name = Security_GetPartitionName(i);
+                    char default_partition_name[50];
+                    if (partition_name[0] == '\0') {
+                        snprintf(default_partition_name, sizeof(default_partition_name), "%s %d", lng(TXT_ALARM_PARTITION), i + 1);
+                        partition_name = default_partition_name;
+                    }
+                    
                     const char* status_text_partition = "";
                     switch(alarm_ui_state[i + 1]) {
                         case ALARM_UI_STATE_ARMED:      GUI_SetColor(GUI_GREEN);  status_text_partition = lng(TXT_ALARM_STATE_ARMED);   break;
@@ -12084,11 +12269,10 @@ static void Service_SecurityScreen(void)
                         default:                        GUI_SetColor(GUI_WHITE);  status_text_partition = "N/A";                      break;
                     }
                     
-                    snprintf(buffer, sizeof(buffer), "%s %d: %s", lng(TXT_ALARM_PARTITION), i + 1, status_text_partition);
-
+                    snprintf(buffer, sizeof(buffer), "%s: %s", partition_name, status_text_partition);
                     GUI_SetFont(&GUI_FontVerdana20_LAT);
                     GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
-                    GUI_DispStringAt(buffer, x_pos + btn_size + 10, y_pos + btn_size / 2);
+                    GUI_DispStringAt(buffer, x_pos + btn_size + lbl_offset, y_pos + btn_size / 2);
 
                     visible_buttons++;
                 }
@@ -12097,7 +12281,7 @@ static void Service_SecurityScreen(void)
         GUI_MULTIBUF_EndEx(1);
     }
 
-    // Obrada pritiska na dugmad
+    // Obrada pritiska na dugmad (logika ostaje nepromijenjena)
     for (int i = 0; i <= SECURITY_PARTITION_COUNT; i++) {
          WM_HWIN hBtn = WM_GetDialogItem(WM_GetDesktopWindow(), GUI_ID_USER + i);
          if (hBtn && BUTTON_IsPressed(hBtn)) {
@@ -12126,6 +12310,204 @@ static void DSP_KillSecurityScreen(void)
         if (WM_IsWindow(hItem)) {
             WM_DeleteWindow(hItem);
         }
+    }
+}
+/**
+ ******************************************************************************
+ * @brief       Kreira i inicijalizuje GUI za ekran podešavanja alarma (ISPRAVLJENA VERZIJA).
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova verzija ispravno koristi mala (50x50) dugmad sa ikonicama i
+ * ispisuje tekstualne labele pored njih, u skladu sa ostatkom UI-ja.
+ * Koristi "pametnu logiku" za ispis naziva.
+ ******************************************************************************
+ */
+static void DSP_InitSettingsAlarmScreen(void)
+{
+    GUI_MULTIBUF_BeginEx(1);
+    GUI_Clear();
+    DrawHamburgerMenu(1);
+
+    const int16_t x_pos = 20;
+    const int16_t y_start = 10;
+    const int16_t btn_size = 50;
+    const int16_t y_gap = 55; // Povećan razmak zbog visine reda
+    const int16_t lbl_offset = 15;
+    
+    char buffer[50];
+
+    // --- Kreiranje dugmeta i labele za "Promijeni Glavni PIN" ---
+    int16_t current_y = y_start;
+    hButtonChangePin = BUTTON_CreateEx(x_pos, current_y, btn_size, btn_size, 0, WM_CF_SHOW, 0, GUI_ID_USER + 50);
+    BUTTON_SetBitmap(hButtonChangePin, BUTTON_CI_UNPRESSED, &bmicons_button_right_50_squared);
+    GUI_SetFont(&GUI_FontVerdana20_LAT);
+    GUI_SetColor(GUI_WHITE);
+    GUI_SetTextAlign(GUI_TA_LEFT | GUI_TA_VCENTER);
+    GUI_DispStringAt(lng(TXT_ALARM_CHANGE_PIN), x_pos + btn_size + lbl_offset, current_y + btn_size / 2);
+
+    // --- Kreiranje dugmeta i labele za "Naziv Sistema" ---
+    current_y += y_gap;
+    hButtonSystemName = BUTTON_CreateEx(x_pos, current_y, btn_size, btn_size, 0, WM_CF_SHOW, 0, GUI_ID_USER + 51);
+    BUTTON_SetBitmap(hButtonSystemName, BUTTON_CI_UNPRESSED, &bmicons_button_right_50_squared);
+    
+    const char* system_name = Security_GetSystemName();
+    if (system_name[0] == '\0') {
+        snprintf(buffer, sizeof(buffer), "%s", lng(TXT_ALARM_SYSTEM_NAME));
+    } else {
+        snprintf(buffer, sizeof(buffer), "%s: %s", lng(TXT_ALARM_SYSTEM_NAME), system_name);
+    }
+    GUI_DispStringAt(buffer, x_pos + btn_size + lbl_offset, current_y + btn_size / 2);
+
+    // --- Kreiranje dugmadi i labela za "Naziv Particije X" ---
+    for (int i = 0; i < SECURITY_PARTITION_COUNT; i++)
+    {
+        current_y += y_gap;
+        hButtonPartitionName[i] = BUTTON_CreateEx(x_pos, current_y, btn_size, btn_size, 0, WM_CF_SHOW, 0, GUI_ID_USER + 52 + i);
+        BUTTON_SetBitmap(hButtonPartitionName[i], BUTTON_CI_UNPRESSED, &bmicons_button_right_50_squared);
+        
+        const char* partition_name = Security_GetPartitionName(i);
+        if (partition_name[0] == '\0') {
+            sprintf(buffer, "%s %d", lng(TXT_ALARM_PARTITION_NAME), i + 1);
+        } else {
+            sprintf(buffer, "%s %d: %s", lng(TXT_ALARM_PARTITION_NAME), i + 1, partition_name);
+        }
+        GUI_DispStringAt(buffer, x_pos + btn_size + lbl_offset, current_y + btn_size / 2);
+    }
+
+    GUI_MULTIBUF_EndEx(1);
+}
+/**
+ ******************************************************************************
+ * @brief       Uništava sve GUI widgete sa ekrana za podešavanje alarma.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija se poziva prilikom napuštanja ekrana
+ * `SCREEN_SETTINGS_ALARM` kako bi se oslobodila memorija.
+ ******************************************************************************
+ */
+static void DSP_KillSettingsAlarmScreen(void)
+{
+    // Provjera i brisanje svakog handle-a pojedinačno radi sigurnosti
+    if (WM_IsWindow(hButtonChangePin)) {
+        WM_DeleteWindow(hButtonChangePin);
+        hButtonChangePin = 0;
+    }
+    if (WM_IsWindow(hButtonSystemName)) {
+        WM_DeleteWindow(hButtonSystemName);
+        hButtonSystemName = 0;
+    }
+    for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
+        if (WM_IsWindow(hButtonPartitionName[i])) {
+            WM_DeleteWindow(hButtonPartitionName[i]);
+            hButtonPartitionName[i] = 0;
+        }
+    }
+}
+/**
+ ******************************************************************************
+ * @brief       Servisira ekran za podešavanje alarma.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija provjerava pritiske na pet dugmadi. U zavisnosti
+ * od pritisnutog dugmeta, pokreće ili proceduru za promjenu
+ * PIN-a (pozivom Numpad-a) ili proceduru za promjenu naziva
+ * (pozivom alfanumeričke tastature).
+ ******************************************************************************
+ */
+static void Service_SettingsAlarmScreen(void)
+{
+    // Provjera pritiska na dugme "Promijeni Glavni PIN"
+    if (BUTTON_IsPressed(hButtonChangePin))
+    {
+        pin_change_state = PIN_CHANGE_WAIT_CURRENT;
+        // Ovdje ćemo kasnije implementirati trostupanjsku logiku
+        // Za sada, samo pokrećemo prvi korak
+        NumpadContext_t pin_context = {
+            .title = lng(TXT_PIN_ENTER_CURRENT),
+            .max_len = 8,
+            // ostale vrijednosti su 0/false po defaultu
+        };
+        Display_ShowNumpad(&pin_context); // Pokaži Numpad za unos trenutnog PIN-a
+        return; // Izađi da bi se odmah obradila promjena ekrana
+    }
+
+    // Provjera pritiska na dugme "Naziv Sistema"
+    if (BUTTON_IsPressed(hButtonSystemName))
+    {
+        selected_partition_for_rename = -1; // Oznaka da se mijenja naziv sistema, a ne particije
+        KeyboardContext_t kbd_context = {
+            .title = lng(TXT_ALARM_SYSTEM_NAME),
+            .max_len = 20
+        };
+        strncpy(kbd_context.initial_value, Security_GetSystemName(), sizeof(kbd_context.initial_value) - 1);
+        Display_ShowKeyboard(&kbd_context); // Pokaži tastaturu za unos naziva
+        return;
+    }
+
+    // Provjera pritiska na dugmad "Naziv Particije X"
+    for (int i = 0; i < SECURITY_PARTITION_COUNT; i++)
+    {
+        if (BUTTON_IsPressed(hButtonPartitionName[i]))
+        {
+            selected_partition_for_rename = i; // Zapamti koju particiju mijenjamo
+            char title_buffer[50];
+            sprintf(title_buffer, "%s %d", lng(TXT_ALARM_PARTITION_NAME), i + 1);
+
+            KeyboardContext_t kbd_context = {
+                .title = title_buffer,
+                .max_len = 20
+            };
+            strncpy(kbd_context.initial_value, Security_GetPartitionName(i), sizeof(kbd_context.initial_value) - 1);
+            Display_ShowKeyboard(&kbd_context); // Pokaži tastaturu
+            return;
+        }
+    }
+}
+/**
+ ******************************************************************************
+ * @brief       Obrađuje kratak pritisak na ikonicu Alarma na SelectScreen2.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija se poziva iz `HandleTouchReleaseEvent`. Provjerava da li
+ * je tajmer za alarm i dalje aktivan. Ako jeste, to znači da dugi
+ * pritisak nije detektovan, te se izvršava akcija za kratak pritisak:
+ * osvježavanje stanja i prelazak na `SCREEN_SECURITY`.
+ ******************************************************************************
+ */
+static void HandleRelease_AlarmIcon(void)
+{
+    if (dynamic_icon_alarm_press_timer != 0)
+    {
+        // Kratak pritisak je detektovan.
+        dynamic_icon_alarm_press_timer = 0;
+        // 1. Osvježi stanje sa hardvera.
+        Security_RefreshState();
+        
+        // 2. Ažuriraj lokalni UI status na osnovu realnog stanja.
+        alarm_ui_state[0] = Security_IsAnyPartitionArmed() ? ALARM_UI_STATE_ARMED : ALARM_UI_STATE_DISARMED;
+        for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
+            alarm_ui_state[i + 1] = Security_GetPartitionState(i) ? ALARM_UI_STATE_ARMED : ALARM_UI_STATE_DISARMED;
+        }
+
+        // 3. Pređi na glavni ekran alarma.
+        screen = SCREEN_SECURITY;
+        shouldDrawScreen = 1;
+    }
+}
+
+/**
+ ******************************************************************************
+ * @brief       Obrađuje kratak pritisak na ikonicu Tajmera na SelectScreen2.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija se poziva iz `HandleTouchReleaseEvent`. Provjerava da li
+ * je tajmer za tajmer i dalje aktivan. Ako jeste, izvršava akciju za
+ * kratak pritisak: prelazak na `SCREEN_TIMER`.
+ ******************************************************************************
+ */
+static void HandleRelease_TimerIcon(void)
+{
+    if (dynamic_icon_timer_press_timer != 0)
+    {
+        // Kratak pritisak na ikonicu Tajmera -> idi na glavni ekran tajmera.
+        dynamic_icon_timer_press_timer = 0;
+        screen = SCREEN_TIMER;
+        shouldDrawScreen = 1;
     }
 }
 /************************ (C) COPYRIGHT JUBERA D.O.O Sarajevo ************************/

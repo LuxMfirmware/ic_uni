@@ -482,14 +482,15 @@ typedef enum
 #endif
 /* Exported constants --------------------------------------------------------*/
 /** ============================================================================*/
-/**         T C P I P       I N T E R F A C E       D E F A U L T               */
+/**         T C P I P       I N T E R F A C E    &    D E F A U L T S           */
 /** ============================================================================*/
 #define NETBIOS_LWIP_NAME               "HOTEL_CTRL"    // netbios network name http://HOTEL_CTRL to find device on same network
 #define DEF_SYSID                       43962   // default system id 0xabba hex
 #define DEF_PASSW                       43962   // default password  0xabba hex
-#define DEF_SRVC_PSWRD                  43962   // default service password  0xabba hex
+#define DEF_SRVC_PSWRD                  "9999"  // default service password 
 #define DEF_MAID_PSWRD                  1548    // default handmaid password
 #define DEF_MNGR_PSWRD                  2637    // default manager password
+#define DEF_ALARM_PIN                   "6776"  // Podrazumijevani PIN za alarmni sistem
 #define IPADDR0                         192     // ip address msb
 #define IPADDR1                         168     // ip address
 #define IPADDR2                         0U      // ip address

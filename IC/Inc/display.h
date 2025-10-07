@@ -250,6 +250,17 @@ typedef enum {
     TXT_ALARM_CMD_DISARM,
     TXT_ALARM_ENTER_PIN,
     
+     // === NOVI TEKSTOVI ZA PODEŠAVANJE ALARMA I PROMJENU PIN-a ===
+    TXT_PIN_ENTER_CURRENT,      /**< Naslov: "TRENUTNI PIN" */
+    TXT_PIN_ENTER_NEW,          /**< Naslov: "UNESITE NOVI PIN" */
+    TXT_PIN_CONFIRM_NEW,        /**< Naslov: "POTVRDITE NOVI PIN" */
+    TXT_PIN_WRONG,              /**< Poruka: "POGREŠAN PIN" */
+    TXT_PINS_DONT_MATCH,        /**< Poruka: "PIN-ovi se ne podudaraju" */
+    TXT_PIN_CHANGE_SUCCESS,     /**< Poruka: "PIN uspješno promijenjen" */
+    TXT_ALARM_CHANGE_PIN,       /**< Labela dugmeta: "Promijeni Glavni PIN" */
+    TXT_ALARM_SYSTEM_NAME,      /**< Labela dugmeta: "Naziv Sistema" */
+    TXT_ALARM_PARTITION_NAME,   /**< Labela dugmeta (koristice se kao prefiks, npr. "Naziv Particije 1") */
+    TXT_ALARM_NOT_CONFIGURED,   /**< Poruka: "Alarmni sistem nije konfigurisan" */
     TEXT_COUNT // Uvijek na kraju!
 } TextID;
 
@@ -401,6 +412,7 @@ typedef enum{
     SCREEN_SETTINGS_7,
     SCREEN_SETTINGS_8,              /**< NOVI EKRAN: Meni za detaljno podešavanje do 6 kapija/garažnih vrata. */
     SCREEN_SETTINGS_9,
+    SCREEN_SETTINGS_ALARM,          /**< NOVI EKRAN: Meni za podešavanje naziva alarma i promjenu PIN-a. */
     SCREEN_SETTINGS_TIMER,          /**< NOVI EKRAN: Meni za detaljno podešavanje parametara Pametnog Alarma. */
     SCREEN_SETTINGS_DATETIME,       /**< NOVI EKRAN: Prikazuje se samo ako RTC vrijeme nije validno, za podešavanje datuma i vremena. */
     SCREEN_SETTINGS_HELP,           /**< NOVI EKRAN: Prikazuje tekstualnu pomoc i uputstva za korištenje. */

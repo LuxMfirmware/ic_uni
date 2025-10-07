@@ -34,12 +34,6 @@
 static Security_Settings_t g_security_settings;
 
 /**
- * @brief Globalna, ali privatna instanca strukture sa korisničkim PIN-ovima.
- * @note  Inicijalizuje se iz EEPROM-a prilikom pokretanja sistema.
- */
-static Security_Users_t g_security_users;
-
-/**
  * @brief Niz koji u RAM-u čuva posljednje poznato stanje svake particije.
  * @note  Vrijednost (`true`=naoružana, `false`=razoružana) se ažurira na
  * osnovu `DIN_EVENT` poruka sa RS485 bus-a.
@@ -80,7 +74,6 @@ static void Security_Users_SetDefault(void);
  */
 void Security_Init(void)
 {
-    Security_Users_Init();
     EE_ReadBuffer((uint8_t*)&g_security_settings, EE_SECURITY, sizeof(Security_Settings_t));
 
     if (g_security_settings.magic_number != EEPROM_MAGIC_NUMBER) {
@@ -110,135 +103,168 @@ void Security_Save(void)
     g_security_settings.crc = 0;
     g_security_settings.crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&g_security_settings, sizeof(Security_Settings_t));
     EE_WriteBuffer((uint8_t*)&g_security_settings, EE_SECURITY, sizeof(Security_Settings_t));
-    Security_Users_Save();
 }
 
 /**
  ******************************************************************************
- * @brief       Postavlja konfiguraciju alarma na fabričke vrijednosti.
+ * @brief       Postavlja konfiguraciju alarma na fabričke (default) vrijednosti.
  * @author      Gemini & [Vaše Ime]
+ * @note        Ova funkcija se poziva kada podaci u EEPROM-u nisu validni.
+ * Inicijalizuje sve parametre na sigurne početne vrijednosti,
+ * uključujući podrazumijevani PIN i prazne stringove za nazive.
  ******************************************************************************
  */
 void Security_SetDefault(void)
 {
+    // Brisanje cijele strukture na nulu radi sigurnosti
     memset(&g_security_settings, 0, sizeof(Security_Settings_t));
+
+    // Postavljanje specifičnih default vrijednosti
     g_security_settings.pulse_duration_ms = 500;
+
+    // Postavljanje podrazumijevanog PIN-a
+    strncpy(g_security_settings.pin, DEF_ALARM_PIN, SECURITY_PIN_LENGTH - 1);
+    g_security_settings.pin[SECURITY_PIN_LENGTH - 1] = '\0'; // Osiguraj NUL-terminator
+
+    // Inicijalizacija naziva na prazne stringove.
+    // UI će na osnovu ovoga prikazati default tekst (npr. "Sistem", "Particija 1").
+    g_security_settings.system_name[0] = '\0';
+    for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
+        g_security_settings.partition_names[i][0] = '\0';
+    }
 }
 
 // --- Geteri i Seteri za konfiguraciju alarma ---
-uint16_t Security_GetPartitionRelayAddr(uint8_t p) {
+/**
+ ******************************************************************************
+ * @brief       Dohvata Modbus adresu releja za specificiranu particiju.
+ * @author      Gemini & [Vaše Ime]
+ * @param[in]   p Indeks particije (0-2).
+ * @retval      uint16_t Vraća trenutnu adresu releja, ili 0 ako je indeks nevažeći.
+ ******************************************************************************
+ */
+uint16_t Security_GetPartitionRelayAddr(uint8_t p)
+{
     return (p < SECURITY_PARTITION_COUNT) ? g_security_settings.partition_relay_addr[p] : 0;
 }
-void Security_SetPartitionRelayAddr(uint8_t p, uint16_t addr) {
+
+/**
+ ******************************************************************************
+ * @brief       Postavlja Modbus adresu releja za specificiranu particiju.
+ * @author      Gemini & [Vaše Ime]
+ * @param[in]   p Indeks particije (0-2).
+ * @param[in]   addr Nova Modbus adresa releja.
+ * @retval      None
+ ******************************************************************************
+ */
+void Security_SetPartitionRelayAddr(uint8_t p, uint16_t addr)
+{
     if (p < SECURITY_PARTITION_COUNT) g_security_settings.partition_relay_addr[p] = addr;
 }
-uint16_t Security_GetPartitionFeedbackAddr(uint8_t p) {
+
+/**
+ ******************************************************************************
+ * @brief       Dohvata Modbus adresu digitalnog ulaza (feedback) za specificiranu particiju.
+ * @author      Gemini & [Vaše Ime]
+ * @param[in]   p Indeks particije (0-2).
+ * @retval      uint16_t Vraća trenutnu adresu digitalnog ulaza, ili 0 ako je indeks nevažeći.
+ ******************************************************************************
+ */
+uint16_t Security_GetPartitionFeedbackAddr(uint8_t p)
+{
     return (p < SECURITY_PARTITION_COUNT) ? g_security_settings.partition_feedback_addr[p] : 0;
 }
-void Security_SetPartitionFeedbackAddr(uint8_t p, uint16_t addr) {
+
+/**
+ ******************************************************************************
+ * @brief       Postavlja Modbus adresu digitalnog ulaza (feedback) za specificiranu particiju.
+ * @author      Gemini & [Vaše Ime]
+ * @param[in]   p Indeks particije (0-2).
+ * @param[in]   addr Nova Modbus adresa digitalnog ulaza.
+ * @retval      None
+ ******************************************************************************
+ */
+void Security_SetPartitionFeedbackAddr(uint8_t p, uint16_t addr)
+{
     if (p < SECURITY_PARTITION_COUNT) g_security_settings.partition_feedback_addr[p] = addr;
 }
-uint16_t Security_GetSystemStatusFeedbackAddr(void) {
+
+/**
+ ******************************************************************************
+ * @brief       Dohvata Modbus adresu ulaza za povratnu informaciju o statusu alarma cijelog sistema.
+ * @author      Gemini & [Vaše Ime]
+ * @retval      uint16_t Vraća trenutnu adresu ulaza.
+ ******************************************************************************
+ */
+uint16_t Security_GetSystemStatusFeedbackAddr(void)
+{
     return g_security_settings.system_status_feedback_addr;
 }
-void Security_SetSystemStatusFeedbackAddr(uint16_t addr) {
+
+/**
+ ******************************************************************************
+ * @brief       Postavlja Modbus adresu ulaza za povratnu informaciju o statusu alarma cijelog sistema.
+ * @author      Gemini & [Vaše Ime]
+ * @param[in]   addr Nova Modbus adresa ulaza.
+ * @retval      None
+ ******************************************************************************
+ */
+void Security_SetSystemStatusFeedbackAddr(uint16_t addr)
+{
     g_security_settings.system_status_feedback_addr = addr;
 }
-uint16_t Security_GetSilentAlarmAddr(void) {
+
+/**
+ ******************************************************************************
+ * @brief       Dohvata Modbus adresu releja za tihi alarm (SOS).
+ * @author      Gemini & [Vaše Ime]
+ * @retval      uint16_t Vraća trenutnu adresu releja.
+ ******************************************************************************
+ */
+uint16_t Security_GetSilentAlarmAddr(void)
+{
     return g_security_settings.silent_alarm_addr;
 }
-void Security_SetSilentAlarmAddr(uint16_t addr) {
+
+/**
+ ******************************************************************************
+ * @brief       Postavlja Modbus adresu releja za tihi alarm (SOS).
+ * @author      Gemini & [Vaše Ime]
+ * @param[in]   addr Nova Modbus adresa releja.
+ * @retval      None
+ ******************************************************************************
+ */
+void Security_SetSilentAlarmAddr(uint16_t addr)
+{
     g_security_settings.silent_alarm_addr = addr;
 }
-uint16_t Security_GetPulseDuration(void) {
+
+/**
+ ******************************************************************************
+ * @brief       Dohvata trajanje impulsa za komande releja.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Vrijednost 0 označava trajni (latched) mod rada, dok vrijednost > 0
+ * predstavlja trajanje u milisekundama (ms).
+ * @retval      uint16_t Vraća trenutno trajanje impulsa u ms.
+ ******************************************************************************
+ */
+uint16_t Security_GetPulseDuration(void)
+{
     return g_security_settings.pulse_duration_ms;
 }
-void Security_SetPulseDuration(uint16_t duration) {
+
+/**
+ ******************************************************************************
+ * @brief       Postavlja trajanje impulsa za komande releja.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Postavite na 0 za trajni (latched) mod, ili > 0 za pulsni mod.
+ * @param[in]   duration Novo trajanje impulsa u milisekundama (ms).
+ * @retval      None
+ ******************************************************************************
+ */
+void Security_SetPulseDuration(uint16_t duration)
+{
     g_security_settings.pulse_duration_ms = duration;
-}
-
-/*============================================================================*/
-/* IMPLEMENTACIJA - USER PINS                                                 */
-/*============================================================================*/
-
-/**
- ******************************************************************************
- * @brief       Inicijalizuje korisničke PIN-ove iz EEPROM-a.
- * @author      Gemini & [Vaše Ime]
- * @note        Ako podaci sa adrese `EE_USERS` nisu validni, postavlja
- * fabričke vrijednosti ("7891", "7892", "7893") i snima ih.
- ******************************************************************************
- */
-void Security_Users_Init(void) {
-    EE_ReadBuffer((uint8_t*)&g_security_users, EE_USERS, sizeof(Security_Users_t));
-    if (g_security_users.magic_number != EEPROM_MAGIC_NUMBER) {
-        Security_Users_SetDefault();
-        Security_Users_Save();
-    } else {
-        uint16_t crc = g_security_users.crc;
-        g_security_users.crc = 0;
-        uint16_t calculated_crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&g_security_users, sizeof(Security_Users_t));
-        if (crc != calculated_crc) {
-            Security_Users_SetDefault();
-            Security_Users_Save();
-        }
-    }
-}
-
-/**
- ******************************************************************************
- * @brief       Snima trenutne korisničke PIN-ove u EEPROM.
- * @author      Gemini & [Vaše Ime]
- ******************************************************************************
- */
-void Security_Users_Save(void) {
-    g_security_users.magic_number = EEPROM_MAGIC_NUMBER;
-    g_security_users.crc = 0;
-    g_security_users.crc = HAL_CRC_Calculate(&hcrc, (uint32_t*)&g_security_users, sizeof(Security_Users_t));
-    EE_WriteBuffer((uint8_t*)&g_security_users, EE_USERS, sizeof(Security_Users_t));
-}
-
-/**
- ******************************************************************************
- * @brief       Postavlja fabričke (default) PIN kodove.
- * @author      Gemini & [Vaše Ime]
- ******************************************************************************
- */
-static void Security_Users_SetDefault(void) {
-    memset(&g_security_users, 0, sizeof(Security_Users_t));
-    for (int i = 0; i < SECURITY_USER_COUNT; i++) {
-        strncpy(g_security_users.pins[i], DEFAULT_PINS[i], SECURITY_PIN_LENGTH);
-    }
-}
-
-/**
- ******************************************************************************
- * @brief       Dohvata PIN kod za određenog korisnika.
- * @param       user_index Indeks korisnika (0-2).
- * @retval      const char* Pokazivač na string sa PIN kodom.
- ******************************************************************************
- */
-const char* Security_GetUserPin(uint8_t user_index) {
-    if (user_index < SECURITY_USER_COUNT) {
-        return g_security_users.pins[user_index];
-    }
-    return "";
-}
-
-/**
- ******************************************************************************
- * @brief       Postavlja novi PIN kod za određenog korisnika u RAM.
- * @note        Potrebno je pozvati `Security_Users_Save()` da bi promjena
- * bila trajno sačuvana u EEPROM.
- * @param       user_index Indeks korisnika (0-2) čiji se PIN mijenja.
- * @param       new_pin    Pokazivač na string sa novim PIN-om.
- ******************************************************************************
- */
-void Security_SetUserPin(uint8_t user_index, const char* new_pin) {
-    if (user_index < SECURITY_USER_COUNT) {
-        strncpy(g_security_users.pins[user_index], new_pin, SECURITY_PIN_LENGTH);
-        g_security_users.pins[user_index][SECURITY_PIN_LENGTH - 1] = '\0';
-    }
 }
 
 /*============================================================================*/
@@ -253,7 +279,8 @@ void Security_SetUserPin(uint8_t user_index, const char* new_pin) {
  * @retval      None
  ******************************************************************************
  */
-void Security_TogglePartition(uint8_t i) {
+void Security_TogglePartition(uint8_t i)
+{
     if (i < SECURITY_PARTITION_COUNT) Execute_Command(i);
 }
 
@@ -268,7 +295,8 @@ void Security_TogglePartition(uint8_t i) {
  * @retval      None
  ******************************************************************************
  */
-void Security_ToggleSystem(void) {
+void Security_ToggleSystem(void)
+{
     bool arm_command = !Security_IsAnyPartitionArmed();
     for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) {
         if (g_security_settings.partition_relay_addr[i] != 0 && partition_is_armed[i] != arm_command) Execute_Command(i);
@@ -286,7 +314,8 @@ void Security_ToggleSystem(void) {
  * @retval      None
  ******************************************************************************
  */
-void Security_TriggerSilentAlarm(void) {
+void Security_TriggerSilentAlarm(void)
+{
     uint16_t address = g_security_settings.silent_alarm_addr;
     if (address == 0) return;
     uint8_t data_buff[3] = { (address >> 8) & 0xFF, address & 0xFF, BINARY_ON };
@@ -302,7 +331,8 @@ void Security_TriggerSilentAlarm(void) {
  * @retval      bool `true` ako je particija naoružana, inače `false`.
  ******************************************************************************
  */
-bool Security_GetPartitionState(uint8_t i) {
+bool Security_GetPartitionState(uint8_t i)
+{
     return (i < SECURITY_PARTITION_COUNT) ? partition_is_armed[i] : false;
 }
 
@@ -313,7 +343,8 @@ bool Security_GetPartitionState(uint8_t i) {
  * @retval      bool `true` ako je sistem u alarmu, inače `false`.
  ******************************************************************************
  */
-bool Security_GetSystemAlarmState(void) {
+bool Security_GetSystemAlarmState(void)
+{
     return system_is_in_alarm;
 }
 
@@ -330,7 +361,8 @@ bool Security_GetSystemAlarmState(void) {
  * @param       len     Dužina podataka.
  ******************************************************************************
  */
-void SECURITY_BusEvent(uint16_t address, uint8_t command, uint8_t* data, uint8_t len) {
+void SECURITY_BusEvent(uint16_t address, uint8_t command, uint8_t* data, uint8_t len)
+{
     if (command != DIN_EVENT || address == 0) return;
     bool is_relevant = false;
     if (address == g_security_settings.system_status_feedback_addr) is_relevant = true;
@@ -352,7 +384,8 @@ void SECURITY_BusEvent(uint16_t address, uint8_t command, uint8_t* data, uint8_t
  * prije iscrtavanja kontrolnog ekrana.
  ******************************************************************************
  */
-void Security_RefreshState(void) {
+void Security_RefreshState(void)
+{
     uint8_t response_data;
     for(int i = 0; i < SECURITY_PARTITION_COUNT; ++i) if (g_security_settings.partition_feedback_addr[i] != 0 && GetState(DIN_GET, g_security_settings.partition_feedback_addr[i], &response_data)) partition_is_armed[i] = (response_data == 1);
     if (g_security_settings.system_status_feedback_addr != 0 && GetState(DIN_GET, g_security_settings.system_status_feedback_addr, &response_data)) system_is_in_alarm = (response_data == 1);
@@ -366,7 +399,8 @@ void Security_RefreshState(void) {
  * @retval      uint8_t Broj konfigurisanih particija (0 do 3).
  ******************************************************************************
  */
-uint8_t Security_GetConfiguredPartitionsCount(void) {
+uint8_t Security_GetConfiguredPartitionsCount(void)
+{
     uint8_t count = 0;
     for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) if (g_security_settings.partition_relay_addr[i] != 0) count++;
     return count;
@@ -380,7 +414,8 @@ uint8_t Security_GetConfiguredPartitionsCount(void) {
  * @retval      bool `true` ako je bar jedna particija naoružana, inače `false`.
  ******************************************************************************
  */
-bool Security_IsAnyPartitionArmed(void) {
+bool Security_IsAnyPartitionArmed(void)
+{
     for (int i = 0; i < SECURITY_PARTITION_COUNT; i++) if (g_security_settings.partition_relay_addr[i] != 0 && partition_is_armed[i]) return true;
     return false;
 }
@@ -389,18 +424,45 @@ bool Security_IsAnyPartitionArmed(void) {
  ******************************************************************************
  * @brief       Validira uneseni korisnički kod.
  * @author      Gemini & [Vaše Ime]
- * @note        Koristi `strcmp` za poređenje sa sva tri snimljena korisnička
- * PIN-a. Eksplicitno odbija PIN "0000" kao nevažeći.
- * @param       code Pokazivač na string koji sadrži uneseni kod.
- * @retval      bool `true` ako je kod ispravan, inače `false`.
+ * @note        Funkcija vrši trostruku provjeru:
+ * 1. Da li je uneseni kod duži od 2 karaktera.
+ * 2. Da li se kod sastoji isključivo od cifara '0'.
+ * 3. Da li se kod podudara sa PIN-om snimljenim u konfiguraciji.
+ * Tek ako su prve dvije provjere zadovoljene, prelazi se na treću.
+ * @param[in]   code Pokazivač na string koji sadrži uneseni kod.
+ * @retval      bool Vraća `true` ako je kod ispravan, inače `false`.
  ******************************************************************************
  */
-bool Security_ValidateUserCode(const char* code) {
-    if (strcmp(code, "0000") == 0 && strlen(code) == 4) return false;
-    for (int i = 0; i < SECURITY_USER_COUNT; i++) {
-        if (strcmp(code, g_security_users.pins[i]) == 0) return true;
+bool Security_ValidateUserCode(const char* code)
+{
+    // 1. Provjera minimalne dužine koda.
+    if (strlen(code) < 3)
+    {
+        return false; // Kod je prekratak i samim tim nevažeći.
     }
-    return false;
+
+    // 2. Provjera da li se kod sastoji isključivo od nula.
+    bool all_zeros = true;
+    for (int i = 0; i < strlen(code); i++)
+    {
+        if (code[i] != '0')
+        {
+            all_zeros = false; // Pronađena je cifra koja nije nula, provjera je prošla.
+            break;
+        }
+    }
+    if (all_zeros)
+    {
+        return false; // Kod se sastoji samo od nula i nevažeći je.
+    }
+
+    // 3. Ako su prve dvije provjere prošle, poredimo kod sa snimljenim PIN-om.
+    if (strcmp(code, g_security_settings.pin) == 0)
+    {
+        return true; // Kod se podudara, validacija je uspješna.
+    }
+
+    return false; // Kod se ne podudara sa snimljenim PIN-om.
 }
 
 /*============================================================================*/
@@ -417,7 +479,8 @@ bool Security_ValidateUserCode(const char* code) {
  * @param       state       Novo stanje ulaza (1 za ON, 0 za OFF).
  ******************************************************************************
  */
-static void HandleSensorEvent(uint16_t sensor_addr, uint8_t state) {
+static void HandleSensorEvent(uint16_t sensor_addr, uint8_t state)
+{
     bool state_changed = false;
     for(int i = 0; i < SECURITY_PARTITION_COUNT; ++i) if (g_security_settings.partition_feedback_addr[i] == sensor_addr) {
             if (partition_is_armed[i] != (bool)state) {
@@ -443,7 +506,8 @@ static void HandleSensorEvent(uint16_t sensor_addr, uint8_t state) {
  * @param       partition_index Indeks particije (0-2) za koju se šalje komanda.
  ******************************************************************************
  */
-static void Execute_Command(uint8_t partition_index) {
+static void Execute_Command(uint8_t partition_index)
+{
     uint16_t address = g_security_settings.partition_relay_addr[partition_index];
     if (address == 0) return;
     uint8_t data_buff[3] = { (address >> 8) & 0xFF, address & 0xFF, 0 };
@@ -453,4 +517,105 @@ static void Execute_Command(uint8_t partition_index) {
         data_buff[2] = partition_is_armed[partition_index] ? BINARY_OFF : BINARY_ON;
     }
     AddCommand(&binaryQueue, BINARY_SET, data_buff, 3);
+}
+/*============================================================================*/
+/* IMPLEMENTACIJA - NOVI GETTERI I SETTERI (za nazive i PIN)                   */
+/*============================================================================*/
+
+/**
+ ******************************************************************************
+ * @brief       Dohvata korisnički definisan naziv za cijeli alarmni sistem.
+ * @author      Gemini & [Vaše Ime]
+ * @retval      const char* Pokazivač na NUL-terminirani string sa nazivom sistema.
+ ******************************************************************************
+ */
+const char* Security_GetSystemName(void)
+{
+    return g_security_settings.system_name;
+}
+
+/**
+ ******************************************************************************
+ * @brief       Postavlja novi korisnički definisan naziv za alarmni sistem.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Funkcija koristi `strncpy` radi sigurnosti, kako bi spriječila
+ * buffer overflow u slučaju da je ulazni string predugačak.
+ * @param[in]   name Pokazivač na NUL-terminirani string sa novim nazivom.
+ * @retval      None
+ ******************************************************************************
+ */
+void Security_SetSystemName(const char* name)
+{
+    if (name != NULL)
+    {
+        strncpy(g_security_settings.system_name, name, sizeof(g_security_settings.system_name) - 1);
+        g_security_settings.system_name[sizeof(g_security_settings.system_name) - 1] = '\0'; // Osiguraj NUL-terminator
+    }
+}
+
+/**
+ ******************************************************************************
+ * @brief       Dohvata korisnički definisan naziv za specificiranu particiju.
+ * @author      Gemini & [Vaše Ime]
+ * @param[in]   partition_index Indeks particije (0-2).
+ * @retval      const char* Pokazivač na NUL-terminirani string sa nazivom,
+ * ili prazan string ako je indeks nevažeći.
+ ******************************************************************************
+ */
+const char* Security_GetPartitionName(uint8_t partition_index)
+{
+    if (partition_index < SECURITY_PARTITION_COUNT)
+    {
+        return g_security_settings.partition_names[partition_index];
+    }
+    return ""; // Vrati prazan string u slučaju greške
+}
+
+/**
+ ******************************************************************************
+ * @brief       Postavlja novi korisnički definisan naziv za specificiranu particiju.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Funkcija koristi `strncpy` radi sigurnosti od buffer overflow-a.
+ * @param[in]   partition_index Indeks particije (0-2) čiji se naziv mijenja.
+ * @param[in]   name Pokazivač na NUL-terminirani string sa novim nazivom.
+ * @retval      None
+ ******************************************************************************
+ */
+void Security_SetPartitionName(uint8_t partition_index, const char* name)
+{
+    if (name != NULL && partition_index < SECURITY_PARTITION_COUNT)
+    {
+        strncpy(g_security_settings.partition_names[partition_index], name, sizeof(g_security_settings.partition_names[0]) - 1);
+        g_security_settings.partition_names[partition_index][sizeof(g_security_settings.partition_names[0]) - 1] = '\0'; // Osiguraj NUL-terminator
+    }
+}
+
+/**
+ ******************************************************************************
+ * @brief       Dohvata jedinstveni PIN kod alarmnog sistema.
+ * @author      Gemini & [Vaše Ime]
+ * @retval      const char* Pokazivač na NUL-terminirani string sa PIN-om.
+ ******************************************************************************
+ */
+const char* Security_GetPin(void)
+{
+    return g_security_settings.pin;
+}
+
+/**
+ ******************************************************************************
+ * @brief       Postavlja novi jedinstveni PIN kod za alarmni sistem.
+ * @author      Gemini & [Vaše Ime]
+ * @note        Funkcija koristi `strncpy` radi sigurnosti od buffer overflow-a.
+ * @param[in]   new_pin Pokazivač na NUL-terminirani string sa novim PIN-om.
+ * @retval      None
+ ******************************************************************************
+ */
+void Security_SetPin(const char* new_pin)
+{
+    if (new_pin != NULL)
+    {
+        strncpy(g_security_settings.pin, new_pin, sizeof(g_security_settings.pin) - 1);
+        g_security_settings.pin[sizeof(g_security_settings.pin) - 1] = '\0'; // Osiguraj NUL-terminator
+    }
 }

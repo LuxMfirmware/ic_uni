@@ -411,7 +411,16 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_ALARM_CMD_ARM */             { "NAORUŽAJ", "ARM", "SCHARF", "ARMER", "INSERIRE", "ARMAR", "ПОСТАВИТЬ", "ПОСТАВИТИ", "UZBRÓJ", "ZAPNOUT", "ZAPNÚŤ" },
     /* TXT_ALARM_CMD_DISARM */          { "RAZORUŽAJ", "DISARM", "UNSCHARF", "DÉSARMER", "DISINSERIRE", "DESARMAR", "СНЯТЬ", "ЗНЯТИ", "ROZBRÓJ", "VYPNOUT", "VYPNÚŤ" },
     /* TXT_ALARM_ENTER_PIN */           { "UNESITE PIN", "ENTER PIN", "PIN EINGEBEN", "ENTREZ PIN", "INSERIRE PIN", "INTRODUZCA PIN", "ВВЕДИТЕ PIN", "ВВЕДІТЬ PIN", "WPROWADŹ PIN", "ZADEJTE PIN", "ZADAJTE PIN" },
-
+    /* TXT_PIN_ENTER_CURRENT */         { "TRENUTNI PIN", "CURRENT PIN", "AKTUELLE PIN", "PIN ACTUEL", "PIN ATTUALE", "PIN ACTUAL", "ТЕКУЩИЙ PIN", "ПОТОЧНИЙ PIN", "OBECNY PIN", "AKTUÁLNÍ PIN", "AKTUÁLNY PIN" },
+    /* TXT_PIN_ENTER_NEW */             { "UNESITE NOVI PIN", "ENTER NEW PIN", "NEUE PIN EINGEBEN", "ENTREZ NOUVEAU PIN", "INSERIRE NUOVO PIN", "INTRODUZCA NUEVO PIN", "ВВЕДИТЕ НОВЫЙ PIN", "ВВЕДІТЬ НОВИЙ PIN", "WPROWADŹ NOWY PIN", "ZADEJTE NOVÝ PIN", "ZADAJTE NOVÝ PIN" },
+    /* TXT_PIN_CONFIRM_NEW */           { "POTVRDITE NOVI PIN", "CONFIRM NEW PIN", "NEUE PIN BESTÄTIGEN", "CONFIRMEZ NOUVEAU PIN", "CONFERMA NUOVO PIN", "CONFIRME NUEVO PIN", "ПОДТВЕРДИТЕ НОВЫЙ PIN", "ПІДТВЕРДІТЬ НОВИЙ PIN", "POTWIERDŹ NOWY PIN", "POTVRĎTE NOVÝ PIN", "POTVRĎTE NOVÝ PIN" },
+    /* TXT_PIN_WRONG */                 { "POGREŠAN PIN", "WRONG PIN", "FALSCHE PIN", "MAUVAIS PIN", "PIN ERRATO", "PIN INCORRECTO", "НЕВЕРНЫЙ PIN", "НЕПРАВИЛЬНИЙ PIN", "BŁĘDNY PIN", "ŠPATNÝ PIN", "NESPRÁVNY PIN" },
+    /* TXT_PINS_DONT_MATCH */           { "PIN-ovi se ne podudaraju", "PINs do not match", "PINS stimmen nicht überein", "Les PINs ne correspondent pas", "I PIN non corrispondono", "Los PIN no coinciden", "PIN-коды не совпадают", "PIN-коди не збігаються", "PINy nie pasują", "PINy se neshodují", "PINy sa nezhodujú" },
+    /* TXT_PIN_CHANGE_SUCCESS */        { "PIN uspješno promijenjen", "PIN changed successfully", "PIN erfolgreich geändert", "PIN changé avec succès", "PIN modificato con successo", "PIN cambiado con éxito", "PIN успешно изменен", "PIN успішно змінено", "PIN zmieniony pomyślnie", "PIN úspěšně změněn", "PIN úspešne zmenený" },
+    /* TXT_ALARM_CHANGE_PIN */          { "Promijeni Glavni PIN", "Change Main PIN", "Haupt-PIN ändern", "Changer le PIN principal", "Cambia PIN principale", "Cambiar PIN principal", "Изменить главный PIN", "Змінити головний PIN", "Zmień główny PIN", "Změnit hlavní PIN", "Zmeniť hlavný PIN" },
+    /* TXT_ALARM_SYSTEM_NAME */         { "Naziv Sistema", "System Name", "Systemname", "Nom du système", "Nome del sistema", "Nombre del sistema", "Имя системы", "Назва системи", "Nazwa systemu", "Název systému", "Názov systému" },
+    /* TXT_ALARM_PARTITION_NAME */      { "Naziv Particije", "Partition Name", "Partitionsname", "Nom de la partition", "Nome partizione", "Nombre de partición", "Имя раздела", "Назва розділу", "Nazwa partycji", "Název sekce", "Názov sekcie" },
+    /* TXT_ALARM_NOT_CONFIGURED */      { "Alarmni sistem nije konfigurisan.", "Alarm system not configured.", "Alarmsystem nicht konfiguriert.", "Système d'alarme non configuré.", "Sistema di allarme non configurato.", "Sistema de alarma no configurado.", "Система сигнализации не настроена.", "Система сигналізації не налаштована.", "System alarmowy nie jest skonfigurowany.", "Alarmový systém není nakonfigurován.", "Alarmový systém nie je nakonfigurovaný." },
 };
 
 static const char* _acContent[LANGUAGE_COUNT][7] = {
