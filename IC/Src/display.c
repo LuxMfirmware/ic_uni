@@ -2767,11 +2767,12 @@ void PID_Hook(GUI_PID_STATE * pTS)
                 DSP_KillSecurityScreen(); // <<< OBAVEZNO UNIŠTI DUGMAD PRIJE IZLASKA
                 screen = SCREEN_SELECT_2;
                 break;
+            
             case SCREEN_SETTINGS_ALARM:
                 DSP_KillSettingsAlarmScreen();
                 screen = SCREEN_SELECT_2;
                 break;
-            // Pravilo: Sa pod-menija trećeg nivoa, hamburger vodi na SELECT_LAST
+            
             case SCREEN_QR_CODE:
                 menu_lc = 0; // Resetuj parametar
                 screen = SCREEN_SELECT_LAST;
@@ -6786,7 +6787,7 @@ static void HandlePress_SelectScreenLast(GUI_PID_STATE * pTS, uint8_t *click_fla
              pTS->y >= select_screen2_drawing_layout.settings_zone.y0 && pTS->y < select_screen2_drawing_layout.settings_zone.y1) {
 
         NumpadContext_t pin_context = {
-            .title = "UNESITE PIN",
+            .title = lng(TXT_ALARM_ENTER_PIN), // KORISTI POSTOJEĆI PREVOD
             .initial_value = "",
             .min_val = 0,
             .max_val = 9999,
@@ -7707,9 +7708,9 @@ static void DSP_InitNumpadScreen(void)
     key_texts[8] = "9";
 
     // Dinamička konfiguracija zadnje tri tipke na osnovu konteksta
-    key_texts[9] = g_numpad_context.allow_decimal ? "." : "DEL"; // Tipka 10: DEL ili tačka
-    key_texts[10] = "0";                                        // Tipka 11: Uvijek nula
-    key_texts[11] = g_numpad_context.allow_minus_one ? "ISKLJ." : "OK"; // Tipka 12: OK ili ISKLJ.
+    key_texts[9] = g_numpad_context.allow_decimal ? "." : (char*)lng(TXT_DEL);
+    key_texts[10] = "0";
+    key_texts[11] = g_numpad_context.allow_minus_one ? (char*)lng(TXT_OFF_SHORT) : (char*)lng(TXT_OK);
 
     // Kreiranje dugmadi u petlji
     for (int i = 0; i < 12; i++) {
@@ -7720,7 +7721,7 @@ static void DSP_InitNumpadScreen(void)
 
         hKeypadButtons[i] = BUTTON_CreateEx(x_pos, y_pos, btn_w, btn_h, 0, WM_CF_SHOW, 0, key_ids[i]);
         BUTTON_SetText(hKeypadButtons[i], key_texts[i]);
-        BUTTON_SetFont(hKeypadButtons[i], &GUI_Font24_1);
+        BUTTON_SetFont(hKeypadButtons[i], &GUI_FontVerdana20_LAT);
     }
 
     // Inicijalizacija i iscrtavanje početnog stanja
@@ -7754,7 +7755,6 @@ static void Service_NumpadScreen(void)
     if (shouldDrawScreen) {
         shouldDrawScreen = 0;
         DSP_InitNumpadScreen();
-        DSP_DrawNumpadText();
     }
     
     int currently_pressed_id = -1;
@@ -7770,8 +7770,7 @@ static void Service_NumpadScreen(void)
 
         WM_HWIN hPressedButton = hKeypadButtons[button_pressed_id];
         int Id = WM_GetId(hPressedButton);
-        should_redraw_text = false;
-
+        
         if (Id >= ID_PINPAD_0 && Id <= ID_PINPAD_9) {
             if (pin_buffer_idx < g_numpad_context.max_len) {
                 pin_last_char = ((Id - ID_PINPAD_0) + '0');
@@ -7782,69 +7781,79 @@ static void Service_NumpadScreen(void)
             }
         }
         else if (Id == ID_PINPAD_DEL) {
-            if (pin_buffer_idx > 0) {
+            if (g_numpad_context.allow_decimal && strchr(pin_buffer, '.') == NULL && pin_buffer_idx < g_numpad_context.max_len) {
+                 pin_buffer[pin_buffer_idx++] = '.';
+                 pin_buffer[pin_buffer_idx] = '\0';
+                 should_redraw_text = true;
+            } else if (!g_numpad_context.allow_decimal && pin_buffer_idx > 0) {
                 pin_buffer[--pin_buffer_idx] = '\0';
                 should_redraw_text = true;
             }
         }
         else if (Id == ID_PINPAD_OK) {
-
-            // ====================================================================
-            // === JEDINA IZMJENA: Provjera da li je aktivan proces promjene PIN-a ===
-            // ====================================================================
-            if (pin_change_state != PIN_CHANGE_IDLE)
-            {
-                // Ako jeste, izvrši se samo nova logika za promjenu PIN-a
+            
+            if (pin_change_state != PIN_CHANGE_IDLE) {
+                // *** LOGIKA ZA PROMJENU PIN-A (ostaje netaknuta) ***
                 switch (pin_change_state)
                 {
                     case PIN_CHANGE_WAIT_CURRENT:
-                        if (Security_ValidateUserCode(pin_buffer)) {
-                            pin_change_state = PIN_CHANGE_WAIT_NEW;
+                        if (strcmp(pin_buffer, Security_GetPin()) == 0) {
                             NumpadContext_t next_context = { .title = lng(TXT_PIN_ENTER_NEW), .max_len = 8 };
-                            Display_ShowNumpad(&next_context);
+                            memcpy(&g_numpad_context, &next_context, sizeof(NumpadContext_t));
+                            pin_change_state = PIN_CHANGE_WAIT_NEW; 
+                            DSP_KillNumpadScreen();
+                            DSP_InitNumpadScreen();
                         } else {
                             pin_error_active = true;
                             pin_mask_timer = HAL_GetTick();
+                            should_redraw_text = true;
                         }
                         break;
+                    
                     case PIN_CHANGE_WAIT_NEW:
                         if (strlen(pin_buffer) >= 4) {
                             strcpy(new_pin_buffer, pin_buffer);
-                            pin_change_state = PIN_CHANGE_WAIT_CONFIRM;
                             NumpadContext_t next_context = { .title = lng(TXT_PIN_CONFIRM_NEW), .max_len = 8 };
-                            Display_ShowNumpad(&next_context);
+                            memcpy(&g_numpad_context, &next_context, sizeof(NumpadContext_t));
+                            pin_change_state = PIN_CHANGE_WAIT_CONFIRM;
+                            DSP_KillNumpadScreen();
+                            DSP_InitNumpadScreen();
                         } else {
                             pin_error_active = true;
                             pin_mask_timer = HAL_GetTick();
+                            should_redraw_text = true;
                         }
                         break;
+                    
                     case PIN_CHANGE_WAIT_CONFIRM:
                         if (strcmp(pin_buffer, new_pin_buffer) == 0) {
                             Security_SetPin(new_pin_buffer);
                             Security_Save();
-                            pin_change_state = PIN_CHANGE_IDLE;
                             NumpadContext_t success_context = { .title = lng(TXT_PIN_CHANGE_SUCCESS), .max_len = 0 };
-                            Display_ShowNumpad(&success_context);
+                            memcpy(&g_numpad_context, &success_context, sizeof(NumpadContext_t));
+                            DSP_KillNumpadScreen();
+                            DSP_InitNumpadScreen();
                             HAL_Delay(2000);
+                            pin_change_state = PIN_CHANGE_IDLE; 
                             DSP_KillNumpadScreen();
                             screen = numpad_return_screen;
                             shouldDrawScreen = 1;
                         } else {
-                            pin_error_active = true;
-                            pin_mask_timer = HAL_GetTick();
+                            NumpadContext_t error_context = { .title = lng(TXT_PINS_DONT_MATCH), .max_len = 8 };
+                            memcpy(&g_numpad_context, &error_context, sizeof(NumpadContext_t));
+                            pin_change_state = PIN_CHANGE_WAIT_NEW;
                             DSP_KillNumpadScreen();
-                            NumpadContext_t retry_context = { .title = lng(TXT_PINS_DONT_MATCH), .max_len = 8 };
-                            Display_ShowNumpad(&retry_context);
+                            DSP_InitNumpadScreen();
                         }
                         break;
-                    default: 
+                    default:
                         pin_change_state = PIN_CHANGE_IDLE;
                         break;
                 }
-                should_redraw_text = true;
             }
-            else // Ako NIJE aktivan proces promjene PIN-a, izvršava se VAŠ ORIGINALNI KOD
+            else
             {
+                // *** POČETAK ISPRAVLJENOG BLOKA (VRAĆENA LOGIKA IZ display - Copy.c) ***
                 bool is_valid = false;
                 
                 if (numpad_return_screen == SCREEN_SECURITY)
@@ -7852,6 +7861,7 @@ static void Service_NumpadScreen(void)
                     if (Security_ValidateUserCode(pin_buffer)) {
                         is_valid = true;
                         
+                        // VRAĆENA "OPTIMISTIC UI" LOGIKA ZA ALARM
                         if (selected_action == 0) { // Akcija za SISTEM
                             bool ui_is_in_arm_state = (alarm_ui_state[0] == ALARM_UI_STATE_ARMED || alarm_ui_state[0] == ALARM_UI_STATE_ARMING);
                             alarm_ui_state[0] = ui_is_in_arm_state ? ALARM_UI_STATE_DISARMING : ALARM_UI_STATE_ARMING;
@@ -7873,11 +7883,12 @@ static void Service_NumpadScreen(void)
                         shouldDrawScreen = 1; 
                     }
                 }
-                else // Podrazumijevani kontekst: Ulazak u glavna podešavanja
+                else // Podrazumijevani kontekst: Ulazak u glavna podešavanja (SERVISNI PIN)
                 {
                     if (strcmp(pin_buffer, system_pin) == 0) {
                         is_valid = true;
                         DSP_KillNumpadScreen();
+                        // VRAĆENA LINIJA KOJA NEDOSTAJE
                         DSP_InitSet1Scrn();
                         screen = SCREEN_SETTINGS_1; 
                         shouldDrawScreen = 1;
@@ -7889,6 +7900,7 @@ static void Service_NumpadScreen(void)
                     pin_mask_timer = HAL_GetTick();
                 }
                 should_redraw_text = true;
+                // *** KRAJ ISPRAVLJENOG BLOKA ***
             }
         }
 
@@ -7901,7 +7913,12 @@ static void Service_NumpadScreen(void)
 
     if (pin_mask_timer != 0 && (HAL_GetTick() - pin_mask_timer) >= PIN_MASK_DELAY) {
         pin_mask_timer = 0;
-        pin_error_active = false;
+        if (pin_error_active) {
+            pin_error_active = false;
+            // Očisti bafer tek nakon isteka tajmera za grešku
+            pin_buffer_idx = 0;
+            memset(pin_buffer, 0, sizeof(pin_buffer));
+        }
         DSP_DrawNumpadText();
     }
 }
@@ -7940,37 +7957,41 @@ static void DSP_DrawNumpadText(void)
     const int y_text_pos = y_block_start;
     const int y_text_center = y_text_pos + (text_h / 2);
 
-    // Privremeni bafer za prikaz na ekranu
     char display_buffer[MAX_PIN_LENGTH + 1] = {0};
 
-    // *** POČETAK IZMJENE: Logika za odlučivanje o maskiranju ***
-    bool should_mask = (strcmp(g_numpad_context.title, lng(TXT_ALARM_ENTER_PIN)) == 0) || 
-                       (strcmp(g_numpad_context.title, "UNESITE PIN") == 0);
-    // *** KRAJ IZMJENE ***
+    bool should_mask = (strcmp(g_numpad_context.title, lng(TXT_ALARM_ENTER_PIN)) == 0) ||
+                       (strcmp(g_numpad_context.title, lng(TXT_PIN_ENTER_CURRENT)) == 0) ||
+                       (strcmp(g_numpad_context.title, lng(TXT_PIN_ENTER_NEW)) == 0) ||
+                       (strcmp(g_numpad_context.title, lng(TXT_PIN_CONFIRM_NEW)) == 0);
 
     GUI_MULTIBUF_BeginEx(1);
     GUI_ClearRect(10, y_text_pos - 25, 370, y_text_pos + text_h);
 
     // Iscrtavanje naslova
-    GUI_SetFont(GUI_FONT_24_1);
+    // ISPRAVKA: Postavljen _LAT font
+    GUI_SetFont(&GUI_FontVerdana20_LAT);
     GUI_SetColor(GUI_WHITE);
     GUI_SetTextMode(GUI_TM_TRANS);
     GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
-    GUI_DispStringAt(g_numpad_context.title, DRAWING_AREA_WIDTH / 2, y_text_pos - 20);
+    // ISPRAVKA: Y pozicija je sada ista kao za poruku o grešci (y_text_center)
+    GUI_DispStringAt(g_numpad_context.title, DRAWING_AREA_WIDTH / 2, y_text_center);
 
-    // Logika za iscrtavanje
-    GUI_SetFont(GUI_FONT_32B_1);
+    // Logika za iscrtavanje unosa (PIN ili poruka)
+    // ISPRAVKA: Postavljen _LAT font
+    GUI_SetFont(&GUI_FontVerdana32_LAT);
     GUI_SetTextAlign(GUI_TA_HCENTER | GUI_TA_VCENTER);
 
     if (pin_error_active) {
         GUI_SetColor(GUI_RED);
-        GUI_DispStringAt("GRESKA", DRAWING_AREA_WIDTH / 2, y_text_center);
+        GUI_DispStringAt(lng(TXT_PIN_WRONG), DRAWING_AREA_WIDTH / 2, y_text_center - 25);
     } else {
+        // Sakrij naslov ako se unosi PIN, jer je sada na istoj poziciji
+        if(pin_buffer_idx > 0) {
+             GUI_ClearRect(10, y_text_pos, 370, y_text_pos + text_h);
+        }
         GUI_SetColor(GUI_ORANGE);
 
-        // *** POČETAK IZMJENE: Primjena 'should_mask' fleg-a ***
         if (should_mask) {
-            // Stara logika sa maskiranjem samo za PIN
             for(int i = 0; i < pin_buffer_idx; i++) {
                 if (pin_mask_timer != 0 && i == (pin_buffer_idx - 1)) {
                     display_buffer[i] = pin_buffer[i];
@@ -7979,10 +8000,8 @@ static void DSP_DrawNumpadText(void)
                 }
             }
         } else {
-            // Nova logika: samo kopiraj unesene brojeve da budu vidljivi
             strncpy(display_buffer, pin_buffer, pin_buffer_idx);
         }
-        // *** KRAJ IZMJENE ***
 
         display_buffer[pin_buffer_idx] = '\0';
         GUI_DispStringAt(display_buffer, DRAWING_AREA_WIDTH / 2, y_text_center);
@@ -8001,9 +8020,10 @@ static void DSP_DrawNumpadText(void)
  *****************************************************************************/
 static void Display_ShowNumpad(const NumpadContext_t* context)
 {
-    // 1. Sačuvaj ekran sa kojeg je funkcija pozvana
-    numpad_return_screen = screen;
-
+    // 1. Sačuvaj ekran sa kojeg je funkcija pozvana, ali samo ako to nije sam Numpad
+    if (screen != SCREEN_NUMPAD) {
+        numpad_return_screen = screen;
+    }
     // 2. Kopiraj proslijeđeni kontekst u internu, statičku varijablu
     if (context != NULL) {
         memcpy(&g_numpad_context, context, sizeof(NumpadContext_t));
@@ -12328,9 +12348,9 @@ static void DSP_InitSettingsAlarmScreen(void)
     DrawHamburgerMenu(1);
 
     const int16_t x_pos = 20;
-    const int16_t y_start = 10;
+    const int16_t y_start = 0;
     const int16_t btn_size = 50;
-    const int16_t y_gap = 55; // Povećan razmak zbog visine reda
+    const int16_t y_gap = 53; // Povećan razmak zbog visine reda
     const int16_t lbl_offset = 15;
     
     char buffer[50];
@@ -12413,9 +12433,16 @@ static void DSP_KillSettingsAlarmScreen(void)
  */
 static void Service_SettingsAlarmScreen(void)
 {
+    // --- POČETAK DODATOG BLOKA ---
+    if (shouldDrawScreen) {
+        shouldDrawScreen = 0;
+        DSP_InitSettingsAlarmScreen();
+    }
+    // --- KRAJ DODATOG BLOKA ---
     // Provjera pritiska na dugme "Promijeni Glavni PIN"
     if (BUTTON_IsPressed(hButtonChangePin))
     {
+        DSP_KillSettingsAlarmScreen();
         pin_change_state = PIN_CHANGE_WAIT_CURRENT;
         // Ovdje ćemo kasnije implementirati trostupanjsku logiku
         // Za sada, samo pokrećemo prvi korak

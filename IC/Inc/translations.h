@@ -291,7 +291,6 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_GATE_GARAGE */               { "Garaža", "Garage", "Garage", "Garage", "Garage", "Garaje", "Гараж", "Гараж", "Garaż", "Garáž", "Garáž" },
     /* TXT_GATE_RAMP */                 { "Rampa", "Barrier", "Schranke", "Barrière", "Barriera", "Barrera", "Шлагбаум", "Шлагбаум", "Szlaban", "Závora", "Rampa" },
     /* TXT_GATE_PEDESTRIAN_LOCK */      { "Brava", "Lock", "Schloss", "Serrure", "Serratura", "Cerradura", "Замок", "Замок", "Zamek", "Zámek", "Zámok" },
-    // ISPRAVKA: Dodan nedostajući prevod za TXT_GATE_SECURITY_DOOR
     /* TXT_GATE_SECURITY_DOOR */        { "Sigurnosna Vrata", "Security Door", "Sicherheitstür", "Porte de Sécurité", "Porta Blindata", "Puerta de Seguridad", "Бронированная Дверь", "Броньовані Двері", "Drzwi Bezpieczeństwa", "Bezpečnostní Dveře", "Bezpečnostné Dvere" },
     /* TXT_GATE_UNDERGROUND_RAMP */     { "Podzemna Rampa", "Underground Ramp", "Tiefgarage Rampe", "Rampe Souterraine", "Rampa Sotterranea", "Rampa Subterránea", "Подземный Пандус", "Підземний Пандус", "Rampa Podziemna", "Podzemní Rampa", "Podzemná Rampa" },
     /* TXT_GATE_CONTROL_PROFILE */      { "Profil Kontrole", "Control Profile", "Steuerungsprofil", "Profil de Contrôle", "Profilo di Controllo", "Perfil de Control", "Профиль Управления", "Профіль Керування", "Profil Sterowania", "Profil Ovládání", "Profil Ovládania" },
@@ -421,6 +420,10 @@ static const char* language_strings[TEXT_COUNT][LANGUAGE_COUNT] = {
     /* TXT_ALARM_SYSTEM_NAME */         { "Naziv Sistema", "System Name", "Systemname", "Nom du système", "Nome del sistema", "Nombre del sistema", "Имя системы", "Назва системи", "Nazwa systemu", "Název systému", "Názov systému" },
     /* TXT_ALARM_PARTITION_NAME */      { "Naziv Particije", "Partition Name", "Partitionsname", "Nom de la partition", "Nome partizione", "Nombre de partición", "Имя раздела", "Назва розділу", "Nazwa partycji", "Název sekce", "Názov sekcie" },
     /* TXT_ALARM_NOT_CONFIGURED */      { "Alarmni sistem nije konfigurisan.", "Alarm system not configured.", "Alarmsystem nicht konfiguriert.", "Système d'alarme non configuré.", "Sistema di allarme non configurato.", "Sistema de alarma no configurado.", "Система сигнализации не настроена.", "Система сигналізації не налаштована.", "System alarmowy nie jest skonfigurowany.", "Alarmový systém není nakonfigurován.", "Alarmový systém nie je nakonfigurovaný." },
+    /* TXT_OK */                        { "OK", "OK", "OK", "OK", "OK", "OK", "ОК", "ОК", "OK", "OK", "OK" },
+    /* TXT_DEL */                       { "DEL", "DEL", "LÖSCH", "SUP", "CANC", "DEL", "УДАЛ", "ВИД", "DEL", "DEL", "DEL" },
+    /* TXT_OFF_SHORT */                 { "ISKLJ.", "OFF", "AUS", "ARRÊT", "OFF", "OFF", "ВЫКЛ", "ВИМК", "WYŁ", "VYP", "VYP" },
+    /* TXT_ERROR */                     { "GREŠKA", "ERROR", "FEHLER", "ERREUR", "ERRORE", "ERROR", "ОШИБКА", "ПОМИЛКА", "BŁĄD", "CHYBA", "CHYBA" },
 };
 
 static const char* _acContent[LANGUAGE_COUNT][7] = {

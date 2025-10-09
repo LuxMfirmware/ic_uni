@@ -261,6 +261,10 @@ typedef enum {
     TXT_ALARM_SYSTEM_NAME,      /**< Labela dugmeta: "Naziv Sistema" */
     TXT_ALARM_PARTITION_NAME,   /**< Labela dugmeta (koristice se kao prefiks, npr. "Naziv Particije 1") */
     TXT_ALARM_NOT_CONFIGURED,   /**< Poruka: "Alarmni sistem nije konfigurisan" */
+    TXT_OK,                     // << NOVI ID
+    TXT_DEL,                    // << NOVI ID
+    TXT_OFF_SHORT,              // << NOVI ID
+    TXT_ERROR,                  // << NOVI ID
     TEXT_COUNT // Uvijek na kraju!
 } TextID;
 
@@ -403,6 +407,7 @@ typedef enum{
     SCREEN_NUMPAD,                  /**< NOVI EKRAN: Univerzalni numericki keypad za unos brojeva. */
     SCREEN_CONFIGURE_DEVICE,        /**< NOVI EKRAN: Prikazuje poruku ako uredaj nije uopšte konfigurisan. */
     SCREEN_RETURN_TO_FIRST,
+    SCREEN_SETTINGS_ALARM,          /**< NOVI EKRAN: Meni za podešavanje naziva alarma i promjenu PIN-a. */
     SCREEN_SETTINGS_1,
     SCREEN_SETTINGS_2,
     SCREEN_SETTINGS_3,
@@ -412,7 +417,6 @@ typedef enum{
     SCREEN_SETTINGS_7,
     SCREEN_SETTINGS_8,              /**< NOVI EKRAN: Meni za detaljno podešavanje do 6 kapija/garažnih vrata. */
     SCREEN_SETTINGS_9,
-    SCREEN_SETTINGS_ALARM,          /**< NOVI EKRAN: Meni za podešavanje naziva alarma i promjenu PIN-a. */
     SCREEN_SETTINGS_TIMER,          /**< NOVI EKRAN: Meni za detaljno podešavanje parametara Pametnog Alarma. */
     SCREEN_SETTINGS_DATETIME,       /**< NOVI EKRAN: Prikazuje se samo ako RTC vrijeme nije validno, za podešavanje datuma i vremena. */
     SCREEN_SETTINGS_HELP,           /**< NOVI EKRAN: Prikazuje tekstualnu pomoc i uputstva za korištenje. */
